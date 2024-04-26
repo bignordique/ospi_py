@@ -1,0 +1,317 @@
+2024-04-26 09:54:19,259 __main__ ospi_engine:274 DEBUG:
+    dequeue  2024 2 21 15 36  1708555002  loop: 7  nqueue: 1  busy: True
+    station_qid: [255, 0, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: []
+    0 {'st': 1708555002, 'dur': 102, 'sid': 2, 'pid': 2, 'deque_time': 1708555104} 0 102
+
+2024-04-26 09:54:19,450 __main__ ospi_engine:88 DEBUG:
+    do_loop  2024 2 21 15 37  1708555020  loop: 8  nqueue: 1  busy: True
+    station_qid: [255, 255, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: [3]
+    0 {'st': 1708555002, 'dur': 102, 'sid': 2, 'pid': 2, 'deque_time': 1708555104} -18 84
+
+2024-04-26 09:54:20,072 __main__ ospi_engine:88 DEBUG:
+    do_loop  2024 2 21 15 38  1708555080  loop: 9  nqueue: 1  busy: True
+    station_qid: [255, 255, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: [3]
+    0 {'st': 1708555002, 'dur': 102, 'sid': 2, 'pid': 2, 'deque_time': 1708555104} -78 24
+
+2024-04-26 09:54:20,321 ospi_log ospi_log:20 DEBUG:
+    logging not ready.
+
+2024-04-26 09:54:20,321 __main__ ospi_engine:274 DEBUG:
+    dequeue  2024 2 21 15 38  1708555104  loop: 9  nqueue: 0  busy: True
+    station_qid: [255, 255, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: []
+
+2024-04-26 09:54:20,691 __main__ ospi_engine:88 DEBUG:
+    do_loop  2024 2 21 15 39  1708555140  loop: 10  nqueue: 0  busy: False
+    station_qid: [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: []
+
+2024-04-26 09:54:21,317 __main__ ospi_engine:88 DEBUG:
+    do_loop  2024 2 21 15 40  1708555200  loop: 11  nqueue: 0  busy: False
+    station_qid: [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: []
+
+2024-04-26 09:54:22,040 __main__ ospi_engine:88 DEBUG:
+    do_loop  2024 2 21 15 41  1708555260  loop: 12  nqueue: 0  busy: False
+    station_qid: [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: []
+
+2024-04-26 09:54:22,657 __main__ ospi_engine:88 DEBUG:
+    do_loop  2024 2 21 15 42  1708555320  loop: 13  nqueue: 0  busy: False
+    station_qid: [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: []
+
+2024-04-26 09:54:22,730 __main__ ospi_engine:619 INFO:
+    basic test ended
+**** 
+
+
+2024-04-26 09:54:22,730 __main__ ospi_engine:88 DEBUG:
+    do_loop  2024 2 21 15 30  1708554626  loop: 14  nqueue: 0  busy: False
+    station_qid: [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: []
+
+2024-04-26 09:54:22,730 __main__ ospi_engine:377 DEBUG:
+    schedule_all_stations  2024 2 21 15 30  1708554626  loop: 14  nqueue: 1  busy: True
+    station_qid: [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: []
+    0 {'st': 1708554627, 'dur': 100, 'sid': 0, 'pid': 0, 'deque_time': 1708554728} 1 102
+
+2024-04-26 09:54:23,167 __main__ ospi_engine:88 DEBUG:
+    do_loop  2024 2 21 15 31  1708554660  loop: 15  nqueue: 1  busy: True
+    station_qid: [0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: [1, 18]
+    0 {'st': 1708554627, 'dur': 100, 'sid': 0, 'pid': 0, 'deque_time': 1708554728} -33 68
+
+2024-04-26 09:54:23,806 __main__ ospi_engine:88 DEBUG:
+    do_loop  2024 2 21 15 32  1708554720  loop: 16  nqueue: 1  busy: True
+    station_qid: [0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: [1, 18]
+    0 {'st': 1708554627, 'dur': 100, 'sid': 0, 'pid': 0, 'deque_time': 1708554728} -93 8
+
+2024-04-26 09:54:23,878 ospi_log ospi_log:20 DEBUG:
+    logging not ready.
+
+2024-04-26 09:54:23,889 __main__ ospi_engine:274 DEBUG:
+    dequeue  2024 2 21 15 32  1708554728  loop: 16  nqueue: 0  busy: True
+    station_qid: [0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: [18]
+
+2024-04-26 09:54:24,432 __main__ ospi_engine:88 DEBUG:
+    do_loop  2024 2 21 15 33  1708554780  loop: 17  nqueue: 0  busy: False
+    station_qid: [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: []
+
+2024-04-26 09:54:25,053 __main__ ospi_engine:88 DEBUG:
+    do_loop  2024 2 21 15 34  1708554840  loop: 18  nqueue: 0  busy: False
+    station_qid: [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: []
+
+2024-04-26 09:54:25,663 __main__ ospi_engine:88 DEBUG:
+    do_loop  2024 2 21 15 35  1708554900  loop: 19  nqueue: 0  busy: False
+    station_qid: [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: []
+
+2024-04-26 09:54:25,664 __main__ ospi_engine:377 DEBUG:
+    schedule_all_stations  2024 2 21 15 35  1708554900  loop: 19  nqueue: 1  busy: True
+    station_qid: [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: []
+    0 {'st': 1708554901, 'dur': 101, 'sid': 1, 'pid': 1, 'deque_time': 1708555003} 1 103
+
+2024-04-26 09:54:26,283 __main__ ospi_engine:88 DEBUG:
+    do_loop  2024 2 21 15 36  1708554960  loop: 20  nqueue: 1  busy: True
+    station_qid: [255, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: [2, 18]
+    0 {'st': 1708554901, 'dur': 101, 'sid': 1, 'pid': 1, 'deque_time': 1708555003} -59 43
+
+2024-04-26 09:54:26,283 __main__ ospi_engine:377 DEBUG:
+    schedule_all_stations  2024 2 21 15 36  1708554960  loop: 20  nqueue: 2  busy: True
+    station_qid: [255, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: [2, 18]
+    0 {'st': 1708554901, 'dur': 101, 'sid': 1, 'pid': 1, 'deque_time': 1708555003} -59 43
+    1 {'st': 1708554961, 'dur': 102, 'sid': 2, 'pid': 2, 'deque_time': 1708555063} 1 103
+
+2024-04-26 09:54:26,718 ospi_log ospi_log:20 DEBUG:
+    logging not ready.
+
+2024-04-26 09:54:26,730 __main__ ospi_engine:274 DEBUG:
+    dequeue  2024 2 21 15 36  1708555003  loop: 20  nqueue: 1  busy: True
+    station_qid: [255, 0, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: [3, 18]
+    0 {'st': 1708554961, 'dur': 102, 'sid': 2, 'pid': 2, 'deque_time': 1708555063} -42 60
+
+2024-04-26 09:54:26,909 __main__ ospi_engine:88 DEBUG:
+    do_loop  2024 2 21 15 37  1708555020  loop: 21  nqueue: 1  busy: True
+    station_qid: [255, 255, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: [3]
+    0 {'st': 1708554961, 'dur': 102, 'sid': 2, 'pid': 2, 'deque_time': 1708555063} -59 43
+
+2024-04-26 09:54:27,347 ospi_log ospi_log:20 DEBUG:
+    logging not ready.
+
+2024-04-26 09:54:27,347 __main__ ospi_engine:274 DEBUG:
+    dequeue  2024 2 21 15 37  1708555063  loop: 21  nqueue: 0  busy: True
+    station_qid: [255, 255, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: []
+
+2024-04-26 09:54:27,520 __main__ ospi_engine:88 DEBUG:
+    do_loop  2024 2 21 15 38  1708555080  loop: 22  nqueue: 0  busy: False
+    station_qid: [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: []
+
+2024-04-26 09:54:28,133 __main__ ospi_engine:88 DEBUG:
+    do_loop  2024 2 21 15 39  1708555140  loop: 23  nqueue: 0  busy: False
+    station_qid: [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: []
+
+2024-04-26 09:54:28,752 __main__ ospi_engine:88 DEBUG:
+    do_loop  2024 2 21 15 40  1708555200  loop: 24  nqueue: 0  busy: False
+    station_qid: [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: []
+
+2024-04-26 09:54:29,373 __main__ ospi_engine:88 DEBUG:
+    do_loop  2024 2 21 15 41  1708555260  loop: 25  nqueue: 0  busy: False
+    station_qid: [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: []
+
+2024-04-26 09:54:29,991 __main__ ospi_engine:88 DEBUG:
+    do_loop  2024 2 21 15 42  1708555320  loop: 26  nqueue: 0  busy: False
+    station_qid: [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: []
+
+2024-04-26 09:54:30,053 __main__ ospi_engine:619 INFO:
+    master on test ended
+**** 
+
+
+2024-04-26 09:54:30,053 __main__ ospi_engine:88 DEBUG:
+    do_loop  2024 2 21 7 1  1708524086  loop: 27  nqueue: 0  busy: False
+    station_qid: [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: []
+
+2024-04-26 09:54:30,409 __main__ ospi_engine:88 DEBUG:
+    do_loop  2024 2 21 7 2  1708524120  loop: 28  nqueue: 0  busy: False
+    station_qid: [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: []
+
+2024-04-26 09:54:30,409 __main__ ospi_engine:377 DEBUG:
+    schedule_all_stations  2024 2 21 7 2  1708524120  loop: 28  nqueue: 1  busy: True
+    station_qid: [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: []
+    0 {'st': 1708524121, 'dur': 104, 'sid': 3, 'pid': 3, 'deque_time': 1708524226} 1 106
+
+2024-04-26 09:54:31,042 __main__ ospi_engine:88 DEBUG:
+    do_loop  2024 2 21 7 3  1708524180  loop: 29  nqueue: 1  busy: True
+    station_qid: [255, 255, 255, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: [4, 18]
+    0 {'st': 1708524121, 'dur': 104, 'sid': 3, 'pid': 3, 'deque_time': 1708524226} -59 46
+
+2024-04-26 09:54:31,512 ospi_log ospi_log:20 DEBUG:
+    logging not ready.
+
+2024-04-26 09:54:31,526 __main__ ospi_engine:274 DEBUG:
+    dequeue  2024 2 21 7 3  1708524226  loop: 29  nqueue: 0  busy: True
+    station_qid: [255, 255, 255, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: [18]
+
+2024-04-26 09:54:31,674 __main__ ospi_engine:88 DEBUG:
+    do_loop  2024 2 21 7 4  1708524240  loop: 30  nqueue: 0  busy: False
+    station_qid: [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: []
+
+2024-04-26 09:54:32,296 __main__ ospi_engine:88 DEBUG:
+    do_loop  2024 2 21 7 5  1708524300  loop: 31  nqueue: 0  busy: False
+    station_qid: [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: []
+
+2024-04-26 09:54:32,296 __main__ ospi_engine:377 DEBUG:
+    schedule_all_stations  2024 2 21 7 5  1708524300  loop: 31  nqueue: 1  busy: True
+    station_qid: [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: []
+    0 {'st': 1708524301, 'dur': 104, 'sid': 3, 'pid': 3, 'deque_time': 1708524406} 1 106
+
+2024-04-26 09:54:32,913 __main__ ospi_engine:88 DEBUG:
+    do_loop  2024 2 21 7 6  1708524360  loop: 32  nqueue: 1  busy: True
+    station_qid: [255, 255, 255, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: [4, 18]
+    0 {'st': 1708524301, 'dur': 104, 'sid': 3, 'pid': 3, 'deque_time': 1708524406} -59 46
+
+2024-04-26 09:54:33,381 ospi_log ospi_log:20 DEBUG:
+    logging not ready.
+
+2024-04-26 09:54:33,393 __main__ ospi_engine:274 DEBUG:
+    dequeue  2024 2 21 7 6  1708524406  loop: 32  nqueue: 0  busy: True
+    station_qid: [255, 255, 255, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: [18]
+
+2024-04-26 09:54:33,536 __main__ ospi_engine:88 DEBUG:
+    do_loop  2024 2 21 7 7  1708524420  loop: 33  nqueue: 0  busy: False
+    station_qid: [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: []
+
+2024-04-26 09:54:34,153 __main__ ospi_engine:88 DEBUG:
+    do_loop  2024 2 21 7 8  1708524480  loop: 34  nqueue: 0  busy: False
+    station_qid: [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: []
+
+2024-04-26 09:54:34,215 __main__ ospi_engine:619 INFO:
+    sunrise test ended**** 
+
+
+2024-04-26 09:54:34,215 __main__ ospi_engine:88 DEBUG:
+    do_loop  2024 2 21 17 23  1708561406  loop: 35  nqueue: 0  busy: False
+    station_qid: [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: []
+
+2024-04-26 09:54:34,563 __main__ ospi_engine:88 DEBUG:
+    do_loop  2024 2 21 17 24  1708561440  loop: 36  nqueue: 0  busy: False
+    station_qid: [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: []
+
+2024-04-26 09:54:34,563 __main__ ospi_engine:377 DEBUG:
+    schedule_all_stations  2024 2 21 17 24  1708561440  loop: 36  nqueue: 1  busy: True
+    station_qid: [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: []
+    0 {'st': 1708561441, 'dur': 104, 'sid': 3, 'pid': 3, 'deque_time': 1708561546} 1 106
+
+2024-04-26 09:54:35,279 __main__ ospi_engine:88 DEBUG:
+    do_loop  2024 2 21 17 25  1708561500  loop: 37  nqueue: 1  busy: True
+    station_qid: [255, 255, 255, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: [4, 18]
+    0 {'st': 1708561441, 'dur': 104, 'sid': 3, 'pid': 3, 'deque_time': 1708561546} -59 46
+
+2024-04-26 09:54:35,754 ospi_log ospi_log:20 DEBUG:
+    logging not ready.
+
+2024-04-26 09:54:35,765 __main__ ospi_engine:274 DEBUG:
+    dequeue  2024 2 21 17 25  1708561546  loop: 37  nqueue: 0  busy: True
+    station_qid: [255, 255, 255, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: [18]
+
+2024-04-26 09:54:35,911 __main__ ospi_engine:88 DEBUG:
+    do_loop  2024 2 21 17 26  1708561560  loop: 38  nqueue: 0  busy: False
+    station_qid: [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: []
+
+2024-04-26 09:54:36,540 __main__ ospi_engine:88 DEBUG:
+    do_loop  2024 2 21 17 27  1708561620  loop: 39  nqueue: 0  busy: False
+    station_qid: [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: []
+
+2024-04-26 09:54:36,540 __main__ ospi_engine:377 DEBUG:
+    schedule_all_stations  2024 2 21 17 27  1708561620  loop: 39  nqueue: 1  busy: True
+    station_qid: [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: []
+    0 {'st': 1708561621, 'dur': 104, 'sid': 3, 'pid': 3, 'deque_time': 1708561726} 1 106
+
+2024-04-26 09:54:37,171 __main__ ospi_engine:88 DEBUG:
+    do_loop  2024 2 21 17 28  1708561680  loop: 40  nqueue: 1  busy: True
+    station_qid: [255, 255, 255, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: [4, 18]
+    0 {'st': 1708561621, 'dur': 104, 'sid': 3, 'pid': 3, 'deque_time': 1708561726} -59 46
+
+2024-04-26 09:54:37,635 ospi_log ospi_log:20 DEBUG:
+    logging not ready.
+
+2024-04-26 09:54:37,648 __main__ ospi_engine:274 DEBUG:
+    dequeue  2024 2 21 17 28  1708561726  loop: 40  nqueue: 0  busy: True
+    station_qid: [255, 255, 255, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: [18]
+
+2024-04-26 09:54:37,795 __main__ ospi_engine:88 DEBUG:
+    do_loop  2024 2 21 17 29  1708561740  loop: 41  nqueue: 0  busy: False
+    station_qid: [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: []
+
+2024-04-26 09:54:38,415 __main__ ospi_engine:88 DEBUG:
+    do_loop  2024 2 21 17 30  1708561800  loop: 42  nqueue: 0  busy: False
+    station_qid: [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
+    station_list: []
+
+2024-04-26 09:54:38,478 __main__ ospi_engine:619 INFO:
+    sunset test ended**** 
+
+

@@ -1,0 +1,9 @@
+MAX_NUM_STATIONS = 32
+NUM_SEQ_GROUPS = 4
+MAX_RUNQ_ENTRIES = 200
+PARALLEL_GROUP_ID = 255
+SECS_PER_DAY = 86400
+PYTHON_LOG_DIR = "/var/www/html/ospi_data/python_logs/log"
+WATER_LOG_DIR = "/var/www/html/ospi_data/water_logs"
+NEUTRAL_HUMIDITY = 30
+NEUTRAL_TEMP = 70
