@@ -130,7 +130,7 @@ if __name__ == "__main__":
     logger = logging.getLogger(__name__)
     logger.info("\n    Startup\n")
 
-    from ospi_db import ospi_db
+    from cgi.ospi_db import ospi_db
     ospi_db_i = ospi_db()
     ospi_db_i.init_db("db_file", "src/ospi_defaults.txt")
 

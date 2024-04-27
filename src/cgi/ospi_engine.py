@@ -12,8 +12,8 @@
 import json
 import logging
 import time
-import ospi_defs
-from ospi_log import ospi_log
+import cgi.ospi_defs as ospi_defs
+from cgi.ospi_log import ospi_log
 
 class ospi_engine():
 
@@ -552,13 +552,13 @@ if __name__ == "__main__":
     logger = logging.getLogger(__name__)
     logger.info("\n    Startup\n")
 
-    from ospi_db import ospi_db
+    from cgi.ospi_db import ospi_db
     ospi_db_i = ospi_db()
     ospi_db_i.init_db("db_file", "src/ospi_defaults.txt")
 
-    from ospi_station_bits import ospi_station_bits
-    from ospi_check_match import ospi_check_match
-    from ospi_log import ospi_log
+    from cgi.ospi_station_bits import ospi_station_bits
+    from cgi.ospi_check_match import ospi_check_match
+    from cgi.ospi_log import ospi_log
     sb = ospi_station_bits(ospi_db_i)
     cm = ospi_check_match(ospi_db_i)
     ol = ospi_log(ospi_db_i)
