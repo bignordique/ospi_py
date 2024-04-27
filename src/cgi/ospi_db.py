@@ -12,7 +12,7 @@ class ospi_db:
 
     def __init__ (self):
         self.logger = logging.getLogger(__name__)
-        self.logger.info("\n    in ospi_db __init__")
+        self.logger.debug("\n    in ospi_db __init__\n")
 
     def init_db(self, db_file, defaults_file):
         ospi_db.db_file = db_file
@@ -28,7 +28,6 @@ class ospi_db:
                 self.logger.error(f'\n    Path {ospi_db.db_file} exists, '\
                                   +'but not a file. Exiting.\n')
                 exit()
-#            os.system("cp "+ospi_db.db_file+" "+ospi_db.db_file+".1;")
             shutil.copyfile(ospi_db.db_file, ospi_db.db_file+".1")
         else: self.default_db(defaults_file)
         with open (db_file, "r") as f:
@@ -64,17 +63,17 @@ class ospi_db:
 
 if __name__ == "__main__":
 
-    DB_DEFAULTS_FILE = "/var/www/html/ospi_data/ospi_defaults.txt"
-    DB_FILE = "ospi_db.json"
+    DB_DEFAULTS_FILE = "config/ospi_defaults.txt"
+    DB_FILE = "run/ospi_db.json"
 
     from logging.handlers import RotatingFileHandler
 
-    LOGFILE = "log"
+    LOGFILE = "test/log"
 
     logging.basicConfig(format='%(asctime)s %(name)s %(module)s:%(lineno)d ' +
                                '%(levelname)s:%(message)s',
                         handlers=[RotatingFileHandler(LOGFILE, maxBytes=30000, 
-                                                      backupCount=5)],
+                                                      backupCount=1)],
                         level=logging.DEBUG)
 
     logger = logging.getLogger(__name__)
@@ -83,3 +82,7 @@ if __name__ == "__main__":
     
     ospi_db_i = ospi_db()
     ospi_db_i.init_db(DB_FILE, DB_DEFAULTS_FILE)
+
+    print ("program 0: ", ospi_db_i.db["programs"]["pd"][0])
+    print ("UTC timestamp:", ospi_db_i.get_utc_stamp(logger))
+    print ("local adjusted timestamp:", ospi_db_i.get_lcl_stamp(logger))

@@ -1,8 +1,8 @@
 #!/var/www/html/python3_11/bin/python3.11
 
 import logging
-import ospi_defs
-from ospi_595_fake import ospi_595_gpio
+import cgi.ospi_defs as ospi_defs
+from cgi.ospi_595_fake import ospi_595_gpio
 
 gpio = ospi_595_gpio()
 
@@ -59,7 +59,7 @@ if __name__ == "__main__":
     logger = logging.getLogger(__name__)
     logger.info("\n    Startup\n")
 
-    from ospi_db import ospi_db
+    from cgi.ospi_db import ospi_db
     ospi_db_i = ospi_db()
     
     ospi_db_i.init_db("db_file", "/var/www/html/ospi_data/ospi_defaults.txt")
