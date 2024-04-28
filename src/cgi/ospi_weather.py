@@ -52,10 +52,19 @@ class ospi_weather():
         
 if __name__ == "__main__":
 
-    from logging.handlers import RotatingFileHandler
+    import os
 
     LOGFILE = "test/log"
+    try :
+        os.remove(LOGFILE)
+    except OSError: any
 
+    DBFILE = "run/ospi_db.json"
+    try :
+        os.remove(DBFILE)
+    except OSError: any
+
+    from logging.handlers import RotatingFileHandler
     logging.basicConfig(format='%(asctime)s %(name)s %(module)s:%(lineno)d ' +
                                '%(levelname)s:%(message)s',
                         handlers=[RotatingFileHandler(LOGFILE, maxBytes=30000, 
@@ -68,7 +77,7 @@ if __name__ == "__main__":
     from ospi_db import ospi_db
 
     ospi_db_i = ospi_db()
-    ospi_db_i.init_db("test/db_file", "config/ospi_defaults.txt")
+    ospi_db_i.init_db(DBFILE, "config/ospi_defaults.txt")
 
     wx = ospi_weather(ospi_db_i)
     wx.initialize()

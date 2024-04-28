@@ -29,10 +29,15 @@ class ospi_mp():
         return['{"result":1}']
 
 if __name__ == "__main__":
-
     import os
-    os.system("rm -f db_file*")
-    os.system("rm -f log")
+
+    LOGFILE = "test/log"
+    DBFILE = "test/db_file"
+
+    try :
+        os.remove(DBFILE)
+        os.remove(LOGFILE)
+    except: OSError:any
 
     from logging.handlers import RotatingFileHandler
 

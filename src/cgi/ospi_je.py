@@ -19,27 +19,29 @@ if __name__ == "__main__":
 
     import os
 
-    LOGFILE = "test/log"
-    DBFILE = "test/db_file"
-
+    DBFILE = "run/ospi_db.json"
     try :
         os.remove(DBFILE)
+    except OSError: any
+
+    LOGFILE = "test/log"
+    try :
         os.remove(LOGFILE)
-    except: OSError:any
+    except OSError: any
 
     from logging.handlers import RotatingFileHandler
 
     logging.basicConfig(format='%(asctime)s %(name)s %(module)s:%(lineno)d ' +
                                '%(levelname)s:%(message)s',
                         handlers=[RotatingFileHandler(LOGFILE, maxBytes=30000, 
-                                                      backupCount=3)],
+                                                      backupCount=1)],
                         level=logging.DEBUG)
 
     logger = logging.getLogger(__name__)
     logger.info("\n    Startup\n")
 
 #    ospi_db_i = ospi_db()
-#    ospi_db_i.init_db("db_file", "config/ospi_defaults.txt")
+#    ospi_db_i.init_db(DB_FILE, "config/ospi_defaults.txt")
 
     je = ospi_je()
 

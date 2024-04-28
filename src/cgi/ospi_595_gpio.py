@@ -2,40 +2,52 @@
 
 import logging
 import ospi_defs
-from gpiozero import OutputDevice as GPIO_OUT
-from gpiozero.pins.native import NativeFactory
+
 # Tried to use RPi.GPIO, but got some issue with glibc??
 # I think NativeFactory should work for the simple stuff here.
 
 class ospi_595_gpio():
 
     def __init__ (self, win=False):
-
+        self.win = win
         self.logger = logging.getLogger(__name__)   
-        my_fact = NativeFactory()
-        self.g = GPIO_OUT("GPIO17", active_high=True, initial_value=True, pin_factory=my_fact)  
-                          # aka "#OE", "A1", pin11
-        self.ser = GPIO_OUT("GPIO27", active_high=True, initial_value=False, pin_factory=my_fact)
-                            # aka "Data", "D5", pin13
-        self.sck = GPIO_OUT("GPIO4", active_high=True, initial_value=False, pin_factory=my_fact)
-                            # aka "Clock", "D6", pin7
-        self.rck = GPIO_OUT("GPIO22", active_high=True, initial_value=False, pin_factory=my_fact)
-                            # aka "Latch", "D7", pin15
+        if not self.win :
+            from gpiozero import OutputDevice as GPIO_OUT
+            from gpiozero.pins.native import NativeFactory
+            my_fact = NativeFactory()
+            self.g = GPIO_OUT("GPIO17", active_high=True, initial_value=True, pin_factory=my_fact)  
+                              # aka "#OE", "A1", pin11
+            self.ser = GPIO_OUT("GPIO27", active_high=True, initial_value=False, pin_factory=my_fact)
+                                # aka "Data", "D5", pin13
+            self.sck = GPIO_OUT("GPIO4", active_high=True, initial_value=False, pin_factory=my_fact)
+                                # aka "Clock", "D6", pin7
+            self.rck = GPIO_OUT("GPIO22", active_high=True, initial_value=False, pin_factory=my_fact)
+                                # aka "Latch", "D7", pin15
 
-        self.update_595(0, ospi_defs.MAX_NUM_STATIONS)
+            self.update_595(0, ospi_defs.MAX_NUM_STATIONS)
 
-        self.g.off()
+            self.g.off()
 
 # map station_bits to organization of 595s.  Will work up to 32 stations.
     def update_595(self, data, channels):
-        tnf_data = data << 24 & 0xff000000  | data & 0x00ffff00 | data & 0xff000000 >> 24
-        for ii in range(0, ospi_defs.MAX_NUM_STATIONS, 1):
-            if tnf_data >> ii & 0b1 == 1: self.ser.on() 
-            else: self.ser.off()
-            self.sck.on()
-            self.sck.off()
-        self.rck.on()
-        self.rck.off()
+        if not self.win :
+            tnf_data = data << 24 & 0xff000000  | data & 0x00ffff00 | data & 0xff000000 >> 24
+            for ii in range(0, ospi_defs.MAX_NUM_STATIONS, 1):
+                if tnf_data >> ii & 0b1 == 1: self.ser.on() 
+                else: self.ser.off()
+                self.sck.on()
+                self.sck.off()
+            self.rck.on()
+            self.rck.off()
+        else :
+            out_string = ""
+            for ii in range (31,0, -1):
+                if data >> ii & 0b1 != 0 :
+                    out_string += "1"
+                else :
+                    out_string += "0"
+            print(out_string)
+
         self.logger.debug(f'\n    input data {data}\n')
 
 if __name__ == "__main__":
@@ -53,7 +65,7 @@ if __name__ == "__main__":
     logging.basicConfig(format='%(asctime)s %(name)s %(module)s:%(lineno)d ' +
                                '%(levelname)s:%(message)s',
                         handlers=[RotatingFileHandler(LOGFILE, maxBytes=30000, 
-                                                      backupCount=1)],
+                                                      backupCount=5)],
                         level=logging.DEBUG)
 
     logger = logging.getLogger(__name__)
@@ -62,7 +74,7 @@ if __name__ == "__main__":
 #    ospi_db_i = ospi_db()
 #    ospi_db_i.init_db("db_file", "/var/www/html/ospi_data/ospi_defaults.txt")
 
-    gpio = ospi_595_gpio()
+    gpio = ospi_595_gpio(win=True)
 
     import time
     time.sleep(1)
