@@ -11,6 +11,9 @@ import ospi_defs
 # with this is it doesn't take current weather into account.   Don't want to water if its gonna 
 # rain today.   At the risk of believing the forcast, we'll compute an adjustment based
 # on yesterdays reported values and today's predictions.
+#
+# 4/20/24 update.   Fetches of yesterdday's weather quit working.  I filed a ticket and Weatherapi responded!   
+# Tried again, and it is now working.
 
 class ospi_weather():
 
@@ -32,26 +35,47 @@ class ospi_weather():
         yesterday =  time.strftime("%Y-%m-%d", time.localtime(ts - ospi_defs.SECS_PER_DAY))
         today = time.strftime("%Y-%m-%d", time.localtime(ts))
         zipcode = "80528"
-        wx_yesterday = self.api_instance.history_weather(zipcode, yesterday)["forecast"]["forecastday"][0]["day"]
-        wx_today = self.api_instance.forecast_weather(zipcode, 1, dt=today)["forecast"]["forecastday"][0]["day"]
+#        print (self.api_instance.history_weather(zipcode, yesterday))
+#        print (self.api_instance.forecast_weather(zipcode, 1, dt=today))
+        avghumidity = 0
+        avgtemp_f = 0
+        totalprecip_hundreds = 0
+        wx_factors = 0
+        try:
+            wx_yesterday = self.api_instance.history_weather(zipcode, yesterday)["forecast"]["forecastday"][0]["day"]
+            avghumidity = wx_yesterday["avghumidity"] 
+            avgtemp_f = wx_yesterday["avgtemp_f"] 
+            totalprecip_hundreds = wx_yesterday["totalprecip_in"] 
+            wx_factors = 1
+        except Exception as e:
+# nominally expect index error because the fetch succeeds, but does not return the expected dict.
+            self.logger.error (f'\n    failed fetch of yesterdays weather: {type(e)}\n')
 
-        avghumidity = (wx_yesterday["avghumidity"] + wx_today["avghumidity"])/2
+        try:
+            wx_today = self.api_instance.forecast_weather(zipcode, 1, dt=today)["forecast"]["forecastday"][0]["day"]
+            avghumidity += wx_today["avghumidity"] 
+            avgtemp_f += wx_today["avgtemp_f"] 
+            totalprecip_hundreds += wx_today["totalprecip_in"] 
+            wx_factors += 1
+        except Exception as e:
+            self.logger.error (f'\n    failed fetch of yesterdays weather: {e}\n')
+
+
+        avghumidity = avghumidity/wx_factors
         hum_factor = ospi_defs.NEUTRAL_HUMIDITY - avghumidity
 
-        avgtemp_f = (wx_yesterday["avgtemp_f"] + wx_today["avgtemp_f"])/2
+        avgtemp_f = avgtemp_f/wx_factors
         temp_factor = (avgtemp_f - ospi_defs.NEUTRAL_TEMP) * 4
 
-        totalprecip_hundreds = (wx_yesterday["totalprecip_in"] + wx_today["totalprecip_in"]) * 100
         precip_factor = totalprecip_hundreds * -2
 
-#        print(avghumidity, avgtemp_f, totalprecip_hundreds)
-#        print(hum_factor, temp_factor, precip_factor)
+        print(avghumidity, avgtemp_f, totalprecip_hundreds)
+        print(hum_factor, temp_factor, precip_factor)
 
         adj = int(min(max(0,100+hum_factor+temp_factor+precip_factor), 200))
         self.ospi_db.db["options"]["wl"] = adj
         
 if __name__ == "__main__":
-
     import os
 
     LOGFILE = "test/log"

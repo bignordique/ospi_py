@@ -52,13 +52,16 @@ class ospi_595_gpio():
 
 if __name__ == "__main__":
 
-    LOGFILE = "test/log"
-    DBFILE = "test/db_file"
-
     import os
+
+    LOGFILE = "test/log"
+    try :
+        os.remove(LOGFILE)
+    except: OSError:any
+  
+    DBFILE = "test/db_file"
     try :
         os.remove(DBFILE)
-        os.remove(LOGFILE)
     except: OSError:any
 
     from logging.handlers import RotatingFileHandler
@@ -72,9 +75,11 @@ if __name__ == "__main__":
     logger.info("\n    Startup\n")
 
 #    ospi_db_i = ospi_db()
-#    ospi_db_i.init_db("db_file", "/var/www/html/ospi_data/ospi_defaults.txt")
+#    ospi_db_i.init_db(DBFILLE, "config/ospi_defaults.txt")
 
-    gpio = ospi_595_gpio(win=True)
+    import platform
+    win = True if platform.system() == "Windows" else False
+    gpio = ospi_595_gpio(win)
 
     import time
     time.sleep(1)

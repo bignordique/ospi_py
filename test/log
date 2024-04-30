@@ -1,9 +1,19 @@
-2024-04-27 18:16:37,626 __main__ ospi_weather:75 INFO:
+2024-04-30 11:16:28,006 __main__ ospi_up:62 INFO:
     Startup
 
-2024-04-27 18:16:37,626 ospi_db ospi_db:15 DEBUG:
+2024-04-30 11:16:28,019 ospi_db ospi_db:15 DEBUG:
     in ospi_db __init__
 
-2024-04-27 18:16:37,626 ospi_db ospi_db:38 INFO:
+2024-04-30 11:16:28,019 ospi_db ospi_db:38 INFO:
     Setting database to defaults.
+
+2024-04-30 11:16:28,019 __main__ ospi_up:30 ERROR:
+    pid: 3 nprogs: 3
+2024-04-30 11:16:28,019 __main__ ospi_up:30 ERROR:
+    pid: 0 nprogs: 3
+2024-04-30 11:16:28,019 __main__ ospi_db:46 INFO:
+    DB writeback.
+
+2024-04-30 11:16:28,019 __main__ ospi_up:35 DEBUG:
+    pid: 2
 

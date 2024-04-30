@@ -119,11 +119,13 @@ if __name__ == "__main__":
     import os
 
     LOGFILE = "test/log"
-    DBFILE = "test/db_file"
+    try :
+        os.remove(LOGFILE)
+    except: OSError:any
 
+    DBFILE = "test/db_file"
     try :
         os.remove(DBFILE)
-        os.remove(LOGFILE)
     except: OSError:any
 
     from logging.handlers import RotatingFileHandler
@@ -140,7 +142,7 @@ if __name__ == "__main__":
 
     from ospi_db import ospi_db
     ospi_db_i = ospi_db()
-    ospi_db_i.init_db("run/ospi_db.json", "config/ospi_defaults.txt")
+    ospi_db_i.init_db(DBFILE, "config/ospi_defaults.txt")
 
     cm = ospi_check_match(ospi_db_i)
 
@@ -158,8 +160,7 @@ if __name__ == "__main__":
     prog = [flag, days0, 2, [start0, start1, start2, start3], [1200, 2400, 3600, 2400, 600, 2040, 2040, 1500, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 'turf', [0, 33, 415]]
     import time
 #                                    y    m   d  h  m  s
-    ts = time.mktime(time.strptime("2024 feb 21 15 30 25", "%Y %b %d %H %M %S"))
-    
+    ts = time.mktime(time.strptime("2024 feb 21 15 30 25", "%Y %b %d %H %M %S"))   
     print (cm.check_match(ts, prog))
 
     start0 = 0b1 << 15   # negative, disabled
@@ -168,9 +169,14 @@ if __name__ == "__main__":
     start3 = 0b1 << 15   # negative, disabled
     prog = [flag, days0, 2, [start0, start1, start2, start3], [1200, 2400, 3600, 2400, 600, 2040, 2040, 1500, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 'turf', [0, 33, 415]]
 
-#                        y    m   d  h  m  s
-    tt = time.strptime("2024 feb 21 00 40 25", "%Y %b %d %H %M %S")
-    ts = time.mktime(tt)
+#    tt = time.strptime("2024 feb 21 15 30 25", "%Y %b %d %H %M %S")
+#    ts = time.mktime(tt)
+#    Strangely, the above gets a weird "Missed attribute 'n_fields' of type time.struct_time" exception
+#    with no line number??  If combined into a single step, no problem??  Some indication on the web
+#    this is a debugger bug?   Easy workaround, use the no intermediate "tt" form.
+#    Not a problem on Linux and Python 3.11.   Might be some Code debugger issue??
+#                                    y    m   d  h  m  s
+    ts = time.mktime(time.strptime("2024 feb 21 00 40 25", "%Y %b %d %H %M %S"))
     print (cm.check_match(ts, prog))
 
     start0 = 0b1 << 15   # negative, disabled
@@ -180,8 +186,7 @@ if __name__ == "__main__":
     prog = [flag, days0, 2, [start0, start1, start2, start3], [1200, 2400, 3600, 2400, 600, 2040, 2040, 1500, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 'turf', [0, 33, 415]]
 
 #                        y    m   d  h  m  s
-    tt = time.strptime("2024 feb 21 08 42 25", "%Y %b %d %H %M %S")
-    ts = time.mktime(tt)
+    ts = time.mktime(time.strptime("2024 feb 21 08 42 25", "%Y %b %d %H %M %S"))
     print (cm.check_match(ts, prog))
 
     start0 = 0b1 << 15   # negative, disabled
@@ -191,6 +196,6 @@ if __name__ == "__main__":
     prog = [flag, days0, 2, [start0, start1, start2, start3], [1200, 2400, 3600, 2400, 600, 2040, 2040, 1500, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 'turf', [0, 33, 415]]
 
 #                        y    m   d  h  m  s
-    tt = time.strptime("2024 feb 21 16 37 25", "%Y %b %d %H %M %S")
-    ts = time.mktime(tt)
+    ts = time.mktime(time.strptime("2024 feb 21 16 37 25", "%Y %b %d %H %M %S"))
     print (cm.check_match(ts, prog))
+
