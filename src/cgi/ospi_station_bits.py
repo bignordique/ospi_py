@@ -1,10 +1,12 @@
 #!/var/www/html/python3_11/bin/python3.11
 
 import logging
-import cgi.ospi_defs as ospi_defs
-from cgi.ospi_595_fake import ospi_595_gpio
+import ospi_defs
+from ospi_595_gpio import ospi_595_gpio
 
-gpio = ospi_595_gpio()
+import platform
+win = True if platform.system() == "Windows" else False
+gpio = ospi_595_gpio(win)
 
 class ospi_station_bits():
 
@@ -40,30 +42,38 @@ class ospi_station_bits():
             sn.append(self.station_bits >> ii & 0b1)
         return sn
 
+
 if __name__ == "__main__":
-    print("hello world")
 
+    import os
 
+    LOGFILE = "test/log"
+    try :
+        os.remove(LOGFILE)
+    except: OSError:any
+  
+    DBFILE = "test/db_file"
+    try :
+        os.remove(DBFILE)
+    except: OSError:any
+
+    DEFFILE = "config/ospi_defaults.txt"   
 
     from logging.handlers import RotatingFileHandler
-
-    LOGFILE = "log"
-
     logging.basicConfig(format='%(asctime)s %(name)s %(module)s:%(lineno)d ' +
                                '%(levelname)s:%(message)s',
                         handlers=[RotatingFileHandler(LOGFILE, 
                                                       maxBytes=30000, 
-                                                      backupCount=5)],
+                                                      backupCount=1)],
                         level=logging.DEBUG)
 
     logger = logging.getLogger(__name__)
     logger.info("\n    Startup\n")
 
-    from cgi.ospi_db import ospi_db
+    from ospi_db import ospi_db
     ospi_db_i = ospi_db()
-    
-    ospi_db_i.init_db("db_file", "/var/www/html/ospi_data/ospi_defaults.txt")
-""""
+    ospi_db_i.init_db(DBFILE, DEFFILE)
+
 
     sb = ospi_station_bits(ospi_db_i)
 
@@ -80,4 +90,3 @@ if __name__ == "__main__":
         sb.apply_all_station_bits()
         sleep(0.25)
 
-"""

@@ -30,13 +30,16 @@ if __name__ == "__main__":
     def print_time():
         print(datetime.datetime.now())
 
-    LOGFILE = "test/log"
-    DBFILE = "test/db_file"
-
     import os
+
+    LOGFILE = "test/log"
+    try :
+        os.remove(LOGFILE)
+    except: OSError:any
+
+    DBFILE = "test/db_file"
     try :
         os.remove(DBFILE)
-        os.remove(LOGFILE)
     except: OSError:any
 
     from logging.handlers import RotatingFileHandler

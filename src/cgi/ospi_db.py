@@ -64,11 +64,14 @@ class ospi_db:
 if __name__ == "__main__":
 
     DB_DEFAULTS_FILE = "config/ospi_defaults.txt"
-    DB_FILE = "run/ospi_db.json"
+    DBFILE = "run/ospi_db.json"
 
     from logging.handlers import RotatingFileHandler
 
     LOGFILE = "test/log"
+    try :
+        os.remove(LOGFILE)
+    except OSError: any
 
     logging.basicConfig(format='%(asctime)s %(name)s %(module)s:%(lineno)d ' +
                                '%(levelname)s:%(message)s',
@@ -81,7 +84,7 @@ if __name__ == "__main__":
 
     
     ospi_db_i = ospi_db()
-    ospi_db_i.init_db(DB_FILE, DB_DEFAULTS_FILE)
+    ospi_db_i.init_db(DBFILE, DB_DEFAULTS_FILE)
 
     print ("program 0: ", ospi_db_i.db["programs"]["pd"][0])
     print ("UTC timestamp:", ospi_db_i.get_utc_stamp(logger))

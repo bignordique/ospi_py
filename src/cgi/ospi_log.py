@@ -147,17 +147,25 @@ class ospi_log:
             
 if __name__ == "__main__":
 
-    DB_DEFAULTS_FILE = "/var/www/html/ospi_data/ospi_defaults.txt"
-    DB_FILE = "ospi_db.json"
+    import os
+
+    LOGFILE = "test/log"
+    try :
+        os.remove(LOGFILE)
+    except: OSError:any
+  
+    DBFILE = "test/db_file"
+    try :
+        os.remove(DBFILE)
+    except: OSError:any
+
+    DEFFILE = "config/ospi_defaults.txt" 
 
     from logging.handlers import RotatingFileHandler
-
-    LOGFILE = "log"
-
     logging.basicConfig(format='%(asctime)s %(name)s %(module)s:%(lineno)d ' +
                                '%(levelname)s:%(message)s',
                         handlers=[RotatingFileHandler(LOGFILE, maxBytes=30000, 
-                                                      backupCount=5)],
+                                                      backupCount=1)],
                         level=logging.DEBUG)
 
     logger = logging.getLogger(__name__)
@@ -165,10 +173,10 @@ if __name__ == "__main__":
 
     
     ospi_db_i = ospi_db()
-    ospi_db_i.init_db(DB_FILE, DB_DEFAULTS_FILE)
+    ospi_db_i.init_db(DBFILE, DEFFILE)
 
     log = ospi_log(ospi_db_i)
-    log.water_log_dir = "water_log_dir"
+    log.water_log_dir = "test/water_logs"
 
     print(log.ospi_db.db["options"]["lg"])
 
@@ -207,16 +215,25 @@ if __name__ == "__main__":
     print(log.get_log(ts1, ts2, "wl"))    # should be empty
     print(log.get_log(ts_end, ts_end, None))
 
-    print (os.system("/usr/bin/tree water_log_dir"))
+    def list_files(startpath):
+        for root, dirs, files in os.walk(startpath):
+            level = root.replace(startpath, '').count(os.sep)
+            indent = ' ' * 4 * (level)
+            print('{}{}/'.format(indent, os.path.basename(root)))
+            subindent = ' ' * 4 * (level + 1)
+            for f in files:
+                print('{}{}'.format(subindent, f))
+
+    list_files (log.water_log_dir)
 
     log.delete_log(int(ts3/ospi_defs.SECS_PER_DAY))
 
-    print (os.system("/usr/bin/tree water_log_dir"))
+#    print (os.system("/usr/bin/tree water_log_dir"))
 
     write_some_logs()
 
     log.prune_log(ts4)
 
-    print (os.system("/usr/bin/tree water_log_dir"))
+#   print (os.system("/usr/bin/tree water_log_dir"))
 
     log.delete_log("all")
