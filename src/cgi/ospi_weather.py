@@ -60,11 +60,14 @@ class ospi_weather():
         except Exception as e:
             self.logger.error (f'\n    failed fetch of yesterdays weather: {e}\n')
 
+        if wx_factors == 0 :
+            avghumidity = 0
+            avgtemp_f = 0
+        else :
+            avghumidity = avghumidity/wx_factors
+            avgtemp_f = avgtemp_f/wx_factors
 
-        avghumidity = avghumidity/wx_factors
         hum_factor = ospi_defs.NEUTRAL_HUMIDITY - avghumidity
-
-        avgtemp_f = avgtemp_f/wx_factors
         temp_factor = (avgtemp_f - ospi_defs.NEUTRAL_TEMP) * 4
 
         precip_factor = totalprecip_hundreds * -2
