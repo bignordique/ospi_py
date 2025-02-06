@@ -111,5 +111,5 @@ if __name__ == "__main__":
 
     wx.compute_daily_adjustment()
 
-    print (ospi_db_i.db["options"]["wl"])
+    print ("water level", ospi_db_i.db["options"]["wl"])
 
