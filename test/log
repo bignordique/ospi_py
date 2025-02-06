@@ -1,19 +1,14 @@
-2024-04-30 11:16:28,006 __main__ ospi_up:62 INFO:
+2025-02-05 18:08:34,143 __main__ ospi_cs:85 INFO:
     Startup
 
-2024-04-30 11:16:28,019 ospi_db ospi_db:15 DEBUG:
+2025-02-05 18:08:34,173 ospi_db ospi_db:15 DEBUG:
     in ospi_db __init__
 
-2024-04-30 11:16:28,019 ospi_db ospi_db:38 INFO:
+2025-02-05 18:08:34,173 ospi_db ospi_db:38 INFO:
     Setting database to defaults.
 
-2024-04-30 11:16:28,019 __main__ ospi_up:30 ERROR:
-    pid: 3 nprogs: 3
-2024-04-30 11:16:28,019 __main__ ospi_up:30 ERROR:
-    pid: 0 nprogs: 3
-2024-04-30 11:16:28,019 __main__ ospi_db:46 INFO:
+2025-02-05 18:08:34,203 __main__ ospi_db:46 INFO:
     DB writeback.
 
-2024-04-30 11:16:28,019 __main__ ospi_up:35 DEBUG:
-    pid: 2
-
+2025-02-05 18:08:34,203 __main__ ospi_cs:59 DEBUG:
+    &s11=S12ddd&p0=0&p1=0&p2=1&i0=0&i1=0&i2=0&j0=0&j1=1&j2=0&k0=1&k1=0&k2=0&d0=0&d1=0&d2=0&g11=23
