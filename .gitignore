@@ -3,4 +3,4 @@ log
 .venv
 data
 run
-test
+test/*
