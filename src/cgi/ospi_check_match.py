@@ -9,6 +9,7 @@ class ospi_check_match():
     def __init__ (self, ospi_db):
         self.ospi_db = ospi_db
         self.logger = logging.getLogger(__name__)
+        self.logger_starttime_decode = logging.getLogger(__name__).getChild("starttime_decode")
 
     def starttime_decode(self, t):
         # If negative, disable starttime.   t is int_16 in C++ code.
@@ -20,9 +21,11 @@ class ospi_check_match():
         if t >> 14 & 0b1 == 0b1:
             t = self.ospi_db.db["settings"]["sunrise"] + offset
             if t < 0 : t = 0
+            self.logger_starttime_decode.debug(f'\n    sunrise offset: {offset} t: {t} ')
         elif t >> 13 & 0b1 == 0b1:
             t = 1440 + self.ospi_db.db["settings"]["sunset"] + offset
             if t >= 1440 : t = 1439
+            self.logger_starttime_decode.debug(f'\n    sunset offset: {offset} t: {t} ')
         return t
 
     def check_day_match(self, t):

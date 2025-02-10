@@ -56,7 +56,7 @@ class ospi_log:
             for ii in dir_list :
                 try :
                     shutil.rmtree(self.water_log_dir + "/" + ii)
-                except :
+                except Exception as e:
                     self.logger.error(f'\n    rmtree exception: "{e}" on path: "{ii}"\n')
         else :
             full_timestamp = days * ospi_defs.SECS_PER_DAY
@@ -177,6 +177,7 @@ if __name__ == "__main__":
 
     log = ospi_log(ospi_db_i)
     log.water_log_dir = "test/water_logs"
+    os.makedirs(log.water_log_dir, exist_ok=True)
 
     print(log.ospi_db.db["options"]["lg"])
 

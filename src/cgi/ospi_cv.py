@@ -104,7 +104,7 @@ if __name__ == "__main__":
     ospi_db_i = ospi_db()
     ospi_db_i.init_db(DBFILE, DEFFILE)
     
-    from ospi_engine import ospi_engine
+    from cgi.ospi_engine import ospi_engine
     eng = ospi_engine(ospi_db_i)
     
     cv = ospi_cv(ospi_db_i, eng)

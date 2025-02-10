@@ -24,6 +24,7 @@ class ospi_dl():
 if __name__ == "__main__":
 
     import os
+    import ospi_db
 
     LOGFILE = "test/log"
     try :

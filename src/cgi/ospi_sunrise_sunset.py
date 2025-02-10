@@ -3,31 +3,47 @@ from astral import LocationInfo, sun
 from datetime import date, time, datetime
 import logging
 from ospi_db import ospi_db
+import zoneinfo
 
 #need to make this work with programmable cities
+
+# blah, blah.   Discovered I was not using astral correctly.   Need to include timezone info.
+# but... explains the incorrect sunset time, but not the ValueError in the sun.sun call.   Implement
+# protection around the call.
+
 
 class ospi_sunrise_sunset (ospi_db):
 
     def update(self):
-        if date.today() != self.lastrun:
-            self.lastrun = date.today()
-            s = sun.sun(self.city.observer, date.today())
-            midnight = datetime.combine(datetime.today(), time.min).timestamp()
-#        midnight = datetime.combine(datetime.today(), time(1,0)).timestamp()
-            ospi_db.db["settings"]["sunrise"] = int((s["sunrise"].timestamp() - midnight)/60)
-            ospi_db.db["settings"]["sunset"] = int((s["sunset"].timestamp() - midnight)/60)
+        if datetime.today() != self.lastrun:
+            self.lastrun = datetime.today()
+            midnight = datetime.combine(self.lastrun, time.min).timestamp()
+            sunrise = midnight + ospi_db.db_defaults["settings"]["sunrise"] * 60
+            sunset = midnight + 24*60*60 + ospi_db.db_defaults["settings"]["sunset"] * 60
+            try:
+                s = sun.sun(self.city.observer, datetime.date(self.lastrun), tzinfo = self.timezone)
+                sunrise = s["sunrise"].timestamp()
+                sunset = s["sunset"].timestamp()
+            except ValueError:
+                self.logger.error(f'\n    Call to astral.sun fails with ValueError\n')
+            except Exception as e:
+                self.logger.error(f'\n    Call to astral.sun fails with:\n' +
+                                  f'    {type(e)}\n')
+            ospi_db.db["settings"]["sunrise"] = int((sunrise - midnight)/60)
+            ospi_db.db["settings"]["sunset"] = int((sunset - (midnight + 1440*60))/60)
             self.logger.debug(f'\n   sunrise: {ospi_db.db["settings"]["sunrise"]}' +
                               f' sunset: {ospi_db.db["settings"]["sunset"]}\n')
             self.wb_db(self.logger)
 
     def __init__(self):
         self.city = LocationInfo("Fort Collins", "America", "America/Denver", 40.58, -105.08)
+        self.timezone = zoneinfo.ZoneInfo("America/Denver")
         self.logger = logging.getLogger(__name__)
         self.lastrun = ""
 
 
 if __name__ == "__main__":
- 
+
     import os
 
     LOGFILE = "test/log"
@@ -43,10 +59,11 @@ if __name__ == "__main__":
     DEFFILE = "config/ospi_defaults.txt"     
 
     from logging.handlers import RotatingFileHandler
+
     logging.basicConfig(format='%(asctime)s %(name)s %(module)s:%(lineno)d ' +
                                '%(levelname)s:%(message)s',
                         handlers=[RotatingFileHandler(LOGFILE, maxBytes=30000, 
-                                                      backupCount=1)],
+                                                      backupCount=5)],
                         level=logging.DEBUG)
 
     logger = logging.getLogger(__name__)

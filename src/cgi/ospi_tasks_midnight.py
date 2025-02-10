@@ -36,7 +36,7 @@ if __name__ == "__main__":
     DBFILE = "test/db_file"
     try :
         os.remove(DBFILE)
-    except: OSError:any:75
+    except: OSError:any
 
     DEFFILE = "config/ospi_defaults.txt"   
 
@@ -50,13 +50,13 @@ if __name__ == "__main__":
     ospi_db_i = ospi_db()
     ospi_db_i.init_db(DBFILE, DEFFILE)
 
-    from ospi_log import ospi_log
-    log = ospi_log(ospi_db_i)
+    def fake_log(fake):
+        pass
 
     from ospi_weather import ospi_weather
     wx = ospi_weather(ospi_db_i)
 
-    midnight = ospi_tasks_midnight(ospi_db_i, log.prune_log, wx.compute_daily_adjustment)
+    midnight = ospi_tasks_midnight(ospi_db_i, fake_log, wx.compute_daily_adjustment)
 
     for ii in range(0,10):
         midnight.run_tasks()

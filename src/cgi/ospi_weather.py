@@ -86,7 +86,7 @@ if __name__ == "__main__":
         os.remove(LOGFILE)
     except OSError: any
 
-    DBFILE = "run/ospi_db.json"
+    DBFILE = "test/ospi_db.json"
     try :
         os.remove(DBFILE)
     except OSError: any

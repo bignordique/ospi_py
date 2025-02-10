@@ -1,0 +1,11 @@
+2025-02-10 12:46:43,753 __main__ ospi_w1_rd_temps:37 INFO:Temperature sensor(s) found: ospi_box: W1ThermSensor(name='DS18B20', type=40(0x28), id='012292e9722f')
+2025-02-10 12:51:24,692 __main__ ospi_w1_rd_temps:37 INFO:Temperature sensor(s) found: ospi_box: W1ThermSensor(name='DS18B20', type=40(0x28), id='012292e9722f')
+2025-02-10 13:41:03,195 __main__ ospi_w1_rd_temps:38 INFO:Temperature sensor(s) found: ospi_box: W1ThermSensor(name='DS18B20', type=40(0x28), id='012292e9722f')
+2025-02-10 13:41:05,004 __main__ ospi_w1_rd_temps:63 DEBUG:
+    81.2
+2025-02-10 13:45:30,593 __main__ ospi_w1_rd_temps:38 INFO:Temperature sensor(s) found: ospi_box: W1ThermSensor(name='DS18B20', type=40(0x28), id='012292e9722f')
+2025-02-10 13:45:32,396 __main__ ospi_w1_rd_temps:63 DEBUG:
+    81.4
+2025-02-10 13:47:29,065 __main__ ospi_w1_rd_temps:38 INFO:Temperature sensor(s) found: ospi_box: W1ThermSensor(name='DS18B20', type=40(0x28), id='012292e9722f')
+2025-02-10 13:47:30,896 __main__ ospi_w1_rd_temps:63 DEBUG:
+    81.7

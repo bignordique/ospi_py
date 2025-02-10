@@ -20,12 +20,12 @@ class ospi_jl():
             self.logger.warning(f'\n    command {cmd[0]} no matches\n')
             return['{"result":18}']
 
-# requests don't match doc.
+# requests don't match OSAPI2.2.0 doc.
+# seems to be jl?pw=xxx&type=xxx&start=xxx&type=xxx
+# doesn't appear app.js generates &hist=n&type=xxx   ??
         if matches[0][0] == "type" :
             return json.dumps(self.log.get_log(int(matches[1][1]), int(matches[2][1]), \
                                            matches[0][1]))
-        else:
-            return json.dumps(self.log.get_log(int(matches[0][1]), int(matches[1][1]), None))
 
         self.logger.error(f'\n    command: "{matches[0][0]}" unrecognized.\n')
         return['{"result":18}']
@@ -67,8 +67,8 @@ if __name__ == "__main__":
     jl = ospi_jl(log)
 
 #nominal
-    print(jl.handle(["&start=16381&end=20000&type=s1"]))
-    print(jl.handle(["&hist=181&type=rd"]))
+    print(jl.handle(["&type=s1&start=16381&end=20000&"]))
+    print(jl.handle(["&hist=181&type=rd"]))  #deprecated, but try the error path
 
 
 

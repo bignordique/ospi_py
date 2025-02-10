@@ -9,7 +9,7 @@ import sys
 logging.basicConfig(format='%(asctime)s %(name)s %(module)s:%(lineno)d ' +
                            '%(levelname)s:%(message)s',
                     handlers=[RotatingFileHandler(ospi_defs.PYTHON_LOG_DIR, maxBytes=30000, 
-                                                  backupCount=1)],
+                                                  backupCount=2)],
                     level=logging.DEBUG)
 
 logger = logging.getLogger(__name__)
@@ -44,6 +44,7 @@ logging.getLogger('ospi_pcf8591').setLevel(logging.INFO)
 logging.getLogger('ospi_w1_rd_temps').setLevel(logging.INFO)
 logging.getLogger('ospi_engine').setLevel(logging.INFO)
 logging.getLogger('ospi_check_match').setLevel(logging.INFO)
+logging.getLogger('ospi_check_match.starttime_decode').setLevel(logging.DEBUG)
 logging.getLogger('ospi_station_bits').setLevel(logging.INFO)
 logging.getLogger('ospi_595_gpio').setLevel(logging.INFO)
 logging.getLogger('ospi_db').setLevel(logging.DEBUG)

@@ -12,8 +12,8 @@
 import json
 import logging
 import time
-import cgi.ospi_defs as ospi_defs
-from cgi.ospi_log import ospi_log
+import ospi_defs as ospi_defs
+from ospi_log import ospi_log
 
 class ospi_engine():
 
@@ -297,7 +297,7 @@ class ospi_engine():
             elif curr_time > entry["st"] :
                 entry["dur"] -= (curr_time - entry["st"])
             else :
-                entry["st"] += pause_timer
+                entry["st"] += self.pause_timer
 
             entry["deque_time"] += self.pause_timer
 
@@ -383,7 +383,7 @@ class ospi_engine():
             return self.ospi_db.db["settings"]["sunset"]
         else: return v
 
-    def handle_shift_remaining_stations(qid, gid, curr_time):
+    def handle_shift_remaining_stations(self, qid, gid, curr_time):
         entry = self.run_q[qid]
         q_end_time = entry["st"] + entry["dur"]
 
@@ -539,9 +539,21 @@ class ospi_engine():
 
 if __name__ == "__main__":
 
-    from logging.handlers import RotatingFileHandler
+    import os
 
-    LOGFILE = "log"
+    LOGFILE = "test/log"
+    try :
+        os.remove(LOGFILE)
+    except: OSError:any
+  
+    DBFILE = "test/db_file"
+    try :
+        os.remove(DBFILE)
+    except: OSError:any
+
+    DEFFILE = "config/ospi_defaults.txt" 
+
+    from logging.handlers import RotatingFileHandler
 
     logging.basicConfig(format='%(asctime)s %(name)s %(module)s:%(lineno)d ' +
                                '%(levelname)s:%(message)s',
@@ -552,13 +564,13 @@ if __name__ == "__main__":
     logger = logging.getLogger(__name__)
     logger.info("\n    Startup\n")
 
-    from cgi.ospi_db import ospi_db
+    from ospi_db import ospi_db
     ospi_db_i = ospi_db()
-    ospi_db_i.init_db("db_file", "src/ospi_defaults.txt")
+    ospi_db_i.init_db(DBFILE, DEFFILE)
 
-    from cgi.ospi_station_bits import ospi_station_bits
-    from cgi.ospi_check_match import ospi_check_match
-    from cgi.ospi_log import ospi_log
+    from ospi_station_bits import ospi_station_bits
+    from ospi_check_match import ospi_check_match
+    from ospi_log import ospi_log
     sb = ospi_station_bits(ospi_db_i)
     cm = ospi_check_match(ospi_db_i)
     ol = ospi_log(ospi_db_i)
