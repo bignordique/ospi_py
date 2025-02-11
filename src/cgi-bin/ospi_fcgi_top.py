@@ -36,7 +36,7 @@ from ospi_pcf8591 import ospi_pcf8591
 from ospi_station_bits import ospi_station_bits
 from ospi_weather import ospi_weather
 from ospi_check_match import ospi_check_match
-from cgi.ospi_engine import ospi_engine
+from ospi_engine import ospi_engine
 from ospi_server_thread import ospi_server_thread
 from ospi_db import ospi_db
 from ospi_log import ospi_log
