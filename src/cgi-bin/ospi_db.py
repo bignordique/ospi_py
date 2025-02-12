@@ -22,7 +22,7 @@ class ospi_db:
                 as_string = f.read()
                 ospi_db.db_defaults = json.loads(as_string)
         else:
-             self.logger.error(f'\n    Defaults path, {defaults} exists is in error. Exiting.')
+             self.logger.error(f'\n    Defaults path, {defaults_file} exists is in error. Exiting.')
              exit()
 
         ospi_db.db_file = db_file

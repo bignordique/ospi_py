@@ -26,6 +26,8 @@ class ospi_jl():
         if matches[0][0] == "type" :
             return json.dumps(self.log.get_log(int(matches[1][1]), int(matches[2][1]), \
                                            matches[0][1]))
+        else:
+            return json.dumps(self.log.get_log(int(matches[0][1]), int(matches[1][1]), None))
 
         self.logger.error(f'\n    command: "{matches[0][0]}" unrecognized.\n')
         return['{"result":18}']

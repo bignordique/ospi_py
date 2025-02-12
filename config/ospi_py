@@ -1,0 +1,4 @@
+#!/bin/bash
+OSPI_BASE="/home/leith/ospi_py"
+$OSPI_BASE/.venv/bin/python3.11 $OSPI_BASE/src/cgi-bin/ospi_fcgi.py
+

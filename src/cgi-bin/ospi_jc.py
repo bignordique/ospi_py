@@ -59,7 +59,7 @@ if __name__ == "__main__":
     from ospi_check_match import ospi_check_match
     from ospi_station_bits import ospi_station_bits
     from ospi_weather import ospi_weather
-    from cgi.ospi_engine import ospi_engine
+    from ospi_engine import ospi_engine
     cm = ospi_check_match(ospi_db_i)
     sb = ospi_station_bits(ospi_db_i)
     wx = ospi_weather()

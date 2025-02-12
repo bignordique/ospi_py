@@ -62,7 +62,7 @@ if __name__ == "__main__":
     cm = ospi_check_match(ospi_db_i)
     wx = ospi_weather(ospi_db_i)
 
-    from cgi.ospi_engine import ospi_engine
+    from ospi_engine import ospi_engine
     eng = ospi_engine(ospi_db_i, cm, sb, wx)
 
     pq = ospi_pq(ospi_db_i, eng)

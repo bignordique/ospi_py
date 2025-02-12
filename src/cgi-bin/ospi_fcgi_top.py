@@ -1,7 +1,6 @@
 #!/var/www/html/python3_11/bin/python3.11
 
-DB_DEFAULTS_FILE = "/var/www/html/ospi_data/ospi_defaults.txt"
-DB_FILE = "/var/www/html/ospi_data/ospi_db.json"
+import ospi_defs
 
 from datetime import datetime
 import re
@@ -78,7 +77,7 @@ st = ospi_server_thread(ospi_db_i, eng, ol.prune_log, wx.compute_daily_adjustmen
 class ospi_fcgi_top ():
 
     def __init__ (self):
-        ospi_db_i.init_db(DBFILE, DEFFILE)
+        ospi_db_i.init_db(ospi_defs.DBFILE, ospi_defs.DEFAULT_DB)
         ol.logging_ready()   #generate warning message if log file not available
         wx.initialize()
         self.ospi_cmd_re = re.compile("pw=([a-f0-9]{32})(&?.*)&_=(\d+)$")
