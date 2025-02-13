@@ -59,9 +59,9 @@ class ospi_cv():
                         self.eng.raindelay_stop()
                     else :
                         self.ospi_db.db["settings"]["rdst"] = \
-                                self.ospi_db.get_utc_stamp(self.logger) + param_as_int * 60# * 60
+                                self.ospi_db.get_utc_stamp(self.logger) + param_as_int * 60 * 60
                         writeback_db = True
-                        self.logger.info(f'\n     rdst set to: {self.ospi_db.db["settings"]["rdst"]}\n')
+                        self.logger.debug(f'\n     rdst set to: {self.ospi_db.db["settings"]["rdst"]}\n')
                 case "re":
                     pass
                 case "update":
@@ -103,9 +103,25 @@ if __name__ == "__main__":
     from ospi_db import ospi_db
     ospi_db_i = ospi_db()
     ospi_db_i.init_db(DBFILE, DEFFILE)
-    
-    from cgi.ospi_engine import ospi_engine
-    eng = ospi_engine(ospi_db_i)
+
+    from ospi_check_match import ospi_check_match
+    cm = ospi_check_match(ospi_db_i)
+
+    from ospi_station_bits import ospi_station_bits
+    sb = ospi_station_bits(ospi_db_i)
+
+    class ol():
+
+        def __init__(self):
+            pass
+
+        def write_log(self, string, timestamp):
+            pass
+
+    ol_i = ol()
+
+    from ospi_engine import ospi_engine
+    eng = ospi_engine(ospi_db_i, cm, sb, ol_i)
     
     cv = ospi_cv(ospi_db_i, eng)
 
@@ -119,4 +135,11 @@ if __name__ == "__main__":
     print(cv.handle(["&rd=1y3"]))
 # out of range
     print(cv.handle(["&rd=32768"]))
+
+    print("rdst before: ", ospi_db_i.db["settings"]["rdst"])
+
+# nominal rain delay
+    print(cv.handle(["&rd=3"]))
+
+    print("rdst: ", ospi_db_i.db["settings"]["rdst"])
 

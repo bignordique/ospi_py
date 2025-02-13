@@ -42,6 +42,7 @@ class ospi_log:
         records = self.get_records(start_timestamp, end_timestamp, log_type)
         return records
 
+# get_hist call to get records looks to be missing end_timestamp??   Browser JS doesn't seem to generate.
     def get_hist(self, days, log_type) :
         self.logger.debug(f'\n    get_hist days: {days} type: {log_type}\n')
         today = self.ospi_db.get_utc_stamp(self.logger)
@@ -74,17 +75,21 @@ class ospi_log:
     def remove_tree(self, path, date, single_file):
         dir_list = os.listdir(path)
         for ii in dir_list :
-            if int(ii) <= date[0] and not single_file or int(ii) == date[0] :
-                next_path = path + "/" + ii
-                if os.path.isdir(next_path) :
-                    next_date = date[1:]
-                    if int(ii) < date[0] :
-                        next_date[0] = 33
-                    self.remove_tree(next_path, next_date, single_file)
-                    if os.listdir(next_path) == [] :
-                        os.rmdir(next_path)
-                else :
-                    os.remove(next_path)
+            if not ii.isdigit() :
+                self.logger.warning(f'\n    Invalid path {path+"/"+ii} in water logs.  Ignoring.')
+                pass
+            else:
+                if int(ii) <= date[0] and not single_file or int(ii) == date[0] :
+                    next_path = path + "/" + ii
+                    if os.path.isdir(next_path) :
+                        next_date = date[1:]
+                        if int(ii) < date[0] :
+                            next_date[0] = 33
+                        self.remove_tree(next_path, next_date, single_file)
+                        if os.listdir(next_path) == [] :
+                            os.rmdir(next_path)
+                    else :
+                        os.remove(next_path)
 
     def mkdir(self, path) :
         try :
@@ -148,6 +153,7 @@ class ospi_log:
 if __name__ == "__main__":
 
     import os
+    from pathlib import Path
 
     LOGFILE = "test/log"
     try :
@@ -178,6 +184,10 @@ if __name__ == "__main__":
     log = ospi_log(ospi_db_i)
     log.water_log_dir = "test/water_logs"
     os.makedirs(log.water_log_dir, exist_ok=True)
+    # Check to make sure we don't trip over spooge in the water_logs.
+    Path(log.water_log_dir + "/foo.bar").touch()
+    test_dir = Path(log.water_log_dir + "/bar.foo")
+    if not test_dir.exists(): test_dir.mkdir()
 
     print(log.ospi_db.db["options"]["lg"])
 
