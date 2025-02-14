@@ -10,7 +10,7 @@ class ospi_jo():
         self.logger = logging.getLogger(__name__)
 
     def handle(self):
-        self.logger.debug(f'\n')
+        self.logger.debug(f'\n    {self.ospi_db.db["options"]}')
         return [json.dumps(self.ospi_db.db["options"])]
 
 if __name__ == "__main__":

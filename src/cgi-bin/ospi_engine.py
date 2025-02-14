@@ -32,6 +32,7 @@ class ospi_engine():
         self.pause_timer = 0
         self.do_loop_count = 0
         self.lastrun = {"station":None, "program":None, "duration":None, "endtime":None}
+        self.raindelay_start_time = 0  # on powerfail, keep it simple.   Set to zero and suppress log.
         self.logger = logging.getLogger(__name__)
 
 
@@ -105,16 +106,21 @@ class ospi_engine():
                     if prog[4][sid] > 0 and self.ospi_db.db["stations"]["stn_dis"][bid] & 0b1 << s == 0:
                         water_time = self.water_time_resolve(prog[4][sid])
 # Use weather
+                        if prog[0] >> 1 & 0b1 == 0b1 : use_wx = True
+                        else:use_wx = False
+
                         wl = self.ospi_db.db["options"]["wl"]
-                        if prog[0] >> 1 & 0b1 == 0b1 :
-                            water_time = int(water_time * wl / 100)
+
+                        if use_wx: water_time = int(water_time * wl / 100)
 # No water if weather makes water_time really small
                         if wl < 20 and water_time < 10 : water_time = 0
+                        if not use_wx: wl = None
 
 # Shouldn't we use self.nqueue instead of len(self.run_q)?
                         if water_time > 0 and len(self.run_q) <= ospi_defs.MAX_RUNQ_ENTRIES :
                             self.nqueue += 1
                             self.run_q.append({"st": 0,
+                                               "wl": wl,
                                                "dur" : water_time,
                                                "sid" : sid,
                                                "pid" : pid,
@@ -434,6 +440,11 @@ class ospi_engine():
                 self.lastrun["endtime"] = curr_time
                 self.water_logs.write_log (f'{entry["pid"] + 1},{sid},{self.lastrun["duration"]}',\
                                           self.ospi_db.get_lcl_stamp(self.logger))
+                self.water_logs.write_log (f'{entry["pid"] + 1},"fl",{self.lastrun["duration"]}',\
+                                          self.ospi_db.get_lcl_stamp(self.logger),self.do_loop_count)
+                if not (entry["wl"] is None):
+                    self.water_logs.write_log (f'{entry["pid"] + 1},"wl",{entry["wl"]}',\
+                                          self.ospi_db.get_lcl_stamp(self.logger))
 
         station_delay = self.water_time_decode_signed(self.ospi_db.db["options"]["sdt"])
 # Day one bug.   Parallel group stations have no sequential stop times.
@@ -460,6 +471,7 @@ class ospi_engine():
             elif len(self.run_q) <= ospi_defs.MAX_RUNQ_ENTRIES :
                 self.nqueue += 1
                 self.run_q.append({"st": 0,
+                                   "wl" : None,
                                    "dur" : t,
                                    "sid" : sid,
                                    "pid" : 99,
@@ -488,11 +500,12 @@ class ospi_engine():
             if uwt :
                 dur = int(dur * self.ospi_db.db["options"]["wl"] / 100)
             bid, s = self.to_bid_s(sid) 
-            if dur > 0 and \
+            if dur > 0 and \  #normal flow has different checks?
                self.ospi_db.db["stations"]["stn_dis"][bid] & 0b1 << s == 0 and \
                len(self.run_q) <= ospi_defs.MAX_RUNQ_ENTRIES : 
                    self.nqueue += 1
                    self.run_q.append({"st": 0,
+                                      "wl" : wl,
                                       "dur" : dur,
                                       "sid" : sid,
                                       "pid" : 254,
@@ -517,6 +530,7 @@ class ospi_engine():
             if dur > 0 :
                    self.nqueue += 1
                    self.run_q.append({"st": 0,
+                                      "wl" : None,                                     
                                       "dur" : dur,
                                       "sid" : sid,
                                       "pid" : 254,
@@ -531,11 +545,16 @@ class ospi_engine():
     def raindelay_start(self):
         self.ospi_db.db["settings"]["rd"] = 1
         self.ospi_db.wb_db(self.logger)
+        self.raindelay_start_time = self.ospi_db.get_lcl_stamp(self.logger)
 
     def raindelay_stop(self):
         self.ospi_db.db["settings"]["rd"] = 0
         self.ospi_db.db["settings"]["rdst"] = 0
         self.ospi_db.wb_db(self.logger)
+        if self.raindelay_start_time != 0:
+            lcl_stamp = self.ospi_db.get_lcl_stamp(self.logger)
+            self.water_logs.write_log (f'{0},"rd",{lcl_stamp - self.raindelay_start_time}',\
+                                          lcl_stamp)
 
 if __name__ == "__main__":
 
@@ -574,9 +593,11 @@ if __name__ == "__main__":
     sb = ospi_station_bits(ospi_db_i)
     cm = ospi_check_match(ospi_db_i)
     ol = ospi_log(ospi_db_i)
+    ol.water_log_dir = "test/water_logs"
     logging.getLogger("ospi_station_bits").setLevel(logging.INFO)
     logging.getLogger("ospi_check_match").setLevel(logging.INFO)
     logging.getLogger("ospi_595_fake").setLevel(logging.INFO)
+    logging.getLogger("ospi_log").setLevel(logging.DEBUG)
 
     engine = ospi_engine(ospi_db_i, cm, sb, ol)
 
@@ -617,7 +638,7 @@ if __name__ == "__main__":
     ospi_db.db["programs"]["pd"][3] = prog3
 
     import time
-# rain delay not gonna work with test bench time
+# rain delay not gonna work with test bench time... not so sure.
 
     def run_ospi(start_time, seconds, test):
         engine.last_minute = 0

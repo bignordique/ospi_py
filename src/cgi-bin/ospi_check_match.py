@@ -78,6 +78,7 @@ class ospi_check_match():
         return ret_val
 
     def check_match(self, curr_time, prog):
+        self.logger.debug(prog)
         self.curr_time = curr_time
         self.prog = prog
         ret_val = False

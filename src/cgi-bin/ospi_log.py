@@ -14,8 +14,10 @@ class ospi_log:
         self.water_log_dir = ospi_defs.WATER_LOG_DIR
         self.logger = logging.getLogger(__name__)
         self.warning_sent = False
+        self.sid_num_re = re.compile(r'\[(\d+),(\d+),(\d+),(\d+),[0-9-:]*\]')
+        self.string_sid_re = re.compile(r'\[(\d+),"(\w\w)",(\d+),(\d+),+(\d+)+[,0-9-:]*\]')
 
-    def write_log(self, rpt_str, time_stamp) :
+    def write_log(self, rpt_str, time_stamp, wl_fl=None) :
         if not self.logging_ready() :
             self.logger.debug (f'\n    logging not ready.\n')
             return False
@@ -32,17 +34,21 @@ class ospi_log:
                 os.chmod(path, 0o664)
                 ts_int = int(time_stamp)
                 readable_time = time.strftime("%d-%H:%M:%S",time.gmtime(ts_int))
-                fd.write(f'[{rpt_str},{str(ts_int)},{readable_time}]\n')
+                if wl_fl is None:
+                    fd.write(f'[{rpt_str},{str(ts_int)},{readable_time}]\n')
+                else:
+                    fd.write(f'[{rpt_str},{str(ts_int)},{str(wl_fl)},{readable_time}]\n')
         except Exception as e :
             self.logger.error(f'\n    file open error: "{e}" on path: "{path}"\n')
 
     def get_log(self, start_timestamp, end_timestamp, log_type) :
-        self.logger.debug(f'\n    get_log start: {start_timestamp}' + \
-                          f' end: {end_timestamp} type: {log_type}\n')
         records = self.get_records(start_timestamp, end_timestamp, log_type)
+        self.logger.debug(f'\n    get_log start: {start_timestamp}' + \
+                          f' end: {end_timestamp} type: {log_type}\n' + \
+                          f'    {records}\n')
         return records
 
-# get_hist call to get records looks to be missing end_timestamp??   Browser JS doesn't seem to generate.
+#  Browser JS doesn't seem to generate.
     def get_hist(self, days, log_type) :
         self.logger.debug(f'\n    get_hist days: {days} type: {log_type}\n')
         today = self.ospi_db.get_utc_stamp(self.logger)
@@ -116,16 +122,19 @@ class ospi_log:
                 try :
                     with open (path, "r") as fd :
                         for line in fd :
-                            m = re.match(r'\[(\d+),(\d+),(\d+),(\d+),[0-9-:]*\]', line)
-                            if m is not None and len(m.groups()) == 4 and log_type is None:
+                            m = self.sid_num_re.match(line)
+                            if m is not None and log_type is None:
                                 records.append([int(m.group(1)), int(m.group(2)),\
                                                 int(m.group(3)), int(m.group(4))])
                             else :
-                                m = re.match(r'\[(\d+),"(\w\w)",(\d+),(\d+),[0-9-:]*\]', line)
-                                if m is not None and len(m.groups()) == 4 and \
-                                        (log_type is None or m.group(2) == log_type) :
-                                    records.append([int(m.group(1)), m.group(2),\
-                                                int(m.group(3)), int(m.group(4))])
+                                m = self.string_sid_re.match(line)
+                                if m is not None:
+                                    if (log_type == None and m.group(2) == "rd") or m.group(2) == log_type:
+                                        records.append([int(m.group(1)), m.group(2),\
+                                          int(m.group(3)), int(m.group(4))])
+                                    elif m.group(2) == log_type:
+                                        records.append([int(m.group(1)), m.group(2),\
+                                          int(m.group(3)), int(m.group(4)), int(m.group(5))])
                 except Exception as e:
                     self.logger.error(f'\n    error: "{e.message}" in log file read.\n')
         return records
@@ -176,7 +185,6 @@ if __name__ == "__main__":
 
     logger = logging.getLogger(__name__)
     logger.info("\n    Startup\n")
-
     
     ospi_db_i = ospi_db()
     ospi_db_i.init_db(DBFILE, DEFFILE)
@@ -211,17 +219,20 @@ if __name__ == "__main__":
         log.write_log("7,8,9", ts3)
         log.write_log("10,11,12", ts4)
         log.write_log('4,"rd",6', ts_end)
-        log.write_log('14,"wl",16', ts_end)
+        log.write_log('14,"wl",16', ts_end, 50)
         log.write_log('17,18,19', ts_end)
+        log.write_log('20,"fl",22', ts_end, 12345)
 
 
     write_some_logs()
 
     print(log.get_log(4322, ts_end, None))
 
-    print(log.get_log(ts1, ts_end, "rd"))
+    print(log.get_log(ts1, ts_end, None))
 
     print(log.get_log(ts_end, ts_end, "wl"))
+
+    print(log.get_log(ts_end, ts_end, "fl"))
 
     print(log.get_log(ts1, ts2, "wl"))    # should be empty
     print(log.get_log(ts_end, ts_end, None))

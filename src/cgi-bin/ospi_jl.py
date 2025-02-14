@@ -14,7 +14,7 @@ class ospi_jl():
     def handle(self, cmd):
         matches = self.cmd_re.findall(cmd[0])
 
-        self.logger.info(f'\n    {cmd[0]} {matches}\n')
+        self.logger.debug(f'\n    {cmd[0]} {matches}\n')
 
         if matches == []:
             self.logger.warning(f'\n    command {cmd[0]} no matches\n')
