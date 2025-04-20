@@ -44,11 +44,14 @@ class ospi_pcf8591():
         fudge = 1.055
         rms = 0.707
         self.v_multiplier = fudge * rms * (r_top + r_bottom)/r_bottom
+        self.ac_store_function(0)
+        """
         if not win :
             import smbus
             self.bus = smbus.SMBus(1)
             self.thread = threading.Thread(target=self.run, daemon=True)
             self.thread.start()
+        """
 
     def run(self):
         while True:

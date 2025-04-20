@@ -11,6 +11,7 @@ class ospi_595_gpio():
     def __init__ (self, win=False):
         self.win = win
         self.logger = logging.getLogger(__name__)   
+        """
         if not self.win :
             from gpiozero import OutputDevice as GPIO_OUT
             from gpiozero.pins.native import NativeFactory
@@ -27,9 +28,12 @@ class ospi_595_gpio():
             self.update_595(0, ospi_defs.MAX_NUM_STATIONS)
 
             self.g.off()
+        """
 
 # map station_bits to organization of 595s.  Will work up to 32 stations.
     def update_595(self, data, channels):
+        return()
+
         if not self.win :
             tnf_data = data << 24 & 0xff000000  | data & 0x00ffff00 | data & 0xff000000 >> 24
             for ii in range(0, ospi_defs.MAX_NUM_STATIONS, 1):

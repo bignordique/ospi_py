@@ -31,6 +31,7 @@ class ospi_weather():
         self.logger.debug("\n    implement apply_monthly_adjustment\n")
 
     def compute_daily_adjustment(self):
+        return()
         ts = self.ospi_db.get_utc_stamp(self.logger)
         yesterday =  time.strftime("%Y-%m-%d", time.localtime(ts - ospi_defs.SECS_PER_DAY))
         today = time.strftime("%Y-%m-%d", time.localtime(ts))

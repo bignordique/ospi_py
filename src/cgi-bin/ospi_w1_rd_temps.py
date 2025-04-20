@@ -19,7 +19,9 @@ class ospi_w1_rd_temps ():
         self.temps_logger = temps_logger
         self.temp_store_function = temp_store_function
 
-        self.logger = logging.getLogger(__name__)
+        #self.logger = logging.getLogger(__name__)
+        self.temp_store_function(0)
+        """
         sensor_list = (("ospi_box", "012292e9722f"),)
         self.sensors = dict()
         for sensor in sensor_list:
@@ -38,6 +40,7 @@ class ospi_w1_rd_temps ():
             self.logger.info (f'Temperature sensor(s) found: {key}: {value}')
 
         self.thread.start()
+        """
 
     def run(self):
         sleep(1) #sometimes get a SensorNotReadyError on first pass without this.
