@@ -19,17 +19,16 @@ class ospi_w1_rd_temps ():
         self.temps_logger = temps_logger
         self.temp_store_function = temp_store_function
 
-        #self.logger = logging.getLogger(__name__)
-        self.temp_store_function(0)
-        """
-        sensor_list = (("ospi_box", "012292e9722f"),)
+        self.logger = logging.getLogger(__name__)
+ #       sensor_list = (("ospi_box", "012292e9722f"),)
+        sensor_list = (("ospi_box", "012292f5ff72"),)
         self.sensors = dict()
         for sensor in sensor_list:
             try:
                 therm_sensor = W1ThermSensor(sensor_type=Sensor.DS18B20, sensor_id=sensor[1])
                 self.sensors[sensor[0]] = therm_sensor
             except w1sensorerrors.NoSensorFoundError:
-                self.logging.error(f'Missing sensor: {sensor}')
+                self.logger.error(f'Missing sensor: {sensor}')
             except Exception as e:
                 self.logger.error(f'Missing {sensor}, cause: {repr(e)}') 
 
@@ -40,7 +39,6 @@ class ospi_w1_rd_temps ():
             self.logger.info (f'Temperature sensor(s) found: {key}: {value}')
 
         self.thread.start()
-        """
 
     def run(self):
         sleep(1) #sometimes get a SensorNotReadyError on first pass without this.
@@ -103,8 +101,12 @@ if __name__ == "__main__":
             TimedRotatingFileHandler(temps_file, when='midnight', backupCount=14)
         temps_logger.addHandler(temps_rot_handler)
 
-
+     
     def print_temp(temp): print(temp)
+
+    """Just for the record, W1 devices must first be defined in /boot/config.txt"""
+    for sensor in W1ThermSensor.get_available_sensors([Sensor.DS18B20]):
+        print("Sensor %s has temperature %.2f" % (sensor.id, sensor.get_temperature(Unit.DEGREES_F)))
 
     rd_interval = 2
     w1_rd_temps_inst = ospi_w1_rd_temps(temps_logger, print_temp)

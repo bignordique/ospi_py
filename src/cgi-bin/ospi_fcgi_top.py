@@ -31,7 +31,8 @@ from ospi_pq import ospi_pq
 from ospi_jx import ospi_jx
 from ospi_cx import ospi_cx
 from ospi_w1_rd_temps import ospi_w1_rd_temps
-from ospi_pcf8591 import ospi_pcf8591
+#from ospi_pcf8591 import ospi_pcf8591
+from ospi_mcp3221 import ospi_mcp3221
 from ospi_station_bits import ospi_station_bits
 from ospi_weather import ospi_weather
 from ospi_check_match import ospi_check_match
@@ -71,7 +72,7 @@ pq = ospi_pq(ospi_db_i, eng)
 jx = ospi_jx(ospi_db_i)
 cx = ospi_cx(ospi_db_i)
 temp = ospi_w1_rd_temps("", js.settemp)
-acvolts = ospi_pcf8591(js.setac)
+acvolts = ospi_mcp3221(js.setac)
 st = ospi_server_thread(ospi_db_i, eng, ol.prune_log, wx.compute_daily_adjustment)
 
 class ospi_fcgi_top ():
