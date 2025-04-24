@@ -10,6 +10,7 @@ idna==3.7
 python-dateutil==2.8.2
 pytz==2023.3.post1
 requests==2.31.0
+RPi.GPIO==0.7.1
 six==1.16.0
 smbus==1.1.post2
 swagger-client @ git+https://github.com/weatherapicom/python.git@6e3d4ee6160afdc66412417242364162935d5971
