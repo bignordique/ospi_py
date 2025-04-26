@@ -19,6 +19,8 @@ class ospi_mcp3221():
         self.thread.start()
 
     def run(self):
+        sleep(1)   # if I don't wait here, it seems to skip the first few statements??
+        io_error_count = 0
         while True:
             try :
                 with io.open("/dev/i2c-1", "rb", buffering=0) as f:
@@ -26,8 +28,11 @@ class ospi_mcp3221():
                     values = list(f.read(2))
                     value = values[0] * 256 + values[1]
                     self.ac_store_function(value)
+                    io_error_count = 0
             except IOError as e:
-                self.logger.error(f'Failed open/read to /dev/i2c-1 {e}\n')
+                io_error_count += 1
+                if io_error_count <= 5:
+                    self.logger.error(f'\n    Failed open/read to /dev/i2c-1 {e} {io_error_count}\n')
             sleep(rd_interval)
 
 
@@ -63,4 +68,4 @@ if __name__ == "__main__":
         print(value)
 
     mcp3221 = ospi_mcp3221(print_value)
-    sleep(3*rd_interval)
+    sleep(10*rd_interval)

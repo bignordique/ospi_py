@@ -48,6 +48,7 @@ logging.getLogger('ospi_check_match').setLevel(logging.INFO)
 logging.getLogger('ospi_check_match.starttime_decode').setLevel(logging.INFO)
 logging.getLogger('ospi_station_bits').setLevel(logging.INFO)
 logging.getLogger('ospi_595_gpio').setLevel(logging.INFO)
+logging.getLogger('ospi_gpio_zones').setLevel(logging.INFO)
 logging.getLogger('ospi_db').setLevel(logging.INFO)
 logging.getLogger('ospi_weather').setLevel(logging.INFO)
 

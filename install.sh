@@ -4,7 +4,7 @@
 sudo mkdir /var/www/cgi-bin
 
 sudo ln -s /home/leith/ospi_py/src/cgi-bin/ospi_fcgi.py /var/www/cgi-bin/ospi_py
-sudo ln -s /home/leith/ospi_py/config/ospi_py /var/www/cgi-bin/ospi_defaults.txt
+sudo ln -s /home/leith/ospi_py/config/ospi_defaults.txt /var/www/cgi-bin/ospi_defaults.txt
 
 sudo mkdir -p /srv/ospi_py/water_logs
 sudo chown -R www-data:www-data /srv/ospi_py
