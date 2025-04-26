@@ -1,4 +1,5 @@
-#!/var/www/html/python3_11/bin/python3.11
+#!/home/leith/ospi_py/.venv/bin/python
+
 from flup.server.fcgi import WSGIServer
 from ospi_fcgi_top import ospi_fcgi_top
 import logging

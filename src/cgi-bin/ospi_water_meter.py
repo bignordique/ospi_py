@@ -39,11 +39,12 @@ if __name__ == "__main__" :
 
  #   while True:
 #      sleep(1)
-
+"""
     while True:
         if water_meter_inst.button.is_pressed:
             print(f'is_pressed\n')
         else:
             print(f'not is_pressed\n')
         sleep(1)
+"""
 

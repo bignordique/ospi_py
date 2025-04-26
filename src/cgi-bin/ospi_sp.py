@@ -1,4 +1,4 @@
-#!/var/www/html/python3_11/bin/python3.11
+#!/home/leith/ospi_py/.venv/bin/python
 
 import json
 import re

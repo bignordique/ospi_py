@@ -16,3 +16,4 @@ smbus==1.1.post2
 swagger-client @ git+https://github.com/weatherapicom/python.git@6e3d4ee6160afdc66412417242364162935d5971
 urllib3==2.2.1
 w1thermsensor==2.3.0
+lgpio
