@@ -17,5 +17,7 @@ sudo ln -sf /home/leith/ospi_py/config/lighttpd.conf /etc/lighttpd
 
 add "dtoverlay=w1-gpio,gpiopin=4" to /boot/firmware/config.txt
 
+chmod 755 /home/leith    www-data needs to reach files 
+
 
 
