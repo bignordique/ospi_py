@@ -9,3 +9,4 @@ NEUTRAL_HUMIDITY = 30
 NEUTRAL_TEMP = 70
 DEFAULT_DB = "/var/www/cgi-bin/ospi_defaults.txt"
 DBFILE = "/srv/ospi_py/ospi_db.json"
+WM_TS_DEPTH = 20

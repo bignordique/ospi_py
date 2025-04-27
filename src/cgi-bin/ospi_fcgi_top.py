@@ -31,7 +31,6 @@ from ospi_pq import ospi_pq
 from ospi_jx import ospi_jx
 from ospi_cx import ospi_cx
 from ospi_w1_rd_temps import ospi_w1_rd_temps
-#from ospi_pcf8591 import ospi_pcf8591
 from ospi_mcp3221 import ospi_mcp3221
 from ospi_station_bits import ospi_station_bits
 from ospi_weather import ospi_weather

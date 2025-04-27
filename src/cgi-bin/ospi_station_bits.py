@@ -2,12 +2,10 @@
 
 import logging
 import ospi_defs
-#from ospi_595_gpio import ospi_595_gpio
 from ospi_gpio_zones import ospi_gpio_zones
 
 import platform
 win = True if platform.system() == "Windows" else False
-#gpio = ospi_595_gpio(win)
 gpio = ospi_gpio_zones()
 
 class ospi_station_bits():
@@ -29,7 +27,6 @@ class ospi_station_bits():
 
     def apply_all_station_bits (self):
         self.logger.debug(f'\n    apply_all_station_bits: {self.station_bits}\n')
- #       gpio.update_595(self.station_bits, self.ospi_db.db["status"]["nstations"])
         gpio.update_zones(self.station_bits)
         
 

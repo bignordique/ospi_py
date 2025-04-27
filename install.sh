@@ -19,5 +19,9 @@ add "dtoverlay=w1-gpio,gpiopin=4" to /boot/firmware/config.txt
 
 chmod 755 /home/leith    www-data needs to reach files 
 
+sudo usermod -a -G i2c www-data
+sudo usermod -a -G gpio www-data
+
+
 
 
