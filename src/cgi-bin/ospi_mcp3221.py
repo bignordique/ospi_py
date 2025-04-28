@@ -28,6 +28,7 @@ class ospi_mcp3221():
                     values = list(f.read(2))
                     value = values[0] * 256 + values[1]
                     self.ac_store_function(value)
+                    self.logger.debug(f'\n    mcp3221 value: {value}\n')
                     io_error_count = 0
             except IOError as e:
                 io_error_count += 1
