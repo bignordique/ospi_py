@@ -39,6 +39,8 @@ from ospi_engine import ospi_engine
 from ospi_server_thread import ospi_server_thread
 from ospi_db import ospi_db
 from ospi_log import ospi_log
+from ospi_water_meter import ospi_water_meter
+from ospi_fuse import ospi_fuse
 
 ospi_db_i = ospi_db()
 
@@ -52,7 +54,8 @@ jp = ospi_jp(ospi_db_i)
 jo = ospi_jo(ospi_db_i)
 jc = ospi_jc(ospi_db_i, eng)
 jn = ospi_jn(ospi_db_i)
-js = ospi_js(ospi_db_i, sb)
+wm = ospi_water_meter(ospi_db_i)
+js = ospi_js(ospi_db_i, sb, wm)
 ja = ospi_ja(jc, jp, jo, js, jn)
 cv = ospi_cv(ospi_db_i, eng)
 co = ospi_co(ospi_db_i)
@@ -71,8 +74,10 @@ pq = ospi_pq(ospi_db_i, eng)
 jx = ospi_jx(ospi_db_i)
 cx = ospi_cx(ospi_db_i)
 temp = ospi_w1_rd_temps("", js.settemp)
+fuse = ospi_fuse(js.setfuse)
+
 acvolts = ospi_mcp3221(js.setac)
-st = ospi_server_thread(ospi_db_i, eng, ol.prune_log, wx.compute_daily_adjustment)
+st = ospi_server_thread(ospi_db_i, eng, ol.prune_log, wx.compute_daily_adjustment, fuse.check_fuse, wm.compute_gpm)
 
 class ospi_fcgi_top ():
 

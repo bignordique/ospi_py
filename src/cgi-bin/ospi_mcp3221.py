@@ -5,8 +5,9 @@ import logging
 from time import sleep
 import fcntl
 import io
+import ospi_defs
 
-rd_interval = 1/60
+rd_interval = ospi_defs.A2D_RD_INTERVAL
 I2C_SLAVE_COMMAND=0x0703
 i2c_address = 0x4d
 

@@ -1,42 +1,35 @@
 
 import logging
-import gpiozero
 from time import sleep, time
-import threading
-from signal import pause
 import ospi_defs
+from gpiozero import Button
 
-# Don't understand why pull_up has to be none to set active_state(polarity)?
-# active_state/polarity seems backwards to me??
+# This gets checked once per second.   GPM not expected to be greater than 20.
 
 class ospi_water_meter():
     
-    def __init__(self):
+    def __init__(self, ospi_db):
+        self.ospi_db = ospi_db
         self.logger = logging.getLogger(__name__)
+        pin = ospi_defs.WM_GPIO_PIN
+        self.button = Button(pin, active_state=True, pull_up=None, bounce_time=0.0001)
         self.timestamps = []
-        self.timestamps = [time() for ii in range(ospi_defs.WM_TS_DEPTH)]
-        self.edge_thread = threading.Thread(target=self.edge, daemon=True)
-        self.edge_thread.start()
-        self.rate_thread = threading.Thread(target=self.rate, daemon=True)
-        self.rate_thread.start()
+        self.timestamps = [0.0 for ii in range(ospi_defs.WM_TS_DEPTH)]
+        self.button.when_pressed = self.click
 
-    def edge(self):
-        button = gpiozero.Button(26, active_state=True, pull_up=None, bounce_time=0.0001)
-        while True:
-           button.when_pressed = self.pressed
-           pause
+    def compute_gpm(self):
+        period = self.ospi_db.db["settings"]["flwrt"]
+        clicks = 0
+        last_period = time() - period
+        for ii in self.timestamps:
+            if ii >= last_period:
+                clicks += 1
+        gpm = 60/period * clicks
+        self.logger.debug(f'\n    clicks in last {period} seconds: {clicks} ' + \
+                          f'gpm: {gpm}\n')
+        return gpm
 
-    def rate(self):
-        while True:
-            clicks = 0
-            last_minute = time() - 60
-            for ii in self.timestamps:
-                if ii >= last_minute:
-                    clicks += 1
-            self.logger.debug(f'\n    clicks in last minute {clicks}\n')
-            sleep(1)
-
-    def pressed(self):
+    def click(self):
         self.timestamps = [time()] + self.timestamps[0:ospi_defs.WM_TS_DEPTH-1]
         self.logger.debug(f'\n    timestamps: {self.timestamps}\n')
 
@@ -62,11 +55,24 @@ if __name__ == "__main__" :
     logging.getLogger(__name__)
     logging.info("\n    Startup\n")
 
-    water_meter_inst = ospi_water_meter()
+    DEFFILE = "config/ospi_defaults.txt"
+    from ospi_db import ospi_db
+    ospi_db_i = ospi_db()
+    ospi_db_i.init_db(DBFILE, DEFFILE)
 
+    water_meter_inst = ospi_water_meter(ospi_db_i)
+    
     try:
         while True:
             sleep(1)
+            water_meter_inst.timestamps = [time()] + water_meter_inst.timestamps[0:ospi_defs.WM_TS_DEPTH-1]
+            print(water_meter_inst.compute_gpm())
+            sleep(5)
+            water_meter_inst.timestamps = [time()] + water_meter_inst.timestamps[0:ospi_defs.WM_TS_DEPTH-1]
+            print(water_meter_inst.compute_gpm())
+            sleep (45)
+            print(water_meter_inst.compute_gpm())
+            
     except KeyboardInterrupt:
         logging.info("\n    KeyboardInterrupt caught\n")
 

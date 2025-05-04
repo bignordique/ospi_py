@@ -476,7 +476,7 @@
     "nstations": 24,
     "ospitemp": "0.0",
     "acvolts": "0.0",
-    "gpm": "0.0"
+    "fuse": "intact"
   },
   "stations": {
     "masop": [

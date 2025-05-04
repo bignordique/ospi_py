@@ -51,6 +51,7 @@ class ospi_db:
 #            as_json = json.loads(as_string)
         with open (ospi_db.db_file, "w") as f:
             json.dump(ospi_db.db_defaults, f)
+        os.chmod(ospi_db.db_file, 0o664)
 
     def wb_db(self, logger):
         logger.info(f'\n    DB writeback.\n')

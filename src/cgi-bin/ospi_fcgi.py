@@ -50,7 +50,8 @@ logging.getLogger('ospi_station_bits').setLevel(logging.INFO)
 logging.getLogger('ospi_gpio_zones').setLevel(logging.INFO)
 logging.getLogger('ospi_db').setLevel(logging.INFO)
 logging.getLogger('ospi_weather').setLevel(logging.INFO)
-logging.getLogger('ospi_water_meter').setLevel(logging.INFO)
+logging.getLogger('ospi_water_meter').setLevel(logging.DEBUG)
+logging.getLogger('ospi_fuse').setLevel(logging.INFO)
 
 fcgi_top = ospi_fcgi_top()
 
