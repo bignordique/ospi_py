@@ -5,27 +5,19 @@ FUSE_GPIO = 21
 
 class ospi_fuse():
 
-    def __init__ (self, fuse_store_function):
+    def __init__ (self):
         self.logger = logging.getLogger(__name__)
-        self.fuse_store_function = fuse_store_function
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(False)
         GPIO.setup(FUSE_GPIO, GPIO.IN)
-        self.check_fuse()
 
-    def check_fuse(self):
+    def get_fuse(self):
         if GPIO.input(FUSE_GPIO):
-            self.set_blown()
+            self.logger.debug(f'\n    report fuse blown\n')
+            return("blown")
         else:
-            self.set_intact()
-
-    def set_intact(self):
-        self.fuse_store_function("intact")
-        self.logger.debug(f'\n    set fuse intact\n')
-
-    def set_blown(self):
-        self.fuse_store_function("blown")
-        self.logger.debug(f'\n    set fuse blown\n')   
+            self.logger.debug(f'\n    report fuse intact\n')
+            return("intact") 
 
 if __name__ == "__main__" :
 
@@ -48,12 +40,12 @@ if __name__ == "__main__" :
         logging.debug(f'\n    {status}\n')
     
 
-    fuse_inst = ospi_fuse(report_fuse)
+    fuse_inst = ospi_fuse()
 
     from time import sleep
     try:
         while True:
-            fuse_inst.check_fuse()
+            print(fuse_inst.get_fuse())
             sleep(1)
     except KeyboardInterrupt:
         logging.info("\n    KeyboardInterrupt caught\n")

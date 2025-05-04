@@ -7,14 +7,14 @@ import copy
 
 class ospi_js():
 
-    def __init__ (self, ospi_db, sb, wm):
+    def __init__ (self, ospi_db, sb, fuse, wm):
         self.ospi_db = ospi_db
         self.sb = sb
+        self.fuse = fuse
         self.wm = wm
         self.logger = logging.getLogger(__name__)
         self.ospitemp = "undefined"
         self.acvolts = "undefined"
-        self.fuse = "undefined"
         self.gpm = "undefined"
 
     def handle(self):
@@ -22,7 +22,7 @@ class ospi_js():
         statusdict["gpm"] = self.wm.compute_gpm()
         statusdict["ospitemp"] = self.ospitemp
         statusdict["acvolts"] = self.acvolts
-        statusdict["fuse"] = self.fuse
+        statusdict["fuse"] = self.fuse.get_fuse()
         statusdict["sn"] = self.sb.sn()
         self.logger.debug(f'\n    {statusdict}\n')
         return[json.dumps(statusdict)]
@@ -32,9 +32,6 @@ class ospi_js():
 
     def setac(self, ac):
         self.acvolts = ac
-
-    def setfuse(self, fuse):
-        self.fuse = fuse
 
 if __name__ == "__main__":
 
@@ -68,11 +65,14 @@ if __name__ == "__main__":
 
     from ospi_station_bits import ospi_station_bits
     sb = ospi_station_bits(ospi_db_i)
+    
+    from ospi_fuse import ospi_fuse
+    fuse = ospi_fuse()
 
     from ospi_water_meter import ospi_water_meter
     wm = ospi_water_meter(ospi_db_i)
 
-    js = ospi_js(ospi_db_i, sb, wm)
+    js = ospi_js(ospi_db_i, sb, fuse, wm)
 
 #nominal
     print(js.handle())

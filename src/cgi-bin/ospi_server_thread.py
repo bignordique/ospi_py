@@ -4,21 +4,18 @@ import threading
 import logging
 from cron_entry import cron_entry
 from ospi_tasks_midnight import ospi_tasks_midnight
-from ospi_fuse import ospi_fuse
 import time
 
 
 class ospi_server_thread():
 
-    def __init__ (self, ospi_db, eng, prune_log, compute_daily_adjustment, check_fuse, compute_gpm):
+    def __init__ (self, ospi_db, eng, prune_log, compute_daily_adjustment):
         self.ospi_db = ospi_db
         self.eng = eng
         self.logger = logging.getLogger(__name__)
         self.thread = threading.Thread(target=self.thread_func, daemon=True)
         self.lock = threading.Lock()
         self.at_midnight = ospi_tasks_midnight(ospi_db, prune_log, compute_daily_adjustment)
-        self.check_fuse = check_fuse
-        self.compute_gpm = compute_gpm
         self.thread.start()
 
 
@@ -29,8 +26,6 @@ class ospi_server_thread():
             self.lock.acquire(blocking=True, timeout=1.0)
             self.at_midnight.check_entry()
             self.eng.do_loop(self.ospi_db.get_utc_stamp(self.logger))
-            self.check_fuse()
-            self.compute_gpm()
 
     def unlock_opsi_thread(self):
         self.lock.release()
@@ -72,9 +67,8 @@ if __name__ == "__main__":
 
     def prune_log(): pass
     def compute_daily_adjustment(): pass
-    def fuse_report(status): pass
 
-    test = ospi_server_thread(ospi_db_i, eng, prune_log, compute_daily_adjustment, fuse_report)
+    test = ospi_server_thread(ospi_db_i, eng, prune_log, compute_daily_adjustment)
 
     from time import sleep
     try:
