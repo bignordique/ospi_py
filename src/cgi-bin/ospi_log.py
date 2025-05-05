@@ -122,16 +122,18 @@ class ospi_log:
                 try :
                     with open (path, "r") as fd :
                         for line in fd :
-                            m = self.sid_num_re.match(line)
+                            m = self.sid_num_re.match(line)  # detect station num record
                             if m is not None and log_type is None:
+                                # standard run record
                                 records.append([int(m.group(1)), int(m.group(2)),\
                                                 int(m.group(3)), int(m.group(4))])
                             else :
                                 m = self.string_sid_re.match(line)
                                 if m is not None:
-                                    if (log_type == None and m.group(2) == "rd") or m.group(2) == log_type:
+                                    #    rain delay record
+                                    if (log_type == None and m.group(2) == "rd"): # or m.group(2) == log_type
                                         records.append([int(m.group(1)), m.group(2),\
-                                          int(m.group(3)), int(m.group(4))])
+                                                        int(m.group(3)), int(m.group(4))])
                                     elif m.group(2) == log_type:
                                         records.append([int(m.group(1)), m.group(2),\
                                           int(m.group(3)), int(m.group(4)), int(m.group(5))])

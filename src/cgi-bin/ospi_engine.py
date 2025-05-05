@@ -17,11 +17,12 @@ from ospi_log import ospi_log
 
 class ospi_engine():
 
-    def __init__ (self, ospi_db, check_match, station_bits, water_logs):
+    def __init__ (self, ospi_db, check_match, station_bits, water_logs, water_meter):
         self.ospi_db = ospi_db
         self.cm = check_match
         self.sb = station_bits
         self.water_logs = water_logs
+        self.water_meter = water_meter
         self.last_minute = 0
         self.run_q = []
         self.station_qid = [255] * ospi_defs.MAX_NUM_STATIONS
@@ -441,7 +442,8 @@ class ospi_engine():
                 self.water_logs.write_log (f'{entry["pid"] + 1},{sid},{self.lastrun["duration"]}',\
                                           self.ospi_db.get_lcl_stamp(self.logger))
                 self.water_logs.write_log (f'{entry["pid"] + 1},"fl",{self.lastrun["duration"]}',\
-                                          self.ospi_db.get_lcl_stamp(self.logger),self.do_loop_count)
+                                          self.ospi_db.get_lcl_stamp(self.logger),int(self.water_meter.compute_gpm()))
+ #                                          self.ospi_db.get_lcl_stamp(self.logger),self.do_loop_count)
                 if not (entry["wl"] is None):
                     self.water_logs.write_log (f'{entry["pid"] + 1},"wl",{entry["wl"]}',\
                                           self.ospi_db.get_lcl_stamp(self.logger))

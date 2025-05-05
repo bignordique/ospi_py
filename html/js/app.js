@@ -4122,6 +4122,7 @@ function updateControllerStatus(t) {
                       (controller.status = e.sn),
                       (controller.ospitemp = e.ospitemp),
                       (controller.acvolts = e.acvolts),
+                      (controller.fuse = e.fuse)
                        t();
                   },
                   function () {
@@ -8891,7 +8892,8 @@ var getLogs = (function () {
                     ((n.totalVolume = 0),
                     $.each(d, function () {
                         var e,
-                            t = flowCountToVolume(this[0]);
+ //                           t = flowCountToVolume(this[0]);
+                        t = flowCountToVolume(this[4]);
                         "timeline" === i
                             ? ((e = new Date(parseInt(1e3 * this[3]))),
                               (e = new Date(e.getUTCFullYear(), e.getUTCMonth(), e.getUTCDate(), e.getUTCHours(), e.getUTCMinutes(), e.getUTCSeconds())),
@@ -8985,7 +8987,8 @@ var getLogs = (function () {
                             _("Total Water Used") +
                             "</span>: " +
                             e.totalVolume +
-                            " L" +
+//                            " L" +
+                            " G" +
                             (t && e.avgWaterLevel < 100 ? " (<span class='green-text'>" + (e.totalVolume - e.totalVolume * (e.avgWaterLevel / 100)).toFixed(2) + "L saved</span>)" : "") +
                             "</div>"
                           : "") +

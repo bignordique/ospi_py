@@ -18,7 +18,7 @@ logger.info("\n    Startup\n")
 
 logging.getLogger('tasks_midnight').setLevel(logging.INFO)
 logging.getLogger('ospi_sunrise_sunset').setLevel(logging.INFO)
-logging.getLogger('ospi_fcgi_top').setLevel(logging.INFO)
+logging.getLogger('ospi_fcgi_top').setLevel(logging.DEBUG)
 logging.getLogger('ospi_cv').setLevel(logging.INFO)
 logging.getLogger('ospi_co').setLevel(logging.INFO)
 logging.getLogger('ospi_ja').setLevel(logging.INFO)
@@ -52,6 +52,7 @@ logging.getLogger('ospi_db').setLevel(logging.INFO)
 logging.getLogger('ospi_weather').setLevel(logging.INFO)
 logging.getLogger('ospi_water_meter').setLevel(logging.INFO)
 logging.getLogger('ospi_fuse').setLevel(logging.INFO)
+logging.getLogger('ospi_log').setLevel(logging.INFO)
 
 fcgi_top = ospi_fcgi_top()
 

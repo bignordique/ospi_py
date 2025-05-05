@@ -21,13 +21,15 @@ class ospi_jl():
             return['{"result":18}']
 
 # requests don't match OSAPI2.2.0 doc.
-# seems to be jl?pw=xxx&type=xxx&start=xxx&type=xxx
+# seems to be jl?pw=xxx&type=xxx&start=xxx&end=xxx
 # doesn't appear app.js generates &hist=n&type=xxx   ??
         if matches[0][0] == "type" :
-            return json.dumps(self.log.get_log(int(matches[1][1]), int(matches[2][1]), \
+            response = json.dumps(self.log.get_log(int(matches[1][1]), int(matches[2][1]), \
                                            matches[0][1]))
         else:
-            return json.dumps(self.log.get_log(int(matches[0][1]), int(matches[1][1]), None))
+            response = json.dumps(self.log.get_log(int(matches[0][1]), int(matches[1][1]), None))
+        self.logger.debug(f'\n    response: {response}\n')
+        return response
 
         self.logger.error(f'\n    command: "{matches[0][0]}" unrecognized.\n')
         return['{"result":18}']
