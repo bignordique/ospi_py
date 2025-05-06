@@ -31,7 +31,7 @@ class ospi_weather():
         self.logger.debug("\n    implement apply_monthly_adjustment\n")
 
     def compute_daily_adjustment(self):
-        return()
+ #       return()
         ts = self.ospi_db.get_utc_stamp(self.logger)
         yesterday =  time.strftime("%Y-%m-%d", time.localtime(ts - ospi_defs.SECS_PER_DAY))
         today = time.strftime("%Y-%m-%d", time.localtime(ts))
@@ -73,8 +73,10 @@ class ospi_weather():
 
         precip_factor = totalprecip_hundreds * -2
 
-        print(avghumidity, avgtemp_f, totalprecip_hundreds)
-        print(hum_factor, temp_factor, precip_factor)
+        self.logger.debug(f'\n    avghumidity: {avghumidity}, avgtemp: {avgtemp_f}, ' + \
+                          f'totalprecip_hundreds: {totalprecip_hundreds}\n')
+        self.logger.debug(f'\n    hum_factor: {hum_factor}, temp_factor: {temp_factor}, ' + \
+                          f'precip_factor: {precip_factor}\n')
 
         adj = int(min(max(0,100+hum_factor+temp_factor+precip_factor), 200))
         self.ospi_db.db["options"]["wl"] = adj

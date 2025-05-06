@@ -13,6 +13,7 @@ class ospi_db:
     def __init__ (self):
         self.logger = logging.getLogger(__name__)
         self.logger.info("\n    in ospi_db __init__")
+        self.write_backs = 0
 
     def init_db(self, db_file, defaults_file):
         defaults_path_exists = os.path.exists(defaults_file)
@@ -54,7 +55,8 @@ class ospi_db:
         os.chmod(ospi_db.db_file, 0o664)
 
     def wb_db(self, logger):
-        logger.info(f'\n    DB writeback.\n')
+        self.write_backs += 1
+        logger.info(f'\n    DB writeback# {self.write_backs}\n')
         with open (ospi_db.db_file, "w") as f:
             json.dump(ospi_db.db, f)
 

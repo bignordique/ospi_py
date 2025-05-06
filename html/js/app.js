@@ -4044,7 +4044,10 @@ function updateController(e, n) {
         ? sendToOS("/ja?pw=", "json").then(function (e) {
               var t;
               (void 0 === e || $.isEmptyObject(e) ? n : ((t = controller.special), ((controller = e).special = t), 
-                                                         (controller.acvolts = controller.status.acvolts), (controller.ospitemp = controller.status.ospitemp),
+                                                         (controller.acvolts = controller.status.acvolts), 
+                                                         (controller.ospitemp = controller.status.ospitemp),
+                                                         (controller.gpm = controller.status.gpm),
+                                                         (controller.fuse = controller.status.fuse),
                                                          (controller.status = controller.status.sn), 
                                                           i))();
           }, n)
@@ -4122,6 +4125,7 @@ function updateControllerStatus(t) {
                       (controller.status = e.sn),
                       (controller.ospitemp = e.ospitemp),
                       (controller.acvolts = e.acvolts),
+                      (controller.gpm = e.gpm),
                       (controller.fuse = e.fuse)
                        t();
                   },
@@ -7899,14 +7903,17 @@ function changeStatus(e, t, n, i) {
             (2 !== controller.options.urs && 2 !== controller.options.sn1t) ||
             void 0 === controller.settings.flcrt ||
             void 0 === controller.settings.flwrt ||
-            (a += "<span style='padding-left:5px'>" + _("Flow") + ": " + (flowCountToVolume(controller.settings.flcrt) / (controller.settings.flwrt / 60)).toFixed(2) + " L/min</span>"),
+            (a += "<span style='padding-left:5px'>" + _("Flow") + ": " + (flowCountToVolume(controller.settings.flcrt) / (controller.settings.flwrt / 60)).toFixed(2) + " G/min</span>"),
         (a = "" !== a ? n + "<p class='running-text smaller center'>" + a + "</p>" : n),
         o.removeClass().addClass(t).html(a).off("click").on("click", i);
 }
 function checkStatus() {
     var e, t, n, i, o, a, s;
     var ac = controller.acvolts == "undefined" ? "" : "\u26A1" + controller.acvolts,
-        temp = controller.ospitemp == "undefined" ? "" : +controller.ospitemp + "\xB0";
+        temp = controller.ospitemp == "undefined" ? "" : +controller.ospitemp + "\xB0",
+        fuse = controller.fuse == "undefined" ? "" : +controller.fuse + " \u23DB",
+        gpm = controller.gpm == "undefined" ? "" : +controller.gpm +  " GPM ";
+        console.log(fuse)
     if (isControllerConnected())
 /*        if (1 === controller.options.re)
             changeStatus(0, "red", "<p class='running-text center pointer'>" + _("Configured as Extender") + "</p>", function () {
@@ -7995,7 +8002,7 @@ function checkStatus() {
                                         " " +
                                         dateToString(new Date(1e3 * (controller.settings.lrun[3] - s))) +
                                         "</p>"
-                                  : "<p class='running-text smaller center pointer'>" + _(ac+ " " + temp + " " +"System Idle") + "</p>",
+                                  : "<p class='running-text smaller center pointer'>" + _(ac+ " " + temp + " " + gpm +"System Idle") + "</p>",
                               goHome
                           );
                 }
@@ -8732,7 +8739,7 @@ var getLogs = (function () {
                             ("station" === i ? m[e] : dateToString(new Date(1e3 * e * 60 * 60 * 24)).slice(0, -9)) +
                             "</h2>",
                             r[e] && (s[d] += "<span style='border:none' class='" + (100 !== r[e] ? (r[e] < 100 ? "green " : "red ") : "") + "ui-body ui-body-a'>" + _("Average") + " " + _("Water Level") + ": " + r[e] + "%</span>"),
-                            l[e] && (s[d] += "<span style='border:none' class='ui-body ui-body-a'>" + _("Total Water Used") + ": " + l[e] + " L</span>"),
+                            l[e] && (s[d] += "<span style='border:none' class='ui-body ui-body-a'>" + _("Total Water Used") + ": " + l[e] + " G</span>"),
                             s[d] += c,
                             n = 0;
                         n < a[e].length;
@@ -8897,7 +8904,7 @@ var getLogs = (function () {
                         "timeline" === i
                             ? ((e = new Date(parseInt(1e3 * this[3]))),
                               (e = new Date(e.getUTCFullYear(), e.getUTCMonth(), e.getUTCDate(), e.getUTCHours(), e.getUTCMinutes(), e.getUTCSeconds())),
-                              o.push({ start: new Date(e.getTime() - parseInt(1e3 * this[2])), end: e, className: "", content: t + " L", shortname: _("FS"), group: _("Flow Sensor") }))
+                              o.push({ start: new Date(e.getTime() - parseInt(1e3 * this[2])), end: e, className: "", content: t + " G", shortname: _("FS"), group: _("Flow Sensor") }))
                             : ((e = Math.floor(this[3] / 60 / 60 / 24)), (o[e] = o[e] ? o[e] + t : t)),
                             (n.totalVolume += t);
                     })),

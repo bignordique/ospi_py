@@ -1,10 +1,11 @@
 
 import logging
-from time import sleep, time
+from time import time
 import ospi_defs
 from gpiozero import Button
 
-# This gets checked once per second.   GPM not expected to be greater than 20.
+# Think its 10 clicks per gallon.
+# increment ospi_db["local"]["clicks"] with each click. 
 
 class ospi_water_meter():
     
@@ -31,7 +32,9 @@ class ospi_water_meter():
 
     def click(self):
         self.timestamps = [time()] + self.timestamps[0:ospi_defs.WM_TS_DEPTH-1]
-        self.logger.debug(f'\n    timestamps: {self.timestamps}\n')
+        self.ospi_db.db["settings"]["wm_clicks"] += 1
+        self.logger.debug(f'\n     wm_clicks: {self.ospi_db.db["settings"]["wm_clicks"]}' + \
+                          f'\n     timestamps: {self.timestamps}\n')
 
 if __name__ == "__main__" :
 
@@ -59,6 +62,8 @@ if __name__ == "__main__" :
     from ospi_db import ospi_db
     ospi_db_i = ospi_db()
     ospi_db_i.init_db(DBFILE, DEFFILE)
+
+    from time import sleep
 
     water_meter_inst = ospi_water_meter(ospi_db_i)
     

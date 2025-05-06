@@ -17,12 +17,11 @@ from ospi_log import ospi_log
 
 class ospi_engine():
 
-    def __init__ (self, ospi_db, check_match, station_bits, water_logs, water_meter):
+    def __init__ (self, ospi_db, check_match, station_bits, water_logs):
         self.ospi_db = ospi_db
         self.cm = check_match
         self.sb = station_bits
         self.water_logs = water_logs
-        self.water_meter = water_meter
         self.last_minute = 0
         self.run_q = []
         self.station_qid = [255] * ospi_defs.MAX_NUM_STATIONS
@@ -32,7 +31,7 @@ class ospi_engine():
         self.pause_state = False
         self.pause_timer = 0
         self.do_loop_count = 0
-        self.lastrun = {"station":None, "program":None, "duration":None, "endtime":None}
+        self.lastrun = {"station":None, "program":None, "duration":None, "endtime":None, "clicks_run":0}
         self.raindelay_start_time = 0  # on powerfail, keep it simple.   Set to zero and suppress log.
         self.logger = logging.getLogger(__name__)
 
@@ -125,7 +124,8 @@ class ospi_engine():
                                                "dur" : water_time,
                                                "sid" : sid,
                                                "pid" : pid,
-                                               "deque_time": 0})
+                                               "deque_time": 0,
+                                               "start_clicks" : 0})
                             match_found = True
                         
         if match_found : 
@@ -175,6 +175,7 @@ class ospi_engine():
                     if not self.sb.get_station_bit(sid):
                         if curr_time >= entry["st"] and \
                             curr_time < entry["st"] + entry["dur"] :
+                            entry["start_clicks"] = self.ospi_db.db["settings"]["wm_clicks"]
                             self.sb.set_station_bit(sid, 1)
 
 # turn off stations with completed run times.
@@ -233,9 +234,10 @@ class ospi_engine():
                 self.sb.set_station_bit(mas_id - 1, masbit)
 
         if self.pause_state :
-            if self.pause_timer > 0 : self.pause_timer -= 1
-            else:
+            if self.pause_timer > 0 :
+                self.pause_timer -= 1
                 self.sb.clear_all_station_bits()
+            else:
                 self.clear_pause()
 
         self.process_dynamic_events(curr_time)
@@ -439,10 +441,11 @@ class ospi_engine():
                 self.lastrun["program"] = entry["pid"]
                 self.lastrun["duration"] = curr_time - entry["st"]
                 self.lastrun["endtime"] = curr_time
+                self.lastrun["clicks_run"] = self.ospi_db.db["settings"]["wm_clicks"] - entry["start_clicks"]
                 self.water_logs.write_log (f'{entry["pid"] + 1},{sid},{self.lastrun["duration"]}',\
                                           self.ospi_db.get_lcl_stamp(self.logger))
                 self.water_logs.write_log (f'{entry["pid"] + 1},"fl",{self.lastrun["duration"]}',\
-                                          self.ospi_db.get_lcl_stamp(self.logger),int(self.water_meter.compute_gpm()))
+                                          self.ospi_db.get_lcl_stamp(self.logger),self.lastrun["clicks_run"])
  #                                          self.ospi_db.get_lcl_stamp(self.logger),self.do_loop_count)
                 if not (entry["wl"] is None):
                     self.water_logs.write_log (f'{entry["pid"] + 1},"wl",{entry["wl"]}',\
@@ -477,7 +480,8 @@ class ospi_engine():
                                    "dur" : t,
                                    "sid" : sid,
                                    "pid" : 99,
-                                   "deque_time": 0})
+                                   "deque_time": 0,
+                                   "start_clicks" : 0})
                 self.schedule_all_stations(curr_time)
         else :
             self.run_q[sqi]["deque_time"] = curr_time
@@ -511,7 +515,8 @@ class ospi_engine():
                                       "dur" : dur,
                                       "sid" : sid,
                                       "pid" : 254,
-                                      "deque_time": 0})
+                                      "deque_time": 0,
+                                      "start_clicks" : 0})
                    match_found = True
 
         if match_found :
@@ -536,7 +541,8 @@ class ospi_engine():
                                       "dur" : dur,
                                       "sid" : sid,
                                       "pid" : 254,
-                                      "deque_time": 0})
+                                      "deque_time": 0,
+                                      "start_clicks" : 0})
                    match_found = True
 
         if match_found :
