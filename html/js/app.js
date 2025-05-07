@@ -5810,14 +5810,14 @@ function showRainDelay() {
 function showPause() {
     StationQueue.isPaused()
         ? areYouSure(_("Do you want to resume program operation?"), "", function () {
-              sendToOS("/pq?pw=");
+              sendToOS("/pq?pw=&dur=0");
           })
         : showDurationBox({
               title: "Pause Station Runs",
               incrementalUpdate: !1,
               maximum: 65535,
               callback: function (e) {
-                  sendToOS("/pq?dur=" + e + "&pw=");
+                  sendToOS("/pq?pw=&dur=" + e);
               },
           });
 }
@@ -7912,8 +7912,8 @@ function checkStatus() {
     var ac = controller.acvolts == "undefined" ? "" : "\u26A1" + controller.acvolts,
         temp = controller.ospitemp == "undefined" ? "" : +controller.ospitemp + "\xB0",
         fuse = controller.fuse == "undefined" ? "" : +controller.fuse + " \u23DB",
-        gpm = controller.gpm == "undefined" ? "" : +controller.gpm +  " GPM ";
-        console.log(fuse)
+        gpm = controller.gpm == "undefined" ? "" : +controller.gpm +  " GPM",
+        temp_gpm = temp + " " + gpm + " ";
     if (isControllerConnected())
 /*        if (1 === controller.options.re)
             changeStatus(0, "red", "<p class='running-text center pointer'>" + _("Configured as Extender") + "</p>", function () {
@@ -7926,7 +7926,7 @@ function checkStatus() {
             });
         else */if (controller.settings.en)
             if (controller.settings.pq)
-                (n = "<p class='running-text center pointer'>" + _("Stations Currently Paused")),
+                (n = "<p class='running-text center pointer'>" + _(temp_gpm + "Stations Currently Paused")),
                     controller.settings.pt && (n += " <span id='countdown' class='nobr'>(" + sec2hms(controller.settings.pt) + " " + _("remaining") + ")</span>"),
                     changeStatus(controller.settings.pt || 0, "yellow", (n += "</p>"), function () {
                         areYouSure(_("Do you want to resume station operation?"), "", function () {
@@ -7950,7 +7950,7 @@ function checkStatus() {
                         if (controller.settings.ps[a] && Station.getPID(a) && Station.getStatus(a) && !Station.isMaster(a)) {
                             (i = !0),
                                 (n = "<div><div class='running-icon'></div><div class='running-text pointer'>"),
-                                (n += pidname(Station.getPID(a)) + " " + _("is running on station") + " <span class='nobr'>" + Station.getName(a) + "</span> "),
+                                (n += temp_gpm + pidname(Station.getPID(a)) + " " + _("is running on station") + " <span class='nobr'>" + Station.getName(a) + "</span> "),
                                 0 < Station.getRemainingRuntime(a) && (n += "<span id='countdown' class='nobr'>(" + sec2hms(Station.getRemainingRuntime(a)) + " " + _("remaining") + ")</span>"),
                                 (n += "</div></div>");
                             break;
@@ -8002,13 +8002,13 @@ function checkStatus() {
                                         " " +
                                         dateToString(new Date(1e3 * (controller.settings.lrun[3] - s))) +
                                         "</p>"
-                                  : "<p class='running-text smaller center pointer'>" + _(ac+ " " + temp + " " + gpm +"System Idle") + "</p>",
+                                  : "<p class='running-text smaller center pointer'>" + _(temp_gpm +"System Idle") + "</p>",
                               goHome
                           );
                 }
             }
         else
-            changeStatus(0, "red", "<p class='running-text center pointer'>" + _("System Disabled") + "</p>", function () {
+            changeStatus(0, "red", "<p class='running-text center pointer'>" + _(temp_gpm + " System Disabled") + "</p>", function () {
                 areYouSure(_("Do you want to re-enable system operation?"), "", function () {
                     showLoading("#footer-running"),
                         sendToOS("/cv?pw=&en=1").done(function () {

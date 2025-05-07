@@ -51,8 +51,9 @@ class ospi_engine():
                 ps.append([0,0,0,gid])
         return ps
 
-    def get_pause_status(self) :
-        return (self.pause_state, self.pause_timer)
+# Not used anywhere?
+ #   def get_pause_status(self) :
+ #       return (self.pause_state, self.pause_timer)
 
     def get_sbits(self):
         sbits = []
@@ -136,6 +137,9 @@ class ospi_engine():
         self.curr_time = ospi_time
         self.curr_minute = int(self.curr_time/60)
 
+#        self.logger.info(f'\n    self.pause_state: {self.pause_state}  self.pause_timer: {self.pause_timer}' + \
+#                         f'\n    pq: {self.ospi_db.db["settings"]["pq"]} \n')
+
         if self.ospi_db.db["settings"]["rd"] == 1 :
             if self.curr_time > self.ospi_db.db["settings"]["rdst"] :
                 self.raindelay_stop()
@@ -172,7 +176,7 @@ class ospi_engine():
                     if qid < 0 or qid >= len(self.run_q) :
                         self.logger.error (f'\n    qid out of range  qid: {qid}  len(q): {len(self.run_q)}\n')
                     entry = self.run_q[qid]
-                    if not self.sb.get_station_bit(sid):
+                    if not self.sb.get_station_bit(sid) : #and not self.pause_state:
                         if curr_time >= entry["st"] and \
                             curr_time < entry["st"] + entry["dur"] :
                             entry["start_clicks"] = self.ospi_db.db["settings"]["wm_clicks"]
@@ -211,7 +215,7 @@ class ospi_engine():
                 self.sb.apply_all_station_bits()
                 self.reset_runtime()
                 self.program_busy = False
-                self.clear_pause()
+ #               self.clear_pause() 
 
 # adjust start time for master on/off delays
 # for each master, scan through stations.   If station is on and associated with master, turn 
@@ -289,9 +293,11 @@ class ospi_engine():
         self.run_q = []
         self.last_seq_stop_times = [0] * ospi_defs.NUM_SEQ_GROUPS
 
+    # FWIW, this whold pause state thing is spaghetti code.
     def toggle_pause(self, curr_time, dur) :
         if self.pause_state :
             self.resume_stations()
+            self.clear_pause()
         else:
             self.pause_state = True
             self.pause_timer = dur
@@ -299,16 +305,18 @@ class ospi_engine():
 
     def set_pause(self, curr_time):
         for q_index in range(0, self.nqueue):
-            entry = self.run_q(q_index)
+            entry = self.run_q[q_index]
             self.turn_off_station(entry["sid"], curr_time)
-            if curr_time >= entry["st"] + entry["dur"] :
+            if curr_time >= entry["st"] + entry["dur"] :    # should only impact any/all entries in the pause envelope
                 continue
             elif curr_time > entry["st"] :
-                entry["dur"] -= (curr_time - entry["st"])
-            else :
-                entry["st"] += self.pause_timer
+                entry["dur"] -= (curr_time - entry["st"])   # subtract passed run time from duraton
+ #           else :
+                entry["st"] += self.pause_timer             # add pause timer to start time
 
-            entry["deque_time"] += self.pause_timer
+ #           entry["deque_time"] += self.pause_timer        # add start time to de queue time
+
+ 
 
             gid = self.ospi_db.db["stations"]["stn_grp"][entry["sid"]]
             if entry["st"] + entry["dur"] > self.last_seq_stop_times[gid] :

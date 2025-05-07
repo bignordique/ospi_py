@@ -106,15 +106,15 @@ class ospi_fcgi_top ():
 
         start_response('200 OK', [('Content-Type', 'application/json')])
 
-        if script_name == "cm" or script_name == "pq":
+        if script_name == "cm": # or script_name == "pq":
             ospi_cmd_match = self.ospi_cmd_re_cm.match(query_string)
         else: ospi_cmd_match = self.ospi_cmd_re.match(query_string)
 
         if ospi_cmd_match is None:
-            self.logger.error(f'\n    Match None on cmd: {query_string}.')
+            self.logger.error(f'\n    script_name: {script_name}  Match None on: {query_string}.\n')
             return['{"result":18}']
 
-        if script_name == "cm" or script_name == "pq":
+        if script_name == "cm":
             *cmd, pwd, epoch_time = ospi_cmd_match.groups()
         else: pwd, *cmd, epoch_time = ospi_cmd_match.groups()
         pw = ospi_db.db["pw"]
