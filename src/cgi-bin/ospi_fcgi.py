@@ -14,7 +14,6 @@ logging.basicConfig(format='%(asctime)s %(name)s %(module)s:%(lineno)d ' +
                     level=logging.DEBUG)
 
 logger = logging.getLogger(__name__)
-logger.info("\n    Startup\n")
 
 logging.getLogger('tasks_midnight').setLevel(logging.INFO)
 logging.getLogger('ospi_sunrise_sunset').setLevel(logging.INFO)
@@ -56,6 +55,8 @@ logging.getLogger('ospi_fuse').setLevel(logging.INFO)
 logging.getLogger('ospi_log').setLevel(logging.INFO)
 
 fcgi_top = ospi_fcgi_top()
+
+#logger.info("\n    Startup.\n")
 
 if len(sys.argv) > 1:
     print("testbench")

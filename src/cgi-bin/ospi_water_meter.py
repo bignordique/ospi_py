@@ -1,11 +1,12 @@
 
 import logging
-from time import time
+import time
 import ospi_defs
 from gpiozero import Button
 
 # Think its 10 clicks per gallon.
-# increment ospi_db["local"]["clicks"] with each click. 
+# increment ospi_db["settings"]["wm_clicks"] with each click. 
+# To decrease disk traffic, don't flush.  wm_clicks doesn't have to perfect.
 
 class ospi_water_meter():
     
@@ -18,21 +19,29 @@ class ospi_water_meter():
         self.timestamps = [0.0 for ii in range(ospi_defs.WM_TS_DEPTH)]
         self.button.when_pressed = self.click
 
+    def init_clicks(self):
+        self.wm_clicks = self.ospi_db.db["settings"]["wm_clicks"]
+        self.wm_timestamp = self.ospi_db.db["settings"]["wm_timestamp"]
+
     def compute_gpm(self):
         period = self.ospi_db.db["settings"]["flwrt"]
         clicks = 0
-        last_period = time() - period
+        last_period = time.time() - period
         for ii in self.timestamps:
             if ii >= last_period:
                 clicks += 1
         gpm = 60/period * clicks
-        self.logger.debug(f'\n    clicks in last {period} seconds: {clicks} ' + \
-                          f'gpm: {gpm}\n')
+        ts_int = int(self.ospi_db.db["settings"]["wm_timestamp"])
+        readable_time = time.strftime("%Y/%m/%d-%H:%M:%S",time.gmtime(ts_int))
+        self.logger.debug(f'\n    clicks in last {period} seconds: {clicks} gpm: {gpm}' +\
+                          f'\n    wm_timestamp: {readable_time} ' +\
+                          f'wm_clicks: {self.ospi_db.db["settings"]["wm_clicks"]}\n')
         return gpm
 
     def click(self):
-        self.timestamps = [time()] + self.timestamps[0:ospi_defs.WM_TS_DEPTH-1]
+        self.timestamps = [time.time()] + self.timestamps[0:ospi_defs.WM_TS_DEPTH-1]
         self.ospi_db.db["settings"]["wm_clicks"] += 1
+        self.ospi_db.db["settings"]["wm_timestamp"] = self.ospi_db.get_lcl_stamp(self.logger)
         self.logger.debug(f'\n     wm_clicks: {self.ospi_db.db["settings"]["wm_clicks"]}' + \
                           f'\n     timestamps: {self.timestamps}\n')
 
@@ -63,20 +72,17 @@ if __name__ == "__main__" :
     ospi_db_i = ospi_db()
     ospi_db_i.init_db(DBFILE, DEFFILE)
 
-    from time import sleep
-
     water_meter_inst = ospi_water_meter(ospi_db_i)
     
     try:
         while True:
-            sleep(1)
-            water_meter_inst.timestamps = [time()] + water_meter_inst.timestamps[0:ospi_defs.WM_TS_DEPTH-1]
+            time.sleep(1)
+            water_meter_inst.timestamps = [time.time()] + water_meter_inst.timestamps[0:ospi_defs.WM_TS_DEPTH-1]
             print(water_meter_inst.compute_gpm())
-            sleep(5)
-            water_meter_inst.timestamps = [time()] + water_meter_inst.timestamps[0:ospi_defs.WM_TS_DEPTH-1]
+            time.sleep(5)
+            water_meter_inst.timestamps = [time.time()] + water_meter_inst.timestamps[0:ospi_defs.WM_TS_DEPTH-1]
             print(water_meter_inst.compute_gpm())
-            sleep (45)
-            print(water_meter_inst.compute_gpm())
+            time.sleep (45)
             
     except KeyboardInterrupt:
         logging.info("\n    KeyboardInterrupt caught\n")

@@ -34,6 +34,7 @@ class ospi_engine():
         self.lastrun = {"station":None, "program":None, "duration":None, "endtime":None, "clicks_run":0}
         self.raindelay_start_time = 0  # on powerfail, keep it simple.   Set to zero and suppress log.
         self.logger = logging.getLogger(__name__)
+        self.first_loop = True
 
 
     def get_ps(self):
@@ -135,6 +136,12 @@ class ospi_engine():
 # pass in ospi_time to make it easy to minipulate in test harnesses
     def do_loop(self, ospi_time):
         self.curr_time = ospi_time
+        if self.first_loop:
+            ts_int = int(self.ospi_db.db["settings"]["wm_timestamp"])
+            readable_time = time.strftime("%Y/%m/%d-%H:%M:%S",time.gmtime(ts_int))
+            self.logger.info(f'\n    First loop.  wm_timestamp: {readable_time}  ' + \
+                             f'wm_clicks: {self.ospi_db.db["settings"]["wm_clicks"]}\n')
+            self.first_loop = False
         self.curr_minute = int(self.curr_time/60)
 
 #        self.logger.info(f'\n    self.pause_state: {self.pause_state}  self.pause_timer: {self.pause_timer}' + \
@@ -659,6 +666,8 @@ if __name__ == "__main__":
     def run_ospi(start_time, seconds, test):
         engine.last_minute = 0
         ts = start_time
+#        engine.do_loop(ts)
+#       exit()
         for ii in range(0, seconds):
             ts+= 1
 #            print(engine.get_sbits())

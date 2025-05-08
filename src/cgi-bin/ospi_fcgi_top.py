@@ -83,6 +83,7 @@ class ospi_fcgi_top ():
 
     def __init__ (self):
         ospi_db_i.init_db(ospi_defs.DBFILE, ospi_defs.DEFAULT_DB)
+        wm.init_clicks
         ol.logging_ready()   #generate warning message if log file not available
         wx.initialize()
         self.ospi_cmd_re = re.compile("pw=([a-f0-9]{32})(&?.*)&_=(\d+)$")

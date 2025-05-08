@@ -7166,7 +7166,11 @@ var showHomeMenu = (function () {
                 o = n ? pidname(Station.getPID(e)) : "",
                 a = Station.getRemainingRuntime(e),
                 s = Supported.pausing() && StationQueue.isPaused(),
-                r = !!v[g].images[e];
+                r = !!v[g].images[e],
+                temp = controller.ospitemp == "undefined" ? "" : +controller.ospitemp + "\xB0",
+                gpm = controller.gpm == "undefined" ? "" : +controller.gpm +  " GPM",
+                temp_gpm = temp + " " + gpm + " ";
+                foobar = "foobar"
             Station.getStatus(e) && 0 < a && y(e, a),
                 (f =
                     (f =
@@ -7513,8 +7517,8 @@ var showHomeMenu = (function () {
             v,
             b = $(
                 "<div data-role='page' id='sprinklers'><div class='ui-panel-wrapper'><div class='ui-content' role='main'><div class='ui-grid-a ui-body ui-corner-all info-card noweather'><div class='ui-block-a'><div id='weather' class='pointer'></div></div><div class='ui-block-b center home-info pointer'><div class='sitename bold'></div><div id='clock-s' class='nobr'></div>" +
-                    _("Water Level") +
-                    ": <span class='waterlevel'></span>%</div></div><div id='os-stations-list' class='card-group center'></div></div></div></div>"
+                    _("Water-Level") +
+                    ": <span class='waterlevel'></span>%</br>temp gpm</div></div><div id='os-stations-list' class='card-group center'></div></div></div></div>"
             ),
             y = function (e, t) {
                 timers["station-" + e] = {
@@ -7910,8 +7914,8 @@ function changeStatus(e, t, n, i) {
 function checkStatus() {
     var e, t, n, i, o, a, s;
     var ac = controller.acvolts == "undefined" ? "" : "\u26A1" + controller.acvolts,
-        temp = controller.ospitemp == "undefined" ? "" : +controller.ospitemp + "\xB0",
         fuse = controller.fuse == "undefined" ? "" : +controller.fuse + " \u23DB",
+        temp = controller.ospitemp == "undefined" ? "" : +controller.ospitemp + "\xB0",
         gpm = controller.gpm == "undefined" ? "" : +controller.gpm +  " GPM",
         temp_gpm = temp + " " + gpm + " ";
     if (isControllerConnected())

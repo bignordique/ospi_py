@@ -193,7 +193,8 @@
     "flwrt": 30,
     "flcrt": 10,
     "gpio": [],
-    "wm_clicks" : 0
+    "wm_clicks" : 0,
+    "wm_timestamp" : 0
   },
   "programs": {
     "nprogs": 3,
