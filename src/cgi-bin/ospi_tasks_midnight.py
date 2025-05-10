@@ -4,7 +4,6 @@ from cron_entry import cron_entry
 from datetime import datetime
 from dateutil import tz
 from ospi_sunrise_sunset import ospi_sunrise_sunset
-from ospi_db import ospi_db
 import ospi_defs
 
 class ospi_tasks_midnight(cron_entry):
@@ -13,7 +12,7 @@ class ospi_tasks_midnight(cron_entry):
         super().__init__("midnight",  "* 0 * * *", self.run_tasks)
         self.ospi_db = ospi_db
         self.logger = logging.getLogger(__name__)
-        self.sr_ss = ospi_sunrise_sunset()
+        self.sr_ss = ospi_sunrise_sunset(ospi_db)
         self.prune_log = prune_log
         self.compute_daily_adjustment = compute_daily_adjustment
 
@@ -47,6 +46,7 @@ if __name__ == "__main__":
                                                       backupCount=1)],
                         level=logging.DEBUG)
 
+    from ospi_db import ospi_db
     ospi_db_i = ospi_db()
     ospi_db_i.init_db(DBFILE, DEFFILE)
 

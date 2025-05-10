@@ -7166,11 +7166,7 @@ var showHomeMenu = (function () {
                 o = n ? pidname(Station.getPID(e)) : "",
                 a = Station.getRemainingRuntime(e),
                 s = Supported.pausing() && StationQueue.isPaused(),
-                r = !!v[g].images[e],
-                temp = controller.ospitemp == "undefined" ? "" : +controller.ospitemp + "\xB0",
-                gpm = controller.gpm == "undefined" ? "" : +controller.gpm +  " GPM",
-                temp_gpm = temp + " " + gpm + " ";
-                foobar = "foobar"
+                r = !!v[g].images[e]
             Station.getStatus(e) && 0 < a && y(e, a),
                 (f =
                     (f =
@@ -7516,22 +7512,39 @@ var showHomeMenu = (function () {
             n,
             v,
             b = $(
-                "<div data-role='page' id='sprinklers'><div class='ui-panel-wrapper'><div class='ui-content' role='main'><div class='ui-grid-a ui-body ui-corner-all info-card noweather'><div class='ui-block-a'><div id='weather' class='pointer'></div></div><div class='ui-block-b center home-info pointer'><div class='sitename bold'></div><div id='clock-s' class='nobr'></div>" +
-                    _("Water-Level") +
-                    ": <span class='waterlevel'></span>%</br>temp gpm</div></div><div id='os-stations-list' class='card-group center'></div></div></div></div>"
+                "<div data-role='page' id='sprinklers'>"+
+                    "<div class='ui-panel-wrapper'>"+
+                        "<div class='ui-content' role='main'>"+
+                            "<div class='ui-grid-a ui-body ui-corner-all info-card noweather'>"+
+                                "<div class='ui-block-a'>"+
+                                    "<div id='weather' class='pointer'></div>"+
+                                "</div>"+
+                                "<div class='ui-block-b center home-info pointer'>"+
+ //                                   "<div class='sitename bold'></div>"+
+                                    "<div id='clock-s' class='nobr'></div>" +
+                                    _("Water Level") + ": <span class='waterlevel'></span>%</br> "+
+                                    "<span class='ospi_temp'></span>"+"\xB0 "+
+                                    "<span class='ospi_gpm'></span>"+" GPM"+
+                                    " "+"<span class='ospi_fuse red ospi_blink bold'></span>"+
+                                "</div>"+
+                            "</div>"+
+                            "<div id='os-stations-list' class='card-group center'></div>"+
+                        "</div>"+
+                    "</div>"+
+                "</div>"
             ),
             y = function (e, t) {
                 timers["station-" + e] = {
                     val: t,
                     station: e,
                     update: function () {
-                        b.find("#countdown-" + e).text("(" + sec2hms(this.val) + " " + _("remaining") + ")");
+                        b.find("#countdown-" + e).text("(" + sec2hms(this.val) + " " + _("remaining") + " " + controller.acvolts + "\u26A1" + ")");
                     },
                     done: function () {
                         b.find("#countdown-" + e)
                             .parent("p")
                             .empty()
-                            .siblings(".station-status")
+                         //   .siblings(".station-status")
                             .removeClass("on")
                             .addClass("off");
                     },
@@ -7654,6 +7667,9 @@ var showHomeMenu = (function () {
                     u(),
                         h(),
                         b.find(".waterlevel").text(controller.options.wl),
+                        b.find(".ospi_temp").text(controller.ospitemp),
+                        b.find(".ospi_gpm").text(controller.gpm),
+                        b.find(".ospi_fuse").text(controller.fuse),
                         b.find(".sitename").text(m.val()),
                         CardList.getAllCards(l)
                             .filter(function (e, t) {
@@ -7699,8 +7715,8 @@ var showHomeMenu = (function () {
                                       }),
                                   Station.isMaster(c) || (!e && !t)
                                       ? a.find(".rem").remove()
-                                      : ((s = t ? _("Running") + " " + n : _("Scheduled") + " " + (Station.getStartTime(c) ? _("for") + " " + dateToString(new Date(1e3 * Station.getStartTime(c))) : n)),
-                                        0 < i && ((s += " <span id=" + (o ? "'pause" : "'countdown-") + c + "' class='nobr'>(" + sec2hms(i) + " " + _("remaining") + ")</span>"), controller.status[c]) && y(c, i),
+                                      : ((s = t ?  _("Running") + " " + n : _("Scheduled") + " " + (Station.getStartTime(c) ? _("for") + " " + dateToString(new Date(1e3 * Station.getStartTime(c))) : n)),
+                                        0 < i && ((s += " <span id=" + (o ? "'pause" : "'countdown-") + c + "' class='nobr'>(" + sec2hms(i) + " " + _("remaining") + " " + controller.acvolts + "\u26A1" + ")</span>"), controller.status[c]) && y(c, i),
                                         0 === a.find(".rem").length ? a.find(".ui-body").append("<p class='rem center'>" + s + "</p>") : a.find(".rem").html(s)));
                     p();
                 }
@@ -7719,6 +7735,9 @@ var showHomeMenu = (function () {
                     }),
                     b.find(".sitename").toggleClass("hidden", !!currLocal).text(m.val()),
                     b.find(".waterlevel").text(controller.options.wl),
+                    b.find(".ospi_temp").text(controller.ospitemp),
+                    b.find(".ospi_gpm").text(controller.gpm),
+                    b.find(".ospi_fuse").text(controller.fuse),
                     u(),
                     b.on("click", ".station-settings", e),
                     b.on("click", ".home-info", function () {
@@ -7913,11 +7932,6 @@ function changeStatus(e, t, n, i) {
 }
 function checkStatus() {
     var e, t, n, i, o, a, s;
-    var ac = controller.acvolts == "undefined" ? "" : "\u26A1" + controller.acvolts,
-        fuse = controller.fuse == "undefined" ? "" : +controller.fuse + " \u23DB",
-        temp = controller.ospitemp == "undefined" ? "" : +controller.ospitemp + "\xB0",
-        gpm = controller.gpm == "undefined" ? "" : +controller.gpm +  " GPM",
-        temp_gpm = temp + " " + gpm + " ";
     if (isControllerConnected())
 /*        if (1 === controller.options.re)
             changeStatus(0, "red", "<p class='running-text center pointer'>" + _("Configured as Extender") + "</p>", function () {
@@ -7930,7 +7944,7 @@ function checkStatus() {
             });
         else */if (controller.settings.en)
             if (controller.settings.pq)
-                (n = "<p class='running-text center pointer'>" + _(temp_gpm + "Stations Currently Paused")),
+                (n = "<p class='running-text center pointer'>" + _("Stations Currently Paused")),
                     controller.settings.pt && (n += " <span id='countdown' class='nobr'>(" + sec2hms(controller.settings.pt) + " " + _("remaining") + ")</span>"),
                     changeStatus(controller.settings.pt || 0, "yellow", (n += "</p>"), function () {
                         areYouSure(_("Do you want to resume station operation?"), "", function () {
@@ -7954,7 +7968,7 @@ function checkStatus() {
                         if (controller.settings.ps[a] && Station.getPID(a) && Station.getStatus(a) && !Station.isMaster(a)) {
                             (i = !0),
                                 (n = "<div><div class='running-icon'></div><div class='running-text pointer'>"),
-                                (n += temp_gpm + pidname(Station.getPID(a)) + " " + _("is running on station") + " <span class='nobr'>" + Station.getName(a) + "</span> "),
+                                (n + pidname(Station.getPID(a)) + " " + _("is running on station") + " <span class='nobr'>" + Station.getName(a) + "</span> "),
                                 0 < Station.getRemainingRuntime(a) && (n += "<span id='countdown' class='nobr'>(" + sec2hms(Station.getRemainingRuntime(a)) + " " + _("remaining") + ")</span>"),
                                 (n += "</div></div>");
                             break;
@@ -8006,13 +8020,13 @@ function checkStatus() {
                                         " " +
                                         dateToString(new Date(1e3 * (controller.settings.lrun[3] - s))) +
                                         "</p>"
-                                  : "<p class='running-text smaller center pointer'>" + _(temp_gpm +"System Idle") + "</p>",
+                                  : "<p class='running-text smaller center pointer'>" + _("System Idle") + "</p>",
                               goHome
                           );
                 }
             }
         else
-            changeStatus(0, "red", "<p class='running-text center pointer'>" + _(temp_gpm + " System Disabled") + "</p>", function () {
+            changeStatus(0, "red", "<p class='running-text center pointer'>" + _(" System Disabled") + "</p>", function () {
                 areYouSure(_("Do you want to re-enable system operation?"), "", function () {
                     showLoading("#footer-running"),
                         sendToOS("/cv?pw=&en=1").done(function () {

@@ -56,7 +56,7 @@ class ospi_db:
 
     def wb_db(self, logger):
         self.write_backs += 1
-        logger.info(f'\n    DB writeback# {self.write_backs}\n')
+        logger.info(f'\n    DB writebacks {self.write_backs}\n')
         with open (ospi_db.db_file, "w") as f:
             json.dump(ospi_db.db, f)
 

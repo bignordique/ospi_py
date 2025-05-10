@@ -22,7 +22,7 @@ class ospi_js():
         statusdict["gpm"] = self.wm.compute_gpm()
         statusdict["ospitemp"] = self.ospitemp
         statusdict["acvolts"] = self.acvolts
-        statusdict["fuse"] = 0 if self.fuse.get_fuse() == "blown" else 1
+        statusdict["fuse"] = "FUSE" if self.fuse.get_fuse() == "blown" else ""
         statusdict["sn"] = self.sb.sn()
         self.logger.debug(f'\n    {statusdict}\n')
         return[json.dumps(statusdict)]

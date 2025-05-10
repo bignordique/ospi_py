@@ -18,8 +18,8 @@ class ospi_sunrise_sunset (ospi_db):
         if datetime.today() != self.lastrun:
             self.lastrun = datetime.today()
             midnight = datetime.combine(self.lastrun, time.min).timestamp()
-            sunrise = midnight + ospi_db.db_defaults["settings"]["sunrise"] * 60
-            sunset = midnight + 24*60*60 + ospi_db.db_defaults["settings"]["sunset"] * 60
+            sunrise = midnight + self.ospi_db["settings"]["sunrise"] * 60
+            sunset = midnight + 24*60*60 + self.ospi_db["settings"]["sunset"] * 60
             try:
                 s = sun.sun(self.city.observer, datetime.date(self.lastrun), tzinfo = self.timezone)
                 sunrise = s["sunrise"].timestamp()
@@ -29,13 +29,14 @@ class ospi_sunrise_sunset (ospi_db):
             except Exception as e:
                 self.logger.error(f'\n    Call to astral.sun fails with:\n' +
                                   f'    {type(e)}\n')
-            ospi_db.db["settings"]["sunrise"] = int((sunrise - midnight)/60)
-            ospi_db.db["settings"]["sunset"] = int((sunset - (midnight + 1440*60))/60)
+            self.ospi_db.db["settings"]["sunrise"] = int((sunrise - midnight)/60)
+            self.ospi_db.db["settings"]["sunset"] = int((sunset - (midnight + 1440*60))/60)
             self.logger.debug(f'\n   sunrise: {ospi_db.db["settings"]["sunrise"]}' +
                               f' sunset: {ospi_db.db["settings"]["sunset"]}\n')
             self.wb_db(self.logger)
 
-    def __init__(self):
+    def __init__(self, ospi_db):
+        self.ospi_db = ospi_db
         self.city = LocationInfo("Fort Collins", "America", "America/Denver", 40.58, -105.08)
         self.timezone = zoneinfo.ZoneInfo("America/Denver")
         self.logger = logging.getLogger(__name__)

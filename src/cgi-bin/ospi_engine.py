@@ -127,7 +127,7 @@ class ospi_engine():
                                                "sid" : sid,
                                                "pid" : pid,
                                                "deque_time": 0,
-                                               "start_clicks" : 0})
+                                               "start_clicks" : self.ospi_db.db["settings"]["wm_clicks"]})
                             match_found = True
                         
         if match_found : 
