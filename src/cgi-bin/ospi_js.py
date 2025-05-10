@@ -7,11 +7,12 @@ import copy
 
 class ospi_js():
 
-    def __init__ (self, ospi_db, sb, fuse, wm):
+    def __init__ (self, ospi_db, sb, fuse, wm, eng):
         self.ospi_db = ospi_db
         self.sb = sb
         self.fuse = fuse
         self.wm = wm
+        self.eng = eng
         self.logger = logging.getLogger(__name__)
         self.ospitemp = "undefined"
         self.acvolts = "undefined"
@@ -24,6 +25,7 @@ class ospi_js():
         statusdict["acvolts"] = self.acvolts
         statusdict["fuse"] = "FUSE" if self.fuse.get_fuse() == "blown" else ""
         statusdict["sn"] = self.sb.sn()
+        statusdict["current_clicks"] = self.eng.get_current_clicks()
         self.logger.debug(f'\n    {statusdict}\n')
         return[json.dumps(statusdict)]
 

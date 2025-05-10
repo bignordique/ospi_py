@@ -52,6 +52,12 @@ class ospi_engine():
                 ps.append([0,0,0,gid])
         return ps
 
+    def get_current_clicks(self):
+        if len(self.run_q) == 0:
+            return 0
+        else:
+            return self.ospi_db.db["settings"]["wm_clicks"] - self.run_q[0]["start_clicks"]
+
 # Not used anywhere?
  #   def get_pause_status(self) :
  #       return (self.pause_state, self.pause_timer)
@@ -127,7 +133,7 @@ class ospi_engine():
                                                "sid" : sid,
                                                "pid" : pid,
                                                "deque_time": 0,
-                                               "start_clicks" : self.ospi_db.db["settings"]["wm_clicks"]})
+                                               "start_clicks" : 0})
                             match_found = True
                         
         if match_found : 

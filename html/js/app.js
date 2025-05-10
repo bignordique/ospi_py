@@ -4048,6 +4048,7 @@ function updateController(e, n) {
                                                          (controller.ospitemp = controller.status.ospitemp),
                                                          (controller.gpm = controller.status.gpm),
                                                          (controller.fuse = controller.status.fuse),
+                                                         (controller.current_clicks = controller.status.current_clicks),
                                                          (controller.status = controller.status.sn), 
                                                           i))();
           }, n)
@@ -4125,6 +4126,7 @@ function updateControllerStatus(t) {
                       (controller.status = e.sn),
                       (controller.ospitemp = e.ospitemp),
                       (controller.acvolts = e.acvolts),
+                      (controller.current_clicks = e.current_clicks),
                       (controller.gpm = e.gpm),
                       (controller.fuse = e.fuse)
                        t();
@@ -7538,7 +7540,7 @@ var showHomeMenu = (function () {
                     val: t,
                     station: e,
                     update: function () {
-                        b.find("#countdown-" + e).text("(" + sec2hms(this.val) + " " + _("remaining") + " " + controller.acvolts + "\u26A1" + ")");
+                        b.find("#countdown-" + e).text("(" + sec2hms(this.val) + " " + _("remaining") + " " + controller.acvolts + "\u26A1" + controller.current_clicks + "G)");
                     },
                     done: function () {
                         b.find("#countdown-" + e)
@@ -7716,7 +7718,7 @@ var showHomeMenu = (function () {
                                   Station.isMaster(c) || (!e && !t)
                                       ? a.find(".rem").remove()
                                       : ((s = t ?  _("Running") + " " + n : _("Scheduled") + " " + (Station.getStartTime(c) ? _("for") + " " + dateToString(new Date(1e3 * Station.getStartTime(c))) : n)),
-                                        0 < i && ((s += " <span id=" + (o ? "'pause" : "'countdown-") + c + "' class='nobr'>(" + sec2hms(i) + " " + _("remaining") + " " + controller.acvolts + "\u26A1" + ")</span>"), controller.status[c]) && y(c, i),
+                                        0 < i && ((s += " <span id=" + (o ? "'pause" : "'countdown-") + c + "' class='nobr'>(" + sec2hms(i) + " " + _("remaining") + " " + controller.acvolts + "\u26A1" + controller.current_clicks + "G)</span>"), controller.status[c]) && y(c, i),
                                         0 === a.find(".rem").length ? a.find(".ui-body").append("<p class='rem center'>" + s + "</p>") : a.find(".rem").html(s)));
                     p();
                 }
@@ -12141,7 +12143,7 @@ function Station() {}
     (Supported.dateRange = function () {
         return checkOSVersion(220);
     });
-var ProgramStatusOptions = { PID: 0, REM: 1, START: 2, GID: 3 };
+var ProgramStatusOptions = { PID: 0, REM: 1, START: 2, GID: 3 , GALLONS: 4};
 function getNumberProgramStatusOptions() {
     if (!(controller.settings.ps.length <= 0)) return controller.settings.ps[0].length;
 }
