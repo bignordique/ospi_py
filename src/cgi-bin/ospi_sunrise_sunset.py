@@ -2,7 +2,6 @@
 from astral import LocationInfo, sun
 from datetime import date, time, datetime
 import logging
-from ospi_db import ospi_db
 import zoneinfo
 
 #need to make this work with programmable cities
@@ -12,14 +11,14 @@ import zoneinfo
 # protection around the call.
 
 
-class ospi_sunrise_sunset (ospi_db):
+class ospi_sunrise_sunset ():
 
     def update(self):
         if datetime.today() != self.lastrun:
             self.lastrun = datetime.today()
             midnight = datetime.combine(self.lastrun, time.min).timestamp()
-            sunrise = midnight + self.ospi_db["settings"]["sunrise"] * 60
-            sunset = midnight + 24*60*60 + self.ospi_db["settings"]["sunset"] * 60
+            sunrise = midnight + self.ospi_db.db["settings"]["sunrise"] * 60
+            sunset = midnight + 24*60*60 + self.ospi_db.db["settings"]["sunset"] * 60
             try:
                 s = sun.sun(self.city.observer, datetime.date(self.lastrun), tzinfo = self.timezone)
                 sunrise = s["sunrise"].timestamp()
@@ -31,9 +30,9 @@ class ospi_sunrise_sunset (ospi_db):
                                   f'    {type(e)}\n')
             self.ospi_db.db["settings"]["sunrise"] = int((sunrise - midnight)/60)
             self.ospi_db.db["settings"]["sunset"] = int((sunset - (midnight + 1440*60))/60)
-            self.logger.debug(f'\n   sunrise: {ospi_db.db["settings"]["sunrise"]}' +
-                              f' sunset: {ospi_db.db["settings"]["sunset"]}\n')
-            self.wb_db(self.logger)
+            self.logger.debug(f'\n   sunrise: {self.ospi_db.db["settings"]["sunrise"]}' +
+                              f' sunset: {self.ospi_db.db["settings"]["sunset"]}\n')
+            self.ospi_db.wb_db(self.logger)
 
     def __init__(self, ospi_db):
         self.ospi_db = ospi_db
@@ -70,10 +69,13 @@ if __name__ == "__main__":
     logger = logging.getLogger(__name__)
     logger.info("\n    Startup\n")
 
+    from ospi_db import ospi_db
     ospi_db_i = ospi_db()
     ospi_db_i.init_db(DBFILE, DEFFILE)
 
-    sr_ss = ospi_sunrise_sunset()
+    print (ospi_db_i.db["settings"]["sunrise"], ospi_db_i.db["settings"]["sunset"])
+
+    sr_ss = ospi_sunrise_sunset(ospi_db_i)
 
 #nominal
 

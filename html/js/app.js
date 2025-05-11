@@ -7526,13 +7526,15 @@ var showHomeMenu = (function () {
                                     "<div id='clock-s' class='nobr'></div>" +
                                     _("Water Level") + ": <span class='waterlevel'></span>%</br> "+
                                     "<span class='ospi_temp'></span>"+"\xB0 "+
-                                    "<span class='ospi_gpm'></span>"+" GPM"+
+                                    "<span class='ospi_gpm'></span>"+" GPM "+
+                                    "<span class='current_clicks'></span>"+" G"+
                                     " "+"<span class='ospi_fuse red ospi_blink bold'></span>"+
                                 "</div>"+
                             "</div>"+
                             "<div id='os-stations-list' class='card-group center'></div>"+
                         "</div>"+
                     "</div>"+
+                    
                 "</div>"
             ),
             y = function (e, t) {
@@ -7540,7 +7542,7 @@ var showHomeMenu = (function () {
                     val: t,
                     station: e,
                     update: function () {
-                        b.find("#countdown-" + e).text("(" + sec2hms(this.val) + " " + _("remaining") + " " + controller.acvolts + "\u26A1" + controller.current_clicks + "G)");
+                        b.find("#countdown-" + e).text("(" + sec2hms(this.val) + " " + _("remaining") + " " + controller.acvolts + "\u26A1" +")");
                     },
                     done: function () {
                         b.find("#countdown-" + e)
@@ -7671,6 +7673,7 @@ var showHomeMenu = (function () {
                         b.find(".waterlevel").text(controller.options.wl),
                         b.find(".ospi_temp").text(controller.ospitemp),
                         b.find(".ospi_gpm").text(controller.gpm),
+                        b.find(".current_clicks").text(controller.current_clicks),
                         b.find(".ospi_fuse").text(controller.fuse),
                         b.find(".sitename").text(m.val()),
                         CardList.getAllCards(l)
@@ -7718,7 +7721,7 @@ var showHomeMenu = (function () {
                                   Station.isMaster(c) || (!e && !t)
                                       ? a.find(".rem").remove()
                                       : ((s = t ?  _("Running") + " " + n : _("Scheduled") + " " + (Station.getStartTime(c) ? _("for") + " " + dateToString(new Date(1e3 * Station.getStartTime(c))) : n)),
-                                        0 < i && ((s += " <span id=" + (o ? "'pause" : "'countdown-") + c + "' class='nobr'>(" + sec2hms(i) + " " + _("remaining") + " " + controller.acvolts + "\u26A1" + controller.current_clicks + "G)</span>"), controller.status[c]) && y(c, i),
+                                        0 < i && ((s += " <span id=" + (o ? "'pause" : "'countdown-") + c + "' class='nobr'>(" + sec2hms(i) + " " + _("remaining") + " " + controller.acvolts + "\u26A1" + ")</span>"), controller.status[c]) && y(c, i),
                                         0 === a.find(".rem").length ? a.find(".ui-body").append("<p class='rem center'>" + s + "</p>") : a.find(".rem").html(s)));
                     p();
                 }
@@ -7739,6 +7742,7 @@ var showHomeMenu = (function () {
                     b.find(".waterlevel").text(controller.options.wl),
                     b.find(".ospi_temp").text(controller.ospitemp),
                     b.find(".ospi_gpm").text(controller.gpm),
+                    b.find(".current_clicks").text(controller.current_clicks),
                     b.find(".ospi_fuse").text(controller.fuse),
                     u(),
                     b.on("click", ".station-settings", e),

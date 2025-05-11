@@ -12,7 +12,7 @@ class ospi_tasks_midnight(cron_entry):
         super().__init__("midnight",  "* 0 * * *", self.run_tasks)
         self.ospi_db = ospi_db
         self.logger = logging.getLogger(__name__)
-        self.sr_ss = ospi_sunrise_sunset(ospi_db)
+        self.sr_ss = ospi_sunrise_sunset(self.ospi_db)
         self.prune_log = prune_log
         self.compute_daily_adjustment = compute_daily_adjustment
 
