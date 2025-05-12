@@ -2,7 +2,6 @@
 import logging
 import datetime
 from dateutil import tz
-import pytz
 from crontab import CronTab
 
 """  One shots cron jobs """
@@ -14,15 +13,21 @@ class cron_entry():
         self.entry = CronTab(tab)
         self.func = func
         self.local_zone = tz.tzlocal()
+        self.triggered = False
         self.next = self.entry.next(datetime.datetime.now(tz=self.local_zone))
         self.logger = logging.getLogger(__name__)
 
     def check_entry(self):
         previous = self.next
         self.next= self.entry.next(datetime.datetime.now(tz=self.local_zone))
-#        self.logger.debug(f'\n    {self.id}: previous: {previous}  next: {self.next}\n')
-        if self.next > previous:
+#        self.logger.debug(f'\n    {self.id}: previous: {previous}  next: {self.next} ' +
+#                          f'triggered: {self.triggered}\n')
+# Depending on the underlying clock, double trigger possible.
+        if self.next > previous and not self.triggered:
             self.func()
+            self.triggered = True
+        else:
+            self.triggered = False
 
 
 if __name__ == "__main__":
