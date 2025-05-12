@@ -18,7 +18,7 @@ class ospi_dl():
             return['{"result":18}']
 
         self.log.delete_log(match.group(1))
-        self.logger.debug(f'\n    {cmd[0]} {match.group(1)}')
+        self.logger.debug(f'\n    {cmd[0]} {match.group(1)}\n')
         return['{"result":1}']
 
 if __name__ == "__main__":

@@ -162,6 +162,7 @@ class ospi_fcgi_top ():
             case "cr":
                 ret_val = cr.handle(cmd)
             case "dl":
+                self.logger.info(f'\n    dl handle: {cmd}.\n')
                 ret_val = dl.handle(cmd)
             case "jl":
                 ret_val = jl.handle(cmd)

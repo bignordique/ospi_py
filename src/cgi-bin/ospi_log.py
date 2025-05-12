@@ -66,7 +66,7 @@ class ospi_log:
                 except Exception as e:
                     self.logger.error(f'\n    rmtree exception: "{e}" on path: "{ii}"\n')
         else :
-            full_timestamp = days * ospi_defs.SECS_PER_DAY
+            full_timestamp = int(days) * ospi_defs.SECS_PER_DAY
             ts = time.gmtime(full_timestamp)
             self.remove_tree(self.water_log_dir, [ts.tm_year, ts.tm_mon, ts.tm_mday], True)
 
@@ -79,6 +79,7 @@ class ospi_log:
 
 # assuming listdir returns valid info, should need to guard rmdir/remove with try/except
     def remove_tree(self, path, date, single_file):
+        self.logger.debug(f'\n    remove_tree: {path} {date} {single_file}\n')
         dir_list = os.listdir(path)
         for ii in dir_list :
             if not ii.isdigit() :
