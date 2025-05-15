@@ -3766,6 +3766,7 @@ var DEFAULT_WEATHER_SERVER_URL = "https://weather.opensprinkler.com",
         subn2: 59,
         subn3: 60,
         subn4: 61,
+        vm: 62,
     },
     dialog = { REMOVE_STATION: 1 },
     popupData = { shift: void 0 },
@@ -6062,6 +6063,7 @@ function showOptions(e) {
                         case "o51":
                         case "o52":
                         case "o53":
+                        case "o62":
                             if (((i = t.is(":checked") ? 1 : 0), checkOSVersion(219) || i)) break;
                             return !0;
                     }
@@ -6188,6 +6190,7 @@ function showOptions(e) {
         void 0 !== controller.options.lg && (l += "<label for='o36'><input data-mini='true' id='o36' type='checkbox' " + (1 === controller.options.lg ? "checked='checked'" : "") + ">" + _("Enable Logging") + "</label>"),
         (l += "<label for='isMetric'><input data-mini='true' id='isMetric' type='checkbox' " + (isMetric ? "checked='checked'" : "") + ">" + _("Use Metric") + "</label>"),
         Supported.groups() && (l += "<label for='groupView'><input data-mini='true' id='groupView' type='checkbox' " + (groupView ? "checked='checked'" : "") + ">" + _("Order Stations by Groups") + "</label>"),
+        void 0 !== controller.options.vm && (l += "<label for='o62'><input data-mini='true' id='o62' type='checkbox' " + (1 === controller.options.vm ? "checked='checked'" : "") + ">" + _("Virtual Mode (disable zone outputs)") + "</label>"),
         (l += "</fieldset><fieldset data-role='collapsible'" + ("string" == typeof e && "master" === e ? " data-collapsed='false'" : "") + "><legend>" + _("Configure Master") + "</legend>"),
         void 0 !== controller.options.mas)
     ) {
@@ -7915,7 +7918,7 @@ function refreshStatus(e) {
 function refreshData() {
     isControllerConnected() && (checkOSVersion(216) ? updateController(null, networkFail) : $.when(updateControllerPrograms(), updateControllerStations()).fail(networkFail));
 }
-function changeStatus(e, t, n, i) {
+function changeStatus(e, color, n, i) {
     var o = $("#footer-running"),
         a = "";
     (i = i || function () {}),
@@ -7934,7 +7937,7 @@ function changeStatus(e, t, n, i) {
             void 0 === controller.settings.flwrt ||
             (a += "<span style='padding-left:5px'>" + _("Flow") + ": " + (flowCountToVolume(controller.settings.flcrt) / (controller.settings.flwrt / 60)).toFixed(2) + " G/min</span>"),
         (a = "" !== a ? n + "<p class='running-text smaller center'>" + a + "</p>" : n),
-        o.removeClass().addClass(t).html(a).off("click").on("click", i);
+        o.removeClass().addClass(color).html(a).off("click").on("click", i);
 }
 function checkStatus() {
     var e, t, n, i, o, a, s;
@@ -8085,6 +8088,7 @@ function updateTimers() {
 function removeStationTimers() {
     for (var e in timers) timers.hasOwnProperty(e) && "clock" !== e && delete timers[e];
 }
+//BTW, there is no "settings" "mm" is the config
 var getManual = (function () {
         function e() {
             var e, t, n, i;

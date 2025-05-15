@@ -36,7 +36,7 @@ class ospi_co():
                 case "tz" | "ntp1" | "ntp2" | "ntp3" | "ntp4" | "hp0" | "hp1" | "ext" |\
                      "sdt" | "mas" | "mas2" | "mton" | "mton2" | "mtof" | "mtof2" | "sn1t" |\
                      "sn1o" | "sn1on" | "sn1of" | "sn2t" | "sn2o" | "sn2on" | "sn2of" |\
-                     "wl" | "ipas" | "devid" | "uwt" | "lg" | "fpr0" | "fpr1" | "sar" | "ife":  
+                     "wl" | "ipas" | "devid" | "uwt" | "lg" | "fpr0" | "fpr1" | "sar" | "ife" | "vm":  
                     try:
                         param = int(opt_set[1])
                     except ValueError:
