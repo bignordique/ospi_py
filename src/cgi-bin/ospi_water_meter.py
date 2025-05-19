@@ -14,10 +14,10 @@ class ospi_water_meter():
         self.ospi_db = ospi_db
         self.logger = logging.getLogger(__name__)
         pin = ospi_defs.WM_GPIO_PIN
-        self.button = Button(pin, active_state=True, pull_up=None, bounce_time=0.0001)
+        self.button = Button(pin, active_state=True, pull_up=None, hold_time=0.1)
         self.timestamps = []
         self.timestamps = [0.0 for ii in range(ospi_defs.WM_TS_DEPTH)]
-        self.button.when_pressed = self.click
+        self.button.when_held = self.click
 
     def init_clicks(self):
         self.wm_clicks = self.ospi_db.db["settings"]["wm_clicks"]
@@ -30,19 +30,18 @@ class ospi_water_meter():
         for ii in self.timestamps:
             if ii >= last_period:
                 clicks += 1
-        gpm = 60/period * clicks
+        self.ospi_db.db["settings"]["flcrt"] = clicks
         ts_int = int(self.ospi_db.db["settings"]["wm_timestamp"])
         readable_time = time.strftime("%Y/%m/%d-%H:%M:%S",time.gmtime(ts_int))
-        self.logger.debug(f'\n    clicks in last {period} seconds: {clicks} gpm: {gpm}' +\
+        self.logger.debug(f'\n    clicks in last {period} seconds: {clicks}' +\
                           f'\n    wm_timestamp: {readable_time} ' +\
                           f'wm_clicks: {self.ospi_db.db["settings"]["wm_clicks"]}\n')
-        return gpm
 
     def click(self):
         self.timestamps = [time.time()] + self.timestamps[0:ospi_defs.WM_TS_DEPTH-1]
         self.ospi_db.db["settings"]["wm_clicks"] += 1
         self.ospi_db.db["settings"]["wm_timestamp"] = self.ospi_db.get_lcl_stamp(self.logger)
-        self.logger.info(f'\n    {self.timestamps[1]} {self.timestamps[0]} {self.timestamps[0]-self.timestamps[1]}\n')
+        self.logger.info(f'\n    {self.timestamps[1]:3.2f} {self.timestamps[0]:3.2f} {self.timestamps[0]-self.timestamps[1]:3.2f}\n')
 #        self.logger.debug(f'\n     wm_clicks: {self.ospi_db.db["settings"]["wm_clicks"]}' + \
 #                         f'\n     timestamps: {self.timestamps}\n')
 

@@ -6,6 +6,7 @@ from time import sleep
 import fcntl
 import io
 import ospi_defs
+from ospi_db import ospi_db
 
 rd_interval = ospi_defs.A2D_RD_INTERVAL
 I2C_SLAVE_COMMAND=0x0703
@@ -13,8 +14,8 @@ i2c_address = 0x4d
 
 class ospi_mcp3221():
 
-    def __init__ (self, ac_store_function):
-        self.ac_store_function = ac_store_function
+    def __init__ (self, ospi_db):
+        self.ospi_db = ospi_db
         self.logger = logging.getLogger(__name__) 
         self.thread = threading.Thread(target=self.run, daemon=True)
         self.thread.start()
@@ -28,7 +29,7 @@ class ospi_mcp3221():
                     fcntl.ioctl(f, I2C_SLAVE_COMMAND, i2c_address)
                     values = list(f.read(2))
                     value = values[0] * 256 + values[1]
-                    self.ac_store_function(value)
+                    self.ospi_db.db["settings"]["curr"] = value
                     self.logger.debug(f'\n    mcp3221 value: {value}\n')
                     io_error_count = 0
             except IOError as e:
@@ -64,10 +65,12 @@ if __name__ == "__main__":
     logger = logging.getLogger(__name__)
     logger.info("\n    Startup\n")
 
-#    ospi_db_i = ospi_db()
-#    ospi_db_i.init_db(DBFILE, DEFFILE)
-    def print_value(value):
-        print(value)
+    ospi_db_i = ospi_db()
+    ospi_db_i.init_db(DBFILE, DEFFILE)
 
-    mcp3221 = ospi_mcp3221(print_value)
-    sleep(10*rd_interval)
+    print("rd_interval", rd_interval)
+
+    mcp3221 = ospi_mcp3221(ospi_db_i)
+    for ii in range(10):
+        print(f'    {ospi_db_i.db["settings"]["curr"]}')
+        sleep(1)

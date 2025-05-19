@@ -8,12 +8,14 @@ import time
 
 class ospi_jc():
 
-    def __init__ (self, ospi_db, eng):
+    def __init__ (self, ospi_db, eng, wm):
         self.ospi_db = ospi_db
         self.eng = eng
+        self.wm = wm
         self.logger = logging.getLogger(__name__)
 
     def handle(self):
+        self.wm.compute_gpm()
         settings = copy.copy(self.ospi_db.db["settings"])
         settings["devt"] = self.ospi_db.get_lcl_stamp(self.logger)
         settings["rdst"] = settings["rdst"] + time.localtime().tm_gmtoff
@@ -60,12 +62,14 @@ if __name__ == "__main__":
     from ospi_station_bits import ospi_station_bits
     from ospi_weather import ospi_weather
     from ospi_engine import ospi_engine
+    from ospi_water_meter import ospi_water_meter
     cm = ospi_check_match(ospi_db_i)
     sb = ospi_station_bits(ospi_db_i)
-    wx = ospi_weather()
+    wx = ospi_weather(ospi_db_i)
     eng = ospi_engine(ospi_db_i, cm, sb, wx)
+    wm = ospi_water_meter(ospi_db_i)
 
-    jc = ospi_jc(ospi_db_i, eng)
+    jc = ospi_jc(ospi_db_i, eng, wm)
 
 #nominal
     print(jc.handle())

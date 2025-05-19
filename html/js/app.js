@@ -4045,11 +4045,8 @@ function updateController(e, n) {
         ? sendToOS("/ja?pw=", "json").then(function (e) {
               var t;
               (void 0 === e || $.isEmptyObject(e) ? n : ((t = controller.special), ((controller = e).special = t), 
-                                                         (controller.acvolts = controller.status.acvolts), 
                                                          (controller.ospitemp = controller.status.ospitemp),
-                                                         (controller.gpm = controller.status.gpm),
                                                          (controller.fuse = controller.status.fuse),
-                                                         (controller.current_clicks = controller.status.current_clicks),
                                                          (controller.status = controller.status.sn), 
                                                           i))();
           }, n)
@@ -4126,9 +4123,6 @@ function updateControllerStatus(t) {
                   function (e) {
                       (controller.status = e.sn),
                       (controller.ospitemp = e.ospitemp),
-                      (controller.acvolts = e.acvolts),
-                      (controller.current_clicks = e.current_clicks),
-                      (controller.gpm = e.gpm),
                       (controller.fuse = e.fuse)
                        t();
                   },
@@ -7529,8 +7523,6 @@ var showHomeMenu = (function () {
                                     "<div id='clock-s' class='nobr'></div>" +
                                     _("Water Level") + ": <span class='waterlevel'></span>%</br> "+
                                     "<span class='ospi_temp'></span>"+"\xB0 "+
-                                    "<span class='ospi_gpm'></span>"+" GPM "+
-                                    "<span class='current_clicks'></span>"+" G"+
                                     " "+"<span class='ospi_fuse red ospi_blink bold'></span>"+
                                 "</div>"+
                             "</div>"+
@@ -7545,7 +7537,7 @@ var showHomeMenu = (function () {
                     val: t,
                     station: e,
                     update: function () {
-                        b.find("#countdown-" + e).text("(" + sec2hms(this.val) + " " + _("remaining") + " " + controller.acvolts + "\u26A1" +")");
+                        b.find("#countdown-" + e).text("(" + sec2hms(this.val) + " " + _("remaining") +")");
                     },
                     done: function () {
                         b.find("#countdown-" + e)
@@ -7675,8 +7667,6 @@ var showHomeMenu = (function () {
                         h(),
                         b.find(".waterlevel").text(controller.options.wl),
                         b.find(".ospi_temp").text(controller.ospitemp),
-                        b.find(".ospi_gpm").text(controller.gpm),
-                        b.find(".current_clicks").text(controller.current_clicks),
                         b.find(".ospi_fuse").text(controller.fuse),
                         b.find(".sitename").text(m.val()),
                         CardList.getAllCards(l)
@@ -7724,7 +7714,7 @@ var showHomeMenu = (function () {
                                   Station.isMaster(c) || (!e && !t)
                                       ? a.find(".rem").remove()
                                       : ((s = t ?  _("Running") + " " + n : _("Scheduled") + " " + (Station.getStartTime(c) ? _("for") + " " + dateToString(new Date(1e3 * Station.getStartTime(c))) : n)),
-                                        0 < i && ((s += " <span id=" + (o ? "'pause" : "'countdown-") + c + "' class='nobr'>(" + sec2hms(i) + " " + _("remaining") + " " + controller.acvolts + "\u26A1" + ")</span>"), controller.status[c]) && y(c, i),
+                                        0 < i && ((s += " <span id=" + (o ? "'pause" : "'countdown-") + c + "' class='nobr'>(" + sec2hms(i) + " " + _("remaining") + " " + ")</span>"), controller.status[c]) && y(c, i),
                                         0 === a.find(".rem").length ? a.find(".ui-body").append("<p class='rem center'>" + s + "</p>") : a.find(".rem").html(s)));
                     p();
                 }
@@ -7744,8 +7734,6 @@ var showHomeMenu = (function () {
                     b.find(".sitename").toggleClass("hidden", !!currLocal).text(m.val()),
                     b.find(".waterlevel").text(controller.options.wl),
                     b.find(".ospi_temp").text(controller.ospitemp),
-                    b.find(".ospi_gpm").text(controller.gpm),
-                    b.find(".current_clicks").text(controller.current_clicks),
                     b.find(".ospi_fuse").text(controller.fuse),
                     u(),
                     b.on("click", ".station-settings", e),
@@ -7919,8 +7907,13 @@ function refreshData() {
     isControllerConnected() && (checkOSVersion(216) ? updateController(null, networkFail) : $.when(updateControllerPrograms(), updateControllerStations()).fail(networkFail));
 }
 function changeStatus(e, color, n, i) {
+    /* e is time remaining */
+    /* color is the color of the status bar */
+    /* n is the text to display */
+    /* i is the function to call when clicked */
+
     var o = $("#footer-running"),
-        a = "";
+        a = "<p class='running-text smaller center'>FUSE</p>";
     (i = i || function () {}),
         1 < e &&
             (timers.statusbar = {
@@ -7930,12 +7923,15 @@ function changeStatus(e, color, n, i) {
                     $("#countdown").text("(" + sec2hms(this.val) + " " + _("remaining") + ")");
                 },
             }),
- /*       isControllerConnected() && void 0 !== controller.settings.curr && (a += _("Current") + ": " + controller.settings.curr + " mA "), */
+        isControllerConnected() && void 0 !== controller.settings.curr && (a += _("Current") + ": " + controller.settings.curr + " mA "),
         !isControllerConnected() ||
             (2 !== controller.options.urs && 2 !== controller.options.sn1t) ||
             void 0 === controller.settings.flcrt ||
             void 0 === controller.settings.flwrt ||
-            (a += "<span style='padding-left:5px'>" + _("Flow") + ": " + (flowCountToVolume(controller.settings.flcrt) / (controller.settings.flwrt / 60)).toFixed(2) + " G/min</span>"),
+            (flowcount = ((flowCountToVolume(controller.settings.flcrt) / (controller.settings.flwrt / 60)).toFixed(2)),
+             flowcount = isMetric ? flowcount : (flowcount * 0.264172).toFixed(2),
+                (a += "<span style='padding-left:5px'>" + _("Flow") + ": " + flowcount + (isMetric?" L/min" :" G/min")  +"</span>")
+            ),
         (a = "" !== a ? n + "<p class='running-text smaller center'>" + a + "</p>" : n),
         o.removeClass().addClass(color).html(a).off("click").on("click", i);
 }

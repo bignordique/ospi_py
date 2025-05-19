@@ -16,7 +16,7 @@ logging.basicConfig(format='%(asctime)s %(name)s %(module)s:%(lineno)d ' +
 logger = logging.getLogger(__name__)
 
 logging.getLogger('tasks_midnight').setLevel(logging.INFO)
-logging.getLogger('ospi_sunrise_sunset').setLevel(logging.DEBUG)
+logging.getLogger('ospi_sunrise_sunset').setLevel(logging.INFO)
 logging.getLogger('ospi_fcgi_top').setLevel(logging.INFO)
 logging.getLogger('ospi_cv').setLevel(logging.INFO)
 logging.getLogger('ospi_co').setLevel(logging.INFO)

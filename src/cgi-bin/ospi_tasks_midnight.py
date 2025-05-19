@@ -9,7 +9,7 @@ import ospi_defs
 class ospi_tasks_midnight(cron_entry):
 
     def __init__(self, ospi_db, prune_log, compute_daily_adjustment):
-        super().__init__("midnight",  "* 0 * * *", self.run_tasks)
+        super().__init__("midnight",  "0 0 * * *", self.run_tasks)
         self.ospi_db = ospi_db
         self.logger = logging.getLogger(__name__)
         self.sr_ss = ospi_sunrise_sunset(self.ospi_db)

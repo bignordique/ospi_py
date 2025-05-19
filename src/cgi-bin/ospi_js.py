@@ -7,22 +7,18 @@ import copy
 
 class ospi_js():
 
-    def __init__ (self, ospi_db, sb, fuse, wm, eng):
+    def __init__ (self, ospi_db, sb, fuse, eng):
         self.ospi_db = ospi_db
         self.sb = sb
         self.fuse = fuse
-        self.wm = wm
         self.eng = eng
         self.logger = logging.getLogger(__name__)
         self.ospitemp = "undefined"
-        self.acvolts = "undefined"
         self.gpm = "undefined"
 
     def handle(self):
         statusdict = copy.copy(self.ospi_db.db["status"])
-        statusdict["gpm"] = self.wm.compute_gpm()
         statusdict["ospitemp"] = self.ospitemp
-        statusdict["acvolts"] = self.acvolts
         statusdict["fuse"] = "FUSE" if self.fuse.get_fuse() == "blown" else ""
         statusdict["sn"] = self.sb.sn()
         statusdict["current_clicks"] = self.eng.get_current_clicks()
@@ -31,9 +27,6 @@ class ospi_js():
 
     def settemp(self, temp):
         self.ospitemp = temp
-
-    def setac(self, ac):
-        self.acvolts = ac
 
 if __name__ == "__main__":
 
@@ -67,14 +60,20 @@ if __name__ == "__main__":
 
     from ospi_station_bits import ospi_station_bits
     sb = ospi_station_bits(ospi_db_i)
-    
+
+    from ospi_check_match import ospi_check_match
+    from ospi_weather import ospi_weather
+    wx = ospi_weather(ospi_db_i)
+    cm = ospi_check_match(ospi_db_i)
+    sb = ospi_station_bits(ospi_db_i)
+
     from ospi_fuse import ospi_fuse
     fuse = ospi_fuse()
 
-    from ospi_water_meter import ospi_water_meter
-    wm = ospi_water_meter(ospi_db_i)
+    from ospi_engine import ospi_engine
+    eng = ospi_engine(ospi_db_i, cm, sb, wx)
 
-    js = ospi_js(ospi_db_i, sb, fuse, wm)
+    js = ospi_js(ospi_db_i, sb, fuse, eng)
 
 #nominal
     print(js.handle())

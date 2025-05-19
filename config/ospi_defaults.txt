@@ -34,6 +34,7 @@
     },
     "ifkey": "",
     "mqtt": {},
+    "curr": 0,
     "wtdata": {
       "wp": "Manual"
     },
@@ -494,7 +495,7 @@
     "re": 0,
     "sar": 0,
     "ife": 0,
-    "sn1t": 0,
+    "sn1t": 2,
     "sn1o": 1,
     "sn2t": 0,
     "sn2o": 1,
