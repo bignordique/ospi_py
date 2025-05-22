@@ -41,9 +41,9 @@ class ospi_water_meter():
         self.timestamps = [time.time()] + self.timestamps[0:ospi_defs.WM_TS_DEPTH-1]
         self.ospi_db.db["settings"]["wm_clicks"] += 1
         self.ospi_db.db["settings"]["wm_timestamp"] = self.ospi_db.get_lcl_stamp(self.logger)
-        self.logger.info(f'\n    {self.timestamps[1]:3.2f} {self.timestamps[0]:3.2f} {self.timestamps[0]-self.timestamps[1]:3.2f}\n')
-#        self.logger.debug(f'\n     wm_clicks: {self.ospi_db.db["settings"]["wm_clicks"]}' + \
-#                         f'\n     timestamps: {self.timestamps}\n')
+#        self.logger.info(f'\n    {self.timestamps[1]:3.2f} {self.timestamps[0]:3.2f} {self.timestamps[0]-self.timestamps[1]:3.2f}\n')
+        self.logger.debug(f'\n     wm_clicks: {self.ospi_db.db["settings"]["wm_clicks"]}' + \
+                         f'\n     timestamps: {self.timestamps}\n')
 
 if __name__ == "__main__" :
 

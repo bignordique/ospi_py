@@ -34,7 +34,6 @@
     },
     "ifkey": "",
     "mqtt": {},
-    "curr": 0,
     "wtdata": {
       "wp": "Manual"
     },

@@ -7522,7 +7522,7 @@ var showHomeMenu = (function () {
  //                                   "<div class='sitename bold'></div>"+
                                     "<div id='clock-s' class='nobr'></div>" +
                                     _("Water Level") + ": <span class='waterlevel'></span>%</br> "+
-                                    "<span class='ospi_temp'></span>"+"\xB0 "+
+                                    "Controller Temp " + "<span class='ospi_temp'></span>"+"\xB0 "+
                                     " "+"<span class='ospi_fuse red ospi_blink bold'></span>"+
                                 "</div>"+
                             "</div>"+
@@ -7913,7 +7913,7 @@ function changeStatus(e, color, n, i) {
     /* i is the function to call when clicked */
 
     var o = $("#footer-running"),
-        a = "<p class='running-text smaller center'>FUSE</p>";
+        a = "";
     (i = i || function () {}),
         1 < e &&
             (timers.statusbar = {

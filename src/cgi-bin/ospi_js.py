@@ -79,6 +79,6 @@ if __name__ == "__main__":
     print(js.handle())
     js.settemp("22.1")
     print(js.handle())
-    js.setac("12")
+#    js.setac("12")
     print(js.handle())
 
