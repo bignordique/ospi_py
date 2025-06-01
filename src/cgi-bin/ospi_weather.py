@@ -105,7 +105,6 @@ if __name__ == "__main__":
     logger.info("\n    Startup\n")
 
     from ospi_db import ospi_db
-
     ospi_db_i = ospi_db()
     ospi_db_i.init_db(DBFILE, "config/ospi_defaults.txt")
 

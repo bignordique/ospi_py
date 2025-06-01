@@ -17,6 +17,7 @@ class ospi_water_meter():
         self.button = Button(pin, active_state=True, pull_up=None, hold_time=0.1)
         self.timestamps = []
         self.timestamps = [0.0 for ii in range(ospi_defs.WM_TS_DEPTH)]
+        self.nozone_stamps = []
         self.button.when_held = self.click
 
     def init_clicks(self):

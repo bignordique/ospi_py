@@ -9020,7 +9020,7 @@ var getLogs = (function () {
                             e.totalVolume +
 //                            " L" +
                             " G" +
-                            (t && e.avgWaterLevel < 100 ? " (<span class='green-text'>" + (e.totalVolume - e.totalVolume * (e.avgWaterLevel / 100)).toFixed(2) + "L saved</span>)" : "") +
+                            (t && e.avgWaterLevel < 100 ? " (<span class='green-text'>" + (e.totalVolume - e.totalVolume * (e.avgWaterLevel / 100)).toFixed(0) + " G saved</span>)" : "") +
                             "</div>"
                           : "") +
                       "</div>");

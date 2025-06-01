@@ -468,8 +468,8 @@ class ospi_engine():
                 self.water_logs.write_log (f'{entry["pid"] + 1},"fl",{self.lastrun["duration"]}',\
                                           self.ospi_db.get_lcl_stamp(self.logger),self.lastrun["clicks_run"])
  #                                          self.ospi_db.get_lcl_stamp(self.logger),self.do_loop_count)
-                if not (entry["wl"] is None):
-                    self.water_logs.write_log (f'{entry["pid"] + 1},"wl",{entry["wl"]}',\
+ #               if not (entry["wl"] is None):
+                self.water_logs.write_log (f'{entry["pid"] + 1},"wl",{entry["wl"]}',\
                                           self.ospi_db.get_lcl_stamp(self.logger))
 
         station_delay = self.water_time_decode_signed(self.ospi_db.db["options"]["sdt"])
@@ -497,7 +497,7 @@ class ospi_engine():
             elif len(self.run_q) <= ospi_defs.MAX_RUNQ_ENTRIES :
                 self.nqueue += 1
                 self.run_q.append({"st": 0,
-                                   "wl" : None,
+                                   "wl" : self.ospi_db.db["options"]["wl"],
                                    "dur" : t,
                                    "sid" : sid,
                                    "pid" : 99,
