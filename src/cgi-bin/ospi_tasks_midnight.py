@@ -8,20 +8,21 @@ import ospi_defs
 
 class ospi_tasks_midnight(cron_entry):
 
-    def __init__(self, ospi_db, prune_log, compute_daily_adjustment):
+    def __init__(self, ospi_db, prune_log, compute_daily_adjustment, log_nozone):
         super().__init__("midnight",  "0 0 * * *", self.run_tasks)
         self.ospi_db = ospi_db
         self.logger = logging.getLogger(__name__)
         self.sr_ss = ospi_sunrise_sunset(self.ospi_db)
         self.prune_log = prune_log
         self.compute_daily_adjustment = compute_daily_adjustment
+        self.log_nozone = log_nozone
 
 
     def run_tasks(self):
         self.sr_ss.update()
-        self.prune_log(self.ospi_db.get_utc_stamp(self.logger) - ospi_defs.SECS_PER_DAY * 7)
+        self.prune_log(self.ospi_db.get_utc_stamp(self.logger) - ospi_defs.SECS_PER_DAY * 31)
         self.compute_daily_adjustment()
-
+        self.log_nozone()
 
 if __name__ == "__main__":
 

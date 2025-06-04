@@ -10,8 +10,10 @@ from gpiozero import Button
 
 class ospi_water_meter():
     
-    def __init__(self, ospi_db):
+    def __init__(self, ospi_db, eng, sb):
         self.ospi_db = ospi_db
+        self.sb = sb
+        self.eng = eng
         self.logger = logging.getLogger(__name__)
         pin = ospi_defs.WM_GPIO_PIN
         self.button = Button(pin, active_state=True, pull_up=None, hold_time=0.1)
@@ -39,12 +41,21 @@ class ospi_water_meter():
                           f'wm_clicks: {self.ospi_db.db["settings"]["wm_clicks"]}\n')
 
     def click(self):
-        self.timestamps = [time.time()] + self.timestamps[0:ospi_defs.WM_TS_DEPTH-1]
+        time_is = time.time()
+        self.timestamps = [time_is] + self.timestamps[0:ospi_defs.WM_TS_DEPTH-1]
         self.ospi_db.db["settings"]["wm_clicks"] += 1
         self.ospi_db.db["settings"]["wm_timestamp"] = self.ospi_db.get_lcl_stamp(self.logger)
 #        self.logger.info(f'\n    {self.timestamps[1]:3.2f} {self.timestamps[0]:3.2f} {self.timestamps[0]-self.timestamps[1]:3.2f}\n')
         self.logger.debug(f'\n     wm_clicks: {self.ospi_db.db["settings"]["wm_clicks"]}' + \
                          f'\n     timestamps: {self.timestamps}\n')
+        if self.sb.station_bits == 0 and self.eng.shut_off_timer == 0:
+            self.nozone_stamps = [time_is] + self.nozone_stamps
+            self.logger.info(f'\n    self.nozone_stamps: \n {self.nozone_stamps}\n')
+        
+    def log_nozone(self):
+        self.logger.info(f'\n    log_nozone called.\n {self.nozone_stamps}\n')
+        self.nozone_stamps = []
+
 
 if __name__ == "__main__" :
 

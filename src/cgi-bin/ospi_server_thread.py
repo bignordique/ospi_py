@@ -9,13 +9,13 @@ import time
 
 class ospi_server_thread():
 
-    def __init__ (self, ospi_db, eng, prune_log, compute_daily_adjustment):
+    def __init__ (self, ospi_db, eng, prune_log, compute_daily_adjustment, log_nozone):
         self.ospi_db = ospi_db
         self.eng = eng
         self.logger = logging.getLogger(__name__)
         self.thread = threading.Thread(target=self.thread_func, daemon=True)
         self.lock = threading.Lock()
-        self.at_midnight = ospi_tasks_midnight(ospi_db, prune_log, compute_daily_adjustment)
+        self.at_midnight = ospi_tasks_midnight(ospi_db, prune_log, compute_daily_adjustment, log_nozone)
         self.thread.start()
 
 

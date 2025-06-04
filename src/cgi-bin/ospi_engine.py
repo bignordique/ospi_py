@@ -35,6 +35,7 @@ class ospi_engine():
         self.raindelay_start_time = 0  # on powerfail, keep it simple.   Set to zero and suppress log.
         self.logger = logging.getLogger(__name__)
         self.first_loop = True
+        self.shut_off_timer = 0
 
 
     def get_ps(self):
@@ -153,6 +154,9 @@ class ospi_engine():
 #        self.logger.info(f'\n    self.pause_state: {self.pause_state}  self.pause_timer: {self.pause_timer}' + \
 #                         f'\n    pq: {self.ospi_db.db["settings"]["pq"]} \n')
 
+        if self.shut_off_timer != 0:
+            self.shut_off_timer -= 1
+
         if self.ospi_db.db["settings"]["rd"] == 1 :
             if self.curr_time > self.ospi_db.db["settings"]["rdst"] :
                 self.raindelay_stop()
@@ -222,9 +226,9 @@ class ospi_engine():
                     if gid != 255 and sst > self.last_seq_stop_times[gid] :
                         self.last_seq_stop_times[gid] = sst
 
-# if run_q empty, clean up
+# if run_q empty, clean up.   not sure why this "clean up" is necessary.
             if self.nqueue == 0 :
-                self.sb.clear_all_station_bits()
+                self.clear_all_station_bits()
                 self.sb.apply_all_station_bits()
                 self.reset_runtime()
                 self.program_busy = False
@@ -253,7 +257,7 @@ class ospi_engine():
         if self.pause_state :
             if self.pause_timer > 0 :
                 self.pause_timer -= 1
-                self.sb.clear_all_station_bits()
+                self.clear_all_station_bits()
             else:
                 self.clear_pause()
 
@@ -354,7 +358,7 @@ class ospi_engine():
             entry["dur"] = 0
 
     def reset_all_stations_immediate(self) :
-        self.sb.clear_all_station_bits()
+        self.clear_all_station_bits()
         self.sb.apply_all_station_bits()
         self.reset_runtime()
         self.clear_pause()
@@ -454,6 +458,7 @@ class ospi_engine():
                  return
 
         self.sb.set_station_bit(sid, 0)
+        self.shut_off_timer = ospi_defs.SHUT_OFF_TIMER
 
         if curr_time > entry["st"] :
             if self.ospi_db.db["options"]["mas"] != sid + 1 and \
@@ -584,6 +589,11 @@ class ospi_engine():
             lcl_stamp = self.ospi_db.get_lcl_stamp(self.logger)
             self.water_logs.write_log (f'{0},"rd",{lcl_stamp - self.raindelay_start_time}',\
                                           lcl_stamp)
+
+    def clear_all_station_bits(self):
+        if self.sb.station_bits != 0:
+            self.shut_off_timer = ospi_defs.SHUT_OFF_TIMER
+        self.sb.clear_all_station_bits()
 
 if __name__ == "__main__":
 
