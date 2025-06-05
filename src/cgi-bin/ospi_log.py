@@ -18,7 +18,6 @@ class ospi_log:
         self.string_sid_re = re.compile(r'\[(\d+),"(\w\w)",(\d+),(\d+),+(\d+)+[,0-9-:]*\]')
 
     def write_log(self, rpt_str, time_stamp, wl_fl=None) :
-        self.logger.info(f'\n    write_log: {rpt_str} {time_stamp} {wl_fl}\n')
         if not self.logging_ready() :
             self.logger.debug (f'\n    logging not ready.\n')
             return False

@@ -53,10 +53,6 @@ class ospi_water_meter():
                           f'\n     timestamps: {self.timestamps}\n')
         if self.sb.station_bits == 0 and self.eng.shut_off_timer == 0:
             self.nozone_stamps = [time_is] + self.nozone_stamps
-            self.logger.info(f'\n    self.nozone_stamps: \n {self.nozone_stamps}\n')
-            if isinstance(self.nozone_timer, Timer):
-                self.logger.info(f'\n    isinstance: \n {isinstance(self.nozone_timer, Timer)} isalive: {self.nozone_timer.is_alive()}\n')
-            else: self.logger.info(f'\n    isinstance: \n {isinstance(self.nozone_timer, Timer)}')
             if isinstance(self.nozone_timer, Timer):
                 self.nozone_timer.cancel()
             self.nozone_timer = Timer(ospi_defs.WM_NOZONE_TO, self.log_nozone)
