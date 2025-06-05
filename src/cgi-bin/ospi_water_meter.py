@@ -1,8 +1,9 @@
 
 import logging
-import time
+import time 
 import ospi_defs
 from gpiozero import Button
+from threading import Timer
 
 # Think its 10 clicks per gallon.
 # increment ospi_db["settings"]["wm_clicks"] with each click. 
@@ -10,10 +11,11 @@ from gpiozero import Button
 
 class ospi_water_meter():
     
-    def __init__(self, ospi_db, eng, sb):
+    def __init__(self, ospi_db, eng, sb, ol):
         self.ospi_db = ospi_db
         self.sb = sb
         self.eng = eng
+        self.ol = ol
         self.logger = logging.getLogger(__name__)
         pin = ospi_defs.WM_GPIO_PIN
         self.button = Button(pin, active_state=True, pull_up=None, hold_time=0.1)
@@ -21,6 +23,7 @@ class ospi_water_meter():
         self.timestamps = [0.0 for ii in range(ospi_defs.WM_TS_DEPTH)]
         self.nozone_stamps = []
         self.button.when_held = self.click
+        self.nozone_timer = None
 
     def init_clicks(self):
         self.wm_clicks = self.ospi_db.db["settings"]["wm_clicks"]
@@ -29,7 +32,7 @@ class ospi_water_meter():
     def compute_gpm(self):
         period = self.ospi_db.db["settings"]["flwrt"]
         clicks = 0
-        last_period = time.time() - period
+        last_period = self.ospi_db.get_lcl_stamp(self.logger) - period
         for ii in self.timestamps:
             if ii >= last_period:
                 clicks += 1
@@ -41,19 +44,33 @@ class ospi_water_meter():
                           f'wm_clicks: {self.ospi_db.db["settings"]["wm_clicks"]}\n')
 
     def click(self):
-        time_is = time.time()
+        time_is = self.ospi_db.get_lcl_stamp(self.logger)
         self.timestamps = [time_is] + self.timestamps[0:ospi_defs.WM_TS_DEPTH-1]
         self.ospi_db.db["settings"]["wm_clicks"] += 1
-        self.ospi_db.db["settings"]["wm_timestamp"] = self.ospi_db.get_lcl_stamp(self.logger)
+        self.ospi_db.db["settings"]["wm_timestamp"] = time_is
 #        self.logger.info(f'\n    {self.timestamps[1]:3.2f} {self.timestamps[0]:3.2f} {self.timestamps[0]-self.timestamps[1]:3.2f}\n')
         self.logger.debug(f'\n     wm_clicks: {self.ospi_db.db["settings"]["wm_clicks"]}' + \
-                         f'\n     timestamps: {self.timestamps}\n')
+                          f'\n     timestamps: {self.timestamps}\n')
         if self.sb.station_bits == 0 and self.eng.shut_off_timer == 0:
             self.nozone_stamps = [time_is] + self.nozone_stamps
             self.logger.info(f'\n    self.nozone_stamps: \n {self.nozone_stamps}\n')
-        
+            if isinstance(self.nozone_timer, Timer):
+                self.logger.info(f'\n    isinstance: \n {isinstance(self.nozone_timer, Timer)} isalive: {self.nozone_timer.is_alive()}\n')
+            else: self.logger.info(f'\n    isinstance: \n {isinstance(self.nozone_timer, Timer)}')
+            if isinstance(self.nozone_timer, Timer):
+                self.nozone_timer.cancel()
+            self.nozone_timer = Timer(ospi_defs.WM_NOZONE_TO, self.log_nozone)
+            self.nozone_timer.start()
+
     def log_nozone(self):
-        self.logger.info(f'\n    log_nozone called.\n {self.nozone_stamps}\n')
+        self.logger.info(f'\n    in log_nozone\n')
+        last_stamp = self.nozone_stamps[0]
+        first_stamp = self.nozone_stamps[-1]
+        duration = last_stamp - first_stamp
+        clicks = len(self.nozone_stamps)
+
+        self.ol.write_log (f'100,23,{duration}', last_stamp)
+        self.ol.write_log (f'100,"fl",{duration}', self.ospi_db.get_lcl_stamp(self.logger),clicks)
         self.nozone_stamps = []
 
 

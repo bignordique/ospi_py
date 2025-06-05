@@ -11,5 +11,6 @@ DEFAULT_DB = "/var/www/cgi-bin/ospi_defaults.txt"
 DBFILE = "/srv/ospi_py/ospi_db.json"
 WM_TS_DEPTH = 20
 WM_GPIO_PIN = 26
+WM_NOZONE_TO = 120
 A2D_RD_INTERVAL = 1/60
 SHUT_OFF_TIMER = 10
