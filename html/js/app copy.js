@@ -1,11 +1,11 @@
 !(function (e, t) {
     "object" == typeof module && "object" == typeof module.exports
         ? (module.exports = e.document
-            ? t(e, !0)
-            : function (e) {
-                if (e.document) return t(e);
-                throw new Error("jQuery requires a window with a document");
-            })
+              ? t(e, !0)
+              : function (e) {
+                    if (e.document) return t(e);
+                    throw new Error("jQuery requires a window with a document");
+                })
         : t(e);
 })("undefined" != typeof window ? window : this, function (f, P) {
     function $(e, t) {
@@ -103,7 +103,7 @@
             error: function (e) {
                 throw new Error(e);
             },
-            noop: function () { },
+            noop: function () {},
             isFunction: function (e) {
                 return "function" === S.type(e);
             },
@@ -181,10 +181,10 @@
                     "string" == typeof t && ((i = e[t]), (t = e), (e = i)),
                     S.isFunction(e)
                         ? ((n = d.call(arguments, 2)),
-                            ((i = function () {
-                                return e.apply(t || this, n.concat(d.call(arguments)));
-                            }).guid = e.guid = e.guid || S.guid++),
-                            i)
+                          ((i = function () {
+                              return e.apply(t || this, n.concat(d.call(arguments)));
+                          }).guid = e.guid = e.guid || S.guid++),
+                          i)
                         : void 0
                 );
             },
@@ -195,170 +195,170 @@
             n["[object " + t + "]"] = t.toLowerCase();
         });
     var e = (function (P) {
-        function u(e, t, n) {
-            var i = "0x" + t - 65536;
-            return i != i || n ? t : i < 0 ? String.fromCharCode(65536 + i) : String.fromCharCode((i >> 10) | 55296, (1023 & i) | 56320);
-        }
-        var e,
-            p,
-            w,
-            a,
-            $,
-            h,
-            R,
-            W,
-            S,
-            c,
-            d,
-            f,
-            k,
-            t,
-            m,
-            g,
-            i,
-            o,
-            v,
-            y = "sizzle" + -new Date(),
-            b = P.document,
-            T = 0,
-            B = 0,
-            H = ce(),
-            U = ce(),
-            V = ce(),
-            q = function (e, t) {
-                return e === t && (d = !0), 0;
-            },
-            n = "undefined",
-            F = {}.hasOwnProperty,
-            s = [],
-            z = s.pop,
-            G = s.push,
-            x = s.push,
-            Y = s.slice,
-            _ =
-                s.indexOf ||
-                function (e) {
-                    for (var t = 0, n = this.length; t < n; t++) if (this[t] === e) return t;
-                    return -1;
+            function u(e, t, n) {
+                var i = "0x" + t - 65536;
+                return i != i || n ? t : i < 0 ? String.fromCharCode(65536 + i) : String.fromCharCode((i >> 10) | 55296, (1023 & i) | 56320);
+            }
+            var e,
+                p,
+                w,
+                a,
+                $,
+                h,
+                R,
+                W,
+                S,
+                c,
+                d,
+                f,
+                k,
+                t,
+                m,
+                g,
+                i,
+                o,
+                v,
+                y = "sizzle" + -new Date(),
+                b = P.document,
+                T = 0,
+                B = 0,
+                H = ce(),
+                U = ce(),
+                V = ce(),
+                q = function (e, t) {
+                    return e === t && (d = !0), 0;
                 },
-            J = "checked|selected|async|autofocus|autoplay|controls|defer|disabled|hidden|ismap|loop|multiple|open|readonly|required|scoped",
-            r = "[\\x20\\t\\r\\n\\f]",
-            l = "(?:\\\\.|[\\w-]|[^\\x00-\\xa0])+",
-            X = l.replace("w", "w#"),
-            K = "\\[" + r + "*(" + l + ")(?:" + r + "*([*^$|!~]?=)" + r + "*(?:'((?:\\\\.|[^\\\\'])*)'|\"((?:\\\\.|[^\\\\\"])*)\"|(" + X + "))|)" + r + "*\\]",
-            Q = ":(" + l + ")(?:\\((('((?:\\\\.|[^\\\\'])*)'|\"((?:\\\\.|[^\\\\\"])*)\")|((?:\\\\.|[^\\\\()[\\]]|" + K + ")*)|.*)\\)|)",
-            C = new RegExp("^" + r + "+|((?:^|[^\\\\])(?:\\\\.)*)" + r + "+$", "g"),
-            Z = new RegExp("^" + r + "*," + r + "*"),
-            ee = new RegExp("^" + r + "*([>+~]|" + r + ")" + r + "*"),
-            te = new RegExp("=" + r + "*([^\\]'\"]*?)" + r + "*\\]", "g"),
-            ne = new RegExp(Q),
-            ie = new RegExp("^" + X + "$"),
-            D = {
-                ID: new RegExp("^#(" + l + ")"),
-                CLASS: new RegExp("^\\.(" + l + ")"),
-                TAG: new RegExp("^(" + l.replace("w", "w*") + ")"),
-                ATTR: new RegExp("^" + K),
-                PSEUDO: new RegExp("^" + Q),
-                CHILD: new RegExp("^:(only|first|last|nth|nth-last)-(child|of-type)(?:\\(" + r + "*(even|odd|(([+-]|)(\\d*)n|)" + r + "*(?:([+-]|)" + r + "*(\\d+)|))" + r + "*\\)|)", "i"),
-                bool: new RegExp("^(?:" + J + ")$", "i"),
-                needsContext: new RegExp("^" + r + "*[>+~]|:(even|odd|eq|gt|lt|nth|first|last)(?:\\(" + r + "*((?:-\\d)?\\d*)" + r + "*\\)|)(?=[^-]|$)", "i"),
-            },
-            oe = /^(?:input|select|textarea|button)$/i,
-            ae = /^h\d$/i,
-            O = /^[^{]+\{\s*\[native \w/,
-            se = /^(?:#([\w-]+)|(\w+)|\.([\w-]+))$/,
-            re = /[+~]/,
-            le = /'|\\/g,
-            I = new RegExp("\\\\([\\da-f]{1,6}" + r + "?|(" + r + ")|.)", "ig");
-        try {
-            x.apply((s = Y.call(b.childNodes)), b.childNodes), s[b.childNodes.length].nodeType;
-        } catch (e) {
-            x = {
-                apply: s.length
-                    ? function (e, t) {
-                        G.apply(e, Y.call(t));
-                    }
-                    : function (e, t) {
-                        for (var n = e.length, i = 0; (e[n++] = t[i++]););
-                        e.length = n - 1;
+                n = "undefined",
+                F = {}.hasOwnProperty,
+                s = [],
+                z = s.pop,
+                G = s.push,
+                x = s.push,
+                Y = s.slice,
+                _ =
+                    s.indexOf ||
+                    function (e) {
+                        for (var t = 0, n = this.length; t < n; t++) if (this[t] === e) return t;
+                        return -1;
                     },
-            };
-        }
-        function E(e, t, n, i) {
-            var o, a, s, r, l, c, d;
-            if (((t ? t.ownerDocument || t : b) !== k && f(t), (n = n || []), !e || "string" != typeof e)) return n;
-            if (1 !== (o = (t = t || k).nodeType) && 9 !== o) return [];
-            if (m && !i) {
-                if ((c = se.exec(e)))
-                    if ((d = c[1])) {
-                        if (9 === o) {
-                            if (!(r = t.getElementById(d)) || !r.parentNode) return n;
-                            if (r.id === d) return n.push(r), n;
-                        } else if (t.ownerDocument && (r = t.ownerDocument.getElementById(d)) && v(t, r) && r.id === d) return n.push(r), n;
-                    } else {
-                        if (c[2]) return x.apply(n, t.getElementsByTagName(e)), n;
-                        if ((d = c[3]) && p.getElementsByClassName && t.getElementsByClassName) return x.apply(n, t.getElementsByClassName(d)), n;
-                    }
-                if (p.qsa && (!g || !g.test(e))) {
-                    if (((l = r = y), (c = t), (d = 9 === o && e), 1 === o && "object" !== t.nodeName.toLowerCase())) {
-                        for (s = h(e), (r = t.getAttribute("id")) ? (l = r.replace(le, "\\$&")) : t.setAttribute("id", l), l = "[id='" + l + "'] ", a = s.length; a--;) s[a] = l + L(s[a]);
-                        (c = (re.test(e) && pe(t.parentNode)) || t), (d = s.join(","));
-                    }
-                    if (d)
-                        try {
-                            return x.apply(n, c.querySelectorAll(d)), n;
-                        } catch (e) {
-                        } finally {
-                            r || t.removeAttribute("id");
+                J = "checked|selected|async|autofocus|autoplay|controls|defer|disabled|hidden|ismap|loop|multiple|open|readonly|required|scoped",
+                r = "[\\x20\\t\\r\\n\\f]",
+                l = "(?:\\\\.|[\\w-]|[^\\x00-\\xa0])+",
+                X = l.replace("w", "w#"),
+                K = "\\[" + r + "*(" + l + ")(?:" + r + "*([*^$|!~]?=)" + r + "*(?:'((?:\\\\.|[^\\\\'])*)'|\"((?:\\\\.|[^\\\\\"])*)\"|(" + X + "))|)" + r + "*\\]",
+                Q = ":(" + l + ")(?:\\((('((?:\\\\.|[^\\\\'])*)'|\"((?:\\\\.|[^\\\\\"])*)\")|((?:\\\\.|[^\\\\()[\\]]|" + K + ")*)|.*)\\)|)",
+                C = new RegExp("^" + r + "+|((?:^|[^\\\\])(?:\\\\.)*)" + r + "+$", "g"),
+                Z = new RegExp("^" + r + "*," + r + "*"),
+                ee = new RegExp("^" + r + "*([>+~]|" + r + ")" + r + "*"),
+                te = new RegExp("=" + r + "*([^\\]'\"]*?)" + r + "*\\]", "g"),
+                ne = new RegExp(Q),
+                ie = new RegExp("^" + X + "$"),
+                D = {
+                    ID: new RegExp("^#(" + l + ")"),
+                    CLASS: new RegExp("^\\.(" + l + ")"),
+                    TAG: new RegExp("^(" + l.replace("w", "w*") + ")"),
+                    ATTR: new RegExp("^" + K),
+                    PSEUDO: new RegExp("^" + Q),
+                    CHILD: new RegExp("^:(only|first|last|nth|nth-last)-(child|of-type)(?:\\(" + r + "*(even|odd|(([+-]|)(\\d*)n|)" + r + "*(?:([+-]|)" + r + "*(\\d+)|))" + r + "*\\)|)", "i"),
+                    bool: new RegExp("^(?:" + J + ")$", "i"),
+                    needsContext: new RegExp("^" + r + "*[>+~]|:(even|odd|eq|gt|lt|nth|first|last)(?:\\(" + r + "*((?:-\\d)?\\d*)" + r + "*\\)|)(?=[^-]|$)", "i"),
+                },
+                oe = /^(?:input|select|textarea|button)$/i,
+                ae = /^h\d$/i,
+                O = /^[^{]+\{\s*\[native \w/,
+                se = /^(?:#([\w-]+)|(\w+)|\.([\w-]+))$/,
+                re = /[+~]/,
+                le = /'|\\/g,
+                I = new RegExp("\\\\([\\da-f]{1,6}" + r + "?|(" + r + ")|.)", "ig");
+            try {
+                x.apply((s = Y.call(b.childNodes)), b.childNodes), s[b.childNodes.length].nodeType;
+            } catch (e) {
+                x = {
+                    apply: s.length
+                        ? function (e, t) {
+                              G.apply(e, Y.call(t));
+                          }
+                        : function (e, t) {
+                              for (var n = e.length, i = 0; (e[n++] = t[i++]); );
+                              e.length = n - 1;
+                          },
+                };
+            }
+            function E(e, t, n, i) {
+                var o, a, s, r, l, c, d;
+                if (((t ? t.ownerDocument || t : b) !== k && f(t), (n = n || []), !e || "string" != typeof e)) return n;
+                if (1 !== (o = (t = t || k).nodeType) && 9 !== o) return [];
+                if (m && !i) {
+                    if ((c = se.exec(e)))
+                        if ((d = c[1])) {
+                            if (9 === o) {
+                                if (!(r = t.getElementById(d)) || !r.parentNode) return n;
+                                if (r.id === d) return n.push(r), n;
+                            } else if (t.ownerDocument && (r = t.ownerDocument.getElementById(d)) && v(t, r) && r.id === d) return n.push(r), n;
+                        } else {
+                            if (c[2]) return x.apply(n, t.getElementsByTagName(e)), n;
+                            if ((d = c[3]) && p.getElementsByClassName && t.getElementsByClassName) return x.apply(n, t.getElementsByClassName(d)), n;
                         }
+                    if (p.qsa && (!g || !g.test(e))) {
+                        if (((l = r = y), (c = t), (d = 9 === o && e), 1 === o && "object" !== t.nodeName.toLowerCase())) {
+                            for (s = h(e), (r = t.getAttribute("id")) ? (l = r.replace(le, "\\$&")) : t.setAttribute("id", l), l = "[id='" + l + "'] ", a = s.length; a--; ) s[a] = l + L(s[a]);
+                            (c = (re.test(e) && pe(t.parentNode)) || t), (d = s.join(","));
+                        }
+                        if (d)
+                            try {
+                                return x.apply(n, c.querySelectorAll(d)), n;
+                            } catch (e) {
+                            } finally {
+                                r || t.removeAttribute("id");
+                            }
+                    }
+                }
+                return W(e.replace(C, "$1"), t, n, i);
+            }
+            function ce() {
+                var n = [];
+                function i(e, t) {
+                    return n.push(e + " ") > w.cacheLength && delete i[n.shift()], (i[e + " "] = t);
+                }
+                return i;
+            }
+            function M(e) {
+                return (e[y] = !0), e;
+            }
+            function A(e) {
+                var t = k.createElement("div");
+                try {
+                    return !!e(t);
+                } catch (e) {
+                    return !1;
+                } finally {
+                    t.parentNode && t.parentNode.removeChild(t);
                 }
             }
-            return W(e.replace(C, "$1"), t, n, i);
-        }
-        function ce() {
-            var n = [];
-            function i(e, t) {
-                return n.push(e + " ") > w.cacheLength && delete i[n.shift()], (i[e + " "] = t);
+            function de(e, t) {
+                for (var n = e.split("|"), i = e.length; i--; ) w.attrHandle[n[i]] = t;
             }
-            return i;
-        }
-        function M(e) {
-            return (e[y] = !0), e;
-        }
-        function A(e) {
-            var t = k.createElement("div");
-            try {
-                return !!e(t);
-            } catch (e) {
-                return !1;
-            } finally {
-                t.parentNode && t.parentNode.removeChild(t);
+            function ue(e, t) {
+                var n = t && e,
+                    i = n && 1 === e.nodeType && 1 === t.nodeType && (~t.sourceIndex || 1 << 31) - (~e.sourceIndex || 1 << 31);
+                if (i) return i;
+                if (n) for (; (n = n.nextSibling); ) if (n === t) return -1;
+                return e ? 1 : -1;
             }
-        }
-        function de(e, t) {
-            for (var n = e.split("|"), i = e.length; i--;) w.attrHandle[n[i]] = t;
-        }
-        function ue(e, t) {
-            var n = t && e,
-                i = n && 1 === e.nodeType && 1 === t.nodeType && (~t.sourceIndex || 1 << 31) - (~e.sourceIndex || 1 << 31);
-            if (i) return i;
-            if (n) for (; (n = n.nextSibling);) if (n === t) return -1;
-            return e ? 1 : -1;
-        }
-        function N(s) {
-            return M(function (a) {
-                return (
-                    (a = +a),
-                    M(function (e, t) {
-                        for (var n, i = s([], e.length, a), o = i.length; o--;) e[(n = i[o])] && (e[n] = !(t[n] = e[n]));
-                    })
-                );
-            });
-        }
-        function pe(e) {
-            return e && typeof e.getElementsByTagName !== n && e;
-        }
-        for (e in ((p = E.support = {}),
+            function N(s) {
+                return M(function (a) {
+                    return (
+                        (a = +a),
+                        M(function (e, t) {
+                            for (var n, i = s([], e.length, a), o = i.length; o--; ) e[(n = i[o])] && (e[n] = !(t[n] = e[n]));
+                        })
+                    );
+                });
+            }
+            function pe(e) {
+                return e && typeof e.getElementsByTagName !== n && e;
+            }
+            for (e in ((p = E.support = {}),
             ($ = E.isXML = function (e) {
                 e = e && (e.ownerDocument || e).documentElement;
                 return !!e && "HTML" !== e.nodeName;
@@ -368,126 +368,126 @@
                     e = l.defaultView;
                 return l !== k && 9 === l.nodeType && l.documentElement
                     ? ((t = (k = l).documentElement),
-                        (m = !$(l)),
-                        e &&
-                        e !== e.top &&
-                        (e.addEventListener
-                            ? e.addEventListener(
-                                "unload",
-                                function () {
+                      (m = !$(l)),
+                      e &&
+                          e !== e.top &&
+                          (e.addEventListener
+                              ? e.addEventListener(
+                                    "unload",
+                                    function () {
+                                        f();
+                                    },
+                                    !1
+                                )
+                              : e.attachEvent &&
+                                e.attachEvent("onunload", function () {
                                     f();
-                                },
-                                !1
-                            )
-                            : e.attachEvent &&
-                            e.attachEvent("onunload", function () {
-                                f();
-                            })),
-                        (p.attributes = A(function (e) {
-                            return (e.className = "i"), !e.getAttribute("className");
-                        })),
-                        (p.getElementsByTagName = A(function (e) {
-                            return e.appendChild(l.createComment("")), !e.getElementsByTagName("*").length;
-                        })),
-                        (p.getElementsByClassName =
-                            O.test(l.getElementsByClassName) &&
-                            A(function (e) {
-                                return (e.innerHTML = "<div class='a'></div><div class='a i'></div>"), (e.firstChild.className = "i"), 2 === e.getElementsByClassName("i").length;
-                            })),
-                        (p.getById = A(function (e) {
-                            return (t.appendChild(e).id = y), !l.getElementsByName || !l.getElementsByName(y).length;
-                        })),
-                        p.getById
-                            ? ((w.find.ID = function (e, t) {
+                                })),
+                      (p.attributes = A(function (e) {
+                          return (e.className = "i"), !e.getAttribute("className");
+                      })),
+                      (p.getElementsByTagName = A(function (e) {
+                          return e.appendChild(l.createComment("")), !e.getElementsByTagName("*").length;
+                      })),
+                      (p.getElementsByClassName =
+                          O.test(l.getElementsByClassName) &&
+                          A(function (e) {
+                              return (e.innerHTML = "<div class='a'></div><div class='a i'></div>"), (e.firstChild.className = "i"), 2 === e.getElementsByClassName("i").length;
+                          })),
+                      (p.getById = A(function (e) {
+                          return (t.appendChild(e).id = y), !l.getElementsByName || !l.getElementsByName(y).length;
+                      })),
+                      p.getById
+                          ? ((w.find.ID = function (e, t) {
                                 if (typeof t.getElementById !== n && m) return (t = t.getElementById(e)) && t.parentNode ? [t] : [];
                             }),
-                                (w.filter.ID = function (e) {
-                                    var t = e.replace(I, u);
-                                    return function (e) {
-                                        return e.getAttribute("id") === t;
-                                    };
-                                }))
-                            : (delete w.find.ID,
-                                (w.filter.ID = function (e) {
-                                    var t = e.replace(I, u);
-                                    return function (e) {
-                                        e = typeof e.getAttributeNode !== n && e.getAttributeNode("id");
-                                        return e && e.value === t;
-                                    };
-                                })),
-                        (w.find.TAG = p.getElementsByTagName
-                            ? function (e, t) {
+                            (w.filter.ID = function (e) {
+                                var t = e.replace(I, u);
+                                return function (e) {
+                                    return e.getAttribute("id") === t;
+                                };
+                            }))
+                          : (delete w.find.ID,
+                            (w.filter.ID = function (e) {
+                                var t = e.replace(I, u);
+                                return function (e) {
+                                    e = typeof e.getAttributeNode !== n && e.getAttributeNode("id");
+                                    return e && e.value === t;
+                                };
+                            })),
+                      (w.find.TAG = p.getElementsByTagName
+                          ? function (e, t) {
                                 return typeof t.getElementsByTagName !== n ? t.getElementsByTagName(e) : void 0;
                             }
-                            : function (e, t) {
+                          : function (e, t) {
                                 var n,
                                     i = [],
                                     o = 0,
                                     a = t.getElementsByTagName(e);
                                 if ("*" !== e) return a;
-                                for (; (n = a[o++]);) 1 === n.nodeType && i.push(n);
+                                for (; (n = a[o++]); ) 1 === n.nodeType && i.push(n);
                                 return i;
                             }),
-                        (w.find.CLASS =
-                            p.getElementsByClassName &&
-                            function (e, t) {
-                                return typeof t.getElementsByClassName !== n && m ? t.getElementsByClassName(e) : void 0;
-                            }),
-                        (i = []),
-                        (g = []),
-                        (p.qsa = O.test(l.querySelectorAll)) &&
-                        (A(function (e) {
-                            (e.innerHTML = "<select msallowclip=''><option selected=''></option></select>"),
-                                e.querySelectorAll("[msallowclip^='']").length && g.push("[*^$]=" + r + "*(?:''|\"\")"),
-                                e.querySelectorAll("[selected]").length || g.push("\\[" + r + "*(?:value|" + J + ")"),
-                                e.querySelectorAll(":checked").length || g.push(":checked");
-                        }),
-                            A(function (e) {
-                                var t = l.createElement("input");
-                                t.setAttribute("type", "hidden"),
-                                    e.appendChild(t).setAttribute("name", "D"),
-                                    e.querySelectorAll("[name=d]").length && g.push("name" + r + "*[*^$|!~]?="),
-                                    e.querySelectorAll(":enabled").length || g.push(":enabled", ":disabled"),
-                                    e.querySelectorAll("*,:x"),
-                                    g.push(",.*:");
-                            })),
-                        (p.matchesSelector = O.test((o = t.matches || t.webkitMatchesSelector || t.mozMatchesSelector || t.oMatchesSelector || t.msMatchesSelector))) &&
-                        A(function (e) {
-                            (p.disconnectedMatch = o.call(e, "div")), o.call(e, "[s!='']:x"), i.push("!=", Q);
-                        }),
-                        (g = g.length && new RegExp(g.join("|"))),
-                        (i = i.length && new RegExp(i.join("|"))),
-                        (e = O.test(t.compareDocumentPosition)),
-                        (v =
-                            e || O.test(t.contains)
-                                ? function (e, t) {
+                      (w.find.CLASS =
+                          p.getElementsByClassName &&
+                          function (e, t) {
+                              return typeof t.getElementsByClassName !== n && m ? t.getElementsByClassName(e) : void 0;
+                          }),
+                      (i = []),
+                      (g = []),
+                      (p.qsa = O.test(l.querySelectorAll)) &&
+                          (A(function (e) {
+                              (e.innerHTML = "<select msallowclip=''><option selected=''></option></select>"),
+                                  e.querySelectorAll("[msallowclip^='']").length && g.push("[*^$]=" + r + "*(?:''|\"\")"),
+                                  e.querySelectorAll("[selected]").length || g.push("\\[" + r + "*(?:value|" + J + ")"),
+                                  e.querySelectorAll(":checked").length || g.push(":checked");
+                          }),
+                          A(function (e) {
+                              var t = l.createElement("input");
+                              t.setAttribute("type", "hidden"),
+                                  e.appendChild(t).setAttribute("name", "D"),
+                                  e.querySelectorAll("[name=d]").length && g.push("name" + r + "*[*^$|!~]?="),
+                                  e.querySelectorAll(":enabled").length || g.push(":enabled", ":disabled"),
+                                  e.querySelectorAll("*,:x"),
+                                  g.push(",.*:");
+                          })),
+                      (p.matchesSelector = O.test((o = t.matches || t.webkitMatchesSelector || t.mozMatchesSelector || t.oMatchesSelector || t.msMatchesSelector))) &&
+                          A(function (e) {
+                              (p.disconnectedMatch = o.call(e, "div")), o.call(e, "[s!='']:x"), i.push("!=", Q);
+                          }),
+                      (g = g.length && new RegExp(g.join("|"))),
+                      (i = i.length && new RegExp(i.join("|"))),
+                      (e = O.test(t.compareDocumentPosition)),
+                      (v =
+                          e || O.test(t.contains)
+                              ? function (e, t) {
                                     var n = 9 === e.nodeType ? e.documentElement : e,
                                         t = t && t.parentNode;
                                     return e === t || !(!t || 1 !== t.nodeType || !(n.contains ? n.contains(t) : e.compareDocumentPosition && 16 & e.compareDocumentPosition(t)));
                                 }
-                                : function (e, t) {
-                                    if (t) for (; (t = t.parentNode);) if (t === e) return !0;
+                              : function (e, t) {
+                                    if (t) for (; (t = t.parentNode); ) if (t === e) return !0;
                                     return !1;
                                 }),
-                        (q = e
-                            ? function (e, t) {
+                      (q = e
+                          ? function (e, t) {
                                 var n;
                                 return e === t
                                     ? ((d = !0), 0)
                                     : (n = !e.compareDocumentPosition - !t.compareDocumentPosition) ||
-                                    (1 & (n = (e.ownerDocument || e) === (t.ownerDocument || t) ? e.compareDocumentPosition(t) : 1) || (!p.sortDetached && t.compareDocumentPosition(e) === n)
-                                        ? e === l || (e.ownerDocument === b && v(b, e))
-                                            ? -1
-                                            : t === l || (t.ownerDocument === b && v(b, t))
-                                                ? 1
-                                                : c
-                                                    ? _.call(c, e) - _.call(c, t)
-                                                    : 0
-                                        : 4 & n
-                                            ? -1
-                                            : 1);
+                                          (1 & (n = (e.ownerDocument || e) === (t.ownerDocument || t) ? e.compareDocumentPosition(t) : 1) || (!p.sortDetached && t.compareDocumentPosition(e) === n)
+                                              ? e === l || (e.ownerDocument === b && v(b, e))
+                                                  ? -1
+                                                  : t === l || (t.ownerDocument === b && v(b, t))
+                                                  ? 1
+                                                  : c
+                                                  ? _.call(c, e) - _.call(c, t)
+                                                  : 0
+                                              : 4 & n
+                                              ? -1
+                                              : 1);
                             }
-                            : function (e, t) {
+                          : function (e, t) {
                                 if (e === t) return (d = !0), 0;
                                 var n,
                                     i = 0,
@@ -497,12 +497,12 @@
                                     r = [t];
                                 if (!o || !a) return e === l ? -1 : t === l ? 1 : o ? -1 : a ? 1 : c ? _.call(c, e) - _.call(c, t) : 0;
                                 if (o === a) return ue(e, t);
-                                for (n = e; (n = n.parentNode);) s.unshift(n);
-                                for (n = t; (n = n.parentNode);) r.unshift(n);
-                                for (; s[i] === r[i];) i++;
+                                for (n = e; (n = n.parentNode); ) s.unshift(n);
+                                for (n = t; (n = n.parentNode); ) r.unshift(n);
+                                for (; s[i] === r[i]; ) i++;
                                 return i ? ue(s[i], r[i]) : s[i] === b ? -1 : r[i] === b ? 1 : 0;
                             }),
-                        l)
+                      l)
                     : k;
             }),
             (E.matches = function (e, t) {
@@ -513,7 +513,7 @@
                     try {
                         var n = o.call(e, t);
                         if (n || p.disconnectedMatch || (e.document && 11 !== e.document.nodeType)) return n;
-                    } catch (e) { }
+                    } catch (e) {}
                 return 0 < E(t, k, null, [e]).length;
             }),
             (E.contains = function (e, t) {
@@ -534,8 +534,8 @@
                     i = 0,
                     o = 0;
                 if (((d = !p.detectDuplicates), (c = !p.sortStable && e.slice(0)), e.sort(q), d)) {
-                    for (; (t = e[o++]);) t === e[o] && (i = n.push(o));
-                    for (; i--;) e.splice(n[i], 1);
+                    for (; (t = e[o++]); ) t === e[o] && (i = n.push(o));
+                    for (; i--; ) e.splice(n[i], 1);
                 }
                 return (c = null), e;
             }),
@@ -549,7 +549,7 @@
                         if ("string" == typeof e.textContent) return e.textContent;
                         for (e = e.firstChild; e; e = e.nextSibling) n += a(e);
                     } else if (3 === o || 4 === o) return e.nodeValue;
-                } else for (; (t = e[i++]);) n += a(t);
+                } else for (; (t = e[i++]); ) n += a(t);
                 return n;
             }),
             ((w = E.selectors = {
@@ -583,11 +583,11 @@
                         var t = e.replace(I, u).toLowerCase();
                         return "*" === e
                             ? function () {
-                                return !0;
-                            }
+                                  return !0;
+                              }
                             : function (e) {
-                                return e.nodeName && e.nodeName.toLowerCase() === t;
-                            };
+                                  return e.nodeName && e.nodeName.toLowerCase() === t;
+                              };
                     },
                     CLASS: function (e) {
                         var t = H[e + " "];
@@ -605,20 +605,20 @@
                             return null == e
                                 ? "!=" === n
                                 : !n ||
-                                ((e += ""),
-                                    "=" === n
-                                        ? e === i
-                                        : "!=" === n
-                                            ? e !== i
-                                            : "^=" === n
-                                                ? i && 0 === e.indexOf(i)
-                                                : "*=" === n
-                                                    ? i && -1 < e.indexOf(i)
-                                                    : "$=" === n
-                                                        ? i && e.slice(-i.length) === i
-                                                        : "~=" === n
-                                                            ? -1 < (" " + e + " ").indexOf(i)
-                                                            : "|=" === n && (e === i || e.slice(0, i.length + 1) === i + "-"));
+                                      ((e += ""),
+                                      "=" === n
+                                          ? e === i
+                                          : "!=" === n
+                                          ? e !== i
+                                          : "^=" === n
+                                          ? i && 0 === e.indexOf(i)
+                                          : "*=" === n
+                                          ? i && -1 < e.indexOf(i)
+                                          : "$=" === n
+                                          ? i && e.slice(-i.length) === i
+                                          : "~=" === n
+                                          ? -1 < (" " + e + " ").indexOf(i)
+                                          : "|=" === n && (e === i || e.slice(0, i.length + 1) === i + "-"));
                         };
                     },
                     CHILD: function (h, e, t, f, m) {
@@ -627,38 +627,38 @@
                             b = "of-type" === e;
                         return 1 === f && 0 === m
                             ? function (e) {
-                                return !!e.parentNode;
-                            }
+                                  return !!e.parentNode;
+                              }
                             : function (e, t, n) {
-                                var i,
-                                    o,
-                                    a,
-                                    s,
-                                    r,
-                                    l,
-                                    c = g != v ? "nextSibling" : "previousSibling",
-                                    d = e.parentNode,
-                                    u = b && e.nodeName.toLowerCase(),
-                                    p = !n && !b;
-                                if (d) {
-                                    if (g) {
-                                        for (; c;) {
-                                            for (a = e; (a = a[c]);) if (b ? a.nodeName.toLowerCase() === u : 1 === a.nodeType) return !1;
-                                            l = c = "only" === h && !l && "nextSibling";
-                                        }
-                                        return !0;
-                                    }
-                                    if (((l = [v ? d.firstChild : d.lastChild]), v && p)) {
-                                        for (r = (i = (o = d[y] || (d[y] = {}))[h] || [])[0] === T && i[1], s = i[0] === T && i[2], a = r && d.childNodes[r]; (a = (++r && a && a[c]) || ((s = r = 0), l.pop()));)
-                                            if (1 === a.nodeType && ++s && a === e) {
-                                                o[h] = [T, r, s];
-                                                break;
-                                            }
-                                    } else if (p && (i = (e[y] || (e[y] = {}))[h]) && i[0] === T) s = i[1];
-                                    else for (; (a = (++r && a && a[c]) || ((s = r = 0), l.pop())) && ((b ? a.nodeName.toLowerCase() !== u : 1 !== a.nodeType) || !++s || (p && ((a[y] || (a[y] = {}))[h] = [T, s]), a !== e)););
-                                    return (s -= m) === f || (s % f == 0 && 0 <= s / f);
-                                }
-                            };
+                                  var i,
+                                      o,
+                                      a,
+                                      s,
+                                      r,
+                                      l,
+                                      c = g != v ? "nextSibling" : "previousSibling",
+                                      d = e.parentNode,
+                                      u = b && e.nodeName.toLowerCase(),
+                                      p = !n && !b;
+                                  if (d) {
+                                      if (g) {
+                                          for (; c; ) {
+                                              for (a = e; (a = a[c]); ) if (b ? a.nodeName.toLowerCase() === u : 1 === a.nodeType) return !1;
+                                              l = c = "only" === h && !l && "nextSibling";
+                                          }
+                                          return !0;
+                                      }
+                                      if (((l = [v ? d.firstChild : d.lastChild]), v && p)) {
+                                          for (r = (i = (o = d[y] || (d[y] = {}))[h] || [])[0] === T && i[1], s = i[0] === T && i[2], a = r && d.childNodes[r]; (a = (++r && a && a[c]) || ((s = r = 0), l.pop())); )
+                                              if (1 === a.nodeType && ++s && a === e) {
+                                                  o[h] = [T, r, s];
+                                                  break;
+                                              }
+                                      } else if (p && (i = (e[y] || (e[y] = {}))[h]) && i[0] === T) s = i[1];
+                                      else for (; (a = (++r && a && a[c]) || ((s = r = 0), l.pop())) && ((b ? a.nodeName.toLowerCase() !== u : 1 !== a.nodeType) || !++s || (p && ((a[y] || (a[y] = {}))[h] = [T, s]), a !== e)); );
+                                      return (s -= m) === f || (s % f == 0 && 0 <= s / f);
+                                  }
+                              };
                     },
                     PSEUDO: function (e, a) {
                         var t,
@@ -666,15 +666,15 @@
                         return s[y]
                             ? s(a)
                             : 1 < s.length
-                                ? ((t = [e, e, "", a]),
-                                    w.setFilters.hasOwnProperty(e.toLowerCase())
-                                        ? M(function (e, t) {
-                                            for (var n, i = s(e, a), o = i.length; o--;) e[(n = _.call(e, i[o]))] = !(t[n] = i[o]);
-                                        })
-                                        : function (e) {
-                                            return s(e, 0, t);
-                                        })
-                                : s;
+                            ? ((t = [e, e, "", a]),
+                              w.setFilters.hasOwnProperty(e.toLowerCase())
+                                  ? M(function (e, t) {
+                                        for (var n, i = s(e, a), o = i.length; o--; ) e[(n = _.call(e, i[o]))] = !(t[n] = i[o]);
+                                    })
+                                  : function (e) {
+                                        return s(e, 0, t);
+                                    })
+                            : s;
                     },
                 },
                 pseudos: {
@@ -684,11 +684,11 @@
                             r = R(e.replace(C, "$1"));
                         return r[y]
                             ? M(function (e, t, n, i) {
-                                for (var o, a = r(e, null, i, []), s = e.length; s--;) (o = a[s]) && (e[s] = !(t[s] = o));
-                            })
+                                  for (var o, a = r(e, null, i, []), s = e.length; s--; ) (o = a[s]) && (e[s] = !(t[s] = o));
+                              })
                             : function (e, t, n) {
-                                return (i[0] = e), r(i, null, n, o), !o.pop();
-                            };
+                                  return (i[0] = e), r(i, null, n, o), !o.pop();
+                              };
                     }),
                     has: M(function (t) {
                         return function (e) {
@@ -774,271 +774,271 @@
                         return e;
                     }),
                     lt: N(function (e, t, n) {
-                        for (var i = n < 0 ? n + t : n; 0 <= --i;) e.push(i);
+                        for (var i = n < 0 ? n + t : n; 0 <= --i; ) e.push(i);
                         return e;
                     }),
                     gt: N(function (e, t, n) {
-                        for (var i = n < 0 ? n + t : n; ++i < t;) e.push(i);
+                        for (var i = n < 0 ? n + t : n; ++i < t; ) e.push(i);
                         return e;
                     }),
                 },
             }).pseudos.nth = w.pseudos.eq),
             { radio: !0, checkbox: !0, file: !0, password: !0, image: !0 }))
-            w.pseudos[e] = (function (t) {
-                return function (e) {
-                    return "input" === e.nodeName.toLowerCase() && e.type === t;
-                };
-            })(e);
-        for (e in { submit: !0, reset: !0 })
-            w.pseudos[e] = (function (n) {
-                return function (e) {
-                    var t = e.nodeName.toLowerCase();
-                    return ("input" === t || "button" === t) && e.type === n;
-                };
-            })(e);
-        function he() { }
-        function L(e) {
-            for (var t = 0, n = e.length, i = ""; t < n; t++) i += e[t].value;
-            return i;
-        }
-        function fe(s, e, t) {
-            var r = e.dir,
-                l = t && "parentNode" === r,
-                c = B++;
-            return e.first
-                ? function (e, t, n) {
-                    for (; (e = e[r]);) if (1 === e.nodeType || l) return s(e, t, n);
-                }
-                : function (e, t, n) {
-                    var i,
-                        o,
-                        a = [T, c];
-                    if (n) {
-                        for (; (e = e[r]);) if ((1 === e.nodeType || l) && s(e, t, n)) return !0;
-                    } else
-                        for (; (e = e[r]);)
-                            if (1 === e.nodeType || l) {
-                                if ((i = (o = e[y] || (e[y] = {}))[r]) && i[0] === T && i[1] === c) return (a[2] = i[2]);
-                                if (((o[r] = a)[2] = s(e, t, n))) return !0;
+                w.pseudos[e] = (function (t) {
+                    return function (e) {
+                        return "input" === e.nodeName.toLowerCase() && e.type === t;
+                    };
+                })(e);
+            for (e in { submit: !0, reset: !0 })
+                w.pseudos[e] = (function (n) {
+                    return function (e) {
+                        var t = e.nodeName.toLowerCase();
+                        return ("input" === t || "button" === t) && e.type === n;
+                    };
+                })(e);
+            function he() {}
+            function L(e) {
+                for (var t = 0, n = e.length, i = ""; t < n; t++) i += e[t].value;
+                return i;
+            }
+            function fe(s, e, t) {
+                var r = e.dir,
+                    l = t && "parentNode" === r,
+                    c = B++;
+                return e.first
+                    ? function (e, t, n) {
+                          for (; (e = e[r]); ) if (1 === e.nodeType || l) return s(e, t, n);
+                      }
+                    : function (e, t, n) {
+                          var i,
+                              o,
+                              a = [T, c];
+                          if (n) {
+                              for (; (e = e[r]); ) if ((1 === e.nodeType || l) && s(e, t, n)) return !0;
+                          } else
+                              for (; (e = e[r]); )
+                                  if (1 === e.nodeType || l) {
+                                      if ((i = (o = e[y] || (e[y] = {}))[r]) && i[0] === T && i[1] === c) return (a[2] = i[2]);
+                                      if (((o[r] = a)[2] = s(e, t, n))) return !0;
+                                  }
+                      };
+            }
+            function me(o) {
+                return 1 < o.length
+                    ? function (e, t, n) {
+                          for (var i = o.length; i--; ) if (!o[i](e, t, n)) return !1;
+                          return !0;
+                      }
+                    : o[0];
+            }
+            function j(e, t, n, i, o) {
+                for (var a, s = [], r = 0, l = e.length, c = null != t; r < l; r++) (a = e[r]) && (!n || n(a, i, o)) && (s.push(a), c) && t.push(r);
+                return s;
+            }
+            function ge(h, f, m, g, v, e) {
+                return (
+                    g && !g[y] && (g = ge(g)),
+                    v && !v[y] && (v = ge(v, e)),
+                    M(function (e, t, n, i) {
+                        var o,
+                            a,
+                            s,
+                            r = [],
+                            l = [],
+                            c = t.length,
+                            d =
+                                e ||
+                                (function (e, t, n) {
+                                    for (var i = 0, o = t.length; i < o; i++) E(e, t[i], n);
+                                    return n;
+                                })(f || "*", n.nodeType ? [n] : n, []),
+                            u = !h || (!e && f) ? d : j(d, r, h, n, i),
+                            p = m ? (v || (e ? h : c || g) ? [] : t) : u;
+                        if ((m && m(u, p, n, i), g)) for (o = j(p, l), g(o, [], n, i), a = o.length; a--; ) (s = o[a]) && (p[l[a]] = !(u[l[a]] = s));
+                        if (e) {
+                            if (v || h) {
+                                if (v) {
+                                    for (o = [], a = p.length; a--; ) (s = p[a]) && o.push((u[a] = s));
+                                    v(null, (p = []), o, i);
+                                }
+                                for (a = p.length; a--; ) (s = p[a]) && -1 < (o = v ? _.call(e, s) : r[a]) && (e[o] = !(t[o] = s));
                             }
-                };
-        }
-        function me(o) {
-            return 1 < o.length
-                ? function (e, t, n) {
-                    for (var i = o.length; i--;) if (!o[i](e, t, n)) return !1;
-                    return !0;
+                        } else (p = j(p === t ? p.splice(c, p.length) : p)), v ? v(null, t, p, i) : x.apply(t, p);
+                    })
+                );
+            }
+            function ve(g, v) {
+                function e(e, t, n, i, o) {
+                    var a,
+                        s,
+                        r,
+                        l = 0,
+                        c = "0",
+                        d = e && [],
+                        u = [],
+                        p = S,
+                        h = e || (y && w.find.TAG("*", o)),
+                        f = (T += null == p ? 1 : Math.random() || 0.1),
+                        m = h.length;
+                    for (o && (S = t !== k && t); c !== m && null != (a = h[c]); c++) {
+                        if (y && a) {
+                            for (s = 0; (r = g[s++]); )
+                                if (r(a, t, n)) {
+                                    i.push(a);
+                                    break;
+                                }
+                            o && (T = f);
+                        }
+                        b && ((a = !r && a) && l--, e) && d.push(a);
+                    }
+                    if (((l += c), b && c !== l)) {
+                        for (s = 0; (r = v[s++]); ) r(d, u, t, n);
+                        if (e) {
+                            if (0 < l) for (; c--; ) d[c] || u[c] || (u[c] = z.call(i));
+                            u = j(u);
+                        }
+                        x.apply(i, u), o && !e && 0 < u.length && 1 < l + v.length && E.uniqueSort(i);
+                    }
+                    return o && ((T = f), (S = p)), d;
                 }
-                : o[0];
-        }
-        function j(e, t, n, i, o) {
-            for (var a, s = [], r = 0, l = e.length, c = null != t; r < l; r++) (a = e[r]) && (!n || n(a, i, o)) && (s.push(a), c) && t.push(r);
-            return s;
-        }
-        function ge(h, f, m, g, v, e) {
+                var b = 0 < v.length,
+                    y = 0 < g.length;
+                return b ? M(e) : e;
+            }
             return (
-                g && !g[y] && (g = ge(g)),
-                v && !v[y] && (v = ge(v, e)),
-                M(function (e, t, n, i) {
-                    var o,
+                (he.prototype = w.filters = w.pseudos),
+                (w.setFilters = new he()),
+                (h = E.tokenize = function (e, t) {
+                    var n,
+                        i,
+                        o,
                         a,
                         s,
-                        r = [],
-                        l = [],
-                        c = t.length,
-                        d =
-                            e ||
-                            (function (e, t, n) {
-                                for (var i = 0, o = t.length; i < o; i++) E(e, t[i], n);
-                                return n;
-                            })(f || "*", n.nodeType ? [n] : n, []),
-                        u = !h || (!e && f) ? d : j(d, r, h, n, i),
-                        p = m ? (v || (e ? h : c || g) ? [] : t) : u;
-                    if ((m && m(u, p, n, i), g)) for (o = j(p, l), g(o, [], n, i), a = o.length; a--;) (s = o[a]) && (p[l[a]] = !(u[l[a]] = s));
-                    if (e) {
-                        if (v || h) {
-                            if (v) {
-                                for (o = [], a = p.length; a--;) (s = p[a]) && o.push((u[a] = s));
-                                v(null, (p = []), o, i);
-                            }
-                            for (a = p.length; a--;) (s = p[a]) && -1 < (o = v ? _.call(e, s) : r[a]) && (e[o] = !(t[o] = s));
-                        }
-                    } else (p = j(p === t ? p.splice(c, p.length) : p)), v ? v(null, t, p, i) : x.apply(t, p);
-                })
-            );
-        }
-        function ve(g, v) {
-            function e(e, t, n, i, o) {
-                var a,
-                    s,
-                    r,
-                    l = 0,
-                    c = "0",
-                    d = e && [],
-                    u = [],
-                    p = S,
-                    h = e || (y && w.find.TAG("*", o)),
-                    f = (T += null == p ? 1 : Math.random() || 0.1),
-                    m = h.length;
-                for (o && (S = t !== k && t); c !== m && null != (a = h[c]); c++) {
-                    if (y && a) {
-                        for (s = 0; (r = g[s++]);)
-                            if (r(a, t, n)) {
-                                i.push(a);
-                                break;
-                            }
-                        o && (T = f);
-                    }
-                    b && ((a = !r && a) && l--, e) && d.push(a);
-                }
-                if (((l += c), b && c !== l)) {
-                    for (s = 0; (r = v[s++]);) r(d, u, t, n);
-                    if (e) {
-                        if (0 < l) for (; c--;) d[c] || u[c] || (u[c] = z.call(i));
-                        u = j(u);
-                    }
-                    x.apply(i, u), o && !e && 0 < u.length && 1 < l + v.length && E.uniqueSort(i);
-                }
-                return o && ((T = f), (S = p)), d;
-            }
-            var b = 0 < v.length,
-                y = 0 < g.length;
-            return b ? M(e) : e;
-        }
-        return (
-            (he.prototype = w.filters = w.pseudos),
-            (w.setFilters = new he()),
-            (h = E.tokenize = function (e, t) {
-                var n,
-                    i,
-                    o,
-                    a,
-                    s,
-                    r,
-                    l,
-                    c = U[e + " "];
-                if (c) return t ? 0 : c.slice(0);
-                for (s = e, r = [], l = w.preFilter; s;) {
-                    for (a in ((n && !(i = Z.exec(s))) || (i && (s = s.slice(i[0].length) || s), r.push((o = []))),
+                        r,
+                        l,
+                        c = U[e + " "];
+                    if (c) return t ? 0 : c.slice(0);
+                    for (s = e, r = [], l = w.preFilter; s; ) {
+                        for (a in ((n && !(i = Z.exec(s))) || (i && (s = s.slice(i[0].length) || s), r.push((o = []))),
                         (n = !1),
                         (i = ee.exec(s)) && ((n = i.shift()), o.push({ value: n, type: i[0].replace(C, " ") }), (s = s.slice(n.length))),
                         w.filter))
-                        !(i = D[a].exec(s)) || (l[a] && !(i = l[a](i))) || ((n = i.shift()), o.push({ value: n, type: a, matches: i }), (s = s.slice(n.length)));
-                    if (!n) break;
-                }
-                return t ? s.length : s ? E.error(e) : U(e, r).slice(0);
-            }),
-            (R = E.compile = function (e, t) {
-                var n,
-                    i = [],
-                    o = [],
-                    a = V[e + " "];
-                if (!a) {
-                    for (n = (t = t || h(e)).length; n--;)
-                        ((a = (function e(t) {
-                            for (
-                                var i,
-                                n,
-                                o,
-                                a = t.length,
-                                s = w.relative[t[0].type],
-                                r = s || w.relative[" "],
-                                l = s ? 1 : 0,
-                                c = fe(
-                                    function (e) {
-                                        return e === i;
-                                    },
-                                    r,
-                                    !0
-                                ),
-                                d = fe(
-                                    function (e) {
-                                        return -1 < _.call(i, e);
-                                    },
-                                    r,
-                                    !0
-                                ),
-                                u = [
-                                    function (e, t, n) {
-                                        return (!s && (n || t !== S)) || ((i = t).nodeType ? c : d)(e, t, n);
-                                    },
-                                ];
-                                l < a;
-                                l++
-                            )
-                                if ((n = w.relative[t[l].type])) u = [fe(me(u), n)];
-                                else {
-                                    if ((n = w.filter[t[l].type].apply(null, t[l].matches))[y]) {
-                                        for (o = ++l; o < a && !w.relative[t[o].type]; o++);
-                                        return ge(
-                                            1 < l && me(u),
-                                            1 < l && L(t.slice(0, l - 1).concat({ value: " " === t[l - 2].type ? "*" : "" })).replace(C, "$1"),
-                                            n,
-                                            l < o && e(t.slice(l, o)),
-                                            o < a && e((t = t.slice(o))),
-                                            o < a && L(t)
-                                        );
-                                    }
-                                    u.push(n);
-                                }
-                            return me(u);
-                        })(t[n]))[y]
-                            ? i
-                            : o
-                        ).push(a);
-                    (a = V(e, ve(o, i))).selector = e;
-                }
-                return a;
-            }),
-            (W = E.select = function (e, t, n, i) {
-                var o,
-                    a,
-                    s,
-                    r,
-                    l,
-                    c = "function" == typeof e && e,
-                    d = !i && h((e = c.selector || e));
-                if (((n = n || []), 1 === d.length)) {
-                    if (2 < (a = d[0] = d[0].slice(0)).length && "ID" === (s = a[0]).type && p.getById && 9 === t.nodeType && m && w.relative[a[1].type]) {
-                        if (!(t = (w.find.ID(s.matches[0].replace(I, u), t) || [])[0])) return n;
-                        c && (t = t.parentNode), (e = e.slice(a.shift().value.length));
+                            !(i = D[a].exec(s)) || (l[a] && !(i = l[a](i))) || ((n = i.shift()), o.push({ value: n, type: a, matches: i }), (s = s.slice(n.length)));
+                        if (!n) break;
                     }
-                    for (o = D.needsContext.test(e) ? 0 : a.length; o-- && ((s = a[o]), !w.relative[(r = s.type)]);)
-                        if ((l = w.find[r]) && (i = l(s.matches[0].replace(I, u), (re.test(a[0].type) && pe(t.parentNode)) || t))) {
-                            if ((a.splice(o, 1), (e = i.length && L(a)))) break;
-                            return x.apply(n, i), n;
+                    return t ? s.length : s ? E.error(e) : U(e, r).slice(0);
+                }),
+                (R = E.compile = function (e, t) {
+                    var n,
+                        i = [],
+                        o = [],
+                        a = V[e + " "];
+                    if (!a) {
+                        for (n = (t = t || h(e)).length; n--; )
+                            ((a = (function e(t) {
+                                for (
+                                    var i,
+                                        n,
+                                        o,
+                                        a = t.length,
+                                        s = w.relative[t[0].type],
+                                        r = s || w.relative[" "],
+                                        l = s ? 1 : 0,
+                                        c = fe(
+                                            function (e) {
+                                                return e === i;
+                                            },
+                                            r,
+                                            !0
+                                        ),
+                                        d = fe(
+                                            function (e) {
+                                                return -1 < _.call(i, e);
+                                            },
+                                            r,
+                                            !0
+                                        ),
+                                        u = [
+                                            function (e, t, n) {
+                                                return (!s && (n || t !== S)) || ((i = t).nodeType ? c : d)(e, t, n);
+                                            },
+                                        ];
+                                    l < a;
+                                    l++
+                                )
+                                    if ((n = w.relative[t[l].type])) u = [fe(me(u), n)];
+                                    else {
+                                        if ((n = w.filter[t[l].type].apply(null, t[l].matches))[y]) {
+                                            for (o = ++l; o < a && !w.relative[t[o].type]; o++);
+                                            return ge(
+                                                1 < l && me(u),
+                                                1 < l && L(t.slice(0, l - 1).concat({ value: " " === t[l - 2].type ? "*" : "" })).replace(C, "$1"),
+                                                n,
+                                                l < o && e(t.slice(l, o)),
+                                                o < a && e((t = t.slice(o))),
+                                                o < a && L(t)
+                                            );
+                                        }
+                                        u.push(n);
+                                    }
+                                return me(u);
+                            })(t[n]))[y]
+                                ? i
+                                : o
+                            ).push(a);
+                        (a = V(e, ve(o, i))).selector = e;
+                    }
+                    return a;
+                }),
+                (W = E.select = function (e, t, n, i) {
+                    var o,
+                        a,
+                        s,
+                        r,
+                        l,
+                        c = "function" == typeof e && e,
+                        d = !i && h((e = c.selector || e));
+                    if (((n = n || []), 1 === d.length)) {
+                        if (2 < (a = d[0] = d[0].slice(0)).length && "ID" === (s = a[0]).type && p.getById && 9 === t.nodeType && m && w.relative[a[1].type]) {
+                            if (!(t = (w.find.ID(s.matches[0].replace(I, u), t) || [])[0])) return n;
+                            c && (t = t.parentNode), (e = e.slice(a.shift().value.length));
                         }
-                }
-                return (c || R(e, d))(i, t, !m, n, (re.test(e) && pe(t.parentNode)) || t), n;
-            }),
-            (p.sortStable = y.split("").sort(q).join("") === y),
-            (p.detectDuplicates = !!d),
-            f(),
-            (p.sortDetached = A(function (e) {
-                return 1 & e.compareDocumentPosition(k.createElement("div"));
-            })),
-            A(function (e) {
-                return (e.innerHTML = "<a href='#'></a>"), "#" === e.firstChild.getAttribute("href");
-            }) ||
-            de("type|href|height|width", function (e, t, n) {
-                return n ? void 0 : e.getAttribute(t, "type" === t.toLowerCase() ? 1 : 2);
-            }),
-            (p.attributes &&
+                        for (o = D.needsContext.test(e) ? 0 : a.length; o-- && ((s = a[o]), !w.relative[(r = s.type)]); )
+                            if ((l = w.find[r]) && (i = l(s.matches[0].replace(I, u), (re.test(a[0].type) && pe(t.parentNode)) || t))) {
+                                if ((a.splice(o, 1), (e = i.length && L(a)))) break;
+                                return x.apply(n, i), n;
+                            }
+                    }
+                    return (c || R(e, d))(i, t, !m, n, (re.test(e) && pe(t.parentNode)) || t), n;
+                }),
+                (p.sortStable = y.split("").sort(q).join("") === y),
+                (p.detectDuplicates = !!d),
+                f(),
+                (p.sortDetached = A(function (e) {
+                    return 1 & e.compareDocumentPosition(k.createElement("div"));
+                })),
                 A(function (e) {
-                    return (e.innerHTML = "<input/>"), e.firstChild.setAttribute("value", ""), "" === e.firstChild.getAttribute("value");
-                })) ||
-            de("value", function (e, t, n) {
-                return n || "input" !== e.nodeName.toLowerCase() ? void 0 : e.defaultValue;
-            }),
-            A(function (e) {
-                return null == e.getAttribute("disabled");
-            }) ||
-            de(J, function (e, t, n) {
-                return n ? void 0 : !0 === e[t] ? t.toLowerCase() : (n = e.getAttributeNode(t)) && n.specified ? n.value : null;
-            }),
-            E
-        );
-    })(f),
+                    return (e.innerHTML = "<a href='#'></a>"), "#" === e.firstChild.getAttribute("href");
+                }) ||
+                    de("type|href|height|width", function (e, t, n) {
+                        return n ? void 0 : e.getAttribute(t, "type" === t.toLowerCase() ? 1 : 2);
+                    }),
+                (p.attributes &&
+                    A(function (e) {
+                        return (e.innerHTML = "<input/>"), e.firstChild.setAttribute("value", ""), "" === e.firstChild.getAttribute("value");
+                    })) ||
+                    de("value", function (e, t, n) {
+                        return n || "input" !== e.nodeName.toLowerCase() ? void 0 : e.defaultValue;
+                    }),
+                A(function (e) {
+                    return null == e.getAttribute("disabled");
+                }) ||
+                    de(J, function (e, t, n) {
+                        return n ? void 0 : !0 === e[t] ? t.toLowerCase() : (n = e.getAttributeNode(t)) && n.specified ? n.value : null;
+                    }),
+                E
+            );
+        })(f),
         z = ((S.find = e), (S.expr = e.selectors), (S.expr[":"] = S.expr.pseudos), (S.unique = e.uniqueSort), (S.text = e.getText), (S.isXMLDoc = e.isXML), (S.contains = e.contains), S.expr.match.needsContext),
         G = /^<(\w+)\s*\/?>(?:<\/\1>|)$/,
         Y = /^.[^:#\[\.,]*$/;
@@ -1068,11 +1068,11 @@
                     ? [i]
                     : []
                 : S.find.matches(
-                    e,
-                    S.grep(t, function (e) {
-                        return 1 === e.nodeType;
-                    })
-                )
+                      e,
+                      S.grep(t, function (e) {
+                          return 1 === e.nodeType;
+                      })
+                  )
         );
     }),
         S.fn.extend({
@@ -1110,10 +1110,10 @@
                         return e.nodeType
                             ? ((this.context = this[0] = e), (this.length = 1), this)
                             : S.isFunction(e)
-                                ? void 0 !== a.ready
-                                    ? a.ready(e)
-                                    : e(S)
-                                : (void 0 !== e.selector && ((this.selector = e.selector), (this.context = e.context)), S.makeArray(e, this));
+                            ? void 0 !== a.ready
+                                ? a.ready(e)
+                                : e(S)
+                            : (void 0 !== e.selector && ((this.selector = e.selector), (this.context = e.context)), S.makeArray(e, this));
                     if (!(n = "<" === e[0] && ">" === e[e.length - 1] && 3 <= e.length ? [null, e, null] : X.exec(e)) || (!n[1] && t)) return (!t || t.jquery ? t || a : this.constructor(t)).find(e);
                     if (n[1]) {
                         if (((t = t instanceof S ? t[0] : t), S.merge(this, S.parseHTML(n[1], t && t.nodeType ? t.ownerDocument || t : g, !0)), G.test(n[1]) && S.isPlainObject(t)))
@@ -1122,16 +1122,16 @@
                 }
                 return this;
             }).prototype = S.fn),
-                (a = S(g)),
-                /^(?:parents|prev(?:Until|All))/),
+            (a = S(g)),
+            /^(?:parents|prev(?:Until|All))/),
         Q = { children: !0, contents: !0, next: !0, prev: !0 };
     function Z(e, t) {
-        for (; (e = e[t]) && 1 !== e.nodeType;);
+        for (; (e = e[t]) && 1 !== e.nodeType; );
         return e;
     }
     S.extend({
         dir: function (e, t, n) {
-            for (var i = [], o = void 0 !== n; (e = e[t]) && 9 !== e.nodeType;)
+            for (var i = [], o = void 0 !== n; (e = e[t]) && 9 !== e.nodeType; )
                 if (1 === e.nodeType) {
                     if (o && S(e).is(n)) break;
                     i.push(e);
@@ -1228,11 +1228,11 @@
         o =
             "string" == typeof o
                 ? ee[o] ||
-                ((n = ee[(e = o)] = {}),
-                    S.each(e.match(k) || [], function (e, t) {
-                        n[t] = !0;
-                    }),
-                    n)
+                  ((n = ee[(e = o)] = {}),
+                  S.each(e.match(k) || [], function (e, t) {
+                      n[t] = !0;
+                  }),
+                  n)
                 : S.extend({}, o);
         function i(e) {
             for (t = o.memory && e, a = !0, c = r || 0, r = 0, l = d.length, s = !0; d && c < l; c++)
@@ -1255,7 +1255,7 @@
                     var e;
                     return (
                         d &&
-                        ((e = d.length),
+                            ((e = d.length),
                             (function i(e) {
                                 S.each(e, function (e, t) {
                                     var n = S.type(t);
@@ -1269,9 +1269,9 @@
                 remove: function () {
                     return (
                         d &&
-                        S.each(arguments, function (e, t) {
-                            for (var n; -1 < (n = S.inArray(t, d, n));) d.splice(n, 1), s && (n <= l && l--, n <= c) && c--;
-                        }),
+                            S.each(arguments, function (e, t) {
+                                for (var n; -1 < (n = S.inArray(t, d, n)); ) d.splice(n, 1), s && (n <= l && l--, n <= c) && c--;
+                            }),
                         this
                     );
                 },
@@ -1308,10 +1308,10 @@
         S.extend({
             Deferred: function (e) {
                 var a = [
-                    ["resolve", "done", S.Callbacks("once memory"), "resolved"],
-                    ["reject", "fail", S.Callbacks("once memory"), "rejected"],
-                    ["notify", "progress", S.Callbacks("memory")],
-                ],
+                        ["resolve", "done", S.Callbacks("once memory"), "resolved"],
+                        ["reject", "fail", S.Callbacks("once memory"), "rejected"],
+                        ["notify", "progress", S.Callbacks("memory")],
+                    ],
                     o = "pending",
                     s = {
                         state: function () {
@@ -1345,13 +1345,13 @@
                             i = t[3];
                         (s[t[1]] = n.add),
                             i &&
-                            n.add(
-                                function () {
-                                    o = i;
-                                },
-                                a[1 ^ e][2].disable,
-                                a[2][2].lock
-                            ),
+                                n.add(
+                                    function () {
+                                        o = i;
+                                    },
+                                    a[1 ^ e][2].disable,
+                                    a[2][2].lock
+                                ),
                             (r[t[0]] = function () {
                                 return r[t[0] + "With"](this === r ? s : this, arguments), this;
                             }),
@@ -1405,15 +1405,15 @@
         else if (
             void 0 !== i &&
             ((o = !0),
-                S.isFunction(i) || (s = !0),
-                (t = c
-                    ? s
-                        ? (t.call(e, i), null)
-                        : ((c = t),
-                            function (e, t, n) {
-                                return c.call(S(e), n);
-                            })
-                    : t))
+            S.isFunction(i) || (s = !0),
+            (t = c
+                ? s
+                    ? (t.call(e, i), null)
+                    : ((c = t),
+                      function (e, t, n) {
+                          return c.call(S(e), n);
+                      })
+                : t))
         )
             for (; r < l; r++) t(e[r], n, s ? i : i.call(e[r], r, t(e[r], n)));
         return o ? e : c ? t.call(e) : l ? t(e[0], n) : a;
@@ -1471,7 +1471,7 @@
                 if (void 0 === t) this.cache[e] = {};
                 else {
                     n = (i = S.isArray(t) ? t.concat(t.map(S.camelCase)) : ((e = S.camelCase(t)), t in o ? [t, e] : (i = e) in o ? [i] : i.match(k) || [])).length;
-                    for (; n--;) delete o[i[n]];
+                    for (; n--; ) delete o[i[n]];
                 }
             },
             hasData: function (e) {
@@ -1491,7 +1491,7 @@
             if (((i = "data-" + t.replace(ne, "-$1").toLowerCase()), "string" == typeof (n = e.getAttribute(i)))) {
                 try {
                     n = "true" === n || ("false" !== n && ("null" === n ? null : +n + "" === n ? +n : te.test(n) ? S.parseJSON(n) : n));
-                } catch (e) { }
+                } catch (e) {}
                 c.set(e, t, n);
             } else n = void 0;
         return n;
@@ -1523,27 +1523,27 @@
                 if (void 0 !== i)
                     return "object" == typeof i
                         ? this.each(function () {
-                            c.set(this, i);
-                        })
+                              c.set(this, i);
+                          })
                         : r(
-                            this,
-                            function (t) {
-                                var e,
-                                    n = S.camelCase(i);
-                                if (a && void 0 === t) return void 0 !== (e = c.get(a, i)) || void 0 !== (e = c.get(a, n)) || void 0 !== (e = ie(a, n, void 0)) ? e : void 0;
-                                this.each(function () {
-                                    var e = c.get(this, n);
-                                    c.set(this, n, t), -1 !== i.indexOf("-") && void 0 !== e && c.set(this, i, t);
-                                });
-                            },
-                            null,
-                            e,
-                            1 < arguments.length,
-                            null,
-                            !0
-                        );
+                              this,
+                              function (t) {
+                                  var e,
+                                      n = S.camelCase(i);
+                                  if (a && void 0 === t) return void 0 !== (e = c.get(a, i)) || void 0 !== (e = c.get(a, n)) || void 0 !== (e = ie(a, n, void 0)) ? e : void 0;
+                                  this.each(function () {
+                                      var e = c.get(this, n);
+                                      c.set(this, n, t), -1 !== i.indexOf("-") && void 0 !== e && c.set(this, i, t);
+                                  });
+                              },
+                              null,
+                              e,
+                              1 < arguments.length,
+                              null,
+                              !0
+                          );
                 if (this.length && ((o = c.get(a)), 1 === a.nodeType) && !v.get(a, "hasDataAttrs")) {
-                    for (t = s.length; t--;) s[t] && 0 === (n = s[t].name).indexOf("data-") && ((n = S.camelCase(n.slice(5))), ie(a, n, o[n]));
+                    for (t = s.length; t--; ) s[t] && 0 === (n = s[t].name).indexOf("data-") && ((n = S.camelCase(n.slice(5))), ie(a, n, o[n]));
                     v.set(a, "hasDataAttrs", !0);
                 }
                 return o;
@@ -1567,7 +1567,7 @@
                     a = S._queueHooks(e, t);
                 "inprogress" === o && ((o = n.shift()), i--),
                     o &&
-                    ("fx" === t && n.unshift("inprogress"),
+                        ("fx" === t && n.unshift("inprogress"),
                         delete a.stop,
                         o.call(
                             e,
@@ -1598,11 +1598,11 @@
                     arguments.length < e
                         ? S.queue(this[0], t)
                         : void 0 === n
-                            ? this
-                            : this.each(function () {
-                                var e = S.queue(this, t, n);
-                                S._queueHooks(this, t), "fx" === t && "inprogress" !== e[0] && S.dequeue(this, t);
-                            })
+                        ? this
+                        : this.each(function () {
+                              var e = S.queue(this, t, n);
+                              S._queueHooks(this, t), "fx" === t && "inprogress" !== e[0] && S.dequeue(this, t);
+                          })
                 );
             },
             dequeue: function (e) {
@@ -1622,7 +1622,7 @@
                     a = S.Deferred(),
                     s = this,
                     r = this.length;
-                for ("string" != typeof e && ((t = e), (e = void 0)), e = e || "fx"; r--;) (i = v.get(s[r], e + "queueHooks")) && i.empty && (o++, i.empty.add(n));
+                for ("string" != typeof e && ((t = e), (e = void 0)), e = e || "fx"; r--; ) (i = v.get(s[r], e + "queueHooks")) && i.empty && (o++, i.empty.add(n));
                 return n(), a.promise(t);
             },
         });
@@ -1634,14 +1634,14 @@
         oe = /^(?:checkbox|radio)$/i,
         y =
             ((e = g.createDocumentFragment().appendChild(g.createElement("div"))),
-                (E = g.createElement("input")).setAttribute("type", "radio"),
-                E.setAttribute("checked", "checked"),
-                E.setAttribute("name", "t"),
-                e.appendChild(E),
-                (m.checkClone = e.cloneNode(!0).cloneNode(!0).lastChild.checked),
-                (e.innerHTML = "<textarea>x</textarea>"),
-                (m.noCloneChecked = !!e.cloneNode(!0).lastChild.defaultValue),
-                "undefined"),
+            (E = g.createElement("input")).setAttribute("type", "radio"),
+            E.setAttribute("checked", "checked"),
+            E.setAttribute("name", "t"),
+            e.appendChild(E),
+            (m.checkClone = e.cloneNode(!0).cloneNode(!0).lastChild.checked),
+            (e.innerHTML = "<textarea>x</textarea>"),
+            (m.noCloneChecked = !!e.cloneNode(!0).lastChild.defaultValue),
+            "undefined"),
         ae = ((m.focusinBubbles = "onfocusin" in f), /^key/),
         se = /^(?:mouse|pointer|contextmenu)|click/,
         re = /^(?:focusinfocus|focusoutblur)$/,
@@ -1655,7 +1655,7 @@
     function ce() {
         try {
             return g.activeElement;
-        } catch (e) { }
+        } catch (e) {}
     }
     (S.event = {
         global: {},
@@ -1673,21 +1673,21 @@
             if (f)
                 for (
                     n.handler && ((n = (a = n).handler), (o = a.selector)),
-                    n.guid || (n.guid = S.guid++),
-                    r = (r = f.events) || (f.events = {}),
-                    s =
-                    (s = f.handle) ||
-                    (f.handle = function (e) {
-                        return typeof S != y && S.event.triggered !== e.type ? S.event.dispatch.apply(t, arguments) : void 0;
-                    }),
-                    l = (e = (e || "").match(k) || [""]).length;
+                        n.guid || (n.guid = S.guid++),
+                        r = (r = f.events) || (f.events = {}),
+                        s =
+                            (s = f.handle) ||
+                            (f.handle = function (e) {
+                                return typeof S != y && S.event.triggered !== e.type ? S.event.dispatch.apply(t, arguments) : void 0;
+                            }),
+                        l = (e = (e || "").match(k) || [""]).length;
                     l--;
 
                 )
                     (u = h = (p = le.exec(e[l]) || [])[1]),
                         (p = (p[2] || "").split(".").sort()),
                         u &&
-                        ((c = S.event.special[u] || {}),
+                            ((c = S.event.special[u] || {}),
                             (u = (o ? c.delegateType : c.bindType) || u),
                             (c = S.event.special[u] || {}),
                             (h = S.extend({ type: u, origType: h, data: i, handler: n, guid: n.guid, selector: o, needsContext: o && S.expr.match.needsContext.test(o), namespace: p.join(".") }, a)),
@@ -1710,15 +1710,15 @@
                 m,
                 g = v.hasData(e) && v.get(e);
             if (g && (l = g.events)) {
-                for (c = (t = (t || "").match(k) || [""]).length; c--;)
+                for (c = (t = (t || "").match(k) || [""]).length; c--; )
                     if (((h = m = (r = le.exec(t[c]) || [])[1]), (f = (r[2] || "").split(".").sort()), h)) {
-                        for (u = S.event.special[h] || {}, p = l[(h = (i ? u.delegateType : u.bindType) || h)] || [], r = r[2] && new RegExp("(^|\\.)" + f.join("\\.(?:.*\\.|)") + "(\\.|$)"), s = a = p.length; a--;)
+                        for (u = S.event.special[h] || {}, p = l[(h = (i ? u.delegateType : u.bindType) || h)] || [], r = r[2] && new RegExp("(^|\\.)" + f.join("\\.(?:.*\\.|)") + "(\\.|$)"), s = a = p.length; a--; )
                             (d = p[a]),
                                 (!o && m !== d.origType) ||
-                                (n && n.guid !== d.guid) ||
-                                (r && !r.test(d.namespace)) ||
-                                (i && i !== d.selector && ("**" !== i || !d.selector)) ||
-                                (p.splice(a, 1), d.selector && p.delegateCount--, u.remove && u.remove.call(e, d));
+                                    (n && n.guid !== d.guid) ||
+                                    (r && !r.test(d.namespace)) ||
+                                    (i && i !== d.selector && ("**" !== i || !d.selector)) ||
+                                    (p.splice(a, 1), d.selector && p.delegateCount--, u.remove && u.remove.call(e, d));
                         s && !p.length && ((u.teardown && !1 !== u.teardown.call(e, f, g.handle)) || S.removeEvent(e, h, g.handle), delete l[h]);
                     } else for (h in l) S.event.remove(e, h + t[c], n, i, !0);
                 S.isEmptyObject(l) && (delete g.handle, v.remove(e, "events"));
@@ -1740,31 +1740,31 @@
                 8 !== n.nodeType &&
                 !re.test(u + S.event.triggered) &&
                 (0 <= u.indexOf(".") && ((u = (p = u.split(".")).shift()), p.sort()),
-                    (r = u.indexOf(":") < 0 && "on" + u),
-                    ((e = e[S.expando] ? e : new S.Event(u, "object" == typeof e && e)).isTrigger = i ? 2 : 3),
-                    (e.namespace = p.join(".")),
-                    (e.namespace_re = e.namespace ? new RegExp("(^|\\.)" + p.join("\\.(?:.*\\.|)") + "(\\.|$)") : null),
-                    (e.result = void 0),
-                    e.target || (e.target = n),
-                    (t = null == t ? [e] : S.makeArray(t, [e])),
-                    (c = S.event.special[u] || {}),
-                    i || !c.trigger || !1 !== c.trigger.apply(n, t))
+                (r = u.indexOf(":") < 0 && "on" + u),
+                ((e = e[S.expando] ? e : new S.Event(u, "object" == typeof e && e)).isTrigger = i ? 2 : 3),
+                (e.namespace = p.join(".")),
+                (e.namespace_re = e.namespace ? new RegExp("(^|\\.)" + p.join("\\.(?:.*\\.|)") + "(\\.|$)") : null),
+                (e.result = void 0),
+                e.target || (e.target = n),
+                (t = null == t ? [e] : S.makeArray(t, [e])),
+                (c = S.event.special[u] || {}),
+                i || !c.trigger || !1 !== c.trigger.apply(n, t))
             ) {
                 if (!i && !c.noBubble && !S.isWindow(n)) {
                     for (s = c.delegateType || u, re.test(s + u) || (h = h.parentNode); h; h = h.parentNode) d.push(h), (a = h);
                     a === (n.ownerDocument || g) && d.push(a.defaultView || a.parentWindow || f);
                 }
-                for (o = 0; (h = d[o++]) && !e.isPropagationStopped();)
+                for (o = 0; (h = d[o++]) && !e.isPropagationStopped(); )
                     (e.type = 1 < o ? s : c.bindType || u),
                         (l = (v.get(h, "events") || {})[e.type] && v.get(h, "handle")) && l.apply(h, t),
                         (l = r && h[r]) && l.apply && S.acceptData(h) && ((e.result = l.apply(h, t)), !1 === e.result) && e.preventDefault();
                 return (
                     (e.type = u),
                     i ||
-                    e.isDefaultPrevented() ||
-                    (c._default && !1 !== c._default.apply(d.pop(), t)) ||
-                    !S.acceptData(n) ||
-                    (r && S.isFunction(n[u]) && !S.isWindow(n) && ((a = n[r]) && (n[r] = null), n[(S.event.triggered = u)](), (S.event.triggered = void 0), a) && (n[r] = a)),
+                        e.isDefaultPrevented() ||
+                        (c._default && !1 !== c._default.apply(d.pop(), t)) ||
+                        !S.acceptData(n) ||
+                        (r && S.isFunction(n[u]) && !S.isWindow(n) && ((a = n[r]) && (n[r] = null), n[(S.event.triggered = u)](), (S.event.triggered = void 0), a) && (n[r] = a)),
                     e.result
                 );
             }
@@ -1780,8 +1780,8 @@
                 r = (v.get(this, "events") || {})[e.type] || [],
                 l = S.event.special[e.type] || {};
             if ((((s[0] = e).delegateTarget = this), !l.preDispatch || !1 !== l.preDispatch.call(this, e))) {
-                for (a = S.event.handlers.call(this, e, r), t = 0; (i = a[t++]) && !e.isPropagationStopped();)
-                    for (e.currentTarget = i.elem, n = 0; (o = i.handlers[n++]) && !e.isImmediatePropagationStopped();)
+                for (a = S.event.handlers.call(this, e, r), t = 0; (i = a[t++]) && !e.isPropagationStopped(); )
+                    for (e.currentTarget = i.elem, n = 0; (o = i.handlers[n++]) && !e.isImmediatePropagationStopped(); )
                         (e.namespace_re && !e.namespace_re.test(o.namespace)) ||
                             ((e.handleObj = o), (e.data = o.data), void 0 === (o = ((S.event.special[o.origType] || {}).handle || o.handler).apply(i.elem, s))) ||
                             !1 !== (e.result = o) ||
@@ -1821,8 +1821,8 @@
                     o = t.button;
                 return (
                     null == e.pageX &&
-                    null != t.clientX &&
-                    ((n = (i = e.target.ownerDocument || g).documentElement),
+                        null != t.clientX &&
+                        ((n = (i = e.target.ownerDocument || g).documentElement),
                         (i = i.body),
                         (e.pageX = t.clientX + ((n && n.scrollLeft) || (i && i.scrollLeft) || 0) - ((n && n.clientLeft) || (i && i.clientLeft) || 0)),
                         (e.pageY = t.clientY + ((n && n.scrollTop) || (i && i.scrollTop) || 0) - ((n && n.clientTop) || (i && i.clientTop) || 0))),
@@ -1839,7 +1839,7 @@
                 o = e.type,
                 a = e,
                 s = this.fixHooks[o];
-            for (s || (this.fixHooks[o] = s = se.test(o) ? this.mouseHooks : ae.test(o) ? this.keyHooks : {}), i = s.props ? this.props.concat(s.props) : this.props, e = new S.Event(a), t = i.length; t--;) e[(n = i[t])] = a[n];
+            for (s || (this.fixHooks[o] = s = se.test(o) ? this.mouseHooks : ae.test(o) ? this.keyHooks : {}), i = s.props ? this.props.concat(s.props) : this.props, e = new S.Event(a), t = i.length; t--; ) e[(n = i[t])] = a[n];
             return e.target || (e.target = g), 3 === e.target.nodeType && (e.target = e.target.parentNode), s.filter ? s.filter(e, a) : e;
         },
         special: {
@@ -1881,9 +1881,9 @@
         (S.Event = function (e, t) {
             return this instanceof S.Event
                 ? (e && e.type ? ((this.originalEvent = e), (this.type = e.type), (this.isDefaultPrevented = e.defaultPrevented || (void 0 === e.defaultPrevented && !1 === e.returnValue) ? p : h)) : (this.type = e),
-                    t && S.extend(this, t),
-                    (this.timeStamp = (e && e.timeStamp) || S.now()),
-                    void (this[S.expando] = !0))
+                  t && S.extend(this, t),
+                  (this.timeStamp = (e && e.timeStamp) || S.now()),
+                  void (this[S.expando] = !0))
                 : new S.Event(e, t);
         }),
         (S.Event.prototype = {
@@ -1916,23 +1916,23 @@
             };
         }),
         m.focusinBubbles ||
-        S.each({ focus: "focusin", blur: "focusout" }, function (n, i) {
-            function o(e) {
-                S.event.simulate(i, e.target, S.event.fix(e), !0);
-            }
-            S.event.special[i] = {
-                setup: function () {
-                    var e = this.ownerDocument || this,
-                        t = v.access(e, i);
-                    t || e.addEventListener(n, o, !0), v.access(e, i, (t || 0) + 1);
-                },
-                teardown: function () {
-                    var e = this.ownerDocument || this,
-                        t = v.access(e, i) - 1;
-                    t ? v.access(e, i, t) : (e.removeEventListener(n, o, !0), v.remove(e, i));
-                },
-            };
-        }),
+            S.each({ focus: "focusin", blur: "focusout" }, function (n, i) {
+                function o(e) {
+                    S.event.simulate(i, e.target, S.event.fix(e), !0);
+                }
+                S.event.special[i] = {
+                    setup: function () {
+                        var e = this.ownerDocument || this,
+                            t = v.access(e, i);
+                        t || e.addEventListener(n, o, !0), v.access(e, i, (t || 0) + 1);
+                    },
+                    teardown: function () {
+                        var e = this.ownerDocument || this,
+                            t = v.access(e, i) - 1;
+                        t ? v.access(e, i, t) : (e.removeEventListener(n, o, !0), v.remove(e, i));
+                    },
+                };
+            }),
         S.fn.extend({
             on: function (e, t, n, i, o) {
                 var a, s;
@@ -1944,7 +1944,7 @@
                 else if (!i) return this;
                 return (
                     1 === o &&
-                    ((a = i),
+                        ((a = i),
                         ((i = function (e) {
                             return S().off(e), a.apply(this, arguments);
                         }).guid = a.guid || (a.guid = S.guid++))),
@@ -2049,11 +2049,11 @@
                     if ((o = e[u]) || 0 === o)
                         if ("object" === S.type(o)) S.merge(d, o.nodeType ? [o] : o);
                         else if (pe.test(o)) {
-                            for (a = a || c.appendChild(t.createElement("div")), s = (ue.exec(o) || ["", ""])[1].toLowerCase(), a.innerHTML = (s = w[s] || w._default)[1] + o.replace(de, "<$1></$2>") + s[2], l = s[0]; l--;) a = a.lastChild;
+                            for (a = a || c.appendChild(t.createElement("div")), s = (ue.exec(o) || ["", ""])[1].toLowerCase(), a.innerHTML = (s = w[s] || w._default)[1] + o.replace(de, "<$1></$2>") + s[2], l = s[0]; l--; ) a = a.lastChild;
                             S.merge(d, a.childNodes), ((a = c.firstChild).textContent = "");
                         } else d.push(t.createTextNode(o));
-                for (c.textContent = "", u = 0; (o = d[u++]);)
-                    if ((!i || -1 === S.inArray(o, i)) && ((r = S.contains(o.ownerDocument, o)), (a = T(c.appendChild(o), "script")), r && Se(a), n)) for (l = 0; (o = a[l++]);) me.test(o.type || "") && n.push(o);
+                for (c.textContent = "", u = 0; (o = d[u++]); )
+                    if ((!i || -1 === S.inArray(o, i)) && ((r = S.contains(o.ownerDocument, o)), (a = T(c.appendChild(o), "script")), r && Se(a), n)) for (l = 0; (o = a[l++]); ) me.test(o.type || "") && n.push(o);
                 return c;
             },
             cleanData: function (e) {
@@ -2074,8 +2074,8 @@
                         return void 0 === e
                             ? S.text(this)
                             : this.empty().each(function () {
-                                (1 !== this.nodeType && 11 !== this.nodeType && 9 !== this.nodeType) || (this.textContent = e);
-                            });
+                                  (1 !== this.nodeType && 11 !== this.nodeType && 9 !== this.nodeType) || (this.textContent = e);
+                              });
                     },
                     null,
                     e,
@@ -2134,7 +2134,7 @@
                             try {
                                 for (; n < i; n++) 1 === (t = this[n] || {}).nodeType && (S.cleanData(T(t, !1)), (t.innerHTML = e));
                                 t = 0;
-                            } catch (e) { }
+                            } catch (e) {}
                         }
                         t && this.empty().append(e);
                     },
@@ -2219,9 +2219,9 @@
         return (
             (n = n || De(e)) && (o = n.getPropertyValue(t) || n[t]),
             n &&
-            ("" !== o || S.contains(e.ownerDocument, e) || (o = S.style(e, t)), Me.test(o)) &&
-            Ee.test(t) &&
-            ((e = a.width), (t = a.minWidth), (i = a.maxWidth), (a.minWidth = a.maxWidth = a.width = o), (o = n.width), (a.width = e), (a.minWidth = t), (a.maxWidth = i)),
+                ("" !== o || S.contains(e.ownerDocument, e) || (o = S.style(e, t)), Me.test(o)) &&
+                Ee.test(t) &&
+                ((e = a.width), (t = a.minWidth), (i = a.maxWidth), (a.minWidth = a.maxWidth = a.width = o), (o = n.width), (a.width = e), (a.minWidth = t), (a.maxWidth = i)),
             void 0 !== o ? o + "" : o
         );
     }
@@ -2240,32 +2240,32 @@
     (x = g.documentElement),
         (_ = g.createElement("div")),
         (C = g.createElement("div")).style &&
-        ((C.style.backgroundClip = "content-box"),
+            ((C.style.backgroundClip = "content-box"),
             (C.cloneNode(!0).style.backgroundClip = ""),
             (m.clearCloneStyle = "content-box" === C.style.backgroundClip),
             (_.style.cssText = "border:0;width:0;height:0;top:0;left:-9999px;margin-top:1px;position:absolute"),
             _.appendChild(C),
             f.getComputedStyle) &&
-        S.extend(m, {
-            pixelPosition: function () {
-                return Ne(), Oe;
-            },
-            boxSizingReliable: function () {
-                return null == Ie && Ne(), Ie;
-            },
-            reliableMarginRight: function () {
-                var e = C.appendChild(g.createElement("div"));
-                return (
-                    (e.style.cssText = C.style.cssText = "-webkit-box-sizing:content-box;-moz-box-sizing:content-box;box-sizing:content-box;display:block;margin:0;border:0;padding:0"),
-                    (e.style.marginRight = e.style.width = "0"),
-                    (C.style.width = "1px"),
-                    x.appendChild(_),
-                    (e = !parseFloat(f.getComputedStyle(e, null).marginRight)),
-                    x.removeChild(_),
-                    e
-                );
-            },
-        }),
+            S.extend(m, {
+                pixelPosition: function () {
+                    return Ne(), Oe;
+                },
+                boxSizingReliable: function () {
+                    return null == Ie && Ne(), Ie;
+                },
+                reliableMarginRight: function () {
+                    var e = C.appendChild(g.createElement("div"));
+                    return (
+                        (e.style.cssText = C.style.cssText = "-webkit-box-sizing:content-box;-moz-box-sizing:content-box;box-sizing:content-box;display:block;margin:0;border:0;padding:0"),
+                        (e.style.marginRight = e.style.width = "0"),
+                        (C.style.width = "1px"),
+                        x.appendChild(_),
+                        (e = !parseFloat(f.getComputedStyle(e, null).marginRight)),
+                        x.removeChild(_),
+                        e
+                    );
+                },
+            }),
         (S.swap = function (e, t, n, i) {
             var o,
                 a = {};
@@ -2281,7 +2281,7 @@
         We = ["Webkit", "O", "Moz", "ms"];
     function Be(e, t) {
         if (t in e) return t;
-        for (var n = t[0].toUpperCase() + t.slice(1), i = t, o = We.length; o--;) if ((t = We[o] + n) in e) return t;
+        for (var n = t[0].toUpperCase() + t.slice(1), i = t, o = We.length; o--; ) if ((t = We[o] + n) in e) return t;
         return i;
     }
     function He(e, t, n) {
@@ -2311,10 +2311,10 @@
         for (var n, i, o, a = [], s = 0, r = e.length; s < r; s++)
             (i = e[s]).style &&
                 ((a[s] = v.get(i, "olddisplay")),
-                    (n = i.style.display),
-                    t
-                        ? (a[s] || "none" !== n || (i.style.display = ""), "" === i.style.display && b(i) && (a[s] = v.access(i, "olddisplay", Ce(i.nodeName))))
-                        : ((o = b(i)), ("none" === n && o) || v.set(i, "olddisplay", o ? n : S.css(i, "display"))));
+                (n = i.style.display),
+                t
+                    ? (a[s] || "none" !== n || (i.style.display = ""), "" === i.style.display && b(i) && (a[s] = v.access(i, "olddisplay", Ce(i.nodeName))))
+                    : ((o = b(i)), ("none" === n && o) || v.set(i, "olddisplay", o ? n : S.css(i, "display"))));
         for (s = 0; s < r; s++) !(i = e[s]).style || (t && "none" !== i.style.display && "" !== i.style.display) || (i.style.display = t ? a[s] || "" : "none");
         return e;
     }
@@ -2344,11 +2344,11 @@
                             ? o
                             : l[t]
                         : ("string" === (a = typeof n) && (o = Pe.exec(n)) && ((n = (o[1] + 1) * o[2] + parseFloat(S.css(e, t))), (a = "number")),
-                            void (
-                                null != n &&
-                                n == n &&
-                                ("number" !== a || S.cssNumber[r] || (n += "px"), m.clearCloneStyle || "" !== n || 0 !== t.indexOf("background") || (l[t] = "inherit"), (s && "set" in s && void 0 === (n = s.set(e, n, i))) || (l[t] = n))
-                            ))
+                          void (
+                              null != n &&
+                              n == n &&
+                              ("number" !== a || S.cssNumber[r] || (n += "px"), m.clearCloneStyle || "" !== n || 0 !== t.indexOf("background") || (l[t] = "inherit"), (s && "set" in s && void 0 === (n = s.set(e, n, i))) || (l[t] = n))
+                          ))
                 );
         },
         css: function (e, t, n, i) {
@@ -2367,8 +2367,8 @@
                     return t
                         ? Le.test(S.css(e, "display")) && 0 === e.offsetWidth
                             ? S.swap(e, $e, function () {
-                                return Ve(e, o, n);
-                            })
+                                  return Ve(e, o, n);
+                              })
                             : Ve(e, o, n)
                         : void 0;
                 },
@@ -2422,8 +2422,8 @@
                         ? this.show()
                         : this.hide()
                     : this.each(function () {
-                        b(this) ? S(this).show() : S(this).hide();
-                    });
+                          b(this) ? S(this).show() : S(this).hide();
+                      });
             },
         }),
         (((S.Tween = O).prototype = {
@@ -2494,27 +2494,27 @@
                 for (i in (n.queue ||
                     (null == (r = S._queueHooks(t, "fx")).unqueued &&
                         ((r.unqueued = 0),
-                            (l = r.empty.fire),
-                            (r.empty.fire = function () {
-                                r.unqueued || l();
-                            })),
-                        r.unqueued++,
-                        d.always(function () {
-                            d.always(function () {
-                                r.unqueued--, S.queue(t, "fx").length || r.empty.fire();
-                            });
+                        (l = r.empty.fire),
+                        (r.empty.fire = function () {
+                            r.unqueued || l();
                         })),
-                    1 === t.nodeType &&
+                    r.unqueued++,
+                    d.always(function () {
+                        d.always(function () {
+                            r.unqueued--, S.queue(t, "fx").length || r.empty.fire();
+                        });
+                    })),
+                1 === t.nodeType &&
                     ("height" in e || "width" in e) &&
                     ((n.overflow = [p.overflow, p.overflowX, p.overflowY]), (c = S.css(t, "display")), "inline" === ("none" === c ? v.get(t, "olddisplay") || Ce(t.nodeName) : c)) &&
                     "none" === S.css(t, "float") &&
                     (p.display = "inline-block"),
-                    n.overflow &&
+                n.overflow &&
                     ((p.overflow = "hidden"),
-                        d.always(function () {
-                            (p.overflow = n.overflow[0]), (p.overflowX = n.overflow[1]), (p.overflowY = n.overflow[2]);
-                        })),
-                    e))
+                    d.always(function () {
+                        (p.overflow = n.overflow[0]), (p.overflowX = n.overflow[1]), (p.overflowY = n.overflow[2]);
+                    })),
+                e))
                     if (((o = e[i]), ze.exec(o))) {
                         if ((delete e[i], (a = a || "toggle" === o), o === (h ? "hide" : "show"))) {
                             if ("show" !== o || !f || void 0 === f[i]) continue;
@@ -2525,16 +2525,16 @@
                 if (S.isEmptyObject(u)) "inline" === ("none" === c ? Ce(t.nodeName) : c) && (p.display = c);
                 else
                     for (i in (f ? "hidden" in f && (h = f.hidden) : (f = v.access(t, "fxshow", {})),
-                        a && (f.hidden = !h),
-                        h
-                            ? S(t).show()
-                            : d.done(function () {
-                                S(t).hide();
-                            }),
-                        d.done(function () {
-                            for (var e in (v.remove(t, "fxshow"), u)) S.style(t, e, u[e]);
-                        }),
-                        u))
+                    a && (f.hidden = !h),
+                    h
+                        ? S(t).show()
+                        : d.done(function () {
+                              S(t).hide();
+                          }),
+                    d.done(function () {
+                        for (var e in (v.remove(t, "fxshow"), u)) S.style(t, e, u[e]);
+                    }),
+                    u))
                         (s = Qe(h ? f[i] : 0, i, d)), i in f || ((f[i] = s.start), h && ((s.end = s.start), (s.start = "width" === i || "height" === i ? 1 : 0)));
             },
         ],
@@ -2548,7 +2548,7 @@
                         a = (S.cssNumber[e] || ("px" !== o && +i)) && Ge.exec(S.css(n.elem, e)),
                         s = 1,
                         r = 20;
-                    if (a && a[3] !== o) for (o = o || a[3], t = t || [], a = +i || 1; S.style(n.elem, e, (a /= s = s || ".5") + o), s !== (s = n.cur() / i) && 1 !== s && --r;);
+                    if (a && a[3] !== o) for (o = o || a[3], t = t || [], a = +i || 1; S.style(n.elem, e, (a /= s = s || ".5") + o), s !== (s = n.cur() / i) && 1 !== s && --r; );
                     return t && ((a = n.start = +a || +i || 0), (n.unit = o), (n.end = t[1] ? a + (t[1] + 1) * t[2] : +t[2])), n;
                 },
             ],
@@ -2675,7 +2675,7 @@
                             i = v.get(this);
                         if (t) i[t] && i[t].stop && s(i[t]);
                         else for (t in i) i[t] && i[t].stop && Ye.test(t) && s(i[t]);
-                        for (t = n.length; t--;) n[t].elem !== this || (null != o && n[t].queue !== o) || (n[t].anim.stop(a), (e = !1), n.splice(t, 1));
+                        for (t = n.length; t--; ) n[t].elem !== this || (null != o && n[t].queue !== o) || (n[t].anim.stop(a), (e = !1), n.splice(t, 1));
                         (!e && a) || S.dequeue(this, o);
                     })
                 );
@@ -2690,7 +2690,7 @@
                             i = t[s + "queueHooks"],
                             o = S.timers,
                             a = n ? n.length : 0;
-                        for (t.finish = !0, S.queue(this, s, []), i && i.stop && i.stop.call(this, !0), e = o.length; e--;) o[e].elem === this && o[e].queue === s && (o[e].anim.stop(!0), o.splice(e, 1));
+                        for (t.finish = !0, S.queue(this, s, []), i && i.stop && i.stop.call(this, !0), e = o.length; e--; ) o[e].elem === this && o[e].queue === s && (o[e].anim.stop(!0), o.splice(e, 1));
                         for (e = 0; e < a; e++) n[e] && n[e].finish && n[e].finish.call(this);
                         delete t.finish;
                     })
@@ -2762,54 +2762,54 @@
                     });
                 },
             }),
-                S.extend({
-                    attr: function (e, t, n) {
-                        var i,
-                            o,
-                            a = e.nodeType;
-                        if (e && 3 !== a && 8 !== a && 2 !== a)
-                            return typeof e.getAttribute == y
-                                ? S.prop(e, t, n)
-                                : ((1 === a && S.isXMLDoc(e)) || ((t = t.toLowerCase()), (i = S.attrHooks[t] || (S.expr.match.bool.test(t) ? et : void 0))),
-                                    void 0 === n
-                                        ? !(i && "get" in i && null !== (o = i.get(e, t))) && null == (o = S.find.attr(e, t))
-                                            ? void 0
-                                            : o
-                                        : null !== n
-                                            ? i && "set" in i && void 0 !== (o = i.set(e, n, t))
-                                                ? o
-                                                : (e.setAttribute(t, n + ""), n)
-                                            : void S.removeAttr(e, t));
-                    },
-                    removeAttr: function (e, t) {
-                        var n,
-                            i,
-                            o = 0,
-                            a = t && t.match(k);
-                        if (a && 1 === e.nodeType) for (; (n = a[o++]);) (i = S.propFix[n] || n), S.expr.match.bool.test(n) && (e[i] = !1), e.removeAttribute(n);
-                    },
-                    attrHooks: {
-                        type: {
-                            set: function (e, t) {
-                                var n;
-                                if (!m.radioValue && "radio" === t && S.nodeName(e, "input")) return (n = e.value), e.setAttribute("type", t), n && (e.value = n), t;
-                            },
+            S.extend({
+                attr: function (e, t, n) {
+                    var i,
+                        o,
+                        a = e.nodeType;
+                    if (e && 3 !== a && 8 !== a && 2 !== a)
+                        return typeof e.getAttribute == y
+                            ? S.prop(e, t, n)
+                            : ((1 === a && S.isXMLDoc(e)) || ((t = t.toLowerCase()), (i = S.attrHooks[t] || (S.expr.match.bool.test(t) ? et : void 0))),
+                              void 0 === n
+                                  ? !(i && "get" in i && null !== (o = i.get(e, t))) && null == (o = S.find.attr(e, t))
+                                      ? void 0
+                                      : o
+                                  : null !== n
+                                  ? i && "set" in i && void 0 !== (o = i.set(e, n, t))
+                                      ? o
+                                      : (e.setAttribute(t, n + ""), n)
+                                  : void S.removeAttr(e, t));
+                },
+                removeAttr: function (e, t) {
+                    var n,
+                        i,
+                        o = 0,
+                        a = t && t.match(k);
+                    if (a && 1 === e.nodeType) for (; (n = a[o++]); ) (i = S.propFix[n] || n), S.expr.match.bool.test(n) && (e[i] = !1), e.removeAttribute(n);
+                },
+                attrHooks: {
+                    type: {
+                        set: function (e, t) {
+                            var n;
+                            if (!m.radioValue && "radio" === t && S.nodeName(e, "input")) return (n = e.value), e.setAttribute("type", t), n && (e.value = n), t;
                         },
                     },
-                }),
-                (et = {
-                    set: function (e, t, n) {
-                        return !1 === t ? S.removeAttr(e, n) : e.setAttribute(n, n), n;
-                    },
-                }),
-                S.each(S.expr.match.bool.source.match(/\w+/g), function (e, t) {
-                    var a = A[t] || S.find.attr;
-                    A[t] = function (e, t, n) {
-                        var i, o;
-                        return n || ((o = A[t]), (A[t] = i), (i = null != a(e, t, n) ? t.toLowerCase() : null), (A[t] = o)), i;
-                    };
-                }),
-                /^(?:input|select|textarea|button)$/i),
+                },
+            }),
+            (et = {
+                set: function (e, t, n) {
+                    return !1 === t ? S.removeAttr(e, n) : e.setAttribute(n, n), n;
+                },
+            }),
+            S.each(S.expr.match.bool.source.match(/\w+/g), function (e, t) {
+                var a = A[t] || S.find.attr;
+                A[t] = function (e, t, n) {
+                    var i, o;
+                    return n || ((o = A[t]), (A[t] = i), (i = null != a(e, t, n) ? t.toLowerCase() : null), (A[t] = o)), i;
+                };
+            }),
+            /^(?:input|select|textarea|button)$/i),
         nt =
             (S.fn.extend({
                 prop: function (e, t) {
@@ -2821,37 +2821,37 @@
                     });
                 },
             }),
-                S.extend({
-                    propFix: { for: "htmlFor", class: "className" },
-                    prop: function (e, t, n) {
-                        var i,
-                            o,
-                            a = e.nodeType;
-                        if (e && 3 !== a && 8 !== a && 2 !== a)
-                            return (
-                                (1 !== a || !S.isXMLDoc(e)) && ((t = S.propFix[t] || t), (o = S.propHooks[t])),
-                                void 0 !== n ? (o && "set" in o && void 0 !== (i = o.set(e, n, t)) ? i : (e[t] = n)) : o && "get" in o && null !== (i = o.get(e, t)) ? i : e[t]
-                            );
-                    },
-                    propHooks: {
-                        tabIndex: {
-                            get: function (e) {
-                                return e.hasAttribute("tabindex") || tt.test(e.nodeName) || e.href ? e.tabIndex : -1;
-                            },
+            S.extend({
+                propFix: { for: "htmlFor", class: "className" },
+                prop: function (e, t, n) {
+                    var i,
+                        o,
+                        a = e.nodeType;
+                    if (e && 3 !== a && 8 !== a && 2 !== a)
+                        return (
+                            (1 !== a || !S.isXMLDoc(e)) && ((t = S.propFix[t] || t), (o = S.propHooks[t])),
+                            void 0 !== n ? (o && "set" in o && void 0 !== (i = o.set(e, n, t)) ? i : (e[t] = n)) : o && "get" in o && null !== (i = o.get(e, t)) ? i : e[t]
+                        );
+                },
+                propHooks: {
+                    tabIndex: {
+                        get: function (e) {
+                            return e.hasAttribute("tabindex") || tt.test(e.nodeName) || e.href ? e.tabIndex : -1;
                         },
                     },
-                }),
-                m.optSelected ||
+                },
+            }),
+            m.optSelected ||
                 (S.propHooks.selected = {
                     get: function (e) {
                         e = e.parentNode;
                         return e && e.parentNode && e.parentNode.selectedIndex, null;
                     },
                 }),
-                S.each(["tabIndex", "readOnly", "maxLength", "cellSpacing", "cellPadding", "rowSpan", "colSpan", "useMap", "frameBorder", "contentEditable"], function () {
-                    S.propFix[this.toLowerCase()] = this;
-                }),
-                /[\t\r\n\f]/g),
+            S.each(["tabIndex", "readOnly", "maxLength", "cellSpacing", "cellPadding", "rowSpan", "colSpan", "useMap", "frameBorder", "contentEditable"], function () {
+                S.propFix[this.toLowerCase()] = this;
+            }),
+            /[\t\r\n\f]/g),
         it =
             (S.fn.extend({
                 addClass: function (t) {
@@ -2871,7 +2871,7 @@
                     if (r)
                         for (e = (t || "").match(k) || []; l < c; l++)
                             if ((i = 1 === (n = this[l]).nodeType && (n.className ? (" " + n.className + " ").replace(nt, " ") : " "))) {
-                                for (a = 0; (o = e[a++]);) i.indexOf(" " + o + " ") < 0 && (i += o + " ");
+                                for (a = 0; (o = e[a++]); ) i.indexOf(" " + o + " ") < 0 && (i += o + " ");
                                 (s = S.trim(i)), n.className !== s && (n.className = s);
                             }
                     return this;
@@ -2893,7 +2893,7 @@
                     if (r)
                         for (e = (t || "").match(k) || []; l < c; l++)
                             if ((i = 1 === (n = this[l]).nodeType && (n.className ? (" " + n.className + " ").replace(nt, " ") : ""))) {
-                                for (a = 0; (o = e[a++]);) for (; 0 <= i.indexOf(" " + o + " ");) i = i.replace(" " + o + " ", " ");
+                                for (a = 0; (o = e[a++]); ) for (; 0 <= i.indexOf(" " + o + " "); ) i = i.replace(" " + o + " ", " ");
                                 (s = t ? S.trim(i) : ""), n.className !== s && (n.className = s);
                             }
                     return this;
@@ -2905,22 +2905,22 @@
                             ? this.addClass(o)
                             : this.removeClass(o)
                         : this.each(
-                            S.isFunction(o)
-                                ? function (e) {
-                                    S(this).toggleClass(o.call(this, e, this.className, t), t);
-                                }
-                                : function () {
-                                    if ("string" == a) for (var e, t = 0, n = S(this), i = o.match(k) || []; (e = i[t++]);) n.hasClass(e) ? n.removeClass(e) : n.addClass(e);
-                                    else (a != y && "boolean" != a) || (this.className && v.set(this, "__className__", this.className), (this.className = (!this.className && !1 !== o && v.get(this, "__className__")) || ""));
-                                }
-                        );
+                              S.isFunction(o)
+                                  ? function (e) {
+                                        S(this).toggleClass(o.call(this, e, this.className, t), t);
+                                    }
+                                  : function () {
+                                        if ("string" == a) for (var e, t = 0, n = S(this), i = o.match(k) || []; (e = i[t++]); ) n.hasClass(e) ? n.removeClass(e) : n.addClass(e);
+                                        else (a != y && "boolean" != a) || (this.className && v.set(this, "__className__", this.className), (this.className = (!this.className && !1 !== o && v.get(this, "__className__")) || ""));
+                                    }
+                          );
                 },
                 hasClass: function (e) {
                     for (var t = " " + e + " ", n = 0, i = this.length; n < i; n++) if (1 === this[n].nodeType && 0 <= (" " + this[n].className + " ").replace(nt, " ").indexOf(t)) return !0;
                     return !1;
                 },
             }),
-                /\r/g),
+            /\r/g),
         ot =
             (S.fn.extend({
                 val: function (t) {
@@ -2930,90 +2930,90 @@
                         o = this[0];
                     return arguments.length
                         ? ((i = S.isFunction(t)),
-                            this.each(function (e) {
-                                1 === this.nodeType &&
-                                    (null == (e = i ? t.call(this, e, S(this).val()) : t)
-                                        ? (e = "")
-                                        : "number" == typeof e
-                                            ? (e += "")
-                                            : S.isArray(e) &&
-                                            (e = S.map(e, function (e) {
-                                                return null == e ? "" : e + "";
-                                            })),
-                                        ((n = S.valHooks[this.type] || S.valHooks[this.nodeName.toLowerCase()]) && "set" in n && void 0 !== n.set(this, e, "value")) || (this.value = e));
-                            }))
+                          this.each(function (e) {
+                              1 === this.nodeType &&
+                                  (null == (e = i ? t.call(this, e, S(this).val()) : t)
+                                      ? (e = "")
+                                      : "number" == typeof e
+                                      ? (e += "")
+                                      : S.isArray(e) &&
+                                        (e = S.map(e, function (e) {
+                                            return null == e ? "" : e + "";
+                                        })),
+                                  ((n = S.valHooks[this.type] || S.valHooks[this.nodeName.toLowerCase()]) && "set" in n && void 0 !== n.set(this, e, "value")) || (this.value = e));
+                          }))
                         : o
-                            ? (n = S.valHooks[o.type] || S.valHooks[o.nodeName.toLowerCase()]) && "get" in n && void 0 !== (e = n.get(o, "value"))
-                                ? e
-                                : "string" == typeof (e = o.value)
-                                    ? e.replace(it, "")
-                                    : null == e
-                                        ? ""
-                                        : e
-                            : void 0;
+                        ? (n = S.valHooks[o.type] || S.valHooks[o.nodeName.toLowerCase()]) && "get" in n && void 0 !== (e = n.get(o, "value"))
+                            ? e
+                            : "string" == typeof (e = o.value)
+                            ? e.replace(it, "")
+                            : null == e
+                            ? ""
+                            : e
+                        : void 0;
                 },
             }),
-                S.extend({
-                    valHooks: {
-                        option: {
-                            get: function (e) {
-                                var t = S.find.attr(e, "value");
-                                return null != t ? t : S.trim(S.text(e));
-                            },
-                        },
-                        select: {
-                            get: function (e) {
-                                for (var t, n = e.options, i = e.selectedIndex, o = "select-one" === e.type || i < 0, a = o ? null : [], s = o ? i + 1 : n.length, r = i < 0 ? s : o ? i : 0; r < s; r++)
-                                    if (!((!(t = n[r]).selected && r !== i) || (m.optDisabled ? t.disabled : null !== t.getAttribute("disabled")) || (t.parentNode.disabled && S.nodeName(t.parentNode, "optgroup")))) {
-                                        if (((t = S(t).val()), o)) return t;
-                                        a.push(t);
-                                    }
-                                return a;
-                            },
-                            set: function (e, t) {
-                                for (var n, i, o = e.options, a = S.makeArray(t), s = o.length; s--;) ((i = o[s]).selected = 0 <= S.inArray(i.value, a)) && (n = !0);
-                                return n || (e.selectedIndex = -1), a;
-                            },
+            S.extend({
+                valHooks: {
+                    option: {
+                        get: function (e) {
+                            var t = S.find.attr(e, "value");
+                            return null != t ? t : S.trim(S.text(e));
                         },
                     },
-                }),
-                S.each(["radio", "checkbox"], function () {
-                    (S.valHooks[this] = {
-                        set: function (e, t) {
-                            return S.isArray(t) ? (e.checked = 0 <= S.inArray(S(e).val(), t)) : void 0;
+                    select: {
+                        get: function (e) {
+                            for (var t, n = e.options, i = e.selectedIndex, o = "select-one" === e.type || i < 0, a = o ? null : [], s = o ? i + 1 : n.length, r = i < 0 ? s : o ? i : 0; r < s; r++)
+                                if (!((!(t = n[r]).selected && r !== i) || (m.optDisabled ? t.disabled : null !== t.getAttribute("disabled")) || (t.parentNode.disabled && S.nodeName(t.parentNode, "optgroup")))) {
+                                    if (((t = S(t).val()), o)) return t;
+                                    a.push(t);
+                                }
+                            return a;
                         },
-                    }),
-                        m.checkOn ||
+                        set: function (e, t) {
+                            for (var n, i, o = e.options, a = S.makeArray(t), s = o.length; s--; ) ((i = o[s]).selected = 0 <= S.inArray(i.value, a)) && (n = !0);
+                            return n || (e.selectedIndex = -1), a;
+                        },
+                    },
+                },
+            }),
+            S.each(["radio", "checkbox"], function () {
+                (S.valHooks[this] = {
+                    set: function (e, t) {
+                        return S.isArray(t) ? (e.checked = 0 <= S.inArray(S(e).val(), t)) : void 0;
+                    },
+                }),
+                    m.checkOn ||
                         (S.valHooks[this].get = function (e) {
                             return null === e.getAttribute("value") ? "on" : e.value;
                         });
-                }),
-                S.each(
-                    "blur focus focusin focusout load resize scroll unload click dblclick mousedown mouseup mousemove mouseover mouseout mouseenter mouseleave change select submit keydown keypress keyup error contextmenu".split(" "),
-                    function (e, n) {
-                        S.fn[n] = function (e, t) {
-                            return 0 < arguments.length ? this.on(n, null, e, t) : this.trigger(n);
-                        };
-                    }
-                ),
-                S.fn.extend({
-                    hover: function (e, t) {
-                        return this.mouseenter(e).mouseleave(t || e);
-                    },
-                    bind: function (e, t, n) {
-                        return this.on(e, null, t, n);
-                    },
-                    unbind: function (e, t) {
-                        return this.off(e, null, t);
-                    },
-                    delegate: function (e, t, n, i) {
-                        return this.on(t, e, n, i);
-                    },
-                    undelegate: function (e, t, n) {
-                        return 1 === arguments.length ? this.off(e, "**") : this.off(t, e || "**", n);
-                    },
-                }),
-                S.now()),
+            }),
+            S.each(
+                "blur focus focusin focusout load resize scroll unload click dblclick mousedown mouseup mousemove mouseover mouseout mouseenter mouseleave change select submit keydown keypress keyup error contextmenu".split(" "),
+                function (e, n) {
+                    S.fn[n] = function (e, t) {
+                        return 0 < arguments.length ? this.on(n, null, e, t) : this.trigger(n);
+                    };
+                }
+            ),
+            S.fn.extend({
+                hover: function (e, t) {
+                    return this.mouseenter(e).mouseleave(t || e);
+                },
+                bind: function (e, t, n) {
+                    return this.on(e, null, t, n);
+                },
+                unbind: function (e, t) {
+                    return this.off(e, null, t);
+                },
+                delegate: function (e, t, n, i) {
+                    return this.on(t, e, n, i);
+                },
+                undelegate: function (e, t, n) {
+                    return 1 === arguments.length ? this.off(e, "**") : this.off(t, e || "**", n);
+                },
+            }),
+            S.now()),
         at = /\?/;
     (S.parseJSON = function (e) {
         return JSON.parse(e + "");
@@ -3050,7 +3050,7 @@
             var n,
                 i = 0,
                 o = e.toLowerCase().match(k) || [];
-            if (S.isFunction(t)) for (; (n = o[i++]);) "+" === n[0] ? ((n = n.slice(1) || "*"), (a[n] = a[n] || []).unshift(t)) : (a[n] = a[n] || []).push(t);
+            if (S.isFunction(t)) for (; (n = o[i++]); ) "+" === n[0] ? ((n = n.slice(1) || "*"), (a[n] = a[n] || []).unshift(t)) : (a[n] = a[n] || []).push(t);
         };
     }
     function gt(t, i, o, a) {
@@ -3124,7 +3124,7 @@
                         getResponseHeader: function (e) {
                             var t;
                             if (2 === y) {
-                                if (!n) for (n = {}; (t = lt.exec(d));) n[t[1].toLowerCase()] = t[2];
+                                if (!n) for (n = {}; (t = lt.exec(d)); ) n[t[1].toLowerCase()] = t[2];
                                 t = n[e.toLowerCase()];
                             }
                             return null == t ? null : t;
@@ -3152,27 +3152,27 @@
                     };
                 if (
                     ((g.promise(w).complete = v.add),
-                        (w.success = w.done),
-                        (w.error = w.fail),
-                        (h.url = ((e || h.url || L) + "").replace(st, "").replace(dt, N[1] + "//")),
-                        (h.type = t.method || t.type || h.method || h.type),
-                        (h.dataTypes = S.trim(h.dataType || "*")
-                            .toLowerCase()
-                            .match(k) || [""]),
-                        null == h.crossDomain && ((e = ut.exec(h.url.toLowerCase())), (h.crossDomain = !(!e || (e[1] === N[1] && e[2] === N[2] && (e[3] || ("http:" === e[1] ? "80" : "443")) === (N[3] || ("http:" === N[1] ? "80" : "443")))))),
-                        h.data && h.processData && "string" != typeof h.data && (h.data = S.param(h.data, h.traditional)),
-                        gt(pt, h, t, w),
-                        2 !== y)
+                    (w.success = w.done),
+                    (w.error = w.fail),
+                    (h.url = ((e || h.url || L) + "").replace(st, "").replace(dt, N[1] + "//")),
+                    (h.type = t.method || t.type || h.method || h.type),
+                    (h.dataTypes = S.trim(h.dataType || "*")
+                        .toLowerCase()
+                        .match(k) || [""]),
+                    null == h.crossDomain && ((e = ut.exec(h.url.toLowerCase())), (h.crossDomain = !(!e || (e[1] === N[1] && e[2] === N[2] && (e[3] || ("http:" === e[1] ? "80" : "443")) === (N[3] || ("http:" === N[1] ? "80" : "443")))))),
+                    h.data && h.processData && "string" != typeof h.data && (h.data = S.param(h.data, h.traditional)),
+                    gt(pt, h, t, w),
+                    2 !== y)
                 ) {
                     for (i in ((p = h.global) && 0 == S.active++ && S.event.trigger("ajaxStart"),
-                        (h.type = h.type.toUpperCase()),
-                        (h.hasContent = !ct.test(h.type)),
-                        (c = h.url),
-                        h.hasContent || (h.data && ((c = h.url += (at.test(c) ? "&" : "?") + h.data), delete h.data), !1 === h.cache && (h.url = rt.test(c) ? c.replace(rt, "$1_=" + ot++) : c + (at.test(c) ? "&" : "?") + "_=" + ot++)),
-                        h.ifModified && (S.lastModified[c] && w.setRequestHeader("If-Modified-Since", S.lastModified[c]), S.etag[c]) && w.setRequestHeader("If-None-Match", S.etag[c]),
-                        ((h.data && h.hasContent && !1 !== h.contentType) || t.contentType) && w.setRequestHeader("Content-Type", h.contentType),
-                        w.setRequestHeader("Accept", h.dataTypes[0] && h.accepts[h.dataTypes[0]] ? h.accepts[h.dataTypes[0]] + ("*" !== h.dataTypes[0] ? ", " + ft + "; q=0.01" : "") : h.accepts["*"]),
-                        h.headers))
+                    (h.type = h.type.toUpperCase()),
+                    (h.hasContent = !ct.test(h.type)),
+                    (c = h.url),
+                    h.hasContent || (h.data && ((c = h.url += (at.test(c) ? "&" : "?") + h.data), delete h.data), !1 === h.cache && (h.url = rt.test(c) ? c.replace(rt, "$1_=" + ot++) : c + (at.test(c) ? "&" : "?") + "_=" + ot++)),
+                    h.ifModified && (S.lastModified[c] && w.setRequestHeader("If-Modified-Since", S.lastModified[c]), S.etag[c]) && w.setRequestHeader("If-None-Match", S.etag[c]),
+                    ((h.data && h.hasContent && !1 !== h.contentType) || t.contentType) && w.setRequestHeader("Content-Type", h.contentType),
+                    w.setRequestHeader("Accept", h.dataTypes[0] && h.accepts[h.dataTypes[0]] ? h.accepts[h.dataTypes[0]] + ("*" !== h.dataTypes[0] ? ", " + ft + "; q=0.01" : "") : h.accepts["*"]),
+                    h.headers))
                         w.setRequestHeader(i, h.headers[i]);
                     if (h.beforeSend && (!1 === h.beforeSend.call(f, w, h) || 2 === y)) return w.abort();
                     for (i in ((s = "abort"), { success: 1, error: 1, complete: 1 })) w[i](h[i]);
@@ -3180,10 +3180,10 @@
                         (w.readyState = 1),
                             p && m.trigger("ajaxSend", [w, h]),
                             h.async &&
-                            0 < h.timeout &&
-                            (u = setTimeout(function () {
-                                w.abort("timeout");
-                            }, h.timeout));
+                                0 < h.timeout &&
+                                (u = setTimeout(function () {
+                                    w.abort("timeout");
+                                }, h.timeout));
                         try {
                             (y = 1), l.send(o, r);
                         } catch (e) {
@@ -3200,14 +3200,14 @@
                         r = t;
                     2 !== y &&
                         ((y = 2),
-                            u && clearTimeout(u),
-                            (l = void 0),
-                            (d = i || ""),
-                            (w.readyState = 0 < e ? 4 : 0),
-                            (i = (200 <= e && e < 300) || 304 === e),
-                            n &&
+                        u && clearTimeout(u),
+                        (l = void 0),
+                        (d = i || ""),
+                        (w.readyState = 0 < e ? 4 : 0),
+                        (i = (200 <= e && e < 300) || 304 === e),
+                        n &&
                             (s = (function (e, t, n) {
-                                for (var i, o, a, s, r = e.contents, l = e.dataTypes; "*" === l[0];) l.shift(), void 0 === i && (i = e.mimeType || t.getResponseHeader("Content-Type"));
+                                for (var i, o, a, s, r = e.contents, l = e.dataTypes; "*" === l[0]; ) l.shift(), void 0 === i && (i = e.mimeType || t.getResponseHeader("Content-Type"));
                                 if (i)
                                     for (o in r)
                                         if (r[o] && r[o].test(i)) {
@@ -3227,48 +3227,48 @@
                                 }
                                 return a ? (a !== l[0] && l.unshift(a), n[a]) : void 0;
                             })(h, w, n)),
-                            (s = (function (e, t, n, i) {
-                                var o,
-                                    a,
-                                    s,
-                                    r,
-                                    l,
-                                    c = {},
-                                    d = e.dataTypes.slice();
-                                if (d[1]) for (s in e.converters) c[s.toLowerCase()] = e.converters[s];
-                                for (a = d.shift(); a;)
-                                    if ((e.responseFields[a] && (n[e.responseFields[a]] = t), !l && i && e.dataFilter && (t = e.dataFilter(t, e.dataType)), (l = a), (a = d.shift())))
-                                        if ("*" === a) a = l;
-                                        else if ("*" !== l && l !== a) {
-                                            if (!(s = c[l + " " + a] || c["* " + a]))
-                                                for (o in c)
-                                                    if (((r = o.split(" ")), r[1] === a && (s = c[l + " " + r[0]] || c["* " + r[0]]))) {
-                                                        !0 === s ? (s = c[o]) : !0 !== c[o] && ((a = r[0]), d.unshift(r[1]));
-                                                        break;
-                                                    }
-                                            if (!0 !== s)
-                                                if (s && e.throws) t = s(t);
-                                                else
-                                                    try {
-                                                        t = s(t);
-                                                    } catch (e) {
-                                                        return { state: "parsererror", error: s ? e : "No conversion from " + l + " to " + a };
-                                                    }
-                                        }
-                                return { state: "success", data: t };
-                            })(h, s, w, i)),
-                            i
-                                ? (h.ifModified && ((n = w.getResponseHeader("Last-Modified")) && (S.lastModified[c] = n), (n = w.getResponseHeader("etag"))) && (S.etag[c] = n),
-                                    204 === e || "HEAD" === h.type ? (r = "nocontent") : 304 === e ? (r = "notmodified") : ((r = s.state), (o = s.data), (i = !(a = s.error))))
-                                : ((a = r), (e || !r) && ((r = "error"), e < 0) && (e = 0)),
-                            (w.status = e),
-                            (w.statusText = (t || r) + ""),
-                            i ? g.resolveWith(f, [o, r, w]) : g.rejectWith(f, [w, r, a]),
-                            w.statusCode(b),
-                            (b = void 0),
-                            p && m.trigger(i ? "ajaxSuccess" : "ajaxError", [w, h, i ? o : a]),
-                            v.fireWith(f, [w, r]),
-                            p) &&
+                        (s = (function (e, t, n, i) {
+                            var o,
+                                a,
+                                s,
+                                r,
+                                l,
+                                c = {},
+                                d = e.dataTypes.slice();
+                            if (d[1]) for (s in e.converters) c[s.toLowerCase()] = e.converters[s];
+                            for (a = d.shift(); a; )
+                                if ((e.responseFields[a] && (n[e.responseFields[a]] = t), !l && i && e.dataFilter && (t = e.dataFilter(t, e.dataType)), (l = a), (a = d.shift())))
+                                    if ("*" === a) a = l;
+                                    else if ("*" !== l && l !== a) {
+                                        if (!(s = c[l + " " + a] || c["* " + a]))
+                                            for (o in c)
+                                                if (((r = o.split(" ")), r[1] === a && (s = c[l + " " + r[0]] || c["* " + r[0]]))) {
+                                                    !0 === s ? (s = c[o]) : !0 !== c[o] && ((a = r[0]), d.unshift(r[1]));
+                                                    break;
+                                                }
+                                        if (!0 !== s)
+                                            if (s && e.throws) t = s(t);
+                                            else
+                                                try {
+                                                    t = s(t);
+                                                } catch (e) {
+                                                    return { state: "parsererror", error: s ? e : "No conversion from " + l + " to " + a };
+                                                }
+                                    }
+                            return { state: "success", data: t };
+                        })(h, s, w, i)),
+                        i
+                            ? (h.ifModified && ((n = w.getResponseHeader("Last-Modified")) && (S.lastModified[c] = n), (n = w.getResponseHeader("etag"))) && (S.etag[c] = n),
+                              204 === e || "HEAD" === h.type ? (r = "nocontent") : 304 === e ? (r = "notmodified") : ((r = s.state), (o = s.data), (i = !(a = s.error))))
+                            : ((a = r), (e || !r) && ((r = "error"), e < 0) && (e = 0)),
+                        (w.status = e),
+                        (w.statusText = (t || r) + ""),
+                        i ? g.resolveWith(f, [o, r, w]) : g.rejectWith(f, [w, r, a]),
+                        w.statusCode(b),
+                        (b = void 0),
+                        p && m.trigger(i ? "ajaxSuccess" : "ajaxError", [w, h, i ? o : a]),
+                        v.fireWith(f, [w, r]),
+                        p) &&
                         (m.trigger("ajaxComplete", [w, h]), --S.active || S.event.trigger("ajaxStop"));
                 }
             },
@@ -3297,30 +3297,30 @@
                 var e;
                 return S.isFunction(t)
                     ? this.each(function (e) {
-                        S(this).wrapAll(t.call(this, e));
-                    })
+                          S(this).wrapAll(t.call(this, e));
+                      })
                     : (this[0] &&
-                        ((e = S(t, this[0].ownerDocument).eq(0).clone(!0)),
-                            this[0].parentNode && e.insertBefore(this[0]),
-                            e
-                                .map(function () {
-                                    for (var e = this; e.firstElementChild;) e = e.firstElementChild;
-                                    return e;
-                                })
-                                .append(this)),
-                        this);
+                          ((e = S(t, this[0].ownerDocument).eq(0).clone(!0)),
+                          this[0].parentNode && e.insertBefore(this[0]),
+                          e
+                              .map(function () {
+                                  for (var e = this; e.firstElementChild; ) e = e.firstElementChild;
+                                  return e;
+                              })
+                              .append(this)),
+                      this);
             },
             wrapInner: function (n) {
                 return this.each(
                     S.isFunction(n)
                         ? function (e) {
-                            S(this).wrapInner(n.call(this, e));
-                        }
+                              S(this).wrapInner(n.call(this, e));
+                          }
                         : function () {
-                            var e = S(this),
-                                t = e.contents();
-                            t.length ? t.wrapAll(n) : e.append(n);
-                        }
+                              var e = S(this),
+                                  t = e.contents();
+                              t.length ? t.wrapAll(n) : e.append(n);
+                          }
                 );
             },
             wrap: function (t) {
@@ -3388,10 +3388,10 @@
                         return null == n
                             ? null
                             : S.isArray(n)
-                                ? S.map(n, function (e) {
-                                    return { name: t.name, value: e.replace(wt, "\r\n") };
-                                })
-                                : { name: t.name, value: n.replace(wt, "\r\n") };
+                            ? S.map(n, function (e) {
+                                  return { name: t.name, value: e.replace(wt, "\r\n") };
+                              })
+                            : { name: t.name, value: n.replace(wt, "\r\n") };
                     })
                     .get();
             },
@@ -3399,7 +3399,7 @@
         (S.ajaxSettings.xhr = function () {
             try {
                 return new XMLHttpRequest();
-            } catch (e) { }
+            } catch (e) {}
         });
     var Tt = 0,
         xt = {},
@@ -3410,78 +3410,78 @@
                 S(f).on("unload", function () {
                     for (var e in xt) xt[e]();
                 }),
-                (m.cors = !!j && "withCredentials" in j),
-                (m.ajax = j = !!j),
-                S.ajaxTransport(function (a) {
-                    var s;
-                    return m.cors || (j && !a.crossDomain)
-                        ? {
-                            send: function (e, t) {
-                                var n,
-                                    i = a.xhr(),
-                                    o = ++Tt;
-                                if ((i.open(a.type, a.url, a.async, a.username, a.password), a.xhrFields)) for (n in a.xhrFields) i[n] = a.xhrFields[n];
-                                for (n in (a.mimeType && i.overrideMimeType && i.overrideMimeType(a.mimeType), a.crossDomain || e["X-Requested-With"] || (e["X-Requested-With"] = "XMLHttpRequest"), e)) i.setRequestHeader(n, e[n]);
-                                (s = function (e) {
-                                    return function () {
-                                        s &&
-                                            (delete xt[o],
-                                                (s = i.onload = i.onerror = null),
-                                                "abort" === e
-                                                    ? i.abort()
-                                                    : "error" === e
-                                                        ? t(i.status, i.statusText)
-                                                        : t(_t[i.status] || i.status, i.statusText, "string" == typeof i.responseText ? { text: i.responseText } : void 0, i.getAllResponseHeaders()));
-                                    };
-                                }),
-                                    (i.onload = s()),
-                                    (i.onerror = s("error")),
-                                    (s = xt[o] = s("abort"));
-                                try {
-                                    i.send((a.hasContent && a.data) || null);
-                                } catch (e) {
-                                    if (s) throw e;
-                                }
-                            },
-                            abort: function () {
-                                s && s();
-                            },
-                        }
-                        : void 0;
-                }),
-                S.ajaxSetup({
-                    accepts: { script: "text/javascript, application/javascript, application/ecmascript, application/x-ecmascript" },
-                    contents: { script: /(?:java|ecma)script/ },
-                    converters: {
-                        "text script": function (e) {
-                            return S.globalEval(e), e;
-                        },
+            (m.cors = !!j && "withCredentials" in j),
+            (m.ajax = j = !!j),
+            S.ajaxTransport(function (a) {
+                var s;
+                return m.cors || (j && !a.crossDomain)
+                    ? {
+                          send: function (e, t) {
+                              var n,
+                                  i = a.xhr(),
+                                  o = ++Tt;
+                              if ((i.open(a.type, a.url, a.async, a.username, a.password), a.xhrFields)) for (n in a.xhrFields) i[n] = a.xhrFields[n];
+                              for (n in (a.mimeType && i.overrideMimeType && i.overrideMimeType(a.mimeType), a.crossDomain || e["X-Requested-With"] || (e["X-Requested-With"] = "XMLHttpRequest"), e)) i.setRequestHeader(n, e[n]);
+                              (s = function (e) {
+                                  return function () {
+                                      s &&
+                                          (delete xt[o],
+                                          (s = i.onload = i.onerror = null),
+                                          "abort" === e
+                                              ? i.abort()
+                                              : "error" === e
+                                              ? t(i.status, i.statusText)
+                                              : t(_t[i.status] || i.status, i.statusText, "string" == typeof i.responseText ? { text: i.responseText } : void 0, i.getAllResponseHeaders()));
+                                  };
+                              }),
+                                  (i.onload = s()),
+                                  (i.onerror = s("error")),
+                                  (s = xt[o] = s("abort"));
+                              try {
+                                  i.send((a.hasContent && a.data) || null);
+                              } catch (e) {
+                                  if (s) throw e;
+                              }
+                          },
+                          abort: function () {
+                              s && s();
+                          },
+                      }
+                    : void 0;
+            }),
+            S.ajaxSetup({
+                accepts: { script: "text/javascript, application/javascript, application/ecmascript, application/x-ecmascript" },
+                contents: { script: /(?:java|ecma)script/ },
+                converters: {
+                    "text script": function (e) {
+                        return S.globalEval(e), e;
                     },
-                }),
-                S.ajaxPrefilter("script", function (e) {
-                    void 0 === e.cache && (e.cache = !1), e.crossDomain && (e.type = "GET");
-                }),
-                S.ajaxTransport("script", function (n) {
-                    var i, o;
-                    if (n.crossDomain)
-                        return {
-                            send: function (e, t) {
-                                (i = S("<script>")
-                                    .prop({ async: !0, charset: n.scriptCharset, src: n.url })
-                                    .on(
-                                        "load error",
-                                        (o = function (e) {
-                                            i.remove(), (o = null), e && t("error" === e.type ? 404 : 200, e.type);
-                                        })
-                                    )),
-                                    g.head.appendChild(i[0]);
-                            },
-                            abort: function () {
-                                o && o();
-                            },
-                        };
-                }),
-                []),
+                },
+            }),
+            S.ajaxPrefilter("script", function (e) {
+                void 0 === e.cache && (e.cache = !1), e.crossDomain && (e.type = "GET");
+            }),
+            S.ajaxTransport("script", function (n) {
+                var i, o;
+                if (n.crossDomain)
+                    return {
+                        send: function (e, t) {
+                            (i = S("<script>")
+                                .prop({ async: !0, charset: n.scriptCharset, src: n.url })
+                                .on(
+                                    "load error",
+                                    (o = function (e) {
+                                        i.remove(), (o = null), e && t("error" === e.type ? 404 : 200, e.type);
+                                    })
+                                )),
+                                g.head.appendChild(i[0]);
+                        },
+                        abort: function () {
+                            o && o();
+                        },
+                    };
+            }),
+            []),
         Dt = /(=)\?(?=&|$)|\?\?/,
         Ot =
             (S.ajaxSetup({
@@ -3491,63 +3491,63 @@
                     return (this[e] = !0), e;
                 },
             }),
-                S.ajaxPrefilter("json jsonp", function (e, t, n) {
-                    var i,
-                        o,
-                        a,
-                        s = !1 !== e.jsonp && (Dt.test(e.url) ? "url" : "string" == typeof e.data && !(e.contentType || "").indexOf("application/x-www-form-urlencoded") && Dt.test(e.data) && "data");
-                    return s || "jsonp" === e.dataTypes[0]
-                        ? ((i = e.jsonpCallback = S.isFunction(e.jsonpCallback) ? e.jsonpCallback() : e.jsonpCallback),
-                            s ? (e[s] = e[s].replace(Dt, "$1" + i)) : !1 !== e.jsonp && (e.url += (at.test(e.url) ? "&" : "?") + e.jsonp + "=" + i),
-                            (e.converters["script json"] = function () {
-                                return a || S.error(i + " was not called"), a[0];
-                            }),
-                            (e.dataTypes[0] = "json"),
-                            (o = f[i]),
-                            (f[i] = function () {
-                                a = arguments;
-                            }),
-                            n.always(function () {
-                                (f[i] = o), e[i] && ((e.jsonpCallback = t.jsonpCallback), Ct.push(i)), a && S.isFunction(o) && o(a[0]), (a = o = void 0);
-                            }),
-                            "script")
-                        : void 0;
-                }),
-                (S.parseHTML = function (e, t, n) {
-                    if (!e || "string" != typeof e) return null;
-                    "boolean" == typeof t && ((n = t), (t = !1)), (t = t || g);
-                    var i = G.exec(e),
-                        n = !n && [];
-                    return i ? [t.createElement(i[1])] : ((i = S.buildFragment([e], t, n)), n && n.length && S(n).remove(), S.merge([], i.childNodes));
-                }),
-                S.fn.load),
+            S.ajaxPrefilter("json jsonp", function (e, t, n) {
+                var i,
+                    o,
+                    a,
+                    s = !1 !== e.jsonp && (Dt.test(e.url) ? "url" : "string" == typeof e.data && !(e.contentType || "").indexOf("application/x-www-form-urlencoded") && Dt.test(e.data) && "data");
+                return s || "jsonp" === e.dataTypes[0]
+                    ? ((i = e.jsonpCallback = S.isFunction(e.jsonpCallback) ? e.jsonpCallback() : e.jsonpCallback),
+                      s ? (e[s] = e[s].replace(Dt, "$1" + i)) : !1 !== e.jsonp && (e.url += (at.test(e.url) ? "&" : "?") + e.jsonp + "=" + i),
+                      (e.converters["script json"] = function () {
+                          return a || S.error(i + " was not called"), a[0];
+                      }),
+                      (e.dataTypes[0] = "json"),
+                      (o = f[i]),
+                      (f[i] = function () {
+                          a = arguments;
+                      }),
+                      n.always(function () {
+                          (f[i] = o), e[i] && ((e.jsonpCallback = t.jsonpCallback), Ct.push(i)), a && S.isFunction(o) && o(a[0]), (a = o = void 0);
+                      }),
+                      "script")
+                    : void 0;
+            }),
+            (S.parseHTML = function (e, t, n) {
+                if (!e || "string" != typeof e) return null;
+                "boolean" == typeof t && ((n = t), (t = !1)), (t = t || g);
+                var i = G.exec(e),
+                    n = !n && [];
+                return i ? [t.createElement(i[1])] : ((i = S.buildFragment([e], t, n)), n && n.length && S(n).remove(), S.merge([], i.childNodes));
+            }),
+            S.fn.load),
         It =
             ((S.fn.load = function (e, t, n) {
                 var i, o, a, s, r;
                 return "string" != typeof e && Ot
                     ? Ot.apply(this, arguments)
                     : ((s = this),
-                        0 <= (r = e.indexOf(" ")) && ((i = S.trim(e.slice(r))), (e = e.slice(0, r))),
-                        S.isFunction(t) ? ((n = t), (t = void 0)) : t && "object" == typeof t && (o = "POST"),
-                        0 < s.length &&
-                        S.ajax({ url: e, type: o, dataType: "html", data: t })
-                            .done(function (e) {
-                                (a = arguments), s.html(i ? S("<div>").append(S.parseHTML(e)).find(i) : e);
-                            })
-                            .complete(
-                                n &&
-                                function (e, t) {
-                                    s.each(n, a || [e.responseText, t, e]);
-                                }
-                            ),
-                        this);
+                      0 <= (r = e.indexOf(" ")) && ((i = S.trim(e.slice(r))), (e = e.slice(0, r))),
+                      S.isFunction(t) ? ((n = t), (t = void 0)) : t && "object" == typeof t && (o = "POST"),
+                      0 < s.length &&
+                          S.ajax({ url: e, type: o, dataType: "html", data: t })
+                              .done(function (e) {
+                                  (a = arguments), s.html(i ? S("<div>").append(S.parseHTML(e)).find(i) : e);
+                              })
+                              .complete(
+                                  n &&
+                                      function (e, t) {
+                                          s.each(n, a || [e.responseText, t, e]);
+                                      }
+                              ),
+                      this);
             }),
-                (S.expr.filters.animated = function (t) {
-                    return S.grep(S.timers, function (e) {
-                        return t === e.elem;
-                    }).length;
-                }),
-                f.document.documentElement);
+            (S.expr.filters.animated = function (t) {
+                return S.grep(S.timers, function (e) {
+                    return t === e.elem;
+                }).length;
+            }),
+            f.document.documentElement);
     function Et(e) {
         return S.isWindow(e) ? e : 9 === e.nodeType && e.defaultView;
     }
@@ -3577,13 +3577,13 @@
                     ? void 0 === t
                         ? this
                         : this.each(function (e) {
-                            S.offset.setOffset(this, t, e);
-                        })
+                              S.offset.setOffset(this, t, e);
+                          })
                     : ((i = { top: 0, left: 0 }),
-                        (o = (n = this[0]) && n.ownerDocument)
-                            ? ((e = o.documentElement),
-                                S.contains(e, n) ? (typeof n.getBoundingClientRect != y && (i = n.getBoundingClientRect()), (n = Et(o)), { top: i.top + n.pageYOffset - e.clientTop, left: i.left + n.pageXOffset - e.clientLeft }) : i)
-                            : void 0);
+                      (o = (n = this[0]) && n.ownerDocument)
+                          ? ((e = o.documentElement),
+                            S.contains(e, n) ? (typeof n.getBoundingClientRect != y && (i = n.getBoundingClientRect()), (n = Et(o)), { top: i.top + n.pageYOffset - e.clientTop, left: i.left + n.pageXOffset - e.clientLeft }) : i)
+                          : void 0);
             },
             position: function () {
                 var e, t, n, i;
@@ -3599,7 +3599,7 @@
             },
             offsetParent: function () {
                 return this.map(function () {
-                    for (var e = this.offsetParent || It; e && !S.nodeName(e, "html") && "static" === S.css(e, "position");) e = e.offsetParent;
+                    for (var e = this.offsetParent || It; e && !S.nodeName(e, "html") && "static" === S.css(e, "position"); ) e = e.offsetParent;
                     return e || It;
                 });
             },
@@ -3637,10 +3637,10 @@
                             return S.isWindow(e)
                                 ? e.document.documentElement["client" + a]
                                 : 9 === e.nodeType
-                                    ? ((i = e.documentElement), Math.max(e.body["scroll" + a], i["scroll" + a], e.body["offset" + a], i["offset" + a], i["client" + a]))
-                                    : void 0 === n
-                                        ? S.css(e, t, o)
-                                        : S.style(e, t, n, o);
+                                ? ((i = e.documentElement), Math.max(e.body["scroll" + a], i["scroll" + a], e.body["offset" + a], i["offset" + a], i["client" + a]))
+                                : void 0 === n
+                                ? S.css(e, t, o)
+                                : S.style(e, t, n, o);
                         },
                         s,
                         n ? e : void 0,
@@ -3655,10 +3655,10 @@
         }),
         (S.fn.andSelf = S.fn.addBack),
         "function" == typeof define &&
-        define.amd &&
-        define("jquery", [], function () {
-            return S;
-        });
+            define.amd &&
+            define("jquery", [], function () {
+                return S;
+            });
     var Mt = f.jQuery,
         At = f.$;
     return (
@@ -3681,18 +3681,18 @@ var DEFAULT_WEATHER_SERVER_URL = "https://weather.opensprinkler.com",
     groupView = !1,
     storage = {
         get: function (e, t) {
-            t = t || function () { };
+            t = t || function () {};
             var n,
                 i = {};
             for (n in (e = "string" == typeof e ? [e] : e)) e.hasOwnProperty(n) && (i[e[n]] = localStorage.getItem(e[n]));
             t(i);
         },
         set: function (e, t) {
-            if (((t = t || function () { }), "object" == typeof e)) for (var n in e) e.hasOwnProperty(n) && localStorage.setItem(n, e[n]);
+            if (((t = t || function () {}), "object" == typeof e)) for (var n in e) e.hasOwnProperty(n) && localStorage.setItem(n, e[n]);
             t(!0);
         },
         remove: function (e, t) {
-            for (var n in ((t = t || function () { }), (e = "string" == typeof e ? [e] : e))) e.hasOwnProperty(n) && localStorage.removeItem(e[n]);
+            for (var n in ((t = t || function () {}), (e = "string" == typeof e ? [e] : e))) e.hasOwnProperty(n) && localStorage.removeItem(e[n]);
             t(!0);
         },
     },
@@ -3805,18 +3805,18 @@ function initApp() {
         currLocal || $.ajaxSetup({ timeout: 1e4 }),
         isAndroid
             ? (insertStyle(".ui-toolbar-back-btn{display:none!important}"),
-                $(this).ajaxStart(function () {
-                    try {
-                        navigator.app.clearCache();
-                    } catch (e) { }
-                }))
+              $(this).ajaxStart(function () {
+                  try {
+                      navigator.app.clearCache();
+                  } catch (e) {}
+              }))
             : isFireFox
-                ? $.ajaxSetup({
-                    xhr: function () {
-                        return new window.XMLHttpRequest({ mozSystem: !0 });
-                    },
-                })
-                : $.ajaxSetup({ cache: !1 }),
+            ? $.ajaxSetup({
+                  xhr: function () {
+                      return new window.XMLHttpRequest({ mozSystem: !0 });
+                  },
+              })
+            : $.ajaxSetup({ cache: !1 }),
         ($.mobile.defaultPageTransition = isAndroid ? "fade" : "slide"),
         ($.mobile.hoverDelay = 0),
         ($.mobile.activeBtnClass = "activeButton"),
@@ -3828,13 +3828,13 @@ function initApp() {
                     this.href,
                     e,
                     "location=" +
-                    (isAndroid ? "yes" : "no") +
-                    ",enableViewportScale=" +
-                    (t.hasClass("iabNoScale") ? "no" : "yes") +
-                    ",toolbar=yes,toolbarposition=top,toolbarcolor=" +
-                    statusBarPrimary +
-                    ",closebuttoncaption=" +
-                    (t.hasClass("iabNoScale") ? _("Back") : _("Done"))
+                        (isAndroid ? "yes" : "no") +
+                        ",enableViewportScale=" +
+                        (t.hasClass("iabNoScale") ? "no" : "yes") +
+                        ",toolbar=yes,toolbarposition=top,toolbarcolor=" +
+                        statusBarPrimary +
+                        ",closebuttoncaption=" +
+                        (t.hasClass("iabNoScale") ? _("Back") : _("Done"))
                 ),
                 setTimeout(function () {
                     t.removeClass("ui-btn-active");
@@ -3881,99 +3881,99 @@ function initApp() {
             "INPUT" !== i &&
                 "TEXTAREA" !== i &&
                 ((i = e.keyCode),
-                    (t = e.altKey),
-                    (n = $("#mainMenu-popup").hasClass("ui-popup-active")),
-                    77 === i
-                        ? 0 < $("#mainMenu").length
-                            ? $("#mainMenu").popup("close")
-                            : showHomeMenu()
-                        : (n || t) && 80 === i
-                            ? (e.preventDefault(), changePage("#programs"))
-                            : (n || t) && 79 === i
-                                ? (e.preventDefault(), changePage("#os-options"))
-                                : (n || t) && 86 === i
-                                    ? (e.preventDefault(), changePage("#preview"))
-                                    : (n || t) && 76 === i
-                                        ? (e.preventDefault(), changePage("#logs"))
-                                        : (n || t) && 82 === i
-                                            ? (e.preventDefault(), changePage("#runonce"))
-                                            : (n || t) && 85 === i
-                                                ? (e.preventDefault(), showPause())
-                                                : (n || t) && 68 === i && (e.preventDefault(), showRainDelay()));
+                (t = e.altKey),
+                (n = $("#mainMenu-popup").hasClass("ui-popup-active")),
+                77 === i
+                    ? 0 < $("#mainMenu").length
+                        ? $("#mainMenu").popup("close")
+                        : showHomeMenu()
+                    : (n || t) && 80 === i
+                    ? (e.preventDefault(), changePage("#programs"))
+                    : (n || t) && 79 === i
+                    ? (e.preventDefault(), changePage("#os-options"))
+                    : (n || t) && 86 === i
+                    ? (e.preventDefault(), changePage("#preview"))
+                    : (n || t) && 76 === i
+                    ? (e.preventDefault(), changePage("#logs"))
+                    : (n || t) && 82 === i
+                    ? (e.preventDefault(), changePage("#runonce"))
+                    : (n || t) && 85 === i
+                    ? (e.preventDefault(), showPause())
+                    : (n || t) && 68 === i && (e.preventDefault(), showRainDelay()));
         }),
         bindPanel(),
         currLocal || void 0 !== window.cordova || updateDeviceIP(),
-        //        cloudSync(),
-
+//        cloudSync(),
+        
         setTimeout(function () {
             checkConfigured(!0), fetchLocal();
         }, 200);
 }
 function flipSwitched() {
-    var $switch, switchId, isChecked, request;
+    var e, t, n, i;
     switching ||
-        (($switch = $(this)),
-            (switchId = $switch.attr("id")),
-            (isChecked = $switch.is(":checked")),
-            (request = "mmm" === switchId ? "mm" : switchId),
-            (request = sendToOS(isChecked ? "/cv?pw=&" + request + "=1" : "/cv?pw=&" + request + "=0")),
-            $.when(request).then(
-                function () {
-                    refreshStatus(), "mmm" === switchId && $("#mm_list .green").removeClass("green"), checkStatus();
-                },
-                function () {
-                    (switching = !0),
-                        setTimeout(function () {
-                            switching = !1;
-                        }, 200),
-                        $switch.prop("checked", !isChecked).flipswitch("refresh");
-                }
-            ));
+        ((e = $(this)),
+        (t = e.attr("id")),
+        (n = e.is(":checked")),
+        (i = "mmm" === t ? "mm" : t),
+        (i = sendToOS(n ? "/cv?pw=&" + i + "=1" : "/cv?pw=&" + i + "=0")),
+        $.when(i).then(
+            function () {
+                refreshStatus(), "mmm" === t && $("#mm_list .green").removeClass("green"), checkStatus();
+            },
+            function () {
+                (switching = !0),
+                    setTimeout(function () {
+                        switching = !1;
+                    }, 200),
+                    e.prop("checked", !n).flipswitch("refresh");
+            }
+        ));
 }
-function sendToOS(path, dataType) {
-    (path = path.replace("pw=", "pw=" + encodeURIComponent(currPass))), (dataType = dataType || "text");
-    var changeMatch = /\/(?:cv|cs|cr|cp|uwa|dp|co|cl|cu|up|cm)/.exec(path),
-        queueName = changeMatch ? "change" : "default",
-        usePost = changeMatch && checkOSVersion(300),
-        urlPath = usePost ? path.split("?")[0] : path,
-        ajaxOptions = {
-            url: currToken ? "https://cloud.openthings.io/forward/v1/" + currToken + urlPath : currPrefix + currIp + urlPath,
-            type: usePost ? "POST" : "GET",
-            data: usePost ? getUrlVars(path) : null,
-            dataType: dataType,
-            shouldRetry: function (xhr, retryAttempt) {
-                return !((0 === xhr.status && "abort" === xhr.statusText) || retryCount < retryAttempt) || ($.ajaxq.abort(queueName), !1);
+function sendToOS(n, e) {
+    (n = n.replace("pw=", "pw=" + encodeURIComponent(currPass))), (e = e || "text");
+    var t = /\/(?:cv|cs|cr|cp|uwa|dp|co|cl|cu|up|cm)/.exec(n),
+        i = t ? "change" : "default",
+        t = t && checkOSVersion(300),
+        o = t ? n.split("?")[0] : n,
+        o = {
+            url: currToken ? "https://cloud.openthings.io/forward/v1/" + currToken + o : currPrefix + currIp + o,
+            type: t ? "POST" : "GET",
+            data: t ? getUrlVars(n) : null,
+            dataType: e,
+            shouldRetry: function (e, t) {
+                return !((0 === e.status && "abort" === e.statusText) || retryCount < t) || ($.ajaxq.abort(i), !1);
             },
         };
     return (
         currAuth &&
-        $.extend(ajaxOptions, {
-            beforeSend: function (xhr) {
-                xhr.setRequestHeader("Authorization", "Basic " + btoa(currAuthUser + ":" + currAuthPass));
-            },
-        }),
-        curr183 && $.extend(ajaxOptions, { cache: "true" }),
-        $.ajaxq(queueName, ajaxOptions).then(
-            function (response) {
-                if ("string" == typeof response)
+            $.extend(o, {
+                beforeSend: function (e) {
+                    e.setRequestHeader("Authorization", "Basic " + btoa(currAuthUser + ":" + currAuthPass));
+                },
+            }),
+        curr183 && $.extend(o, { cache: "true" }),
+        $.ajaxq(i, o).then(
+            function (t) {
+                if ("string" == typeof t)
                     try {
-                        response = $.parseJSON(response);
+                        t = $.parseJSON(t);
                     } catch (e) {
-                        return response;
+                        return t;
                     }
-                return "object" != typeof response || "number" != typeof response.result || 1 === response.result
-                    ? response
-                    : 2 === response.result
-                        ? (/\/(?:cv|cs|cr|cp|uwa|dp|co|cl|cu|up|cm)/.exec(path) && showerror(_("Check device password and try again.")), $.Deferred().reject({ status: 401 }))
-                        : 32 === response.result
-                            ? $.Deferred().reject({ status: 404 })
-                            : /\/(?:cv|cs|cr|cp|uwa|dp|co|cl|cu|up|cm)/.exec(path)
-                                ? (48 === response.result ? showerror(_("The selected station is already running or is scheduled to run.")) : showerror(_("Please check input and try again.")), $.Deferred().reject(response))
-                                : void 0;
+                return "object" != typeof t || "number" != typeof t.result || 1 === t.result
+                    ? t
+                    : 2 === t.result
+                    ? (/\/(?:cv|cs|cr|cp|uwa|dp|co|cl|cu|up|cm)/.exec(n) && showerror(_("Check device password and try again.")), $.Deferred().reject({ status: 401 }))
+                    : 32 === t.result
+                    ? $.Deferred().reject({ status: 404 })
+                    : /\/(?:cv|cs|cr|cp|uwa|dp|co|cl|cu|up|cm)/.exec(n)
+                    ? (48 === t.result ? showerror(_("The selected station is already running or is scheduled to run.")) : showerror(_("Please check input and try again.")), $.Deferred().reject(t))
+                    : void 0;
             },
-            function (error) {
-                ("timeout" !== error.statusText && 0 !== error.status) || !/\/(?:cv|cs|cr|cp|uwa|dp|co|cl|cu|cm)/.exec(path)
-                    ? 401 === error.status && showerror(_("Check device password and try again."))
+            function (e) {
+                ("timeout" !== e.statusText && 0 !== e.status) || !/\/(?:cv|cs|cr|cp|uwa|dp|co|cl|cu|cm)/.exec(n)
+                    ? 401 === e.status && showerror(_("Check device password and try again."))
                     : showerror(_("Connection timed-out. Please try again."));
             }
         )
@@ -4020,11 +4020,11 @@ function newLoad() {
                 function t() {
                     currLocal
                         ? storage.remove(["sites"], function () {
-                            window.location.reload();
-                        })
+                              window.location.reload();
+                          })
                         : "site-control" === $(".ui-page-active").attr("id")
-                            ? n()
-                            : ($.mobile.document.one("pageshow", n), changePage("#site-control", { transition: "none" }));
+                        ? n()
+                        : ($.mobile.document.one("pageshow", n), changePage("#site-control", { transition: "none" }));
                 }
                 var n = function () {
                     showerror(_("Unable to connect to") + " " + i, 3500);
@@ -4036,162 +4036,162 @@ function newLoad() {
 
 
 
-function updateController(onSuccess, onError) {
-    (onSuccess = onSuccess || function () { }), (onError = onError || function () { });
-    function onComplete() {
-        $("html").trigger("datarefresh"), checkStatus(), onSuccess();
+function updateController(e, n) {
+    (e = e || function () {}), (n = n || function () {});
+    function i() {
+        $("html").trigger("datarefresh"), checkStatus(), e();
     }
     isControllerConnected() && checkOSVersion(216)
-        ? sendToOS("/ja?pw=", "json").then(function (data) {
-            var savedSpecial;
-            (void 0 === data || $.isEmptyObject(data) ? onError : ((savedSpecial = controller.special), ((controller = data).special = savedSpecial),
-                (controller.ospitemp = controller.status.ospitemp),
-                (controller.fuse = controller.status.fuse),
-                (controller.status = controller.status.sn),
-                onComplete))();
-        }, onError)
-        : $.when(updateControllerPrograms(), updateControllerStations(), updateControllerOptions(), updateControllerStatus(), updateControllerSettings()).then(onComplete, onError);
+        ? sendToOS("/ja?pw=", "json").then(function (e) {
+              var t;
+              (void 0 === e || $.isEmptyObject(e) ? n : ((t = controller.special), ((controller = e).special = t), 
+                                                         (controller.ospitemp = controller.status.ospitemp),
+                                                         (controller.fuse = controller.status.fuse),
+                                                         (controller.status = controller.status.sn), 
+                                                          i))();
+          }, n)
+        : $.when(updateControllerPrograms(), updateControllerStations(), updateControllerOptions(), updateControllerStatus(), updateControllerSettings()).then(i, n);
 }
-function updateControllerPrograms(callback) {
+function updateControllerPrograms(r) {
     return (
-        (callback = callback || function () { }),
+        (r = r || function () {}),
 /*        !0 === curr183
             ? sendToOS("/gp?d=0").done(function (e) {
                   for (var t, n, i = e.match(/(nprogs|nboards|mnp)=[\w|\d|.\"]+/g), o = /pd=\[\];(.*);/.exec(e), a = {}, s = 0; s < i.length; s++) "" !== i[s] && (a[(t = i[s].split("="))[0]] = parseInt(t[1]));
                   if (((a.pd = []), null !== o)) for (o = o[1].split(";"), s = 0; s < o.length; s++) (n = (n = (n = o[s].split("="))[1].replace("[", "")).replace("]", "")), (a.pd[s] = parseIntArray(n.split(",")));
-                  (controller.programs = a), callback();
+                  (controller.programs = a), r();
               })
-            : */sendToOS("/jp?pw=", "json").done(function (data) {
-            (controller.programs = data), callback();
-        })
+            : */sendToOS("/jp?pw=", "json").done(function (e) {
+                  (controller.programs = e), r();
+              })
     );
 }
-function updateControllerStations(callback) {
+function updateControllerStations(i) {
     return (
-        (callback = callback || function () { }),
+        (i = i || function () {}),
  /*       !0 === curr183
             ? sendToOS("/vs").done(function (e) {
                   var t = /snames=\[(.*?)\];/.exec(e),
                       e = e.match(/(?:masop|mo)\s?[=|:]\s?\[(.*?)\]/);
                   (t = t[1].split(",")).pop();
                   for (var n = 0; n < t.length; n++) t[n] = t[n].replace(/'/g, "");
-                  (e = parseIntArray(e[1].split(","))), (controller.stations = { snames: t, masop: e, maxlen: t.length }), callback();
+                  (e = parseIntArray(e[1].split(","))), (controller.stations = { snames: t, masop: e, maxlen: t.length }), i();
+              }) 
+            : */ sendToOS("/jn?pw=", "json").done(function (e) {
+                  (controller.stations = e), i();
               })
-            : */ sendToOS("/jn?pw=", "json").done(function (data) {
-            (controller.stations = data), callback();
-        })
     );
 }
-function updateControllerOptions(callback) {
+function updateControllerOptions(r) {
     return (
-        (callback = callback || function () { }),
+        (r = r || function () {}),
         !0 === curr183
-            ? sendToOS("/vo").done(function (rawText) {
-                var keyName,
-                    keyNum,
-                    options = {};
-                if (rawText.match(/var sd\s*=/)) {
-                    for (var regex = /(tz|htp|htp2|nbrd|seq|sdt|mas|mton|mtoff|urs|rst|wl|ipas)\s?[=|:]\s?([\w|\d|.\"]+)/gm; null !== (match = regex.exec(rawText));) options[match[1].replace("nbrd", "ext").replace("mtoff", "mtof")] = +match[2];
-                    options.ext--, (options.fwv = "1.8.3-ospi");
-                } else {
-                    var match,
-                        legacyKeys = [1, 2, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 25, 26];
-                    for (match = (match = /var opts=\[(.*)\];/.exec(rawText))[1].replace(/"/g, "").split(","), keyName = 0; keyName < match.length - 1; keyName += 4) (keyNum = +match[keyName + 3]), -1 !== $.inArray(keyNum, legacyKeys) && (options[keyIndex[keyNum]] = +match[keyName + 2]);
-                    options.fwv = 183;
-                }
-                (controller.options = options), callback();
-            })
-            : sendToOS("/jo?pw=", "json").done(function (data) {
-                (controller.options = data), callback();
-            })
+            ? sendToOS("/vo").done(function (e) {
+                  var t,
+                      n,
+                      i = {};
+                  if (e.match(/var sd\s*=/)) {
+                      for (var o = /(tz|htp|htp2|nbrd|seq|sdt|mas|mton|mtoff|urs|rst|wl|ipas)\s?[=|:]\s?([\w|\d|.\"]+)/gm; null !== (a = o.exec(e)); ) i[a[1].replace("nbrd", "ext").replace("mtoff", "mtof")] = +a[2];
+                      i.ext--, (i.fwv = "1.8.3-ospi");
+                  } else {
+                      var a,
+                          s = [1, 2, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 25, 26];
+                      for (a = (a = /var opts=\[(.*)\];/.exec(e))[1].replace(/"/g, "").split(","), t = 0; t < a.length - 1; t += 4) (n = +a[t + 3]), -1 !== $.inArray(n, s) && (i[keyIndex[n]] = +a[t + 2]);
+                      i.fwv = 183;
+                  }
+                  (controller.options = i), r();
+              })
+            : sendToOS("/jo?pw=", "json").done(function (e) {
+                  (controller.options = e), r();
+              })
     );
 }
-function updateControllerStatus(callback) {
+function updateControllerStatus(t) {
     return (
-        (callback = callback || function () { }),
+        (t = t || function () {}),
  /*       !0 === curr183
             ? sendToOS("/sn0").then(
                   function (e) {
                       e = parseIntArray((e = e.toString().match(/\d+/))[0].split(""));
-                      (controller.status = e), callback();
+                      (controller.status = e), t();
                   },
                   function () {
                       controller.status = [];
                   }
               )
             : */sendToOS("/js?pw=", "json").then(
-            function (data) {
-                (controller.status = data.sn),
-                    (controller.ospitemp = data.ospitemp),
-                    (controller.fuse = data.fuse)
-                callback();
-            },
-            function () {
-                controller.status = [];
-            }
-        )
+                  function (e) {
+                      (controller.status = e.sn),
+                      (controller.ospitemp = e.ospitemp),
+                      (controller.fuse = e.fuse)
+                       t();
+                  },
+                  function () {
+                      controller.status = [];
+                  }
+              )
     );
 }
-function updateControllerSettings(callback) {
+function updateControllerSettings(e) {
     return (
-        (callback = callback || function () { }),
+        (e = e || function () {}),
         !0 === curr183
             ? sendToOS("").then(
-                function (rawText) {
-                    for (
-                        var match,
-                        pattern = /(ver|devt|nbrd|tz|en|rd|rs|mm|rdst|urs)\s?[=|:]\s?([\w|\d|.\"]+)/gm,
-                        locMatch = rawText.match(/loc\s?[=|:]\s?[\"|'](.*)[\"|']/),
-                        lrunMatch = rawText.match(/lrun=\[(.*)\]/),
-                        psMatch = rawText.match(/ps=\[(.*)\];/),
-                        settings = {},
-                        idx = (psMatch = psMatch[1].split("],[")).length - 1;
-                        0 <= idx;
-                        idx--
-                    )
-                        psMatch[idx] = parseIntArray(psMatch[idx].replace(/\[|\]/g, "").split(","));
-                    for (; null !== (match = pattern.exec(rawText));) settings[match[1]] = +match[2];
-                    (settings.loc = locMatch[1]), (settings.ps = psMatch), (settings.lrun = parseIntArray(lrunMatch[1].split(","))), (controller.settings = settings);
-                },
-                function () {
-                    if (controller.settings && controller.stations) {
-                        for (var emptyPs = [], idx = 0; idx < controller.stations.maxlen; idx++) emptyPs.push([0, 0]);
-                        controller.settings.ps = emptyPs;
-                    }
-                }
-            )
+                  function (e) {
+                      for (
+                          var t,
+                              n = /(ver|devt|nbrd|tz|en|rd|rs|mm|rdst|urs)\s?[=|:]\s?([\w|\d|.\"]+)/gm,
+                              i = e.match(/loc\s?[=|:]\s?[\"|'](.*)[\"|']/),
+                              o = e.match(/lrun=\[(.*)\]/),
+                              a = e.match(/ps=\[(.*)\];/),
+                              s = {},
+                              r = (a = a[1].split("],[")).length - 1;
+                          0 <= r;
+                          r--
+                      )
+                          a[r] = parseIntArray(a[r].replace(/\[|\]/g, "").split(","));
+                      for (; null !== (t = n.exec(e)); ) s[t[1]] = +t[2];
+                      (s.loc = i[1]), (s.ps = a), (s.lrun = parseIntArray(o[1].split(","))), (controller.settings = s);
+                  },
+                  function () {
+                      if (controller.settings && controller.stations) {
+                          for (var e = [], t = 0; t < controller.stations.maxlen; t++) e.push([0, 0]);
+                          controller.settings.ps = e;
+                      }
+                  }
+              )
             : sendToOS("/jc?pw=").then(
-                function (data) {
-                    if ("object" != typeof data)
-                        try {
-                            data = JSON.parse(data);
-                        } catch (e) {
-                            var wtoPattern = /,"wto":\{.*?\}/,
-                                wtoMatch = data.match(wtoPattern);
-                            data = data.replace(wtoPattern, "");
-                            try {
-                                (data = JSON.parse(data)), handleCorruptedWeatherOptions(wtoMatch);
-                            } catch (e) {
-                                return !1;
-                            }
-                        }
-                    void 0 === data.lrun && (data.lrun = [0, 0, 0, 0]), data.loc.match(regex.gps) && ((wtoMatch = data.loc.split(",")), (currentCoordinates = [parseFloat(wtoMatch[0]), parseFloat(wtoMatch[1])])), (controller.settings = data), callback();
-                },
-                function () {
-                    if (controller.settings && controller.stations) {
-                        for (var emptyPs = [], idx = 0; idx < controller.stations.maxlen; idx++) emptyPs.push([0, 0]);
-                        controller.settings.ps = emptyPs;
-                    }
-                }
-            )
+                  function (t) {
+                      if ("object" != typeof t)
+                          try {
+                              t = JSON.parse(t);
+                          } catch (e) {
+                              var n = /,"wto":\{.*?\}/,
+                                  i = t.match(n);
+                              t = t.replace(n, "");
+                              try {
+                                  (t = JSON.parse(t)), handleCorruptedWeatherOptions(i);
+                              } catch (e) {
+                                  return !1;
+                              }
+                          }
+                      void 0 === t.lrun && (t.lrun = [0, 0, 0, 0]), t.loc.match(regex.gps) && ((n = t.loc.split(",")), (currentCoordinates = [parseFloat(n[0]), parseFloat(n[1])])), (controller.settings = t), e();
+                  },
+                  function () {
+                      if (controller.settings && controller.stations) {
+                          for (var e = [], t = 0; t < controller.stations.maxlen; t++) e.push([0, 0]);
+                          controller.settings.ps = e;
+                      }
+                  }
+              )
     );
 }
-function updateControllerStationSpecial(callback) {
+function updateControllerStationSpecial(t) {
     return (
-        (callback = callback || function () { }),
+        (t = t || function () {}),
         sendToOS("/je?pw=", "json").then(
-            function (data) {
-                (controller.special = data), callback();
+            function (e) {
+                (controller.special = e), t();
             },
             function () {
                 controller.special = {};
@@ -4199,158 +4199,158 @@ function updateControllerStationSpecial(callback) {
         )
     );
 }
-function checkConfigured(isFirstLoad) {
-    storage.get(["sites", "current_site", "cloudToken"], function (stored) {
-        var rawSites = stored.sites,
-            currentSite = stored.current_site,
-            sites = parseSites(rawSites),
-            siteNames = Object.keys(sites);
-        siteNames.length
-            ? null !== currentSite && currentSite in sites
-                ? (updateSiteList(siteNames, currentSite),
-                    (currToken = sites[currentSite].os_token),
-                    (currIp = sites[currentSite].os_ip),
-                    (currPass = sites[currentSite].os_pw),
-                    (currPrefix = void 0 !== sites[currentSite].ssl && "1" === sites[currentSite].ssl ? "https://" : "http://"),
-                    void 0 !== sites[currentSite].auth_user && void 0 !== sites[currentSite].auth_pw ? ((currAuth = !0), (currAuthUser = sites[currentSite].auth_user), (currAuthPass = sites[currentSite].auth_pw)) : (currAuth = !1),
-                    (curr183 = !!sites[currentSite].is183),
-                    newLoad())
-                : ($.mobile.loading("hide"), changePage("#site-control", { transition: isFirstLoad ? "none" : void 0 }))
-            : isFirstLoad && (void 0 === stored.cloudToken || null === stored.cloudToken ? changePage("#start", { transition: "none" }) : changePage("#site-control", { transition: "none" }));
+function checkConfigured(o) {
+    storage.get(["sites", "current_site", "cloudToken"], function (e) {
+        var t = e.sites,
+            n = e.current_site,
+            t = parseSites(t),
+            i = Object.keys(t);
+        i.length
+            ? null !== n && n in t
+                ? (updateSiteList(i, n),
+                  (currToken = t[n].os_token),
+                  (currIp = t[n].os_ip),
+                  (currPass = t[n].os_pw),
+                  (currPrefix = void 0 !== t[n].ssl && "1" === t[n].ssl ? "https://" : "http://"),
+                  void 0 !== t[n].auth_user && void 0 !== t[n].auth_pw ? ((currAuth = !0), (currAuthUser = t[n].auth_user), (currAuthPass = t[n].auth_pw)) : (currAuth = !1),
+                  (curr183 = !!t[n].is183),
+                  newLoad())
+                : ($.mobile.loading("hide"), changePage("#site-control", { transition: o ? "none" : void 0 }))
+            : o && (void 0 === e.cloudToken || null === e.cloudToken ? changePage("#start", { transition: "none" }) : changePage("#site-control", { transition: "none" }));
     });
 }
-function fixPasswordHash(siteName) {
-    storage.get(["sites"], function (stored) {
-        var hashedPass,
-            sites = parseSites(stored.sites);
+function fixPasswordHash(i) {
+    storage.get(["sites"], function (e) {
+        var t,
+            n = parseSites(e.sites);
         isMD5(currPass) ||
-            ((hashedPass = md5(currPass)),
-                sendToOS("/sp?pw=&npw=" + encodeURIComponent(hashedPass) + "&cpw=" + encodeURIComponent(hashedPass), "json").done(function (response) {
-                    response = response.result;
-                    if (!response || 1 < response) return !1;
-                    (sites[siteName].os_pw = currPass = hashedPass), storage.set({ sites: JSON.stringify(sites) }, cloudSaveSites);
-                }));
+            ((t = md5(currPass)),
+            sendToOS("/sp?pw=&npw=" + encodeURIComponent(t) + "&cpw=" + encodeURIComponent(t), "json").done(function (e) {
+                e = e.result;
+                if (!e || 1 < e) return !1;
+                (n[i].os_pw = currPass = t), storage.set({ sites: JSON.stringify(n) }, cloudSaveSites);
+            }));
     });
 }
-function submitNewUser(useSSL, useAuth) {
+function submitNewUser(s, r) {
     document.activeElement.blur(), $.mobile.loading("show");
-    function onConnected(deviceInfo, sites) {
-        var isLegacy, siteName, password, savePassword;
+    function n(e, t) {
+        var n, i, o, a;
         $.mobile.loading("hide"),
-            (("string" == typeof deviceInfo && deviceInfo.match(/var (en|sd)\s*=/)) || ("number" == typeof deviceInfo.fwv && 203 === deviceInfo.fwv)) && (isLegacy = !0),
-            void 0 !== deviceInfo.fwv || !0 === isLegacy
-                ? ((siteName = $("#os_name").val()),
-                    (password = $("#os_pw").val()),
-                    (savePassword = $("#save_pw").is(":checked")),
-                    "" === siteName && (siteName = "Site " + (Object.keys(sites).length + 1)),
-                    (sites[siteName] = {}),
-                    (sites[siteName].os_token = currToken = cloudToken),
-                    (sites[siteName].os_ip = currIp = ipAddress),
-                    "number" == typeof deviceInfo.fwv && 213 <= deviceInfo.fwv && "number" == typeof deviceInfo.wl && (password = md5(password)),
-                    (sites[siteName].os_pw = savePassword ? password : ""),
-                    (currPass = password),
-                    (currPrefix = useSSL ? ((sites[siteName].ssl = "1"), "https://") : "http://"),
-                    useAuth ? ((sites[siteName].auth_user = $("#os_auth_user").val()), (sites[siteName].auth_pw = $("#os_auth_pw").val()), (currAuth = !0), (currAuthUser = sites[siteName].auth_user), (currAuthPass = sites[siteName].auth_pw)) : (currAuth = !1),
-                    !0 === isLegacy && ((sites[siteName].is183 = "1"), (curr183 = !0)),
-                    $("#os_name,#os_ip,#os_pw,#os_auth_user,#os_auth_pw,#os_token").val(""),
-                    storage.set({ sites: JSON.stringify(sites), current_site: siteName }, function () {
-                        cloudSaveSites(), updateSiteList(Object.keys(sites), siteName), newLoad();
-                    }))
+            (("string" == typeof e && e.match(/var (en|sd)\s*=/)) || ("number" == typeof e.fwv && 203 === e.fwv)) && (n = !0),
+            void 0 !== e.fwv || !0 === n
+                ? ((i = $("#os_name").val()),
+                  (o = $("#os_pw").val()),
+                  (a = $("#save_pw").is(":checked")),
+                  "" === i && (i = "Site " + (Object.keys(t).length + 1)),
+                  (t[i] = {}),
+                  (t[i].os_token = currToken = c),
+                  (t[i].os_ip = currIp = l),
+                  "number" == typeof e.fwv && 213 <= e.fwv && "number" == typeof e.wl && (o = md5(o)),
+                  (t[i].os_pw = a ? o : ""),
+                  (currPass = o),
+                  (currPrefix = s ? ((t[i].ssl = "1"), "https://") : "http://"),
+                  r ? ((t[i].auth_user = $("#os_auth_user").val()), (t[i].auth_pw = $("#os_auth_pw").val()), (currAuth = !0), (currAuthUser = t[i].auth_user), (currAuthPass = t[i].auth_pw)) : (currAuth = !1),
+                  !0 === n && ((t[i].is183 = "1"), (curr183 = !0)),
+                  $("#os_name,#os_ip,#os_pw,#os_auth_user,#os_auth_pw,#os_token").val(""),
+                  storage.set({ sites: JSON.stringify(t), current_site: i }, function () {
+                      cloudSaveSites(), updateSiteList(Object.keys(t), i), newLoad();
+                  }))
                 : showerror(_("Check IP/Port and try again."));
     }
-    function onConnectionError(error) {
-        useAuth || 401 !== error.status ? (useSSL ? ($.mobile.loading("hide"), showerror(_("Check IP/Port and try again."))) : submitNewUser(!0)) : showAuthForm();
+    function t(e) {
+        r || 401 !== e.status ? (s ? ($.mobile.loading("hide"), showerror(_("Check IP/Port and try again."))) : submitNewUser(!0)) : i();
     }
-    function showAuthForm() {
+    function i() {
         var e;
         $("#addnew-auth").length
             ? submitNewUser(s, !0)
             : ($.mobile.loading("hide"),
-                (e = $(
-                    "<div class='ui-content' id='addnew-auth'><form method='post' novalidate><p class='center smaller'>" +
-                    _("Authorization Required") +
-                    "</p><label for='os_auth_user'>" +
-                    _("Username:") +
-                    "</label><input autocomplete='off' autocorrect='off' autocapitalize='off' spellcheck='false' type='text' name='os_auth_user' id='os_auth_user'><label for='os_auth_pw'>" +
-                    _("Password:") +
-                    "</label><input type='password' name='os_auth_pw' id='os_auth_pw'><input type='submit' value='" +
-                    _("Submit") +
-                    "'></form></div>"
-                ).enhanceWithin()).on("submit", "form", function () {
-                    return submitNewUser(s, !0), !1;
-                }),
-                $("#addnew-content").hide(),
-                $("#addnew").append(e).popup("reposition", { positionTo: "window" }));
+              (e = $(
+                  "<div class='ui-content' id='addnew-auth'><form method='post' novalidate><p class='center smaller'>" +
+                      _("Authorization Required") +
+                      "</p><label for='os_auth_user'>" +
+                      _("Username:") +
+                      "</label><input autocomplete='off' autocorrect='off' autocapitalize='off' spellcheck='false' type='text' name='os_auth_user' id='os_auth_user'><label for='os_auth_pw'>" +
+                      _("Password:") +
+                      "</label><input type='password' name='os_auth_pw' id='os_auth_pw'><input type='submit' value='" +
+                      _("Submit") +
+                      "'></form></div>"
+              ).enhanceWithin()).on("submit", "form", function () {
+                  return submitNewUser(s, !0), !1;
+              }),
+              $("#addnew-content").hide(),
+              $("#addnew").append(e).popup("reposition", { positionTo: "window" }));
     }
-    function getAuthHeader() {
+    function o() {
         return btoa($("#os_auth_user").val() + ":" + $("#os_auth_pw").val());
     }
-    var protocol,
-        connectionType = $(".connection-type input[type='radio']:checked").val(),
-        ipAddress = $.mobile.path.parseUrl($("#os_ip").val()).hrefNoHash.replace(/https?:\/\//, ""),
-        cloudToken = "token" === connectionType ? $("#os_token").val() : null;
-    ipAddress || cloudToken
-        ? cloudToken && 32 !== cloudToken.length
+    var a,
+        e = $(".connection-type input[type='radio']:checked").val(),
+        l = $.mobile.path.parseUrl($("#os_ip").val()).hrefNoHash.replace(/https?:\/\//, ""),
+        c = "token" === e ? $("#os_token").val() : null;
+    l || c
+        ? c && 32 !== c.length
             ? showerror(_("OpenThings Token must be 32 characters long."))
-            : !0 !== useAuth && $("#os_useauth").is(":checked")
-                ? showAuthForm()
-                : (!0 === $("#os_usessl").is(":checked") && (useSSL = !0),
-                    (protocol = useSSL ? "https://" : "http://"),
-                    useAuth && ($("#addnew-auth").hide(), $("#addnew-content").show(), $("#addnew").popup("reposition", { positionTo: "window" })),
-                    (connectionType = "/jo?pw=" + md5($("#os_pw").val())),
-                    (connectionType = cloudToken ? "https://cloud.openthings.io/forward/v1/" + cloudToken + connectionType : protocol + ipAddress + connectionType),
-                    $.ajax({
-                        url: connectionType,
-                        type: "GET",
-                        dataType: "json",
-                        timeout: 1e4,
-                        global: !1,
-                        beforeSend: function (xhr) {
-                            !cloudToken && useAuth && xhr.setRequestHeader("Authorization", "Basic " + getAuthHeader());
-                        },
-                        error: function (error) {
-                            useAuth || 401 !== error.status
-                                ? $.ajax({
-                                    url: cloudToken ? "https://cloud.openthings.io/forward/v1/" + cloudToken : protocol + ipAddress,
-                                    type: "GET",
-                                    dataType: "text",
-                                    timeout: 1e4,
-                                    global: !1,
-                                    cache: !0,
-                                    beforeSend: function (xhr) {
-                                        !cloudToken && useAuth && xhr.setRequestHeader("Authorization", "Basic " + getAuthHeader());
-                                    },
-                                    success: function (legacyText) {
-                                        storage.get("sites", function (stored) {
-                                            stored = parseSites(stored.sites);
-                                            onConnected(legacyText, stored);
-                                        });
-                                    },
-                                    error: onConnectionError,
-                                })
-                                : showAuthForm();
-                        },
-                        success: function (deviceInfo) {
-                            storage.get("sites", function (stored) {
-                                stored = parseSites(stored.sites);
-                                onConnected(deviceInfo, stored);
-                            });
-                        },
-                    }))
+            : !0 !== r && $("#os_useauth").is(":checked")
+            ? i()
+            : (!0 === $("#os_usessl").is(":checked") && (s = !0),
+              (a = s ? "https://" : "http://"),
+              r && ($("#addnew-auth").hide(), $("#addnew-content").show(), $("#addnew").popup("reposition", { positionTo: "window" })),
+              (e = "/jo?pw=" + md5($("#os_pw").val())),
+              (e = c ? "https://cloud.openthings.io/forward/v1/" + c + e : a + l + e),
+              $.ajax({
+                  url: e,
+                  type: "GET",
+                  dataType: "json",
+                  timeout: 1e4,
+                  global: !1,
+                  beforeSend: function (e) {
+                      !c && r && e.setRequestHeader("Authorization", "Basic " + o());
+                  },
+                  error: function (e) {
+                      r || 401 !== e.status
+                          ? $.ajax({
+                                url: c ? "https://cloud.openthings.io/forward/v1/" + c : a + l,
+                                type: "GET",
+                                dataType: "text",
+                                timeout: 1e4,
+                                global: !1,
+                                cache: !0,
+                                beforeSend: function (e) {
+                                    !c && r && e.setRequestHeader("Authorization", "Basic " + o());
+                                },
+                                success: function (t) {
+                                    storage.get("sites", function (e) {
+                                        e = parseSites(e.sites);
+                                        n(t, e);
+                                    });
+                                },
+                                error: t,
+                            })
+                          : i();
+                  },
+                  success: function (t) {
+                      storage.get("sites", function (e) {
+                          e = parseSites(e.sites);
+                          n(t, e);
+                      });
+                  },
+              }))
         : showerror(_("An IP address or token is required to continue."));
 }
-function parseSites(rawJson) {
-    return null == rawJson ? {} : JSON.parse(rawJson);
+function parseSites(e) {
+    return null == e ? {} : JSON.parse(e);
 }
-function showSiteSelect(listHtml) {
+function showSiteSelect(e) {
     $("#site-select").popup("destroy").remove();
-    var $popup = $(
+    var t = $(
         "<div data-role='popup' id='site-select' data-theme='a' data-overlay-theme='b'><div data-role='header' data-theme='b'><h1>" +
-        _("Select Site") +
-        "</h1></div><div class='ui-content'><ul data-role='none' class='ui-listview ui-corner-all ui-shadow'></ul></div></div>"
+            _("Select Site") +
+            "</h1></div><div class='ui-content'><ul data-role='none' class='ui-listview ui-corner-all ui-shadow'></ul></div></div>"
     );
-    listHtml && $popup.find("ul").html(listHtml),
-        $popup
+    e && t.find("ul").html(e),
+        t
             .one("popupafterclose", function () {
                 $(this).popup("destroy").remove();
             })
@@ -4358,88 +4358,88 @@ function showSiteSelect(listHtml) {
             .enhanceWithin()
             .popup("open");
 }
-function showAddNew(prefillIp, closeFirst) {
+function showAddNew(e, t) {
     $("#addnew").popup("destroy").remove();
-    var isEditing = !!prefillIp,
-        $popup = $(
+    var n = !!e,
+        i = $(
             "<div data-role='popup' id='addnew' data-theme='a' data-overlay-theme='b'><div data-role='header' data-theme='b'><h1>" +
-            _("New Device") +
-            "</h1></div><div class='ui-content' id='addnew-content'><form method='post' novalidate>" +
-            (isEditing ? "" : "<p class='center smaller'>" + _("Note: The name is used to identify the OpenSprinkler within the app. OpenSprinkler IP can be either an IP or hostname. You can also specify a port by using IP:Port") + "</p>") +
-            "<label for='os_name'>" +
-            _("Open Sprinkler Name:") +
-            "</label><input autocorrect='off' spellcheck='false' type='text' name='os_name' id='os_name' placeholder='Home'>" +
-            (isEditing
-                ? ""
-                : "<div class='ui-field-contain'><fieldset data-role='controlgroup' class='ui-mini center connection-type' data-type='horizontal'><legend class='left'>" +
-                _("Connection Type") +
-                ":</legend><input class='noselect' type='radio' name='connectionType' id='type-direct' value='ip' checked='checked'><label for='type-direct'>" +
-                _("Direct") +
-                "</label><input class='noselect' type='radio' name='connectionType' id='type-token' value='token'><label for='type-token'>" +
-                _("OpenThings Cloud") +
-                "</label></fieldset></div><label class='ip-field' for='os_ip'>" +
-                _("Open Sprinkler IP:") +
-                "</label>") +
-            "<input data-wrapper-class='ip-field' " +
-            (isEditing ? "data-role='none' style='display:none' " : "") +
-            "autocomplete='off' autocorrect='off' autocapitalize='off' spellcheck='false' type='url' pattern='' name='os_ip' id='os_ip' value='" +
-            (isEditing ? prefillIp : "") +
-            "' placeholder='home.dyndns.org'><label class='token-field' for='os_token' style='display: none'>" +
-            _("OpenThings Token") +
-            ":</label><input data-wrapper-class='token-field hidden' autocomplete='off' autocorrect='off' autocapitalize='off' spellcheck='false' type='text' pattern='' name='os_token' id='os_token' value='' placeholder='" +
-            _("OpenThings Token") +
-            "'><label for='os_pw'>" +
-            _("Open Sprinkler Password:") +
-            "</label><input type='password' name='os_pw' id='os_pw' value=''><label for='save_pw'>" +
-            _("Save Password") +
-            "</label><input type='checkbox' data-wrapper-class='save_pw' name='save_pw' id='save_pw' data-mini='true' checked='checked'>" +
-            (isEditing
-                ? ""
-                : "<div data-theme='a' data-mini='true' data-role='collapsible' class='advanced-options'><h4>" +
-                _("Advanced") +
-                "</h4><fieldset data-role='controlgroup' data-type='horizontal' data-mini='true' class='center'><input type='checkbox' name='os_usessl' id='os_usessl'><label for='os_usessl'>" +
-                _("Use SSL") +
-                "</label><input type='checkbox' name='os_useauth' id='os_useauth'><label for='os_useauth'>" +
-                _("Use Auth") +
-                "</label></fieldset></div>") +
-            "<input type='submit' data-theme='b' value='" +
-            _("Submit") +
-            "'></form></div></div>"
+                _("New Device") +
+                "</h1></div><div class='ui-content' id='addnew-content'><form method='post' novalidate>" +
+                (n ? "" : "<p class='center smaller'>" + _("Note: The name is used to identify the OpenSprinkler within the app. OpenSprinkler IP can be either an IP or hostname. You can also specify a port by using IP:Port") + "</p>") +
+                "<label for='os_name'>" +
+                _("Open Sprinkler Name:") +
+                "</label><input autocorrect='off' spellcheck='false' type='text' name='os_name' id='os_name' placeholder='Home'>" +
+                (n
+                    ? ""
+                    : "<div class='ui-field-contain'><fieldset data-role='controlgroup' class='ui-mini center connection-type' data-type='horizontal'><legend class='left'>" +
+                      _("Connection Type") +
+                      ":</legend><input class='noselect' type='radio' name='connectionType' id='type-direct' value='ip' checked='checked'><label for='type-direct'>" +
+                      _("Direct") +
+                      "</label><input class='noselect' type='radio' name='connectionType' id='type-token' value='token'><label for='type-token'>" +
+                      _("OpenThings Cloud") +
+                      "</label></fieldset></div><label class='ip-field' for='os_ip'>" +
+                      _("Open Sprinkler IP:") +
+                      "</label>") +
+                "<input data-wrapper-class='ip-field' " +
+                (n ? "data-role='none' style='display:none' " : "") +
+                "autocomplete='off' autocorrect='off' autocapitalize='off' spellcheck='false' type='url' pattern='' name='os_ip' id='os_ip' value='" +
+                (n ? e : "") +
+                "' placeholder='home.dyndns.org'><label class='token-field' for='os_token' style='display: none'>" +
+                _("OpenThings Token") +
+                ":</label><input data-wrapper-class='token-field hidden' autocomplete='off' autocorrect='off' autocapitalize='off' spellcheck='false' type='text' pattern='' name='os_token' id='os_token' value='' placeholder='" +
+                _("OpenThings Token") +
+                "'><label for='os_pw'>" +
+                _("Open Sprinkler Password:") +
+                "</label><input type='password' name='os_pw' id='os_pw' value=''><label for='save_pw'>" +
+                _("Save Password") +
+                "</label><input type='checkbox' data-wrapper-class='save_pw' name='save_pw' id='save_pw' data-mini='true' checked='checked'>" +
+                (n
+                    ? ""
+                    : "<div data-theme='a' data-mini='true' data-role='collapsible' class='advanced-options'><h4>" +
+                      _("Advanced") +
+                      "</h4><fieldset data-role='controlgroup' data-type='horizontal' data-mini='true' class='center'><input type='checkbox' name='os_usessl' id='os_usessl'><label for='os_usessl'>" +
+                      _("Use SSL") +
+                      "</label><input type='checkbox' name='os_useauth' id='os_useauth'><label for='os_useauth'>" +
+                      _("Use Auth") +
+                      "</label></fieldset></div>") +
+                "<input type='submit' data-theme='b' value='" +
+                _("Submit") +
+                "'></form></div></div>"
         );
     return (
-        $popup.find("form").on("submit", function () {
+        i.find("form").on("submit", function () {
             return submitNewUser(), !1;
         }),
-        $popup
+        i
             .one("popupafterclose", function () {
                 $(this).popup("destroy").remove();
             })
             .popup({ history: !1, positionTo: "window" })
             .enhanceWithin(),
-        closeFirst
+        t
             ? $(".ui-popup-active")
-                .children()
-                .first()
-                .one("popupafterclose", function () {
-                    $popup.popup("open");
-                })
-                .popup("close")
-            : $popup.popup("open"),
-        fixInputClick($popup),
-        $popup.find(".ui-collapsible-heading-toggle").on("click", function () {
-            var isCollapsed = $(this).parents(".ui-collapsible").hasClass("ui-collapsible-collapsed"),
-                $activePage = $(".ui-page-active"),
-                minHeight = parseInt($activePage.css("min-height"));
-            isCollapsed ? $activePage.css("min-height", minHeight + 65 + "px") : $activePage.css("min-height", minHeight - 65 + "px"), $popup.popup("reposition", { positionTo: "window" });
+                  .children()
+                  .first()
+                  .one("popupafterclose", function () {
+                      i.popup("open");
+                  })
+                  .popup("close")
+            : i.popup("open"),
+        fixInputClick(i),
+        i.find(".ui-collapsible-heading-toggle").on("click", function () {
+            var e = $(this).parents(".ui-collapsible").hasClass("ui-collapsible-collapsed"),
+                t = $(".ui-page-active"),
+                n = parseInt(t.css("min-height"));
+            e ? t.css("min-height", n + 65 + "px") : t.css("min-height", n - 65 + "px"), i.popup("reposition", { positionTo: "window" });
         }),
-        $popup.find(".connection-type input[type='radio']").on("change", function () {
-            var hiddenField = "token" === this.value ? "ip" : "token";
-            $popup.find("." + hiddenField + "-field").hide(),
-                $popup
+        i.find(".connection-type input[type='radio']").on("change", function () {
+            var e = "token" === this.value ? "ip" : "token";
+            i.find("." + e + "-field").hide(),
+                i
                     .find("." + this.value + "-field")
                     .removeClass("hidden")
                     .show(),
-                $popup.find(".advanced-options").toggle("ip" === this.value);
+                i.find(".advanced-options").toggle("ip" === this.value);
         }),
         !1
     );
@@ -4459,20 +4459,20 @@ function showAddNew(prefillIp, closeFirst) {
                     $.mobile.window.on("statusTap", function () {
                         $("body, html").animate({ scrollTop: 0 }, 700);
                     });
-            } catch (e) { }
+            } catch (e) {}
             setTimeout(function () {
                 try {
                     navigator.splashscreen.hide();
-                } catch (e) { }
+                } catch (e) {}
             }, 500),
                 $.mobile.document.on("backbutton", function () {
                     return checkChangesBeforeBack(), !1;
                 }),
                 updateDeviceIP(),
                 isiOS &&
-                ThreeDeeTouch.isAvailable(function (e) {
-                    e &&
-                        (ThreeDeeTouch.enableLinkPreview(),
+                    ThreeDeeTouch.isAvailable(function (e) {
+                        e &&
+                            (ThreeDeeTouch.enableLinkPreview(),
                             ThreeDeeTouch.configureQuickActions([
                                 { type: "sites", title: _("Manage Sites"), iconType: "Location" },
                                 { type: "addprogram", title: _("Add Program"), iconType: "Add" },
@@ -4481,89 +4481,89 @@ function showAddNew(prefillIp, closeFirst) {
                             (ThreeDeeTouch.onHomeIconPressed = function (e) {
                                 "sites" === e.type ? changePage("#site-control") : "addprogram" === e.type ? changePage("#addprogram") : "stopall" === e.type && stopAllStations();
                             }));
-                });
+                    });
         })
         .one("mobileinit", function () {
             ($.support.cors = !0), ($.mobile.allowCrossDomainPages = !0), loadLocalSettings();
         })
-        .on("pagebeforechange", function (event, changeData) {
-            var toPage = changeData.toPage,
-                $activePage = $(".ui-page-active");
-            "string" != typeof changeData.toPage ||
-                ((toPage = $.mobile.path.parseUrl(toPage).hash), 0 < $activePage.length && toPage === "#" + $activePage.attr("id")) ||
-                ("popup" === changeData.options.role || $(".ui-popup-active").length || $.mobile.silentScroll(0),
-                    "#programs" === toPage
-                        ? getPrograms(changeData.options.programToExpand)
-                        : "#addprogram" === toPage
-                            ? addProgram(changeData.options.copyID)
-                            : "#manual" === toPage
-                                ? getManual()
-                                : "#about" === toPage
-                                    ? showAbout()
-                                    : "#runonce" === toPage
-                                        ? getRunonce()
-                                        : "#os-options" === toPage
-                                            ? showOptions(changeData.options.expandItem)
-                                            : "#preview" === toPage
-                                                ? getPreview()
-                                                : "#logs" === toPage
-                                                    ? getLogs()
-                                                    : "#forecast" === toPage
-                                                        ? showForecast()
-                                                        : "#loadingPage" === toPage
-                                                            ? checkConfigured(!0)
-                                                            : "#start" === toPage
-                                                                ? showStart()
-                                                                : "#site-control" === toPage
-                                                                    ? showSites()
-                                                                    : "#sprinklers" === toPage &&
-                                                                    (0 === $(toPage).length
-                                                                        ? showHome(changeData.options.firstLoad)
-                                                                        : $(toPage).one("pageshow", function () {
-                                                                            refreshStatus();
-                                                                        })));
+        .on("pagebeforechange", function (e, t) {
+            var n = t.toPage,
+                i = $(".ui-page-active");
+            "string" != typeof t.toPage ||
+                ((n = $.mobile.path.parseUrl(n).hash), 0 < i.length && n === "#" + i.attr("id")) ||
+                ("popup" === t.options.role || $(".ui-popup-active").length || $.mobile.silentScroll(0),
+                "#programs" === n
+                    ? getPrograms(t.options.programToExpand)
+                    : "#addprogram" === n
+                    ? addProgram(t.options.copyID)
+                    : "#manual" === n
+                    ? getManual()
+                    : "#about" === n
+                    ? showAbout()
+                    : "#runonce" === n
+                    ? getRunonce()
+                    : "#os-options" === n
+                    ? showOptions(t.options.expandItem)
+                    : "#preview" === n
+                    ? getPreview()
+                    : "#logs" === n
+                    ? getLogs()
+                    : "#forecast" === n
+                    ? showForecast()
+                    : "#loadingPage" === n
+                    ? checkConfigured(!0)
+                    : "#start" === n
+                    ? showStart()
+                    : "#site-control" === n
+                    ? showSites()
+                    : "#sprinklers" === n &&
+                      (0 === $(n).length
+                          ? showHome(t.options.firstLoad)
+                          : $(n).one("pageshow", function () {
+                                refreshStatus();
+                            })));
         })
         .on("resume", function () {
             void 0 !== currIp && (cloudSync(), showLoading("#weather,#footer-running"), updateController(updateWeather, networkFail));
-        })
-        .on("pause", function () { })
-        .on("pagebeforeshow", function (event) {
-            var pageHash = "#" + event.target.id;
-            "#start" == pageHash || "#loadingPage" == pageHash ? $("#header,#footer,#footer-menu").hide() : $("#header,#footer,#footer-menu").show(),
-                storage.get("showDisabled", function (stored) {
-                    stored.showDisabled && "true" === stored.showDisabled ? $(pageHash).addClass("show-hidden").find(".station-hidden").show() : $(pageHash).removeClass("show-hidden").find(".station-hidden").hide();
+        }) 
+        .on("pause", function () {})
+        .on("pagebeforeshow", function (e) {
+            var t = "#" + e.target.id;
+            "#start" == t || "#loadingPage" == t ? $("#header,#footer,#footer-menu").hide() : $("#header,#footer,#footer-menu").show(),
+                storage.get("showDisabled", function (e) {
+                    e.showDisabled && "true" === e.showDisabled ? $(t).addClass("show-hidden").find(".station-hidden").show() : $(t).removeClass("show-hidden").find(".station-hidden").hide();
                 });
         })
-        .on("pageshow", function (event) {
-            var statusInterval,
-                dataInterval,
-                pageHash = "#" + event.target.id,
-                $page = $(pageHash);
+        .on("pageshow", function (e) {
+            var t,
+                n,
+                e = "#" + e.target.id,
+                i = $(e);
             goingBack ? (goingBack = !1) : pageHistoryCount++,
-                fixInputClick($page),
+                fixInputClick(i),
                 isControllerConnected() &&
-                "#site-control" != pageHash &&
-                "#start" != pageHash &&
-                "#loadingPage" != pageHash &&
-                ((statusInterval = setInterval(function () {
-                    refreshStatus();
-                }, 5e3)),
-                    checkOSVersion(216) || (dataInterval = setInterval(refreshData, 2e4)),
-                    $page.one("pagehide", function () {
-                        clearInterval(statusInterval), clearInterval(dataInterval);
+                    "#site-control" != e &&
+                    "#start" != e &&
+                    "#loadingPage" != e &&
+                    ((t = setInterval(function () {
+                        refreshStatus();
+                    }, 5e3)),
+                    checkOSVersion(216) || (n = setInterval(refreshData, 2e4)),
+                    i.one("pagehide", function () {
+                        clearInterval(t), clearInterval(n);
                     }));
         })
         .on("popupafteropen", function () {
             if ($(".ui-overlay-b:not(.ui-screen-hidden)").length)
                 try {
                     StatusBar.backgroundColorByHexString(statusBarOverlay);
-                } catch (e) { }
+                } catch (e) {}
         })
         .on("popupafterclose", function () {
             $(".ui-page-active").children().add("#sprinklers-settings").removeClass("blur-filter");
             try {
                 StatusBar.backgroundColorByHexString(statusBarPrimary);
-            } catch (e) { }
+            } catch (e) {}
         })
         .on("popupbeforeposition", function () {
             $(".ui-page-active").children().add("#sprinklers-settings").addClass("blur-filter");
@@ -4578,8 +4578,8 @@ var showSites = (function () {
         o.hasClass("ui-page-active")
             ? t()
             : o.one("pagebeforeshow", function (e) {
-                e.stopImmediatePropagation(), t();
-            }),
+                  e.stopImmediatePropagation(), t();
+              }),
             o.on("swiperight swipeleft", function (e) {
                 e.stopImmediatePropagation();
             }),
@@ -4591,10 +4591,10 @@ var showSites = (function () {
         o = $("<div data-role='page' id='site-control'><div class='ui-content'></div></div>"),
         n = $(
             "<div data-role='popup' id='addsite' data-theme='b'><ul data-role='listview'><li data-icon='false'><a href='#' id='site-add-scan'>" +
-            _("Scan For Device") +
-            "</a></li><li data-icon='false'><a href='#' id='site-add-manual'>" +
-            _("Manually Add Device") +
-            "</a></li></ul></div>"
+                _("Scan For Device") +
+                "</a></li><li data-icon='false'><a href='#' id='site-add-manual'>" +
+                _("Manually Add Device") +
+                "</a></li></ul></div>"
         );
     function g() {
         storage.get(["sites", "current_site", "cloudToken"], function (p) {
@@ -4636,24 +4636,24 @@ var showSites = (function () {
                                 (t.os_token
                                     ? ""
                                     : "<div class='ui-field-contain'><label for='cip-" +
-                                    n +
-                                    "'>" +
-                                    _("Change IP") +
-                                    "</label><input id='cip-" +
-                                    n +
-                                    "' type='url' value='" +
-                                    t.os_ip +
-                                    "' autocomplete='off' autocorrect='off' autocapitalize='off' pattern='' spellcheck='false'></div>") +
+                                      n +
+                                      "'>" +
+                                      _("Change IP") +
+                                      "</label><input id='cip-" +
+                                      n +
+                                      "' type='url' value='" +
+                                      t.os_ip +
+                                      "' autocomplete='off' autocorrect='off' autocapitalize='off' pattern='' spellcheck='false'></div>") +
                                 (t.os_token
                                     ? "<div class='ui-field-contain'><label for='ctoken-" +
-                                    n +
-                                    "'>" +
-                                    _("Change Token") +
-                                    "</label><input id='ctoken-" +
-                                    n +
-                                    "' type='text' value='" +
-                                    t.os_token +
-                                    "' autocomplete='off' autocorrect='off' autocapitalize='off' pattern='' spellcheck='false'></div>"
+                                      n +
+                                      "'>" +
+                                      _("Change Token") +
+                                      "</label><input id='ctoken-" +
+                                      n +
+                                      "' type='text' value='" +
+                                      t.os_token +
+                                      "' autocomplete='off' autocorrect='off' autocapitalize='off' pattern='' spellcheck='false'></div>"
                                     : "") +
                                 "<div class='ui-field-contain'><label for='cpw-" +
                                 n +
@@ -4665,34 +4665,34 @@ var showSites = (function () {
                                 (t.os_token
                                     ? ""
                                     : "<fieldset data-mini='true' data-role='collapsible'><h3><span style='line-height:23px'>" +
-                                    _("Advanced") +
-                                    "</span><button data-helptext='" +
-                                    _("These options are only for an OpenSprinkler behind a proxy capable of SSL and/or Basic Authentication.") +
-                                    "' class='collapsible-button-right help-icon btn-no-border ui-btn ui-icon-info ui-btn-icon-notext'></button></h3><label for='usessl-" +
-                                    n +
-                                    "'><input data-mini='true' type='checkbox' id='usessl-" +
-                                    n +
-                                    "' name='usessl-" +
-                                    n +
-                                    "'" +
-                                    (void 0 !== t.ssl && "1" === t.ssl ? " checked='checked'" : "") +
-                                    ">" +
-                                    _("Use SSL") +
-                                    "</label><label for='useauth-" +
-                                    n +
-                                    "'><input class='useauth' data-user='" +
-                                    t.auth_user +
-                                    "' data-pw='" +
-                                    t.auth_pw +
-                                    "' data-mini='true' type='checkbox' id='useauth-" +
-                                    n +
-                                    "' name='useauth-" +
-                                    n +
-                                    "'" +
-                                    (void 0 !== t.auth_user && void 0 !== t.auth_pw ? " checked='checked'" : "") +
-                                    ">" +
-                                    _("Use Auth") +
-                                    "</label></fieldset>") +
+                                      _("Advanced") +
+                                      "</span><button data-helptext='" +
+                                      _("These options are only for an OpenSprinkler behind a proxy capable of SSL and/or Basic Authentication.") +
+                                      "' class='collapsible-button-right help-icon btn-no-border ui-btn ui-icon-info ui-btn-icon-notext'></button></h3><label for='usessl-" +
+                                      n +
+                                      "'><input data-mini='true' type='checkbox' id='usessl-" +
+                                      n +
+                                      "' name='usessl-" +
+                                      n +
+                                      "'" +
+                                      (void 0 !== t.ssl && "1" === t.ssl ? " checked='checked'" : "") +
+                                      ">" +
+                                      _("Use SSL") +
+                                      "</label><label for='useauth-" +
+                                      n +
+                                      "'><input class='useauth' data-user='" +
+                                      t.auth_user +
+                                      "' data-pw='" +
+                                      t.auth_pw +
+                                      "' data-mini='true' type='checkbox' id='useauth-" +
+                                      n +
+                                      "' name='useauth-" +
+                                      n +
+                                      "'" +
+                                      (void 0 !== t.auth_user && void 0 !== t.auth_pw ? " checked='checked'" : "") +
+                                      ">" +
+                                      _("Use Auth") +
+                                      "</label></fieldset>") +
                                 "<input class='submit' type='submit' value='" +
                                 _("Save Changes to") +
                                 " " +
@@ -4724,22 +4724,22 @@ var showSites = (function () {
                             n = $(this);
                         n.is(":checked")
                             ? ((e = $(
-                                "<div data-role='popup' data-theme='a'><form method='post' class='ui-content' novalidate><label for='auth_user'>" +
-                                _("Username:") +
-                                "</label><input autocomplete='off' autocorrect='off' autocapitalize='off' spellcheck='false' type='text' name='auth_user' id='auth_user'><label for='auth_pw'>" +
-                                _("Password:") +
-                                "</label><input type='password' name='auth_pw' id='auth_pw'><input type='submit' class='submit' value='" +
-                                _("Submit") +
-                                "'></form></div>"
-                            ).enhanceWithin()),
-                                (t = !1),
-                                e.find(".submit").on("click", function () {
-                                    return n.data({ user: e.find("#auth_user").val(), pw: e.find("#auth_pw").val() }), (t = !0), e.popup("close"), !1;
-                                }),
-                                e.one("popupafterclose", function () {
-                                    t || n.attr("checked", !1).checkboxradio("refresh");
-                                }),
-                                openPopup(e))
+                                  "<div data-role='popup' data-theme='a'><form method='post' class='ui-content' novalidate><label for='auth_user'>" +
+                                      _("Username:") +
+                                      "</label><input autocomplete='off' autocorrect='off' autocapitalize='off' spellcheck='false' type='text' name='auth_user' id='auth_user'><label for='auth_pw'>" +
+                                      _("Password:") +
+                                      "</label><input type='password' name='auth_pw' id='auth_pw'><input type='submit' class='submit' value='" +
+                                      _("Submit") +
+                                      "'></form></div>"
+                              ).enhanceWithin()),
+                              (t = !1),
+                              e.find(".submit").on("click", function () {
+                                  return n.data({ user: e.find("#auth_user").val(), pw: e.find("#auth_pw").val() }), (t = !0), e.popup("close"), !1;
+                              }),
+                              e.one("popupafterclose", function () {
+                                  t || n.attr("checked", !1).checkboxradio("refresh");
+                              }),
+                              openPopup(e))
                             : n.data({ user: "", pw: "" });
                     }),
                     h.find("form").on("submit", function () {
@@ -4782,8 +4782,8 @@ var showSites = (function () {
                                             updateSiteList(Object.keys(m), p.current_site),
                                             $.isEmptyObject(m)
                                                 ? storage.get("cloudToken", function () {
-                                                    (null !== p.cloudToken && void 0 !== p.cloudToken) || ((currPass = currIp = ""), changePage("#start"));
-                                                })
+                                                      (null !== p.cloudToken && void 0 !== p.cloudToken) || ((currPass = currIp = ""), changePage("#start"));
+                                                  })
                                                 : (g(), showerror(_("Site deleted successfully"))),
                                             !1
                                         );
@@ -4838,240 +4838,240 @@ var showSites = (function () {
         }
     );
 })();
-function addSyncStatus(cloudToken) {
-    var $bar = $(
+function addSyncStatus(e) {
+    e = $(
         "<div class='ui-bar smaller ui-bar-a ui-corner-all logged-in-alert'><div class='inline ui-btn ui-icon-recycle btn-no-border ui-btn-icon-notext ui-mini'></div><div class='inline syncStatus'>" +
-        _("Synced with OpenSprinkler.com") +
-        " (" +
-        getTokenUser(cloudToken) +
-        ")</div><div class='inline ui-btn ui-icon-delete btn-no-border ui-btn-icon-notext ui-mini logout'></div></div>"
+            _("Synced with OpenSprinkler.com") +
+            " (" +
+            getTokenUser(e) +
+            ")</div><div class='inline ui-btn ui-icon-delete btn-no-border ui-btn-icon-notext ui-mini logout'></div></div>"
     );
     return (
-        $bar.find(".logout").on("click", logout),
-        $bar.find(".ui-icon-recycle").on("click", function () {
-            var $icon = $(this);
-            $icon.addClass("spin"),
+        e.find(".logout").on("click", logout),
+        e.find(".ui-icon-recycle").on("click", function () {
+            var e = $(this);
+            e.addClass("spin"),
                 cloudSync(function () {
-                    $icon.removeClass("spin");
+                    e.removeClass("spin");
                 });
         }),
-        $bar
+        e
     );
 }
-function testSite(siteConfig, siteIndex, callback) {
-    var testUrl = "/jo?pw=" + encodeURIComponent(siteConfig.os_pw),
-        testUrl = siteConfig.os_token ? "https://cloud.openthings.io/forward/v1/" + siteConfig.os_token + testUrl : ("1" === siteConfig.ssl ? "https://" : "http://") + siteConfig.os_ip + testUrl;
+function testSite(t, e, n) {
+    var i = "/jo?pw=" + encodeURIComponent(t.os_pw),
+        i = t.os_token ? "https://cloud.openthings.io/forward/v1/" + t.os_token + i : ("1" === t.ssl ? "https://" : "http://") + t.os_ip + i;
     $.ajax({
-        url: testUrl,
+        url: i,
         type: "GET",
         dataType: "json",
-        beforeSend: function (xhr) {
-            void 0 !== siteConfig.auth_user && void 0 !== siteConfig.auth_pw && xhr.setRequestHeader("Authorization", "Basic " + btoa(siteConfig.auth_user + ":" + siteConfig.auth_pw));
+        beforeSend: function (e) {
+            void 0 !== t.auth_user && void 0 !== t.auth_pw && e.setRequestHeader("Authorization", "Basic " + btoa(t.auth_user + ":" + t.auth_pw));
         },
     }).then(
         function () {
-            callback(siteIndex, !0);
+            n(e, !0);
         },
         function () {
-            callback(siteIndex, !1);
+            n(e, !1);
         }
     );
 }
-function updateSiteList(siteNames, currentSite) {
-    var optionsHtml = "",
-        $selector = $("#site-selector");
-    $.each(siteNames, function () {
-        optionsHtml += "<option " + (this.toString() === currentSite ? "selected " : "") + "value='" + htmlEscape(this) + "'>" + this + "</option>";
+function updateSiteList(e, t) {
+    var n = "",
+        i = $("#site-selector");
+    $.each(e, function () {
+        n += "<option " + (this.toString() === t ? "selected " : "") + "value='" + htmlEscape(this) + "'>" + this + "</option>";
     }),
-        $("#info-list").find("li[data-role='list-divider']").text(currentSite),
-        $selector.html(optionsHtml),
-        $selector.parent().parent().hasClass("ui-select") && $selector.selectmenu("refresh");
+        $("#info-list").find("li[data-role='list-divider']").text(t),
+        i.html(n),
+        i.parent().parent().hasClass("ui-select") && i.selectmenu("refresh");
 }
-function updateSite(siteName) {
-    storage.get("sites", function (stored) {
-        stored = parseSites(stored.sites);
-        siteName in stored &&
+function updateSite(t) {
+    storage.get("sites", function (e) {
+        e = parseSites(e.sites);
+        t in e &&
             closePanel(function () {
-                storage.set({ current_site: siteName }, checkConfigured);
+                storage.set({ current_site: t }, checkConfigured);
             });
     });
 }
-function findLocalSiteName(sites, callback) {
-    for (var name in sites) if (sites.hasOwnProperty(name) && -1 !== currIp.indexOf(sites[name].os_ip)) return void callback(name);
-    callback(!1);
+function findLocalSiteName(e, t) {
+    for (var n in e) if (e.hasOwnProperty(n) && -1 !== currIp.indexOf(e[n].os_ip)) return void t(n);
+    t(!1);
 }
-function updateDeviceIP(callback) {
-    function setDeviceIP(ip) {
-        (deviceip = ip), "function" == typeof callback && callback(ip);
+function updateDeviceIP(t) {
+    function n(e) {
+        (deviceip = e), "function" == typeof t && t(e);
     }
-    var detectedIp;
+    var i;
     try {
-        networkinterface.getWiFiIPAddress(function (result) {
-            (detectedIp = result.ip), setDeviceIP(detectedIp);
+        networkinterface.getWiFiIPAddress(function (e) {
+            (i = e.ip), n(i);
         });
     } catch (e) {
-        findRouter(function (success, routerIp) {
-            setDeviceIP(success ? routerIp : void 0);
+        findRouter(function (e, t) {
+            n(e ? t : void 0);
         });
     }
 }
-function isLocalIP(ipString) {
-    ipString = parseIntArray(ipString.split("."));
-    return 10 === ipString[0] || 127 === ipString[0] || (172 === ipString[0] && 17 < ipString[1] && ipString[1] < 32) || (192 === ipString[0] && 168 === ipString[1]);
+function isLocalIP(e) {
+    e = parseIntArray(e.split("."));
+    return 10 === e[0] || 127 === e[0] || (172 === e[0] && 17 < e[1] && e[1] < 32) || (192 === e[0] && 168 === e[1]);
 }
-function startScan(port, scanPass) {
-    var hostOctet,
-        onError,
-        onSuccess,
-        subnetBase,
-        checkDone,
-        pollInterval,
-        endpoint,
-        scanLabel,
-        ipOctets = deviceip.split("."),
-        pendingCount = 1,
-        foundCount = 0,
-        foundHtml = "",
-        dataType = "",
-        knownIps = [],
-        cancelled = !1;
+function startScan(e, t) {
+    var n,
+        i,
+        o,
+        a,
+        s,
+        r,
+        l,
+        c,
+        d = deviceip.split("."),
+        u = 1,
+        p = 0,
+        h = "",
+        f = "",
+        m = [],
+        g = !1;
     for (
-        scanPass = scanPass || 0,
-        port = "number" == typeof port ? port : 80,
-        storage.get("sites", function (stored) {
-            var key,
-                sites = parseSites(stored.sites);
-            for (key in sites) sites.hasOwnProperty(key) && knownIps.push(sites[key].os_ip);
-        }),
-        onError = function () {
-            pendingCount++;
-        },
-        onSuccess = function (response) {
-            pendingCount++;
-            var fwVersion,
-                host = $.mobile.path.parseUrl(this.url).authority;
-            if (-1 === $.inArray(host, knownIps)) {
-                if ("text" === this.dataType) {
-                    if (!(fwVersion = response.match(/var\s*ver=(\d+)/))) return;
-                    fwVersion = fwVersion[1];
-                } else {
-                    if (!response.hasOwnProperty("fwv")) return;
-                    fwVersion = response.fwv;
-                }
-                foundCount++, (foundHtml += "<li><a class='ui-btn ui-btn-icon-right ui-icon-carat-r' href='#' data-ip='" + host + "'>" + host + "<p>" + _("Firmware") + ": " + getOSVersion(fwVersion) + "</p></a></li>");
-            }
-        },
-        checkDone = function () {
-            if (!0 === cancelled) return $.mobile.loading("hide"), clearInterval(pollInterval), !1;
-            245 === pendingCount &&
-                ($.mobile.loading("hide"),
-                    clearInterval(pollInterval),
-                    foundCount
-                        ? ((foundHtml = $(foundHtml)).find("a").on("click", function () {
-                            return addFound($(this).data("ip")), !1;
-                        }),
-                            showSiteSelect(foundHtml))
-                        : 0 === scanPass
-                            ? startScan(8080, 1)
-                            : 1 === scanPass
-                                ? startScan(80, 2)
-                                : 2 === scanPass
-                                    ? startScan(8080, 3)
-                                    : showerror(_("No new devices were detected on your network")));
-        },
-        ipOctets.pop(),
-        subnetBase = ipOctets.join("."),
-        0 === scanPass ? (scanLabel = _("Scanning for OpenSprinkler")) : 1 === scanPass ? (scanLabel = _("Scanning for OpenSprinkler Pi")) : 2 === scanPass ? (scanLabel = _("Scanning for OpenSprinkler (1.8.3)")) : 3 === scanPass && (scanLabel = _("Scanning for OpenSprinkler Pi (1.8.3)")),
-        $.mobile.loading("show", { html: "<h1>" + scanLabel + "</h1><p class='cancel tight center inline-icon'><span class='btn-no-border ui-btn ui-icon-delete ui-btn-icon-notext'></span>" + _("Cancel") + "</p>", textVisible: !0, theme: "b" }),
-        $(".ui-loader")
-            .find(".cancel")
-            .one("click", function () {
-                cancelled = !0;
+        t = t || 0,
+            e = "number" == typeof e ? e : 80,
+            storage.get("sites", function (e) {
+                var t,
+                    n = parseSites(e.sites);
+                for (t in n) n.hasOwnProperty(t) && m.push(n[t].os_ip);
             }),
-        hostOctet = 1;
-        hostOctet <= 244;
-        hostOctet++
+            i = function () {
+                u++;
+            },
+            o = function (e) {
+                u++;
+                var t,
+                    n = $.mobile.path.parseUrl(this.url).authority;
+                if (-1 === $.inArray(n, m)) {
+                    if ("text" === this.dataType) {
+                        if (!(t = e.match(/var\s*ver=(\d+)/))) return;
+                        t = t[1];
+                    } else {
+                        if (!e.hasOwnProperty("fwv")) return;
+                        t = e.fwv;
+                    }
+                    p++, (h += "<li><a class='ui-btn ui-btn-icon-right ui-icon-carat-r' href='#' data-ip='" + n + "'>" + n + "<p>" + _("Firmware") + ": " + getOSVersion(t) + "</p></a></li>");
+                }
+            },
+            s = function () {
+                if (!0 === g) return $.mobile.loading("hide"), clearInterval(r), !1;
+                245 === u &&
+                    ($.mobile.loading("hide"),
+                    clearInterval(r),
+                    p
+                        ? ((h = $(h)).find("a").on("click", function () {
+                              return addFound($(this).data("ip")), !1;
+                          }),
+                          showSiteSelect(h))
+                        : 0 === t
+                        ? startScan(8080, 1)
+                        : 1 === t
+                        ? startScan(80, 2)
+                        : 2 === t
+                        ? startScan(8080, 3)
+                        : showerror(_("No new devices were detected on your network")));
+            },
+            d.pop(),
+            a = d.join("."),
+            0 === t ? (c = _("Scanning for OpenSprinkler")) : 1 === t ? (c = _("Scanning for OpenSprinkler Pi")) : 2 === t ? (c = _("Scanning for OpenSprinkler (1.8.3)")) : 3 === t && (c = _("Scanning for OpenSprinkler Pi (1.8.3)")),
+            $.mobile.loading("show", { html: "<h1>" + c + "</h1><p class='cancel tight center inline-icon'><span class='btn-no-border ui-btn ui-icon-delete ui-btn-icon-notext'></span>" + _("Cancel") + "</p>", textVisible: !0, theme: "b" }),
+            $(".ui-loader")
+                .find(".cancel")
+                .one("click", function () {
+                    g = !0;
+                }),
+            n = 1;
+        n <= 244;
+        n++
     )
-        (ipOctets = subnetBase + "." + hostOctet), (endpoint = scanPass < 2 ? ((dataType = "/jo"), "json") : "text"), $.ajax({ url: "http://" + ipOctets + (port && 80 !== port ? ":" + port : "") + dataType, type: "GET", dataType: endpoint, timeout: 6e3, global: !1, error: onError, success: onSuccess });
-    pollInterval = setInterval(checkDone, 200);
+        (d = a + "." + n), (l = t < 2 ? ((f = "/jo"), "json") : "text"), $.ajax({ url: "http://" + d + (e && 80 !== e ? ":" + e : "") + f, type: "GET", dataType: l, timeout: 6e3, global: !1, error: i, success: o });
+    r = setInterval(s, 200);
 }
-function findRouter(callback) {
-    callback = callback || function () { };
-    function onPingResult(success, ip) {
-        completed++, !0 === success && (foundIp = ip);
+function findRouter(e) {
+    e = e || function () {};
+    function t(e, t) {
+        s++, !0 === e && (i = t);
     }
     for (
-        var pollInterval,
-        foundIp,
-        candidates = [
-            "192.168.1.1",
-            "10.0.1.1",
-            "192.168.1.220",
-            "192.168.2.1",
-            "10.1.1.1",
-            "192.168.11.1",
-            "192.168.0.1",
-            "192.168.0.30",
-            "192.168.0.50",
-            "192.168.10.1",
-            "192.168.20.1",
-            "192.168.30.1",
-            "192.168.62.1",
-            "192.168.102.1",
-            "192.168.1.254",
-            "192.168.0.227",
-            "10.0.0.138",
-            "192.168.123.254",
-            "192.168.4.1",
-            "10.0.0.2",
-            "10.0.2.1",
-            "10.0.3.1",
-            "10.0.4.1",
-            "10.0.5.1",
-        ],
-        total = candidates.length,
-        completed = 0,
-        idx = 0;
-        idx < total;
-        idx++
+        var n,
+            i,
+            o = [
+                "192.168.1.1",
+                "10.0.1.1",
+                "192.168.1.220",
+                "192.168.2.1",
+                "10.1.1.1",
+                "192.168.11.1",
+                "192.168.0.1",
+                "192.168.0.30",
+                "192.168.0.50",
+                "192.168.10.1",
+                "192.168.20.1",
+                "192.168.30.1",
+                "192.168.62.1",
+                "192.168.102.1",
+                "192.168.1.254",
+                "192.168.0.227",
+                "10.0.0.138",
+                "192.168.123.254",
+                "192.168.4.1",
+                "10.0.0.2",
+                "10.0.2.1",
+                "10.0.3.1",
+                "10.0.4.1",
+                "10.0.5.1",
+            ],
+            a = o.length,
+            s = 0,
+            r = 0;
+        r < a;
+        r++
     )
-        "string" != typeof foundIp && ping(candidates[idx], onPingResult);
-    pollInterval = setInterval(function () {
-        (completed !== total && "string" != typeof foundIp) || (clearInterval(pollInterval), "string" == typeof foundIp ? callback(!0, foundIp) : callback(!1));
+        "string" != typeof i && ping(o[r], t);
+    n = setInterval(function () {
+        (s !== a && "string" != typeof i) || (clearInterval(n), "string" == typeof i ? e(!0, i) : e(!1));
     }, 50);
 }
-function ping(host, callback) {
-    (callback = callback || function () { }),
-        (host && "" !== host) || callback(!1),
-        $.ajax({ url: "http://" + host, type: "GET", timeout: 6e3, global: !1 }).then(
+function ping(t, n) {
+    (n = n || function () {}),
+        (t && "" !== t) || n(!1),
+        $.ajax({ url: "http://" + t, type: "GET", timeout: 6e3, global: !1 }).then(
             function () {
-                callback(!0, host);
+                n(!0, t);
             },
-            function (error) {
-                "timeout" === error.statusText ? callback(!1) : callback(!0, host);
+            function (e) {
+                "timeout" === e.statusText ? n(!1) : n(!0, t);
             }
         );
 }
-function addFound(ip) {
+function addFound(e) {
     $("#site-select")
         .one("popupafterclose", function () {
-            showAddNew(ip);
+            showAddNew(e);
         })
         .popup("close");
 }
-function showZimmermanAdjustmentOptions(inputElement, onSubmit) {
+function showZimmermanAdjustmentOptions(t, n) {
     $(".ui-popup-active").find("[data-role='popup']").popup("close");
-    function adjustInput(inputIndex, delta) {
-        var $input = $popup.find(".inputs input").eq(inputIndex),
-            currentVal = parseInt($input.val());
-        (-1 === delta && 0 === currentVal) || (1 === delta && 100 === currentVal) || $input.val(currentVal + delta);
+    function i(e, t) {
+        var e = a.find(".inputs input").eq(e),
+            n = parseInt(e.val());
+        (-1 === t && 0 === n) || (1 === t && 100 === n) || e.val(n + t);
     }
-    var options = $.extend({}, { h: 100, t: 100, r: 100, bh: 30, bt: 70, br: 0 }, unescapeJSON(inputElement.value)),
-        hasBaselineSupport = checkOSVersion(2162),
-        $popup =
-            (isMetric && ((options.bt = Math.round(((5 * (options.bt - 32)) / 9) * 10) / 10), (options.br = Math.round(25.4 * options.br * 10) / 10)),
-                $(
-                    "<div data-role='popup' data-theme='a' id='adjustmentOptions'><div data-role='header' data-theme='b'><h1>" +
+    var e = $.extend({}, { h: 100, t: 100, r: 100, bh: 30, bt: 70, br: 0 }, unescapeJSON(t.value)),
+        o = checkOSVersion(2162),
+        a =
+            (isMetric && ((e.bt = Math.round(((5 * (e.bt - 32)) / 9) * 10) / 10), (e.br = Math.round(25.4 * e.br * 10) / 10)),
+            $(
+                "<div data-role='popup' data-theme='a' id='adjustmentOptions'><div data-role='header' data-theme='b'><h1>" +
                     _("Weather Adjustment Options") +
                     "</h1></div><div class='ui-content'><p class='rain-desc center smaller'>" +
                     _("Set the baseline weather conditions for your location. ") +
@@ -5082,172 +5082,172 @@ function showZimmermanAdjustmentOptions(inputElement, onSubmit) {
                     "</label><input data-wrapper-class='pad_buttons' class='bt' type='number' " +
                     (isMetric ? "min='-20' max='50'" : "min='0' max='120'") +
                     " value='" +
-                    options.bt +
-                    (hasBaselineSupport ? "'>" : "' disabled='disabled'>") +
+                    e.bt +
+                    (o ? "'>" : "' disabled='disabled'>") +
                     "</div><div class='ui-block-b'><label class='center'>" +
                     _("Rain") +
                     (isMetric ? " mm" : ' "') +
                     "</label><input data-wrapper-class='pad_buttons' class='br' type='number' " +
                     (isMetric ? "min='0' max='25' step='0.1'" : "min='0' max='1' step='0.01'") +
                     " value='" +
-                    options.br +
-                    (hasBaselineSupport ? "'>" : "' disabled='disabled'>") +
+                    e.br +
+                    (o ? "'>" : "' disabled='disabled'>") +
                     "</div><div class='ui-block-c'><label class='center'>" +
                     _("Humidity") +
                     " %</label><input data-wrapper-class='pad_buttons' class='bh' type='number'  min='0' max='100' value='" +
-                    options.bh +
-                    (hasBaselineSupport ? "'>" : "' disabled='disabled'>") +
+                    e.bh +
+                    (o ? "'>" : "' disabled='disabled'>") +
                     "</div></div><p class='rain-desc center smaller'>" +
                     _("Set the sensitivity of the watering adjustment to changes in each of the above weather conditions.") +
                     "</p><span><fieldset class='ui-grid-b incr'><div class='ui-block-a'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='plus' data-iconpos='bottom'></a></div><div class='ui-block-b'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='plus' data-iconpos='bottom'></a></div><div class='ui-block-c'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='plus' data-iconpos='bottom'></a></div></fieldset><div class='ui-grid-b inputs'><div class='ui-block-a'><input data-wrapper-class='pad_buttons' class='t' type='number' min='0' max='100' value='" +
-                    options.t +
+                    e.t +
                     "'></div><div class='ui-block-b'><input data-wrapper-class='pad_buttons' class='r' type='number'  min='0' max='100' value='" +
-                    options.r +
+                    e.r +
                     "'></div><div class='ui-block-c'><input data-wrapper-class='pad_buttons' class='h' type='number'  min='0' max='100' value='" +
-                    options.h +
+                    e.h +
                     "'></div></div><fieldset class='ui-grid-b decr'><div class='ui-block-a'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='minus' data-iconpos='bottom'></a></div><div class='ui-block-b'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='minus' data-iconpos='bottom'></a></div><div class='ui-block-c'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='minus' data-iconpos='bottom'></a></div></fieldset></span><button class='submit' data-theme='b'>" +
                     _("Submit") +
                     "</button></div></div>"
-                ));
-    $popup.find(".submit").on("click", function () {
-        var values = { h: parseInt($popup.find(".h").val()), t: parseInt($popup.find(".t").val()), r: parseInt($popup.find(".r").val()) };
+            ));
+    a.find(".submit").on("click", function () {
+        var e = { h: parseInt(a.find(".h").val()), t: parseInt(a.find(".t").val()), r: parseInt(a.find(".r").val()) };
         return (
-            hasBaselineSupport &&
-            ($.extend(values, { bh: parseInt($popup.find(".bh").val()), bt: parseFloat($popup.find(".bt").val()), br: parseFloat($popup.find(".br").val()) }), isMetric) &&
-            ((values.bt = Math.round(100 * ((9 * values.bt) / 5 + 32)) / 100), (values.br = Math.round((values.br / 25.4) * 1e3) / 1e3)),
-            inputElement && (inputElement.value = escapeJSON(values)),
-            onSubmit(),
-            $popup.popup("close"),
+            o &&
+                ($.extend(e, { bh: parseInt(a.find(".bh").val()), bt: parseFloat(a.find(".bt").val()), br: parseFloat(a.find(".br").val()) }), isMetric) &&
+                ((e.bt = Math.round(100 * ((9 * e.bt) / 5 + 32)) / 100), (e.br = Math.round((e.br / 25.4) * 1e3) / 1e3)),
+            t && (t.value = escapeJSON(e)),
+            n(),
+            a.popup("close"),
             !1
         );
     }),
-        $popup
+        a
             .on("focus", "input[type='number']", function () {
                 this.value = "";
             })
             .on("blur", "input[type='number']", function () {
-                var min = parseFloat(this.min),
-                    max = parseFloat(this.max);
-                "" === this.value && (this.value = "0"), (this.value < min || this.value > max) && (this.value = this.value < min ? min : max);
+                var e = parseFloat(this.min),
+                    t = parseFloat(this.max);
+                "" === this.value && (this.value = "0"), (this.value < e || this.value > t) && (this.value = this.value < e ? e : t);
             }),
-        holdButton($popup.find(".incr").children(), function (event) {
-            event = $(event.currentTarget).index();
-            return adjustInput(event, 1), !1;
+        holdButton(a.find(".incr").children(), function (e) {
+            e = $(e.currentTarget).index();
+            return i(e, 1), !1;
         }),
-        holdButton($popup.find(".decr").children(), function (event) {
-            event = $(event.currentTarget).index();
-            return adjustInput(event, -1), !1;
+        holdButton(a.find(".decr").children(), function (e) {
+            e = $(e.currentTarget).index();
+            return i(e, -1), !1;
         }),
         $("#adjustmentOptions").remove(),
-        $popup.css("max-width", "380px"),
-        openPopup($popup, { positionTo: "window" });
+        a.css("max-width", "380px"),
+        openPopup(a, { positionTo: "window" });
 }
-function showAutoRainDelayAdjustmentOptions(inputElement, onSubmit) {
+function showAutoRainDelayAdjustmentOptions(e, t) {
     $(".ui-popup-active").find("[data-role='popup']").popup("close");
-    function adjustDelay(delta) {
-        var $input = $popup.find("#delay_duration"),
-            currentVal = parseInt($input.val());
-        (-1 === delta && 0 === currentVal) || (1 === delta && 8760 === currentVal) || $input.val(currentVal + delta);
+    function n(e) {
+        var t = o.find("#delay_duration"),
+            n = parseInt(t.val());
+        (-1 === e && 0 === n) || (1 === e && 8760 === n) || t.val(n + e);
     }
-    var options = $.extend({}, { d: 24 }, unescapeJSON(inputElement.value)),
-        $popup = $(
+    var i = $.extend({}, { d: 24 }, unescapeJSON(e.value)),
+        o = $(
             "<div data-role='popup' data-theme='a' id='adjustmentOptions'><div data-role='header' data-theme='b'><h1>" +
-            _("Weather Adjustment Options") +
-            "</h1></div><div class='ui-content'><p class='rain-desc center smaller'>" +
-            _("If the weather reports any condition suggesting rain, a rain delay is automatically issued using the below set delay duration.") +
-            "</p><label class='center' for='delay_duration'>" +
-            _("Delay Duration (hours)") +
-            "</label><div class='input_with_buttons'><button class='decr ui-btn ui-btn-icon-notext ui-icon-carat-l btn-no-border'></button><input id='delay_duration' type='number' pattern='[0-9]*' value='" +
-            options.d +
-            "'><button class='incr ui-btn ui-btn-icon-notext ui-icon-carat-r btn-no-border'></button></div><button class='submit' data-theme='b'>" +
-            _("Submit") +
-            "</button></div></div>"
+                _("Weather Adjustment Options") +
+                "</h1></div><div class='ui-content'><p class='rain-desc center smaller'>" +
+                _("If the weather reports any condition suggesting rain, a rain delay is automatically issued using the below set delay duration.") +
+                "</p><label class='center' for='delay_duration'>" +
+                _("Delay Duration (hours)") +
+                "</label><div class='input_with_buttons'><button class='decr ui-btn ui-btn-icon-notext ui-icon-carat-l btn-no-border'></button><input id='delay_duration' type='number' pattern='[0-9]*' value='" +
+                i.d +
+                "'><button class='incr ui-btn ui-btn-icon-notext ui-icon-carat-r btn-no-border'></button></div><button class='submit' data-theme='b'>" +
+                _("Submit") +
+                "</button></div></div>"
         );
-    $popup.find(".submit").on("click", function () {
-        return (options = { d: parseInt($popup.find("#delay_duration").val()) }), inputElement && (inputElement.value = escapeJSON(options)), onSubmit(), $popup.popup("close"), !1;
+    o.find(".submit").on("click", function () {
+        return (i = { d: parseInt(o.find("#delay_duration").val()) }), e && (e.value = escapeJSON(i)), t(), o.popup("close"), !1;
     }),
-        $popup
+        o
             .on("focus", "input[type='number']", function () {
                 this.value = "";
             })
             .on("blur", "input[type='number']", function () {
                 ("" === this.value || parseInt(this.value) < 0) && (this.value = "0");
             }),
-        holdButton($popup.find(".incr"), function () {
-            return adjustDelay(1), !1;
+        holdButton(o.find(".incr"), function () {
+            return n(1), !1;
         }),
-        holdButton($popup.find(".decr"), function () {
-            return adjustDelay(-1), !1;
+        holdButton(o.find(".decr"), function () {
+            return n(-1), !1;
         }),
         $("#adjustmentOptions").remove(),
-        $popup.css("max-width", "380px"),
-        openPopup($popup, { positionTo: "window" });
+        o.css("max-width", "380px"),
+        openPopup(o, { positionTo: "window" });
 }
-function showMonthlyAdjustmentOptions(inputElement, onSubmit) {
+function showMonthlyAdjustmentOptions(n, i) {
     $(".ui-popup-active").find("[data-role='popup']").popup("close");
-    var options = $.extend({}, { scales: [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100] }, unescapeJSON(inputElement.value)),
-        $popup = $(
+    var o = $.extend({}, { scales: [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100] }, unescapeJSON(n.value)),
+        a = $(
             "<div data-role='popup' data-theme='a' id='adjustmentOptions'><div data-role='header' data-theme='b'><h1>" +
-            _("Weather Adjustment Options") +
-            "</h1></div><div class='ui-content'><p class='rain-desc center smaller'>" +
-            _("Input Monthly Watering Percentage Values") +
-            "</p><div class='ui-grid-c'><div class='ui-block-a'><label class='center'>" +
-            _("Jan") +
-            "</label><input data-wrapper-class='pad_buttons' class='sc0' type='number' min=0 max=250 value=" +
-            o.scales[0] +
-            "></div><div class='ui-block-b'><label class='center'>" +
-            _("Feb") +
-            "</label><input data-wrapper-class='pad_buttons' class='sc1' type='number' min=0 max=250 value=" +
-            o.scales[1] +
-            "></div><div class='ui-block-c'><label class='center'>" +
-            _("Mar") +
-            "</label><input data-wrapper-class='pad_buttons' class='sc2' type='number' min=0 max=250 value=" +
-            o.scales[2] +
-            "></div><div class='ui-block-d'><label class='center'>" +
-            _("Apr") +
-            "</label><input data-wrapper-class='pad_buttons' class='sc3' type='number' min=0 max=250 value=" +
-            o.scales[3] +
-            "></div></div><div class='ui-grid-c'><div class='ui-block-a'><label class='center'>" +
-            _("May") +
-            "</label><input data-wrapper-class='pad_buttons' class='sc4' type='number' min=0 max=250 value=" +
-            o.scales[4] +
-            "></div><div class='ui-block-b'><label class='center'>" +
-            _("Jun") +
-            "</label><input data-wrapper-class='pad_buttons' class='sc5' type='number' min=0 max=250 value=" +
-            o.scales[5] +
-            "></div><div class='ui-block-c'><label class='center'>" +
-            _("Jul") +
-            "</label><input data-wrapper-class='pad_buttons' class='sc6' type='number' min=0 max=250 value=" +
-            o.scales[6] +
-            "></div><div class='ui-block-d'><label class='center'>" +
-            _("Aug") +
-            "</label><input data-wrapper-class='pad_buttons' class='sc7' type='number' min=0 max=250 value=" +
-            o.scales[7] +
-            "></div></div><div class='ui-grid-c'><div class='ui-block-a'><label class='center'>" +
-            _("Sep") +
-            "</label><input data-wrapper-class='pad_buttons' class='sc8' type='number' min=0 max=250 value=" +
-            o.scales[8] +
-            "></div><div class='ui-block-b'><label class='center'>" +
-            _("Oct") +
-            "</label><input data-wrapper-class='pad_buttons' class='sc9' type='number' min=0 max=250 value=" +
-            o.scales[9] +
-            "></div><div class='ui-block-c'><label class='center'>" +
-            _("Nov") +
-            "</label><input data-wrapper-class='pad_buttons' class='sc10' type='number' min=0 max=250 value=" +
-            o.scales[10] +
-            "></div><div class='ui-block-d'><label class='center'>" +
-            _("Dec") +
-            "</label><input data-wrapper-class='pad_buttons' class='sc11' type='number' min=0 max=250 value=" +
-            o.scales[11] +
-            "></div></div><button class='submit' data-theme='b'>" +
-            _("Submit") +
-            "</button></div></div>"
+                _("Weather Adjustment Options") +
+                "</h1></div><div class='ui-content'><p class='rain-desc center smaller'>" +
+                _("Input Monthly Watering Percentage Values") +
+                "</p><div class='ui-grid-c'><div class='ui-block-a'><label class='center'>" +
+                _("Jan") +
+                "</label><input data-wrapper-class='pad_buttons' class='sc0' type='number' min=0 max=250 value=" +
+                o.scales[0] +
+                "></div><div class='ui-block-b'><label class='center'>" +
+                _("Feb") +
+                "</label><input data-wrapper-class='pad_buttons' class='sc1' type='number' min=0 max=250 value=" +
+                o.scales[1] +
+                "></div><div class='ui-block-c'><label class='center'>" +
+                _("Mar") +
+                "</label><input data-wrapper-class='pad_buttons' class='sc2' type='number' min=0 max=250 value=" +
+                o.scales[2] +
+                "></div><div class='ui-block-d'><label class='center'>" +
+                _("Apr") +
+                "</label><input data-wrapper-class='pad_buttons' class='sc3' type='number' min=0 max=250 value=" +
+                o.scales[3] +
+                "></div></div><div class='ui-grid-c'><div class='ui-block-a'><label class='center'>" +
+                _("May") +
+                "</label><input data-wrapper-class='pad_buttons' class='sc4' type='number' min=0 max=250 value=" +
+                o.scales[4] +
+                "></div><div class='ui-block-b'><label class='center'>" +
+                _("Jun") +
+                "</label><input data-wrapper-class='pad_buttons' class='sc5' type='number' min=0 max=250 value=" +
+                o.scales[5] +
+                "></div><div class='ui-block-c'><label class='center'>" +
+                _("Jul") +
+                "</label><input data-wrapper-class='pad_buttons' class='sc6' type='number' min=0 max=250 value=" +
+                o.scales[6] +
+                "></div><div class='ui-block-d'><label class='center'>" +
+                _("Aug") +
+                "</label><input data-wrapper-class='pad_buttons' class='sc7' type='number' min=0 max=250 value=" +
+                o.scales[7] +
+                "></div></div><div class='ui-grid-c'><div class='ui-block-a'><label class='center'>" +
+                _("Sep") +
+                "</label><input data-wrapper-class='pad_buttons' class='sc8' type='number' min=0 max=250 value=" +
+                o.scales[8] +
+                "></div><div class='ui-block-b'><label class='center'>" +
+                _("Oct") +
+                "</label><input data-wrapper-class='pad_buttons' class='sc9' type='number' min=0 max=250 value=" +
+                o.scales[9] +
+                "></div><div class='ui-block-c'><label class='center'>" +
+                _("Nov") +
+                "</label><input data-wrapper-class='pad_buttons' class='sc10' type='number' min=0 max=250 value=" +
+                o.scales[10] +
+                "></div><div class='ui-block-d'><label class='center'>" +
+                _("Dec") +
+                "</label><input data-wrapper-class='pad_buttons' class='sc11' type='number' min=0 max=250 value=" +
+                o.scales[11] +
+                "></div></div><button class='submit' data-theme='b'>" +
+                _("Submit") +
+                "</button></div></div>"
         );
-    $popup.find(".submit").on("click", function () {
-        for (var scales = [], monthIdx = 0; monthIdx < 12; monthIdx++) (scales[monthIdx] = parseInt($popup.find(".sc" + monthIdx).val())), scales[monthIdx] < 0 && (scales[monthIdx] = 0), 250 < scales[monthIdx] && (scales[monthIdx] = 250);
-        return (options = { scales: scales }), inputElement && (inputElement.value = escapeJSON(options)), onSubmit(), $popup.popup("close"), !1;
+    a.find(".submit").on("click", function () {
+        for (var e = [], t = 0; t < 12; t++) (e[t] = parseInt(a.find(".sc" + t).val())), e[t] < 0 && (e[t] = 0), 250 < e[t] && (e[t] = 250);
+        return (o = { scales: e }), n && (n.value = escapeJSON(o)), i(), a.popup("close"), !1;
     }),
-        $popup
+        a
             .on("focus", "input[type='number']", function () {
                 this.value = "";
             })
@@ -5255,26 +5255,26 @@ function showMonthlyAdjustmentOptions(inputElement, onSubmit) {
                 ("" === this.value || parseInt(this.value) < 0) && (this.value = "0");
             }),
         $("#adjustmentOptions").remove(),
-        $popup.css("max-width", "380px"),
-        openPopup($popup, { positionTo: "window" });
+        a.css("max-width", "380px"),
+        openPopup(a, { positionTo: "window" });
 }
-function validateWULocation(stationId, callback) {
-    (controller.settings.wto && "string" == typeof controller.settings.wto.key && "" !== controller.settings.wto.key) || callback(!1),
-        $.ajax({ url: "https://api.weather.com/v2/pws/observations/hourly/7day?stationId=" + stationId + "&format=json&units=e&apiKey=" + controller.settings.wto.key, cache: !0 })
-            .done(function (response) {
-                !response || response.errors ? callback(!1) : callback(!0);
+function validateWULocation(e, t) {
+    (controller.settings.wto && "string" == typeof controller.settings.wto.key && "" !== controller.settings.wto.key) || t(!1),
+        $.ajax({ url: "https://api.weather.com/v2/pws/observations/hourly/7day?stationId=" + e + "&format=json&units=e&apiKey=" + controller.settings.wto.key, cache: !0 })
+            .done(function (e) {
+                !e || e.errors ? t(!1) : t(!0);
             })
             .fail(function () {
-                callback(!1);
+                t(!1);
             });
 }
-function showEToAdjustmentOptions(inputElement, onSubmit) {
+function showEToAdjustmentOptions(e, t) {
     $(".ui-popup-active").find("[data-role='popup']").popup("close");
-    var options = $.extend({}, { baseETo: 0, elevation: 600 }, unescapeJSON(inputElement.value)),
-        $popup =
-            (isMetric && ((options.baseETo = Math.round(25.4 * options.baseETo * 10) / 10), (options.elevation = Math.round(options.elevation / 3.28))),
-                $(
-                    "<div data-role='popup' data-theme='a' id='adjustmentOptions'><div data-role='header' data-theme='b'><h1>" +
+    var n = $.extend({}, { baseETo: 0, elevation: 600 }, unescapeJSON(e.value)),
+        i =
+            (isMetric && ((n.baseETo = Math.round(25.4 * n.baseETo * 10) / 10), (n.elevation = Math.round(n.elevation / 3.28))),
+            $(
+                "<div data-role='popup' data-theme='a' id='adjustmentOptions'><div data-role='header' data-theme='b'><h1>" +
                     _("Weather Adjustment Options") +
                     "</h1></div><div class='ui-content'><p class='rain-desc center smaller'>" +
                     _("Set the baseline potential evapotranspiration (ETo) and elevation for your location. ") +
@@ -5285,76 +5285,76 @@ function showEToAdjustmentOptions(inputElement, onSubmit) {
                     "/day)</label><input data-wrapper-class='pad_buttons' class='baseline-ETo' type='number' min='0' " +
                     (isMetric ? "max='25' step='0.1'" : "max='1' step='0.01'") +
                     " value='" +
-                    options.baseETo +
+                    n.baseETo +
                     "'></div><div class='ui-block-b'><label class='center'>" +
                     _("Elevation") +
                     (isMetric ? " (m)" : " (ft)") +
                     "</label><input data-wrapper-class='pad_buttons' class='elevation' type='number' step='1'" +
                     (isMetric ? "min='-400' max='9000'" : "min='-1400' max='30000'") +
                     " value='" +
-                    options.elevation +
+                    n.elevation +
                     "'></div></div><button class='detect-baseline-eto'>" +
                     _("Detect baseline ETo") +
                     "</button><button class='submit' data-theme='b'>" +
                     _("Submit") +
                     "</button></div></div>"
-                ));
-    $popup.find(".submit").on("click", function () {
+            ));
+    i.find(".submit").on("click", function () {
         return (
-            (options = { baseETo: parseFloat($popup.find(".baseline-ETo").val()), elevation: parseInt($popup.find(".elevation").val()) }),
-            isMetric && ((options.baseETo = Math.round((options.baseETo / 25.4) * 100) / 100), (options.elevation = Math.round(3.28 * options.elevation))),
-            inputElement && (inputElement.value = escapeJSON(options)),
-            onSubmit(),
-            $popup.popup("close"),
+            (n = { baseETo: parseFloat(i.find(".baseline-ETo").val()), elevation: parseInt(i.find(".elevation").val()) }),
+            isMetric && ((n.baseETo = Math.round((n.baseETo / 25.4) * 100) / 100), (n.elevation = Math.round(3.28 * n.elevation))),
+            e && (e.value = escapeJSON(n)),
+            t(),
+            i.popup("close"),
             !1
         );
     }),
-        $popup.find(".detect-baseline-eto").on("click", function () {
-            var originalLabel = $(".detect-baseline-eto").html();
+        i.find(".detect-baseline-eto").on("click", function () {
+            var e = $(".detect-baseline-eto").html();
             return (
                 showLoading(".detect-baseline-eto"),
                 $.ajax({
                     url: WEATHER_SERVER_URL + "/baselineETo?loc=" + encodeURIComponent(controller.settings.loc),
                     contentType: "application/json; charset=utf-8",
-                    success: function (response) {
-                        response = response.eto;
-                        isMetric && (response = Math.round(25.4 * response * 100) / 100), $(".baseline-ETo").val(response), window.alert("Detected baseline ETo for configured location is " + response + (isMetric ? "mm" : "in") + "/day");
+                    success: function (e) {
+                        e = e.eto;
+                        isMetric && (e = Math.round(25.4 * e * 100) / 100), $(".baseline-ETo").val(e), window.alert("Detected baseline ETo for configured location is " + e + (isMetric ? "mm" : "in") + "/day");
                     },
-                    error: function (xhr, statusText) {
-                        xhr = "Unable to detect baseline ETo: " + (xhr.status ? xhr.responseText + "(" + xhr.status + ")" : statusText);
-                        window.alert(xhr), window.console.error(xhr);
+                    error: function (e, t) {
+                        e = "Unable to detect baseline ETo: " + (e.status ? e.responseText + "(" + e.status + ")" : t);
+                        window.alert(e), window.console.error(e);
                     },
                     complete: function () {
-                        $(".detect-baseline-eto").html(originalLabel);
+                        $(".detect-baseline-eto").html(e);
                     },
                 }),
                 !1
             );
         }),
-        $popup
+        i
             .on("focus", "input[type='number']", function () {
                 this.value = "";
             })
             .on("blur", "input[type='number']", function () {
-                var min = parseFloat(this.min),
-                    max = parseFloat(this.max);
-                "" === this.value && (this.value = "0"), (this.value < min || this.value > max) && (this.value = this.value < min ? min : max);
+                var e = parseFloat(this.min),
+                    t = parseFloat(this.max);
+                "" === this.value && (this.value = "0"), (this.value < e || this.value > t) && (this.value = this.value < e ? e : t);
             }),
         $("#adjustmentOptions").remove(),
-        $popup.css("max-width", "380px"),
-        openPopup($popup, { positionTo: "window" });
+        i.css("max-width", "380px"),
+        openPopup(i, { positionTo: "window" });
 }
-function formatTemp(tempF) {
-    return (tempF = isMetric ? Math.round((5 / 9) * (tempF - 32) * 10) / 10 + " &#176;C" : Math.round(10 * tempF) / 10 + " &#176;F");
+function formatTemp(e) {
+    return (e = isMetric ? Math.round((5 / 9) * (e - 32) * 10) / 10 + " &#176;C" : Math.round(10 * e) / 10 + " &#176;F");
 }
-function formatPrecip(inches) {
-    return (inches = isMetric ? Math.round(25.4 * inches * 10) / 10 + " mm" : Math.round(100 * inches) / 100 + " in");
+function formatPrecip(e) {
+    return (e = isMetric ? Math.round(25.4 * e * 10) / 10 + " mm" : Math.round(100 * e) / 100 + " in");
 }
-function formatHumidity(percent) {
-    return Math.round(percent) + " %";
+function formatHumidity(e) {
+    return Math.round(e) + " %";
 }
-function formatSpeed(mph) {
-    return (mph = isMetric ? Math.round(1.6 * mph * 10) / 10 + " km/h" : Math.round(10 * mph) / 10 + " mph");
+function formatSpeed(e) {
+    return (e = isMetric ? Math.round(1.6 * e * 10) / 10 + " km/h" : Math.round(10 * e) / 10 + " mph");
 }
 function hideWeather() {
     $("#weather").empty().parents(".info-card").addClass("noweather");
@@ -5363,68 +5363,68 @@ function finishWeatherUpdate() {
     updateWeatherBox(), $.mobile.document.trigger("weatherUpdateComplete");
 }
 function updateWeather() {
-    var now = new Date().getTime();
-    if (weather && weather.providedLocation === controller.settings.loc && now - weather.lastUpdated < 36e4) finishWeatherUpdate();
+    var e = new Date().getTime();
+    if (weather && weather.providedLocation === controller.settings.loc && e - weather.lastUpdated < 36e4) finishWeatherUpdate();
     else {
         if (localStorage.weatherData)
             try {
-                var cached = JSON.parse(localStorage.weatherData);
-                if (cached.providedLocation === controller.settings.loc && now - cached.lastUpdated < 36e4) return (weather = cached), void finishWeatherUpdate();
-            } catch (e) { }
+                var t = JSON.parse(localStorage.weatherData);
+                if (t.providedLocation === controller.settings.loc && e - t.lastUpdated < 36e4) return (weather = t), void finishWeatherUpdate();
+            } catch (e) {}
         (weather = void 0),
             "" === controller.settings.loc
                 ? hideWeather()
                 : (showLoading("#weather"),
-                    $.ajax({
-                        url: WEATHER_SERVER_URL + "/weatherData?loc=" + encodeURIComponent(controller.settings.loc),
-                        contentType: "application/json; charset=utf-8",
-                        success: function (data) {
-                            ("object" != typeof data
-                                ? hideWeather
-                                : ((currentCoordinates = data.location), ((weather = data).lastUpdated = new Date().getTime()), (data.providedLocation = controller.settings.loc), (localStorage.weatherData = JSON.stringify(data)), finishWeatherUpdate))();
-                        },
-                    }));
+                  $.ajax({
+                      url: WEATHER_SERVER_URL + "/weatherData?loc=" + encodeURIComponent(controller.settings.loc),
+                      contentType: "application/json; charset=utf-8",
+                      success: function (e) {
+                          ("object" != typeof e
+                              ? hideWeather
+                              : ((currentCoordinates = e.location), ((weather = e).lastUpdated = new Date().getTime()), (e.providedLocation = controller.settings.loc), (localStorage.weatherData = JSON.stringify(e)), finishWeatherUpdate))();
+                      },
+                  }));
     }
 }
 function checkURLandUpdateWeather() {
-    function applyWeatherServer(serverHost) {
-        (WEATHER_SERVER_URL = serverHost ? currPrefix + serverHost : DEFAULT_WEATHER_SERVER_URL), updateWeather();
+    function t(e) {
+        (WEATHER_SERVER_URL = e ? currPrefix + e : DEFAULT_WEATHER_SERVER_URL), updateWeather();
     }
     return controller.settings.wsp
         ? "weather.opensprinkler.com" === controller.settings.wsp
-            ? void applyWeatherServer()
-            : void applyWeatherServer(controller.settings.wsp)
-        : $.get(currPrefix + currIp + "/su").then(function (responseText) {
-            responseText = responseText.match(/value="([\w|:|/|.]+)" name=wsp/);
-            applyWeatherServer(responseText ? responseText[1] : void 0);
-        });
+            ? void t()
+            : void t(controller.settings.wsp)
+        : $.get(currPrefix + currIp + "/su").then(function (e) {
+              e = e.match(/value="([\w|:|/|.]+)" name=wsp/);
+              t(e ? e[1] : void 0);
+          });
 }
 function updateWeatherBox() {
     $("#weather")
         .html(
             (controller.settings.rd ? "<div class='rain-delay red'><span class='icon ui-icon-alert'></span>Rain Delay<span class='time'>" + dateToString(new Date(1e3 * controller.settings.rdst), void 0, !0) + "</span></div>" : "") +
-            "<div title='" +
-            weather.description +
-            "' class='wicon'><img src='https://openweathermap.org/img/w/" +
-            weather.icon +
-            ".png'></div><div class='inline tight'>" +
-            formatTemp(weather.temp) +
-            "</div><br><div class='inline location tight'>" +
-            _("Current Weather") +
-            "</div>" +
-            ("object" == typeof weather.alert ? "<div><button class='tight help-icon btn-no-border ui-btn ui-icon-alert ui-btn-icon-notext ui-corner-all'></button>" + weather.alert.type + "</div>" : "")
+                "<div title='" +
+                weather.description +
+                "' class='wicon'><img src='https://openweathermap.org/img/w/" +
+                weather.icon +
+                ".png'></div><div class='inline tight'>" +
+                formatTemp(weather.temp) +
+                "</div><br><div class='inline location tight'>" +
+                _("Current Weather") +
+                "</div>" +
+                ("object" == typeof weather.alert ? "<div><button class='tight help-icon btn-no-border ui-btn ui-icon-alert ui-btn-icon-notext ui-corner-all'></button>" + weather.alert.type + "</div>" : "")
         )
         .off("click")
-        .on("click", function (event) {
-            event = $(event.target);
+        .on("click", function (e) {
+            e = $(e.target);
             return (
-                event.hasClass("rain-delay") || event.parents(".rain-delay").length
+                e.hasClass("rain-delay") || e.parents(".rain-delay").length
                     ? areYouSure(_("Do you want to turn off rain delay?"), "", function () {
-                        showLoading("#weather"),
-                            sendToOS("/cv?pw=&rd=0").done(function () {
-                                updateController(updateWeather);
-                            });
-                    })
+                          showLoading("#weather"),
+                              sendToOS("/cv?pw=&rd=0").done(function () {
+                                  updateController(updateWeather);
+                              });
+                      })
                     : changePage("#forecast"),
                 !1
             );
@@ -5432,48 +5432,48 @@ function updateWeatherBox() {
         .parents(".info-card")
         .removeClass("noweather");
 }
-function coordsToLocation(lat, lng, callback, fallbackLabel) {
-    (fallbackLabel = fallbackLabel || lat + "," + lng),
-        $.getJSON("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + lat + "," + lng + "&key=AIzaSyDaT_HTZwFojXmvYIhwWudK00vFXzMmOKc&result_type=locality|sublocality|administrative_area_level_1|country", function (geoResponse) {
-            if (0 === geoResponse.results.length) callback(fallbackLabel);
+function coordsToLocation(e, t, a, s) {
+    (s = s || e + "," + t),
+        $.getJSON("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + e + "," + t + "&key=AIzaSyDaT_HTZwFojXmvYIhwWudK00vFXzMmOKc&result_type=locality|sublocality|administrative_area_level_1|country", function (e) {
+            if (0 === e.results.length) a(s);
             else {
-                (geoResponse = geoResponse.results), (fallbackLabel = geoResponse[0].formatted_address);
-                var idx,
-                    hasLocal = !1;
-                for (idx in geoResponse)
-                    if (geoResponse.hasOwnProperty(idx) && (-1 < $.inArray("locality", geoResponse[idx].types) || -1 < $.inArray("sublocality", geoResponse[idx].types) || -1 < $.inArray("postal_code", geoResponse[idx].types) || -1 < $.inArray("street_address", geoResponse[idx].types))) {
-                        hasLocal = !0;
+                (e = e.results), (s = e[0].formatted_address);
+                var t,
+                    n = !1;
+                for (t in e)
+                    if (e.hasOwnProperty(t) && (-1 < $.inArray("locality", e[t].types) || -1 < $.inArray("sublocality", e[t].types) || -1 < $.inArray("postal_code", e[t].types) || -1 < $.inArray("street_address", e[t].types))) {
+                        n = !0;
                         break;
                     }
-                if (!1 === hasLocal) callback(fallbackLabel);
+                if (!1 === n) a(s);
                 else {
-                    var cityPart = "",
-                        countryPart = "",
-                        hasRegion = !1;
-                    for (idx in (geoResponse = geoResponse[idx].address_components))
-                        geoResponse.hasOwnProperty(idx) &&
-                            !hasRegion &&
-                            ("" === (cityPart = "" === cityPart && -1 < $.inArray("locality", geoResponse[idx].types) ? geoResponse[idx].long_name + ", " + cityPart : cityPart) && -1 < $.inArray("sublocality", geoResponse[idx].types) && (cityPart = geoResponse[idx].long_name + ", " + cityPart),
-                                -1 < $.inArray("administrative_area_level_1", geoResponse[idx].types) && ((cityPart += geoResponse[idx].long_name), (hasRegion = !0)),
-                                -1 < $.inArray("country", geoResponse[idx].types)) &&
-                            (countryPart = geoResponse[idx].long_name);
-                    hasRegion || (cityPart += countryPart), callback(cityPart);
+                    var i = "",
+                        o = "",
+                        n = !1;
+                    for (t in (e = e[t].address_components))
+                        e.hasOwnProperty(t) &&
+                            !n &&
+                            ("" === (i = "" === i && -1 < $.inArray("locality", e[t].types) ? e[t].long_name + ", " + i : i) && -1 < $.inArray("sublocality", e[t].types) && (i = e[t].long_name + ", " + i),
+                            -1 < $.inArray("administrative_area_level_1", e[t].types) && ((i += e[t].long_name), (n = !0)),
+                            -1 < $.inArray("country", e[t].types)) &&
+                            (o = e[t].long_name);
+                    n || (i += o), a(i);
                 }
             }
         });
 }
-function getSunTimes(date) {
-    date = date || new Date(1e3 * controller.settings.devt);
-    var times = SunCalc.getTimes(date, currentCoordinates[0], currentCoordinates[1]),
-        sunrise = times.sunrise,
-        sunset = times.sunset,
-        tzOffset = getTimezoneOffset();
-    return sunrise.setUTCMinutes(sunrise.getUTCMinutes() + tzOffset), sunset.setUTCMinutes(sunset.getUTCMinutes() + tzOffset), [(sunrise = 60 * sunrise.getUTCHours() + sunrise.getUTCMinutes()), (sunset = 60 * sunset.getUTCHours() + sunset.getUTCMinutes())];
+function getSunTimes(e) {
+    e = e || new Date(1e3 * controller.settings.devt);
+    var e = SunCalc.getTimes(e, currentCoordinates[0], currentCoordinates[1]),
+        t = e.sunrise,
+        e = e.sunset,
+        n = getTimezoneOffset();
+    return t.setUTCMinutes(t.getUTCMinutes() + n), e.setUTCMinutes(e.getUTCMinutes() + n), [(t = 60 * t.getUTCHours() + t.getUTCMinutes()), (e = 60 * e.getUTCHours() + e.getUTCMinutes())];
 }
-function makeAttribution(provider) {
-    if ("string" != typeof provider) return "";
-    var html = "<div class='weatherAttribution'>";
-    switch (provider) {
+function makeAttribution(e) {
+    if ("string" != typeof e) return "";
+    var t = "<div class='weatherAttribution'>";
+    switch (e) {
         case "Apple":
             t += _("Powered by Apple");
             break;
@@ -5489,18 +5489,18 @@ function makeAttribution(provider) {
             t += "<a href='https://wunderground.com/' target='_blank'>" + _("Powered by Weather Underground") + "</a>";
             break;
         case "local":
-            html += _("Powered by your Local PWS");
+            t += _("Powered by your Local PWS");
             break;
         case "Manual":
-            html += _("Using manual watering");
+            t += _("Using manual watering");
             break;
         default:
-            html += _("Unrecognised weather provider");
+            t += _("Unrecognised weather provider");
     }
-    return html + "</div>";
+    return t + "</div>";
 }
 function showForecast() {
-    var $page = $("<div data-role='page' id='forecast'><div class='ui-content' role='main'><ul data-role='listview' data-inset='true'>" + makeForecast() + "</ul>" + makeAttribution(weather.wp || weather.weatherProvider) + "</div></div>");
+    var e = $("<div data-role='page' id='forecast'><div class='ui-content' role='main'><ul data-role='listview' data-inset='true'>" + makeForecast() + "</ul>" + makeAttribution(weather.wp || weather.weatherProvider) + "</div></div>");
     changeHeader({
         title: _("Forecast"),
         leftBtn: { icon: "carat-l", text: _("Back"), class: "ui-toolbar-back-btn", on: goBack },
@@ -5516,185 +5516,185 @@ function showForecast() {
             },
         },
     }),
-        $page.one("pagehide", function () {
-            $page.remove();
+        e.one("pagehide", function () {
+            e.remove();
         }),
-        $page.find(".alert").on("click", function () {
+        e.find(".alert").on("click", function () {
             openPopup(
                 $(
                     "<div data-role='popup' data-theme='a'><div data-role='header' data-theme='b'><h1>" +
-                    weather.alert.name +
-                    "</h1></div><div class='ui-content'><span style='white-space: pre-wrap'>" +
-                    $.trim(weather.alert.message) +
-                    "</span></div></div>"
+                        weather.alert.name +
+                        "</h1></div><div class='ui-content'><span style='white-space: pre-wrap'>" +
+                        $.trim(weather.alert.message) +
+                        "</span></div></div>"
                 )
             );
         }),
         $("#forecast").remove(),
-        $.mobile.pageContainer.append($page);
+        $.mobile.pageContainer.append(e);
 }
 function makeForecast() {
-    var dayIndex,
-        dayData,
-        dayHtml,
-        forecastHtml = "",
-        sunriseMinutes = controller.settings.sunrise || getSunTimes()[0],
-        sunsetMinutes = controller.settings.sunset || getSunTimes()[1],
-        dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    var e,
+        t,
+        n,
+        i = "",
+        o = controller.settings.sunrise || getSunTimes()[0],
+        a = controller.settings.sunset || getSunTimes()[1],
+        s = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     for (
-        forecastHtml +=
-        "<li data-icon='false' class='center'><div>" +
-        _("Now") +
-        "</div><br><div title='" +
-        weather.description +
-        "' class='wicon'><img src='https://openweathermap.org/img/w/" +
-        weather.icon +
-        ".png'></div><span>" +
-        formatTemp(weather.temp) +
-        "</span><br><span>" +
-        _("Sunrise") +
-        "</span><span>: " +
-        pad(parseInt(sunriseMinutes / 60) % 24) +
-        ":" +
-        pad(sunriseMinutes % 60) +
-        "</span> <span>" +
-        _("Sunset") +
-        "</span><span>: " +
-        pad(parseInt(sunsetMinutes / 60) % 24) +
-        ":" +
-        pad(sunsetMinutes % 60) +
-        "</span></li>",
-        dayIndex = 1;
-        dayIndex < weather.forecast.length;
-        dayIndex++
+        i +=
+            "<li data-icon='false' class='center'><div>" +
+            _("Now") +
+            "</div><br><div title='" +
+            weather.description +
+            "' class='wicon'><img src='https://openweathermap.org/img/w/" +
+            weather.icon +
+            ".png'></div><span>" +
+            formatTemp(weather.temp) +
+            "</span><br><span>" +
+            _("Sunrise") +
+            "</span><span>: " +
+            pad(parseInt(o / 60) % 24) +
+            ":" +
+            pad(o % 60) +
+            "</span> <span>" +
+            _("Sunset") +
+            "</span><span>: " +
+            pad(parseInt(a / 60) % 24) +
+            ":" +
+            pad(a % 60) +
+            "</span></li>",
+            e = 1;
+        e < weather.forecast.length;
+        e++
     )
-        (sunriseMinutes = (dayData = getSunTimes((dayHtml = new Date(1e3 * weather.forecast[dayIndex].date))))[0]),
-            (sunsetMinutes = dayData[1]),
-            (forecastHtml +=
+        (o = (n = getSunTimes((t = new Date(1e3 * weather.forecast[e].date))))[0]),
+            (a = n[1]),
+            (i +=
                 "<li data-icon='false' class='center'><div>" +
-                dayHtml.toLocaleDateString() +
+                t.toLocaleDateString() +
                 "</div><br><div title='" +
-                weather.forecast[dayIndex].description +
+                weather.forecast[e].description +
                 "' class='wicon'><img src='https://openweathermap.org/img/w/" +
-                weather.forecast[dayIndex].icon +
+                weather.forecast[e].icon +
                 ".png'></div><span>" +
-                _(dayNames[dayHtml.getDay()]) +
+                _(s[t.getDay()]) +
                 "</span><br><span>" +
                 _("Low") +
                 "</span><span>: " +
-                formatTemp(weather.forecast[dayIndex].temp_min) +
+                formatTemp(weather.forecast[e].temp_min) +
                 "  </span><span>" +
                 _("High") +
                 "</span><span>: " +
-                formatTemp(weather.forecast[dayIndex].temp_max) +
+                formatTemp(weather.forecast[e].temp_max) +
                 "</span><br><span>" +
                 _("Sunrise") +
                 "</span><span>: " +
-                pad(parseInt(sunriseMinutes / 60) % 24) +
+                pad(parseInt(o / 60) % 24) +
                 ":" +
-                pad(sunriseMinutes % 60) +
+                pad(o % 60) +
                 "</span> <span>" +
                 _("Sunset") +
                 "</span><span>: " +
-                pad(parseInt(sunsetMinutes / 60) % 24) +
+                pad(parseInt(a / 60) % 24) +
                 ":" +
-                pad(sunsetMinutes % 60) +
+                pad(a % 60) +
                 "</span></li>");
-    return forecastHtml;
+    return i;
 }
-function overlayMap(callback) {
-    $("#location-list").popup("destroy").remove(), $.mobile.loading("show"), (callback = callback || function () { });
-    function getGeolocation(geoCallback) {
-        function onGeoResult(position) {
-            clearTimeout(geoTimeout), $.mobile.loading("hide"), position || showerror(_("Unable to retrieve your current location")), geoCallback(position);
+function overlayMap(n) {
+    $("#location-list").popup("destroy").remove(), $.mobile.loading("show"), (n = n || function () {});
+    function i(t) {
+        function n(e) {
+            clearTimeout(i), $.mobile.loading("hide"), e || showerror(_("Unable to retrieve your current location")), t(e);
         }
-        var geoTimeout;
-        geoCallback =
-            geoCallback ||
-            function (position) {
-                position && $iframe.get(0).contentWindow.postMessage({ type: "currentLocation", payload: { lat: position.coords.latitude, lon: position.coords.longitude } }, "*");
+        var i;
+        t =
+            t ||
+            function (e) {
+                e && s.get(0).contentWindow.postMessage({ type: "currentLocation", payload: { lat: e.coords.latitude, lon: e.coords.longitude } }, "*");
             };
         try {
-            (geoTimeout = setTimeout(function () {
+            (i = setTimeout(function () {
                 $.mobile.loading("show", { html: "<div class='logo'></div><h1 style='padding-top:5px'>" + _("Attempting to retrieve your current location") + "</h1></p>", textVisible: !0, theme: "b" });
             }, 100)),
                 navigator.geolocation.getCurrentPosition(
-                    function (position) {
-                        clearTimeout(geoTimeout), onGeoResult(position);
+                    function (e) {
+                        clearTimeout(i), n(e);
                     },
                     function () {
-                        onGeoResult(!1);
+                        n(!1);
                     },
                     { timeout: 1e4 }
                 );
-        } catch (err) {
-            onGeoResult(!1);
+        } catch (e) {
+            n(!1);
         }
     }
-    function fetchNearbyPWS(lat, lon) {
-        var apiKey = $("#wtkey").val();
-        "" !== apiKey &&
-            $.ajax({ url: "https://api.weather.com/v3/location/near?format=json&product=pws&apiKey=" + apiKey + "&geocode=" + encodeURIComponent(lat) + "," + encodeURIComponent(lon), cache: !0 }).done(function (data) {
-                var stations = [];
-                data.location.stationId.forEach(function (stationId, idx) {
-                    stations.push({ id: stationId, lat: data.location.latitude[idx], lon: data.location.longitude[idx], message: data.location.stationId[idx] });
+    function o(e, t) {
+        var n = $("#wtkey").val();
+        "" !== n &&
+            $.ajax({ url: "https://api.weather.com/v3/location/near?format=json&product=pws&apiKey=" + n + "&geocode=" + encodeURIComponent(e) + "," + encodeURIComponent(t), cache: !0 }).done(function (n) {
+                var i = [];
+                n.location.stationId.forEach(function (e, t) {
+                    i.push({ id: e, lat: n.location.latitude[t], lon: n.location.longitude[t], message: n.location.stationId[t] });
                 }),
-                    0 < stations.length && ((stations = encodeURIComponent(JSON.stringify(stations))), $iframe.get(0).contentWindow.postMessage({ type: "pwsData", payload: stations }, "*"));
+                    0 < i.length && ((i = encodeURIComponent(JSON.stringify(i))), s.get(0).contentWindow.postMessage({ type: "pwsData", payload: i }, "*"));
             });
     }
-    var $popup = $(
-        "<div data-role='popup' id='location-list' data-theme='a' style='background-color:rgb(229, 227, 223);'><a href='#' data-rel='back' class='ui-btn ui-corner-all ui-shadow ui-btn-b ui-icon-delete ui-btn-icon-notext ui-btn-right'>" +
-        _("Close") +
-        "</a><iframe style='border:none' src='" +
-        getAppURLPath() +
-        "map.html' width='100%' height='100%' seamless=''></iframe></div>"
-    ),
-        $iframe = $popup.find("iframe"),
-        locVal = $("#loc").val(),
-        startCoords = { lat: (locVal.match(regex.gps) ? locVal.split(",") : currentCoordinates)[0], lon: (locVal.match(regex.gps) ? locVal.split(",") : currentCoordinates)[1] },
-        mapUsed = !1;
-    $.mobile.window.off("message onmessage").on("message onmessage", function (event) {
-        var parts,
-            msgData = event.originalEvent.data;
-        void 0 !== msgData.WS
-            ? ((parts = msgData.WS.split(",")), callback(1 < parts.length ? parts : msgData.WS, msgData.station), (mapUsed = !0), $popup.popup("destroy").remove())
-            : !0 === msgData.loaded
-                ? $.mobile.loading("hide")
-                : "object" == typeof msgData.location
-                    ? fetchNearbyPWS(msgData.location[0], msgData.location[1])
-                    : !0 === msgData.dismissKeyboard
-                        ? document.activeElement.blur()
-                        : !0 === msgData.getLocation && getGeolocation();
+    var a = $(
+            "<div data-role='popup' id='location-list' data-theme='a' style='background-color:rgb(229, 227, 223);'><a href='#' data-rel='back' class='ui-btn ui-corner-all ui-shadow ui-btn-b ui-icon-delete ui-btn-icon-notext ui-btn-right'>" +
+                _("Close") +
+                "</a><iframe style='border:none' src='" +
+                getAppURLPath() +
+                "map.html' width='100%' height='100%' seamless=''></iframe></div>"
+        ),
+        s = a.find("iframe"),
+        e = $("#loc").val(),
+        t = { lat: (e.match(regex.gps) ? e.split(",") : currentCoordinates)[0], lon: (e.match(regex.gps) ? e.split(",") : currentCoordinates)[1] },
+        r = !1;
+    $.mobile.window.off("message onmessage").on("message onmessage", function (e) {
+        var t,
+            e = e.originalEvent.data;
+        void 0 !== e.WS
+            ? ((t = e.WS.split(",")), n(1 < t.length ? t : e.WS, e.station), (r = !0), a.popup("destroy").remove())
+            : !0 === e.loaded
+            ? $.mobile.loading("hide")
+            : "object" == typeof e.location
+            ? o(e.location[0], e.location[1])
+            : !0 === e.dismissKeyboard
+            ? document.activeElement.blur()
+            : !0 === e.getLocation && i();
     }),
-        $iframe.one("load", function () {
-            0 === startCoords.lat && 0 === startCoords.lon && getGeolocation(), this.contentWindow.postMessage({ type: "startLocation", payload: { start: startCoords } }, "*");
+        s.one("load", function () {
+            0 === t.lat && 0 === t.lon && i(), this.contentWindow.postMessage({ type: "startLocation", payload: { start: t } }, "*");
         }),
-        $popup.one("popupafterclose", function () {
-            !1 === mapUsed && callback(!1);
+        a.one("popupafterclose", function () {
+            !1 === r && n(!1);
         }),
-        openPopup($popup, {
+        openPopup(a, {
             beforeposition: function () {
-                $popup.css({ width: window.innerWidth - 36, height: window.innerHeight - 28 });
+                a.css({ width: window.innerWidth - 36, height: window.innerHeight - 28 });
             },
             x: 0,
             y: 0,
         }),
-        fetchNearbyPWS(startCoords.lat, startCoords.lon);
+        o(t.lat, t.lon);
 }
 var rebootReasons = {
-    0: _("None"),
-    1: _("Factory Reset"),
-    2: _("Reset Button"),
-    3: _("WiFi Change"),
-    4: _("Web Request"),
-    5: _("Web Request"),
-    6: _("WiFi Configure"),
-    7: _("Firmware Update"),
-    8: _("Weather Failure"),
-    9: _("Network Failure"),
-    10: _("Clock Update"),
-    99: _("Power On"),
-},
+        0: _("None"),
+        1: _("Factory Reset"),
+        2: _("Reset Button"),
+        3: _("WiFi Change"),
+        4: _("Web Request"),
+        5: _("Web Request"),
+        6: _("WiFi Configure"),
+        7: _("Firmware Update"),
+        8: _("Weather Failure"),
+        9: _("Network Failure"),
+        10: _("Clock Update"),
+        99: _("Power On"),
+    },
     weatherErrors = {
         "-4": _("Empty Response"),
         "-3": _("Timed Out"),
@@ -5723,18 +5723,18 @@ var rebootReasons = {
         51: _("Missing Adjustment Option"),
         99: _("Unexpected Error"),
     };
-function getRebootReason(code) {
-    return code in rebootReasons ? rebootReasons[code] : _("Unrecognised") + " (" + code + ")";
+function getRebootReason(e) {
+    return e in rebootReasons ? rebootReasons[e] : _("Unrecognised") + " (" + e + ")";
 }
-function getWeatherError(code) {
-    var majorCode = Math.floor(code / 10);
-    return code in weatherErrors ? weatherErrors[code] : code <= 59 && 10 <= code && majorCode in weatherErrors ? weatherErrors[majorCode] : _("Unrecognised") + " (" + code + ")";
+function getWeatherError(e) {
+    var t = Math.floor(e / 10);
+    return e in weatherErrors ? weatherErrors[e] : e <= 59 && 10 <= e && t in weatherErrors ? weatherErrors[t] : _("Unrecognised") + " (" + e + ")";
 }
-function getWeatherStatus(errorCode) {
-    return errorCode < 0 ? "<font class='debugWUError'>" + _("Offline") + "</font>" : 0 < errorCode ? "<font class='debugWUError'>" + _("Error") + "</font>" : "<font class='debugWUOK'>" + _("Online") + "</font>";
+function getWeatherStatus(e) {
+    return e < 0 ? "<font class='debugWUError'>" + _("Offline") + "</font>" : 0 < e ? "<font class='debugWUError'>" + _("Error") + "</font>" : "<font class='debugWUOK'>" + _("Online") + "</font>";
 }
-function getWiFiRating(rssi) {
-    return _(rssi < -80 ? "Unuseable" : rssi < -70 ? "Poor" : rssi < -60 ? "Fair" : rssi < -50 ? "Good" : "Excellent");
+function getWiFiRating(e) {
+    return _(e < -80 ? "Unuseable" : e < -70 ? "Poor" : e < -60 ? "Fair" : e < -50 ? "Good" : "Excellent");
 }
 function debugWU() {
     var e = "<div data-role='popup' id='debugWU' class='ui-content ui-page-theme-a'>";
@@ -5753,33 +5753,33 @@ function debugWU() {
                 : "") +
             "</table><div class='debugWUHeading'>Weather Service Details</div><div class='debugWUScrollable'><table class='debugWUTable'>"),
         "object" == typeof controller.settings.wtdata &&
-        0 < Object.keys(controller.settings.wtdata).length &&
-        (e +=
-            (void 0 !== controller.settings.wtdata.h ? "<tr><td>" + _("Mean Humidity") + "</td><td>" + formatHumidity(controller.settings.wtdata.h) + "</td></tr>" : "") +
-            (void 0 !== controller.settings.wtdata.t ? "<tr><td>" + _("Mean Temp") + "</td><td>" + formatTemp(controller.settings.wtdata.t) + "</td></tr>" : "") +
-            (void 0 !== controller.settings.wtdata.p ? "<tr><td>" + _("Total Rain") + "</td><td>" + formatPrecip(controller.settings.wtdata.p) + "</td></tr>" : "") +
-            (void 0 !== controller.settings.wtdata.eto ? "<tr><td>" + _("ETo") + "</td><td>" + formatPrecip(controller.settings.wtdata.eto) + "</td></tr>" : "") +
-            (void 0 !== controller.settings.wtdata.radiation ? "<tr><td>" + _("Mean Radiation") + "</td><td>" + controller.settings.wtdata.radiation + " kWh/m2</td></tr>" : "") +
-            (void 0 !== controller.settings.wtdata.minT ? "<tr><td>" + _("Min Temp") + "</td><td>" + formatTemp(controller.settings.wtdata.minT) + "</td></tr>" : "") +
-            (void 0 !== controller.settings.wtdata.maxT ? "<tr><td>" + _("Max Temp") + "</td><td>" + formatTemp(controller.settings.wtdata.maxT) + "</td></tr>" : "") +
-            (void 0 !== controller.settings.wtdata.minH ? "<tr><td>" + _("Min Humidity") + "</td><td>" + formatHumidity(controller.settings.wtdata.minH) + "</td></tr>" : "") +
-            (void 0 !== controller.settings.wtdata.maxH ? "<tr><td>" + _("Max Humidity") + "</td><td>" + formatHumidity(controller.settings.wtdata.maxH) + "</td></tr>" : "") +
-            (void 0 !== controller.settings.wtdata.wind ? "<tr><td>" + _("Mean Wind") + "</td><td>" + formatSpeed(controller.settings.wtdata.wind) + "</td></tr>" : "")),
+            0 < Object.keys(controller.settings.wtdata).length &&
+            (e +=
+                (void 0 !== controller.settings.wtdata.h ? "<tr><td>" + _("Mean Humidity") + "</td><td>" + formatHumidity(controller.settings.wtdata.h) + "</td></tr>" : "") +
+                (void 0 !== controller.settings.wtdata.t ? "<tr><td>" + _("Mean Temp") + "</td><td>" + formatTemp(controller.settings.wtdata.t) + "</td></tr>" : "") +
+                (void 0 !== controller.settings.wtdata.p ? "<tr><td>" + _("Total Rain") + "</td><td>" + formatPrecip(controller.settings.wtdata.p) + "</td></tr>" : "") +
+                (void 0 !== controller.settings.wtdata.eto ? "<tr><td>" + _("ETo") + "</td><td>" + formatPrecip(controller.settings.wtdata.eto) + "</td></tr>" : "") +
+                (void 0 !== controller.settings.wtdata.radiation ? "<tr><td>" + _("Mean Radiation") + "</td><td>" + controller.settings.wtdata.radiation + " kWh/m2</td></tr>" : "") +
+                (void 0 !== controller.settings.wtdata.minT ? "<tr><td>" + _("Min Temp") + "</td><td>" + formatTemp(controller.settings.wtdata.minT) + "</td></tr>" : "") +
+                (void 0 !== controller.settings.wtdata.maxT ? "<tr><td>" + _("Max Temp") + "</td><td>" + formatTemp(controller.settings.wtdata.maxT) + "</td></tr>" : "") +
+                (void 0 !== controller.settings.wtdata.minH ? "<tr><td>" + _("Min Humidity") + "</td><td>" + formatHumidity(controller.settings.wtdata.minH) + "</td></tr>" : "") +
+                (void 0 !== controller.settings.wtdata.maxH ? "<tr><td>" + _("Max Humidity") + "</td><td>" + formatHumidity(controller.settings.wtdata.maxH) + "</td></tr>" : "") +
+                (void 0 !== controller.settings.wtdata.wind ? "<tr><td>" + _("Mean Wind") + "</td><td>" + formatSpeed(controller.settings.wtdata.wind) + "</td></tr>" : "")),
         (e =
             (e += "number" == typeof controller.settings.lwc ? "<tr><td>" + _("Last Request") + "</td><td>" + dateToString(new Date(1e3 * controller.settings.lwc), null, 2) + "</td></tr>" : "") +
             ("number" == typeof controller.settings.wterr ? "<tr><td>" + _("Last Response") + "</td><td>" + getWeatherError(controller.settings.wterr) + "</td></tr>" : "") +
             "</table></div>"),
         "number" == typeof controller.settings.otcs && (e += "<div class='debugWUHeading'>Integrations</div><table class='debugWUTable'><tr><td>OpenThings Cloud</td><td>" + resolveOTCStatus(controller.settings.otcs) + "</td></tr></table>"),
         !controller.settings.wtdata ||
-        ("string" != typeof controller.settings.wtdata.wp && "string" != typeof controller.settings.wtdata.weatherProvider) ||
-        (e = (e += "<hr>") + makeAttribution(controller.settings.wtdata.wp || controller.settings.wtdata.weatherProvider)),
+            ("string" != typeof controller.settings.wtdata.wp && "string" != typeof controller.settings.wtdata.weatherProvider) ||
+            (e = (e += "<hr>") + makeAttribution(controller.settings.wtdata.wp || controller.settings.wtdata.weatherProvider)),
         (e += "</div>"),
         openPopup($(e)),
         !1
     );
 }
-function resolveOTCStatus(statusCode) {
-    switch (statusCode) {
+function resolveOTCStatus(e) {
+    switch (e) {
         case 0:
             return "Not Enabled";
         case 1:
@@ -5807,46 +5807,46 @@ function showRainDelay() {
 function showPause() {
     StationQueue.isPaused()
         ? areYouSure(_("Do you want to resume program operation?"), "", function () {
-            sendToOS("/pq?pw=&dur=0");
-        })
+              sendToOS("/pq?pw=&dur=0");
+          })
         : showDurationBox({
-            title: "Pause Station Runs",
-            incrementalUpdate: !1,
-            maximum: 65535,
-            callback: function (e) {
-                sendToOS("/pq?pw=&dur=" + e);
-            },
-        });
+              title: "Pause Station Runs",
+              incrementalUpdate: !1,
+              maximum: 65535,
+              callback: function (e) {
+                  sendToOS("/pq?pw=&dur=" + e);
+              },
+          });
 }
-function getAdjustmentMethod(methodId) {
-    var methods = [
+function getAdjustmentMethod(e) {
+    var t = [
         { name: _("Manual"), id: 0 },
         { name: "Zimmerman", id: 1 },
         { name: _("Auto Rain Delay"), id: 2, minVersion: 216 },
         { name: "ETo", id: 3, minVersion: 216 },
         { name: "Monthly", id: 4, minVersion: 220 },
     ];
-    return void 0 === methodId ? methods : methods[-129 & methodId];
+    return void 0 === e ? t : t[-129 & e];
 }
 function getCurrentAdjustmentMethodId() {
     return -129 & controller.options.uwt;
 }
-function getRestriction(restrictionIndex) {
+function getRestriction(e) {
     return [
         { isCurrent: 0, name: _("None") },
         { isCurrent: !!((controller.options.uwt >> 7) & 1), name: _("California Restriction") },
-    ][restrictionIndex];
+    ][e];
 }
-function setRestriction(restrictionType, currentUwt) {
-    return (currentUwt = currentUwt || -129 & controller.options.uwt), 1 === restrictionType && (currentUwt |= 128), currentUwt;
+function setRestriction(e, t) {
+    return (t = t || -129 & controller.options.uwt), 1 === e && (t |= 128), t;
 }
-function testAPIKey(apiKey, callback) {
-    $.ajax({ url: "https://api.weather.com/v2/pws/observations/current?stationId=KMAHANOV10&format=json&units=m&apiKey=" + apiKey, cache: !0 })
-        .done(function (response) {
-            response.errors ? callback(!1) : callback(!0);
+function testAPIKey(e, t) {
+    $.ajax({ url: "https://api.weather.com/v2/pws/observations/current?stationId=KMAHANOV10&format=json&units=m&apiKey=" + e, cache: !0 })
+        .done(function (e) {
+            e.errors ? t(!1) : t(!0);
         })
         .fail(function () {
-            callback(!1);
+            t(!1);
         });
 }
 function bindPanel() {
@@ -5871,10 +5871,10 @@ function bindPanel() {
         e.find(".export_config").on("click", function () {
             return (
                 "object" != typeof controller.stations.stn_spe ||
-                    "object" == typeof controller.special ||
-                    controller.stations.stn_spe.every(function (e) {
-                        return 0 === e;
-                    })
+                "object" == typeof controller.special ||
+                controller.stations.stn_spe.every(function (e) {
+                    return 0 === e;
+                })
                     ? getExportMethod()
                     : updateControllerStationSpecial(getExportMethod),
                 !1
@@ -5944,7 +5944,7 @@ function bindPanel() {
             "start" !== e && "loadingPage" !== e && isControllerConnected() && 1 === $(".ui-page-active").length && (i(), t.panel("open"));
         });
 }
-function showOptions(section) {
+function showOptions(e) {
     function t(e, t, n) {
         return (
             "<div class='ui-field-contain'><fieldset data-role='controlgroup' class='ui-mini center sensor-options' data-type='horizontal'><legend class='left'>" +
@@ -6066,32 +6066,32 @@ function showOptions(section) {
                             "loc" === n || "lg" === n
                                 ? "o" + n
                                 : ((a = /\d+/.exec(n)),
-                                    "o" +
-                                    Object.keys(keyIndex).find(function (e) {
-                                        return keyIndex[e] === a;
-                                    }))),
+                                  "o" +
+                                      Object.keys(keyIndex).find(function (e) {
+                                          return keyIndex[e] === a;
+                                      }))),
                         !0 === checkOSVersion(208) && "loc" === n && (i = i.replace(/\s/g, "_")),
                         (s[n] = i);
                 }),
             r
                 ? (e.prop("disabled", !1), c.find(".submit").addClass("hasChanges"))
                 : (void 0 !== controller.options.fpr0 &&
-                    (void 0 !== controller.options.urs
-                        ? (s.o21 = c.find("input[name='o21'][type='radio']:checked").val())
-                        : (void 0 !== controller.options.sn1t && (s.o50 = c.find("input[name='o50'][type='radio']:checked").val()), void 0 !== controller.options.sn2t && (s.o52 = c.find("input[name='o52'][type='radio']:checked").val()))),
-                    (s = transformKeys(s)),
-                    $.mobile.loading("show"),
-                    sendToOS("/co?pw=&" + $.param(s))
-                        .done(function () {
-                            $.mobile.document.one("pageshow", function () {
-                                showerror(_("Settings have been saved"));
-                            }),
-                                goBack(),
-                                updateController(updateWeather);
-                        })
-                        .fail(function () {
-                            e.prop("disabled", !1), c.find(".submit").addClass("hasChanges");
-                        }));
+                      (void 0 !== controller.options.urs
+                          ? (s.o21 = c.find("input[name='o21'][type='radio']:checked").val())
+                          : (void 0 !== controller.options.sn1t && (s.o50 = c.find("input[name='o50'][type='radio']:checked").val()), void 0 !== controller.options.sn2t && (s.o52 = c.find("input[name='o52'][type='radio']:checked").val()))),
+                  (s = transformKeys(s)),
+                  $.mobile.loading("show"),
+                  sendToOS("/co?pw=&" + $.param(s))
+                      .done(function () {
+                          $.mobile.document.one("pageshow", function () {
+                              showerror(_("Settings have been saved"));
+                          }),
+                              goBack(),
+                              updateController(updateWeather);
+                      })
+                      .fail(function () {
+                          e.prop("disabled", !1), c.find(".submit").addClass("hasChanges");
+                      }));
     }
     var i,
         o,
@@ -6103,8 +6103,8 @@ function showOptions(section) {
         d = changeHeader({ title: _("Edit Options"), leftBtn: { icon: "carat-l", text: _("Back"), class: "ui-toolbar-back-btn", on: checkChangesBeforeBack }, rightBtn: { icon: "check", text: _("Submit"), class: "submit", on: n } });
     if (
         (c.find(".submit").on("click", n),
-            (l = "<fieldset data-role='collapsible'" + ("string" != typeof section || "system" === section ? " data-collapsed='false'" : "") + "><legend>" + _("System") + "</legend>"),
-            void 0 !== controller.options.ntp &&
+        (l = "<fieldset data-role='collapsible'" + ("string" != typeof e || "system" === e ? " data-collapsed='false'" : "") + "><legend>" + _("System") + "</legend>"),
+        void 0 !== controller.options.ntp &&
             (l +=
                 "<div class='ui-field-contain datetime-input'><label for='datetime'>" +
                 _("Device Time") +
@@ -6115,7 +6115,7 @@ function showOptions(section) {
                 "'>" +
                 dateToString(new Date(1e3 * controller.settings.devt)).slice(0, -3) +
                 "</button></div>"),
-            !isOSPi() && void 0 !== controller.options.tz)
+        !isOSPi() && void 0 !== controller.options.tz)
     ) {
         for (
             i = [
@@ -6163,9 +6163,9 @@ function showOptions(section) {
                 "+13:45",
                 "+14:00",
             ],
-            o = (0 <= (o = controller.options.tz - 48) ? "+" : "-") + pad((Math.abs(o) / 4) >> 0) + ":" + ((((Math.abs(o) % 4) * 15) / 10) >> 0) + (((Math.abs(o) % 4) * 15) % 10),
-            l += "<div class='ui-field-contain'><label for='o1' class='select'>" + _("Timezone") + "</label><select " + (checkOSVersion(210) && "object" == typeof weather ? "disabled='disabled' " : "") + "data-mini='true' id='o1'>",
-            a = 0;
+                o = (0 <= (o = controller.options.tz - 48) ? "+" : "-") + pad((Math.abs(o) / 4) >> 0) + ":" + ((((Math.abs(o) % 4) * 15) / 10) >> 0) + (((Math.abs(o) % 4) * 15) % 10),
+                l += "<div class='ui-field-contain'><label for='o1' class='select'>" + _("Timezone") + "</label><select " + (checkOSVersion(210) && "object" == typeof weather ? "disabled='disabled' " : "") + "data-mini='true' id='o1'>",
+                a = 0;
             a < i.length;
             a++
         )
@@ -6181,91 +6181,91 @@ function showOptions(section) {
             "'><span>" +
             controller.settings.loc +
             "</span><a class='ui-btn btn-no-border ui-btn-icon-notext ui-icon-delete ui-btn-corner-all clear-loc'></a></button></div>"),
-            void 0 !== controller.options.lg && (l += "<label for='o36'><input data-mini='true' id='o36' type='checkbox' " + (1 === controller.options.lg ? "checked='checked'" : "") + ">" + _("Enable Logging") + "</label>"),
-            (l += "<label for='isMetric'><input data-mini='true' id='isMetric' type='checkbox' " + (isMetric ? "checked='checked'" : "") + ">" + _("Use Metric") + "</label>"),
-            Supported.groups() && (l += "<label for='groupView'><input data-mini='true' id='groupView' type='checkbox' " + (groupView ? "checked='checked'" : "") + ">" + _("Order Stations by Groups") + "</label>"),
-            void 0 !== controller.options.vm && (l += "<label for='o62'><input data-mini='true' id='o62' type='checkbox' " + (1 === controller.options.vm ? "checked='checked'" : "") + ">" + _("Virtual Mode (disable zone outputs)") + "</label>"),
-            (l += "</fieldset><fieldset data-role='collapsible'" + ("string" == typeof section && "master" === section ? " data-collapsed='false'" : "") + "><legend>" + _("Configure Master") + "</legend>"),
-            void 0 !== controller.options.mas)
+        void 0 !== controller.options.lg && (l += "<label for='o36'><input data-mini='true' id='o36' type='checkbox' " + (1 === controller.options.lg ? "checked='checked'" : "") + ">" + _("Enable Logging") + "</label>"),
+        (l += "<label for='isMetric'><input data-mini='true' id='isMetric' type='checkbox' " + (isMetric ? "checked='checked'" : "") + ">" + _("Use Metric") + "</label>"),
+        Supported.groups() && (l += "<label for='groupView'><input data-mini='true' id='groupView' type='checkbox' " + (groupView ? "checked='checked'" : "") + ">" + _("Order Stations by Groups") + "</label>"),
+        void 0 !== controller.options.vm && (l += "<label for='o62'><input data-mini='true' id='o62' type='checkbox' " + (1 === controller.options.vm ? "checked='checked'" : "") + ">" + _("Virtual Mode (disable zone outputs)") + "</label>"),
+        (l += "</fieldset><fieldset data-role='collapsible'" + ("string" == typeof e && "master" === e ? " data-collapsed='false'" : "") + "><legend>" + _("Configure Master") + "</legend>"),
+        void 0 !== controller.options.mas)
     ) {
         for (
             l +=
-            "<div class='ui-field-contain ui-field-no-border'><label for='o18' class='select'>" +
-            _("Master Station") +
-            " " +
-            (void 0 !== controller.options.mas2 ? "1" : "") +
-            "</label><select data-mini='true' id='o18'><option value='0'>" +
-            _("None") +
-            "</option>",
-            a = 0;
+                "<div class='ui-field-contain ui-field-no-border'><label for='o18' class='select'>" +
+                _("Master Station") +
+                " " +
+                (void 0 !== controller.options.mas2 ? "1" : "") +
+                "</label><select data-mini='true' id='o18'><option value='0'>" +
+                _("None") +
+                "</option>",
+                a = 0;
             a < controller.stations.snames.length && ((l += "<option " + (1 === Station.isMaster(a) ? "selected" : "") + " value='" + (a + 1) + "'>" + controller.stations.snames[a] + "</option>"), checkOSVersion(214) || 7 !== a);
             a++
         );
         (l += "</select></div>"),
             void 0 !== controller.options.mton &&
-            (l +=
-                "<div " +
-                (0 === controller.options.mas ? "style='display:none' " : "") +
-                "class='ui-field-no-border ui-field-contain duration-field'><label for='o19'>" +
-                _("Master On Adjustment") +
-                "</label><button data-mini='true' id='o19' value='" +
-                controller.options.mton +
-                "'>" +
-                controller.options.mton +
-                "s</button></div>"),
+                (l +=
+                    "<div " +
+                    (0 === controller.options.mas ? "style='display:none' " : "") +
+                    "class='ui-field-no-border ui-field-contain duration-field'><label for='o19'>" +
+                    _("Master On Adjustment") +
+                    "</label><button data-mini='true' id='o19' value='" +
+                    controller.options.mton +
+                    "'>" +
+                    controller.options.mton +
+                    "s</button></div>"),
             void 0 !== controller.options.mtof &&
-            (l +=
-                "<div " +
-                (0 === controller.options.mas ? "style='display:none' " : "") +
-                "class='ui-field-no-border ui-field-contain duration-field'><label for='o20'>" +
-                _("Master Off Adjustment") +
-                "</label><button data-mini='true' id='o20' value='" +
-                controller.options.mtof +
-                "'>" +
-                controller.options.mtof +
-                "s</button></div>");
+                (l +=
+                    "<div " +
+                    (0 === controller.options.mas ? "style='display:none' " : "") +
+                    "class='ui-field-no-border ui-field-contain duration-field'><label for='o20'>" +
+                    _("Master Off Adjustment") +
+                    "</label><button data-mini='true' id='o20' value='" +
+                    controller.options.mtof +
+                    "'>" +
+                    controller.options.mtof +
+                    "s</button></div>");
     }
     if (void 0 !== controller.options.mas2) {
         for (
             l =
-            (l += "<hr style='width:95%' class='content-divider'>") +
-            ("<div class='ui-field-contain ui-field-no-border'><label for='o37' class='select'>" + _("Master Station") + " 2</label><select data-mini='true' id='o37'><option value='0'>" + _("None") + "</option>"),
-            a = 0;
+                (l += "<hr style='width:95%' class='content-divider'>") +
+                ("<div class='ui-field-contain ui-field-no-border'><label for='o37' class='select'>" + _("Master Station") + " 2</label><select data-mini='true' id='o37'><option value='0'>" + _("None") + "</option>"),
+                a = 0;
             a < controller.stations.snames.length && ((l += "<option " + (2 === Station.isMaster(a) ? "selected" : "") + " value='" + (a + 1) + "'>" + controller.stations.snames[a] + "</option>"), checkOSVersion(214) || 7 !== a);
             a++
         );
         (l += "</select></div>"),
             void 0 !== controller.options.mton2 &&
-            (l +=
-                "<div " +
-                (0 === controller.options.mas2 ? "style='display:none' " : "") +
-                "class='ui-field-no-border ui-field-contain duration-field'><label for='o38'>" +
-                _("Master On Adjustment") +
-                "</label><button data-mini='true' id='o38' value='" +
-                controller.options.mton2 +
-                "'>" +
-                controller.options.mton2 +
-                "s</button></div>"),
+                (l +=
+                    "<div " +
+                    (0 === controller.options.mas2 ? "style='display:none' " : "") +
+                    "class='ui-field-no-border ui-field-contain duration-field'><label for='o38'>" +
+                    _("Master On Adjustment") +
+                    "</label><button data-mini='true' id='o38' value='" +
+                    controller.options.mton2 +
+                    "'>" +
+                    controller.options.mton2 +
+                    "s</button></div>"),
             void 0 !== controller.options.mtof2 &&
-            (l +=
-                "<div " +
-                (0 === controller.options.mas2 ? "style='display:none' " : "") +
-                "class='ui-field-no-border ui-field-contain duration-field'><label for='o39'>" +
-                _("Master Off Adjustment") +
-                "</label><button data-mini='true' id='o39' value='" +
-                controller.options.mtof2 +
-                "'>" +
-                controller.options.mtof2 +
-                "s</button></div>");
+                (l +=
+                    "<div " +
+                    (0 === controller.options.mas2 ? "style='display:none' " : "") +
+                    "class='ui-field-no-border ui-field-contain duration-field'><label for='o39'>" +
+                    _("Master Off Adjustment") +
+                    "</label><button data-mini='true' id='o39' value='" +
+                    controller.options.mtof2 +
+                    "'>" +
+                    controller.options.mtof2 +
+                    "s</button></div>");
     }
-    if (((l += "</fieldset><fieldset data-role='collapsible'" + ("string" == typeof section && "station" === section ? " data-collapsed='false'" : "") + "><legend>" + _("Station Handling") + "</legend>"), void 0 !== controller.options.ext)) {
+    if (((l += "</fieldset><fieldset data-role='collapsible'" + ("string" == typeof e && "station" === e ? " data-collapsed='false'" : "") + "><legend>" + _("Station Handling") + "</legend>"), void 0 !== controller.options.ext)) {
         for (
             l +=
-            "<div class='ui-field-contain'><label for='o15' class='select'>" +
-            _("Number of Stations") +
-            ("number" == typeof controller.options.dexp && controller.options.dexp < 255 && 0 <= controller.options.dexp ? " <span class='nobr'>(" + (8 * controller.options.dexp + 8) + " " + _("available") + ")</span>" : "") +
-            "</label><select data-mini='true' id='o15'>",
-            a = 0;
+                "<div class='ui-field-contain'><label for='o15' class='select'>" +
+                _("Number of Stations") +
+                ("number" == typeof controller.options.dexp && controller.options.dexp < 255 && 0 <= controller.options.dexp ? " <span class='nobr'>(" + (8 * controller.options.dexp + 8) + " " + _("available") + ")</span>" : "") +
+                "</label><select data-mini='true' id='o15'>",
+                a = 0;
             a <= (controller.options.mexp || 5);
             a++
         )
@@ -6282,26 +6282,26 @@ function showOptions(section) {
                 "'>" +
                 dhms2str(sec2dhms(controller.options.sdt)) +
                 "</button></div>"),
-            (l +=
-                "<label for='showDisabled'><input data-mini='true' class='noselect' id='showDisabled' type='checkbox' " +
-                ("true" === localStorage.showDisabled ? "checked='checked'" : "") +
-                ">" +
-                _("Show Disabled") +
-                " " +
-                _("(Changes Auto-Saved)") +
-                "</label>"),
-            void 0 !== controller.options.seq && (l += "<label for='o16'><input data-mini='true' id='o16' type='checkbox' " + (1 === controller.options.seq ? "checked='checked'" : "") + ">" + _("Sequential") + "</label>"),
-            (l += "</fieldset><fieldset data-role='collapsible'" + ("string" == typeof section && "weather" === section ? " data-collapsed='false'" : "") + "><legend>" + _("Weather and Sensors") + "</legend>"),
-            void 0 !== controller.options.uwt)
+        (l +=
+            "<label for='showDisabled'><input data-mini='true' class='noselect' id='showDisabled' type='checkbox' " +
+            ("true" === localStorage.showDisabled ? "checked='checked'" : "") +
+            ">" +
+            _("Show Disabled") +
+            " " +
+            _("(Changes Auto-Saved)") +
+            "</label>"),
+        void 0 !== controller.options.seq && (l += "<label for='o16'><input data-mini='true' id='o16' type='checkbox' " + (1 === controller.options.seq ? "checked='checked'" : "") + ">" + _("Sequential") + "</label>"),
+        (l += "</fieldset><fieldset data-role='collapsible'" + ("string" == typeof e && "weather" === e ? " data-collapsed='false'" : "") + "><legend>" + _("Weather and Sensors") + "</legend>"),
+        void 0 !== controller.options.uwt)
     ) {
         for (
             l +=
-            "<div class='ui-field-contain'><label for='o31' class='select'>" +
-            _("Weather Adjustment Method") +
-            "<button data-helptext='" +
-            _("Weather adjustment uses DarkSky data in conjunction with the selected method to adjust the watering percentage.") +
-            "' class='help-icon btn-no-border ui-btn ui-icon-info ui-btn-icon-notext'></button></label><select data-mini='true' id='o31'>",
-            a = 0;
+                "<div class='ui-field-contain'><label for='o31' class='select'>" +
+                _("Weather Adjustment Method") +
+                "<button data-helptext='" +
+                _("Weather adjustment uses DarkSky data in conjunction with the selected method to adjust the watering percentage.") +
+                "' class='help-icon btn-no-border ui-btn ui-icon-info ui-btn-icon-notext'></button></label><select data-mini='true' id='o31'>",
+                a = 0;
             a < getAdjustmentMethod().length;
             a++
         ) {
@@ -6310,7 +6310,7 @@ function showOptions(section) {
         }
         if (
             ((l += "</select></div>"),
-                "object" == typeof controller.settings.wto &&
+            "object" == typeof controller.settings.wto &&
                 (l +=
                     "<div class='ui-field-contain" +
                     (0 === getCurrentAdjustmentMethodId() ? " hidden" : "") +
@@ -6321,16 +6321,16 @@ function showOptions(section) {
                     "'>" +
                     _("Tap to Configure") +
                     "</button></div>"),
-                checkOSVersion(214))
+            checkOSVersion(214))
         ) {
             for (
                 l +=
-                "<div class='ui-field-contain'><label for='weatherRestriction' class='select'>" +
-                _("Weather-Based Restrictions") +
-                "<button data-helptext='" +
-                _("Prevents watering when the selected restriction is met.") +
-                "' class='help-icon btn-no-border ui-btn ui-icon-info ui-btn-icon-notext'></button></label><select data-mini='true' class='noselect' id='weatherRestriction'>",
-                a = 0;
+                    "<div class='ui-field-contain'><label for='weatherRestriction' class='select'>" +
+                    _("Weather-Based Restrictions") +
+                    "<button data-helptext='" +
+                    _("Prevents watering when the selected restriction is met.") +
+                    "' class='help-icon btn-no-border ui-btn ui-icon-info ui-btn-icon-notext'></button></label><select data-mini='true' class='noselect' id='weatherRestriction'>",
+                    a = 0;
                 a < 2;
                 a++
             ) {
@@ -6354,223 +6354,223 @@ function showOptions(section) {
             controller.options.wl +
             "%</button></div>"),
         (void 0 === controller.options.urs && void 0 === controller.options.sn1t) ||
-        (void 0 !== controller.options.fpr0
-            ? (l += void 0 !== controller.options.urs ? t(keyIndex.urs, controller.options.urs) : void 0 !== controller.options.sn1t ? t(keyIndex.sn1t, controller.options.sn1t, 1) : "")
-            : (l += "<label for='o21'><input data-mini='true' id='o21' type='checkbox' " + (1 === controller.options.urs ? "checked='checked'" : "") + ">" + _("Use Rain Sensor") + "</label>")),
+            (void 0 !== controller.options.fpr0
+                ? (l += void 0 !== controller.options.urs ? t(keyIndex.urs, controller.options.urs) : void 0 !== controller.options.sn1t ? t(keyIndex.sn1t, controller.options.sn1t, 1) : "")
+                : (l += "<label for='o21'><input data-mini='true' id='o21' type='checkbox' " + (1 === controller.options.urs ? "checked='checked'" : "") + ">" + _("Use Rain Sensor") + "</label>")),
         void 0 !== controller.options.rso &&
-        (l +=
-            "<label for='o22'><input " +
-            (1 === controller.options.urs || 240 === controller.options.urs ? "" : "data-wrapper-class='hidden' ") +
-            "data-mini='true' id='o22' type='checkbox' " +
-            (1 === controller.options.rso ? "checked='checked'" : "") +
-            ">" +
-            _("Normally Open") +
-            "</label>"),
+            (l +=
+                "<label for='o22'><input " +
+                (1 === controller.options.urs || 240 === controller.options.urs ? "" : "data-wrapper-class='hidden' ") +
+                "data-mini='true' id='o22' type='checkbox' " +
+                (1 === controller.options.rso ? "checked='checked'" : "") +
+                ">" +
+                _("Normally Open") +
+                "</label>"),
         void 0 !== controller.options.sn1o &&
-        (l +=
-            "<label for='o51'><input " +
-            (1 === controller.options.sn1t || 3 === controller.options.sn1t || 240 === controller.options.sn1t ? "" : "data-wrapper-class='hidden' ") +
-            "data-mini='true' id='o51' type='checkbox' " +
-            (1 === controller.options.sn1o ? "checked='checked'" : "") +
-            ">" +
-            _("Normally Open") +
-            "</label>"),
+            (l +=
+                "<label for='o51'><input " +
+                (1 === controller.options.sn1t || 3 === controller.options.sn1t || 240 === controller.options.sn1t ? "" : "data-wrapper-class='hidden' ") +
+                "data-mini='true' id='o51' type='checkbox' " +
+                (1 === controller.options.sn1o ? "checked='checked'" : "") +
+                ">" +
+                _("Normally Open") +
+                "</label>"),
         void 0 !== controller.options.fpr0 &&
-        (l +=
-            "<div class='ui-field-contain" +
-            (2 === controller.options.urs || 2 === controller.options.sn1t ? "" : " hidden") +
-            "'><label for='o41'>" +
-            _("Flow Pulse Rate") +
-            "</label><table><tr style='width:100%;vertical-align: top;'><td style='width:100%'><div class='ui-input-text controlgroup-textinput ui-btn ui-body-inherit ui-corner-all ui-mini ui-shadow-inset ui-input-has-clear'><input data-role='none' data-mini='true' type='number' pattern='^[-+]?[0-9]*.?[0-9]*$' id='o41' value='" +
-            (256 * controller.options.fpr1 + controller.options.fpr0) / 100 +
-            "'></div></td><td class='tight-select'><select id='o41-units' class='noselect' data-mini='true'><option selected='selected' value='liter'>L/pulse</option><option value='gallon'>Gal/pulse</option></select></td></tr></table></div>"),
+            (l +=
+                "<div class='ui-field-contain" +
+                (2 === controller.options.urs || 2 === controller.options.sn1t ? "" : " hidden") +
+                "'><label for='o41'>" +
+                _("Flow Pulse Rate") +
+                "</label><table><tr style='width:100%;vertical-align: top;'><td style='width:100%'><div class='ui-input-text controlgroup-textinput ui-btn ui-body-inherit ui-corner-all ui-mini ui-shadow-inset ui-input-has-clear'><input data-role='none' data-mini='true' type='number' pattern='^[-+]?[0-9]*.?[0-9]*$' id='o41' value='" +
+                (256 * controller.options.fpr1 + controller.options.fpr0) / 100 +
+                "'></div></td><td class='tight-select'><select id='o41-units' class='noselect' data-mini='true'><option selected='selected' value='liter'>L/pulse</option><option value='gallon'>Gal/pulse</option></select></td></tr></table></div>"),
         void 0 !== controller.options.sn1on &&
-        (l +=
-            "<div class='" +
-            (1 === controller.options.sn1t || 3 === controller.options.sn1t ? "" : "hidden ") +
-            "ui-field-no-border ui-field-contain duration-field'><label for='o54'>" +
-            _("Sensor 1 Delayed On Time") +
-            "</label><button data-mini='true' id='o54' value='" +
-            controller.options.sn1on +
-            "'>" +
-            controller.options.sn1on +
-            "m</button></div>"),
+            (l +=
+                "<div class='" +
+                (1 === controller.options.sn1t || 3 === controller.options.sn1t ? "" : "hidden ") +
+                "ui-field-no-border ui-field-contain duration-field'><label for='o54'>" +
+                _("Sensor 1 Delayed On Time") +
+                "</label><button data-mini='true' id='o54' value='" +
+                controller.options.sn1on +
+                "'>" +
+                controller.options.sn1on +
+                "m</button></div>"),
         void 0 !== controller.options.sn1of &&
-        (l +=
-            "<div class='" +
-            (1 === controller.options.sn1t || 3 === controller.options.sn1t ? "" : "hidden ") +
-            "ui-field-no-border ui-field-contain duration-field'><label for='o55'>" +
-            _("Sensor 1 Delayed Off Time") +
-            "</label><button data-mini='true' id='o55' value='" +
-            controller.options.sn1of +
-            "'>" +
-            controller.options.sn1of +
-            "m</button></div>"),
+            (l +=
+                "<div class='" +
+                (1 === controller.options.sn1t || 3 === controller.options.sn1t ? "" : "hidden ") +
+                "ui-field-no-border ui-field-contain duration-field'><label for='o55'>" +
+                _("Sensor 1 Delayed Off Time") +
+                "</label><button data-mini='true' id='o55' value='" +
+                controller.options.sn1of +
+                "'>" +
+                controller.options.sn1of +
+                "m</button></div>"),
         checkOSVersion(217) &&
-        (l +=
-            "<label id='prgswitch' class='center smaller" +
-            (240 === controller.options.urs || 240 === controller.options.sn1t || 240 === controller.options.sn2t ? "" : " hidden") +
-            "'>" +
-            _("When using program switch, a switch is connected to the sensor port to trigger Program 1 every time the switch is pressed for at least 1 second.") +
-            "</label>"),
+            (l +=
+                "<label id='prgswitch' class='center smaller" +
+                (240 === controller.options.urs || 240 === controller.options.sn1t || 240 === controller.options.sn2t ? "" : " hidden") +
+                "'>" +
+                _("When using program switch, a switch is connected to the sensor port to trigger Program 1 every time the switch is pressed for at least 1 second.") +
+                "</label>"),
         void 0 !== controller.options.sn2t && checkOSVersion(219) && (l += t(keyIndex.sn2t, controller.options.sn2t, 2)),
         void 0 !== controller.options.sn2o &&
-        (l +=
-            "<label for='o53'><input " +
-            (1 === controller.options.sn2t || 3 === controller.options.sn2t || 240 === controller.options.sn2t ? "" : "data-wrapper-class='hidden' ") +
-            "data-mini='true' id='o53' type='checkbox' " +
-            (1 === controller.options.sn2o ? "checked='checked'" : "") +
-            ">" +
-            _("Normally Open") +
-            "</label>"),
+            (l +=
+                "<label for='o53'><input " +
+                (1 === controller.options.sn2t || 3 === controller.options.sn2t || 240 === controller.options.sn2t ? "" : "data-wrapper-class='hidden' ") +
+                "data-mini='true' id='o53' type='checkbox' " +
+                (1 === controller.options.sn2o ? "checked='checked'" : "") +
+                ">" +
+                _("Normally Open") +
+                "</label>"),
         void 0 !== controller.options.sn2on &&
-        (l +=
-            "<div class='" +
-            (1 === controller.options.sn2t || 3 === controller.options.sn2t ? "" : "hidden ") +
-            "ui-field-no-border ui-field-contain duration-field'><label for='o56'>" +
-            _("Sensor 2 Delayed On Time") +
-            "</label><button data-mini='true' id='o56' value='" +
-            controller.options.sn2on +
-            "'>" +
-            controller.options.sn2on +
-            "m</button></div>"),
+            (l +=
+                "<div class='" +
+                (1 === controller.options.sn2t || 3 === controller.options.sn2t ? "" : "hidden ") +
+                "ui-field-no-border ui-field-contain duration-field'><label for='o56'>" +
+                _("Sensor 2 Delayed On Time") +
+                "</label><button data-mini='true' id='o56' value='" +
+                controller.options.sn2on +
+                "'>" +
+                controller.options.sn2on +
+                "m</button></div>"),
         void 0 !== controller.options.sn2of &&
-        (l +=
-            "<div class='" +
-            (1 === controller.options.sn2t || 3 === controller.options.sn2t ? "" : "hidden ") +
-            "ui-field-no-border ui-field-contain duration-field'><label for='o57'>" +
-            _("Sensor 2 Delayed Off Time") +
-            "</label><button data-mini='true' id='o57' value='" +
-            controller.options.sn2of +
-            "'>" +
-            controller.options.sn2of +
-            "m</button></div>"),
+            (l +=
+                "<div class='" +
+                (1 === controller.options.sn2t || 3 === controller.options.sn2t ? "" : "hidden ") +
+                "ui-field-no-border ui-field-contain duration-field'><label for='o57'>" +
+                _("Sensor 2 Delayed Off Time") +
+                "</label><button data-mini='true' id='o57' value='" +
+                controller.options.sn2of +
+                "'>" +
+                controller.options.sn2of +
+                "m</button></div>"),
         void 0 !== controller.options.sn2t &&
-        (l +=
-            "<label id='prgswitch-2' class='center smaller" +
-            (240 === controller.options.urs || 240 === controller.options.sn1t || 240 === controller.options.sn2t ? "" : " hidden") +
-            "'>" +
-            _("When using program switch, a switch is connected to the sensor port to trigger Program 2 every time the switch is pressed for at least 1 second.") +
-            "</label>"),
+            (l +=
+                "<label id='prgswitch-2' class='center smaller" +
+                (240 === controller.options.urs || 240 === controller.options.sn1t || 240 === controller.options.sn2t ? "" : " hidden") +
+                "'>" +
+                _("When using program switch, a switch is connected to the sensor port to trigger Program 2 every time the switch is pressed for at least 1 second.") +
+                "</label>"),
         (void 0 === controller.settings.ifkey && void 0 === controller.settings.mqtt && void 0 === controller.settings.otc) ||
-        ((l += "</fieldset><fieldset data-role='collapsible'" + ("string" == typeof section && "integrations" === section ? " data-collapsed='false'" : "") + "><legend>" + _("Integrations") + "</legend>"),
+            ((l += "</fieldset><fieldset data-role='collapsible'" + ("string" == typeof e && "integrations" === e ? " data-collapsed='false'" : "") + "><legend>" + _("Integrations") + "</legend>"),
             void 0 !== controller.settings.otc &&
-            (l +=
-                "<div class='ui-field-contain'><label for='otc'>" +
-                _("OTC") +
-                "<button style='display:inline-block;' data-helptext='" +
-                _("OpenThings Cloud (OTC) allows remote access using OTC Token .") +
-                "' class='help-icon btn-no-border ui-btn ui-icon-info ui-btn-icon-notext'></button></label><button data-mini='true' id='otc' value='" +
-                escapeJSON(controller.settings.otc) +
-                "'>" +
-                _("Tap to Configure") +
-                "</button></div>"),
-            void 0 !== controller.settings.mqtt &&
-            (l +=
-                "<div class='ui-field-contain'><label for='mqtt'>" +
-                _("MQTT") +
-                "<button style='display:inline-block;' data-helptext='" +
-                _("OpenSprinkler can send notifications to an MQTT broker at a specified host and port.") +
-                "' class='help-icon btn-no-border ui-btn ui-icon-info ui-btn-icon-notext'></button></label><button data-mini='true' id='mqtt' value='" +
-                escapeJSON(controller.settings.mqtt) +
-                "'>" +
-                _("Tap to Configure") +
-                "</button></div>"),
-            void 0 !== controller.settings.ifkey &&
-            (l =
                 (l +=
-                    "<div class='ui-field-contain'><label for='ifkey'>" +
-                    _("IFTTT Key") +
+                    "<div class='ui-field-contain'><label for='otc'>" +
+                    _("OTC") +
+                    "<button style='display:inline-block;' data-helptext='" +
+                    _("OpenThings Cloud (OTC) allows remote access using OTC Token .") +
+                    "' class='help-icon btn-no-border ui-btn ui-icon-info ui-btn-icon-notext'></button></label><button data-mini='true' id='otc' value='" +
+                    escapeJSON(controller.settings.otc) +
+                    "'>" +
+                    _("Tap to Configure") +
+                    "</button></div>"),
+            void 0 !== controller.settings.mqtt &&
+                (l +=
+                    "<div class='ui-field-contain'><label for='mqtt'>" +
+                    _("MQTT") +
+                    "<button style='display:inline-block;' data-helptext='" +
+                    _("OpenSprinkler can send notifications to an MQTT broker at a specified host and port.") +
+                    "' class='help-icon btn-no-border ui-btn ui-icon-info ui-btn-icon-notext'></button></label><button data-mini='true' id='mqtt' value='" +
+                    escapeJSON(controller.settings.mqtt) +
+                    "'>" +
+                    _("Tap to Configure") +
+                    "</button></div>"),
+            void 0 !== controller.settings.ifkey &&
+                (l =
+                    (l +=
+                        "<div class='ui-field-contain'><label for='ifkey'>" +
+                        _("IFTTT Key") +
+                        "<button data-helptext='" +
+                        _("To enable IFTTT, a Webhooks key is required which can be obtained from https://ifttt.com") +
+                        "' class='help-icon btn-no-border ui-btn ui-icon-info ui-btn-icon-notext'></button></label><input autocomplete='off' autocorrect='off' autocapitalize='off' spellcheck='false' data-mini='true' type='text' id='ifkey' value='" +
+                        controller.settings.ifkey +
+                        "'></div>") +
+                    "<div class='ui-field-contain'><label for='o49'>" +
+                    _("IFTTT Events") +
                     "<button data-helptext='" +
-                    _("To enable IFTTT, a Webhooks key is required which can be obtained from https://ifttt.com") +
-                    "' class='help-icon btn-no-border ui-btn ui-icon-info ui-btn-icon-notext'></button></label><input autocomplete='off' autocorrect='off' autocapitalize='off' spellcheck='false' data-mini='true' type='text' id='ifkey' value='" +
-                    controller.settings.ifkey +
-                    "'></div>") +
-                "<div class='ui-field-contain'><label for='o49'>" +
-                _("IFTTT Events") +
-                "<button data-helptext='" +
-                _("Select which events to send to IFTTT for use in recipes.") +
-                "' class='help-icon btn-no-border ui-btn ui-icon-info ui-btn-icon-notext'></button></label><button data-mini='true' id='o49' value='" +
-                controller.options.ife +
-                "'>" +
-                _("Configure Events") +
-                "</button></div>"),
+                    _("Select which events to send to IFTTT for use in recipes.") +
+                    "' class='help-icon btn-no-border ui-btn ui-icon-info ui-btn-icon-notext'></button></label><button data-mini='true' id='o49' value='" +
+                    controller.options.ife +
+                    "'>" +
+                    _("Configure Events") +
+                    "</button></div>"),
             void 0 !== controller.settings.dname &&
-            (l +=
-                "<div class='ui-field-contain'><label for='dname'>" +
-                _("Device Name") +
-                "<button data-helptext='" +
-                _("Device name is attached to all IFTTT notifications to help distinguish multiple devices") +
-                "' class='help-icon btn-no-border ui-btn ui-icon-info ui-btn-icon-notext'></button></label><input autocomplete='off' autocorrect='off' autocapitalize='off' spellcheck='false' data-mini='true' type='text' id='dname' value=\"" +
-                controller.settings.dname +
-                '"></div>')),
-        (l += "</fieldset><fieldset class='full-width-slider' data-role='collapsible'" + ("string" == typeof section && "lcd" === section ? " data-collapsed='false'" : "") + "><legend>" + _("LCD Screen") + "</legend>"),
+                (l +=
+                    "<div class='ui-field-contain'><label for='dname'>" +
+                    _("Device Name") +
+                    "<button data-helptext='" +
+                    _("Device name is attached to all IFTTT notifications to help distinguish multiple devices") +
+                    "' class='help-icon btn-no-border ui-btn ui-icon-info ui-btn-icon-notext'></button></label><input autocomplete='off' autocorrect='off' autocapitalize='off' spellcheck='false' data-mini='true' type='text' id='dname' value=\"" +
+                    controller.settings.dname +
+                    '"></div>')),
+        (l += "</fieldset><fieldset class='full-width-slider' data-role='collapsible'" + ("string" == typeof e && "lcd" === e ? " data-collapsed='false'" : "") + "><legend>" + _("LCD Screen") + "</legend>"),
         void 0 !== controller.options.con &&
-        (l += "<div class='ui-field-contain'><label for='o27'>" + _("Contrast") + "</label><input type='range' id='o27' min='0' max='255' step='10' data-highlight='true' value='" + controller.options.con + "'></div>"),
+            (l += "<div class='ui-field-contain'><label for='o27'>" + _("Contrast") + "</label><input type='range' id='o27' min='0' max='255' step='10' data-highlight='true' value='" + controller.options.con + "'></div>"),
         void 0 !== controller.options.lit &&
-        (l += "<div class='ui-field-contain'><label for='o28'>" + _("Brightness") + "</label><input type='range' id='o28' min='0' max='255' step='10' data-highlight='true' value='" + controller.options.lit + "'></div>"),
+            (l += "<div class='ui-field-contain'><label for='o28'>" + _("Brightness") + "</label><input type='range' id='o28' min='0' max='255' step='10' data-highlight='true' value='" + controller.options.lit + "'></div>"),
         void 0 !== controller.options.dim &&
-        (l += "<div class='ui-field-contain'><label for='o29'>" + _("Idle Brightness") + "</label><input type='range' id='o29' min='0' max='255' step='10' data-highlight='true' value='" + controller.options.dim + "'></div>"),
-        (l += "</fieldset><fieldset data-role='collapsible' data-theme='b'" + ("string" == typeof section && "advanced" === section ? " data-collapsed='false'" : "") + "><legend>" + _("Advanced") + "</legend>"),
+            (l += "<div class='ui-field-contain'><label for='o29'>" + _("Idle Brightness") + "</label><input type='range' id='o29' min='0' max='255' step='10' data-highlight='true' value='" + controller.options.dim + "'></div>"),
+        (l += "</fieldset><fieldset data-role='collapsible' data-theme='b'" + ("string" == typeof e && "advanced" === e ? " data-collapsed='false'" : "") + "><legend>" + _("Advanced") + "</legend>"),
         checkOSVersion(219) &&
-        void 0 !== controller.options.uwt &&
-        "object" == typeof controller.settings.wto &&
-        (l +=
-            "<div class='ui-field-contain'><label for='wtkey'>" +
-            _("Wunderground Key").replace("Wunderground", "Wunder&shy;ground") +
-            "<button data-helptext='" +
-            _("We use DarkSky normally however with a user provided API key the weather source will switch to Weather Underground.") +
-            "' class='help-icon btn-no-border ui-btn ui-icon-info ui-btn-icon-notext'></button></label><table><tr style='width:100%;vertical-align: top;'><td style='width:100%'><div class='" +
-            (controller.settings.wto.key && "" !== controller.settings.wto.key ? "green " : "") +
-            "ui-input-text controlgroup-textinput ui-btn ui-body-inherit ui-corner-all ui-mini ui-shadow-inset ui-input-has-clear'><input data-role='none' data-mini='true' autocomplete='off' autocorrect='off' autocapitalize='off' spellcheck='false' type='text' id='wtkey' value='" +
-            (controller.settings.wto.key || "") +
-            "'><a href='#' tabindex='-1' aria-hidden='true' data-helptext='" +
-            _("An invalid API key has been detected.") +
-            "' class='hidden help-icon ui-input-clear ui-btn ui-icon-alert ui-btn-icon-notext ui-corner-all'></a></div></td><td><button class='noselect' data-mini='true' id='verify-api'>" +
-            _("Verify") +
-            "</button></td></tr></table></div>"),
+            void 0 !== controller.options.uwt &&
+            "object" == typeof controller.settings.wto &&
+            (l +=
+                "<div class='ui-field-contain'><label for='wtkey'>" +
+                _("Wunderground Key").replace("Wunderground", "Wunder&shy;ground") +
+                "<button data-helptext='" +
+                _("We use DarkSky normally however with a user provided API key the weather source will switch to Weather Underground.") +
+                "' class='help-icon btn-no-border ui-btn ui-icon-info ui-btn-icon-notext'></button></label><table><tr style='width:100%;vertical-align: top;'><td style='width:100%'><div class='" +
+                (controller.settings.wto.key && "" !== controller.settings.wto.key ? "green " : "") +
+                "ui-input-text controlgroup-textinput ui-btn ui-body-inherit ui-corner-all ui-mini ui-shadow-inset ui-input-has-clear'><input data-role='none' data-mini='true' autocomplete='off' autocorrect='off' autocapitalize='off' spellcheck='false' type='text' id='wtkey' value='" +
+                (controller.settings.wto.key || "") +
+                "'><a href='#' tabindex='-1' aria-hidden='true' data-helptext='" +
+                _("An invalid API key has been detected.") +
+                "' class='hidden help-icon ui-input-clear ui-btn ui-icon-alert ui-btn-icon-notext ui-corner-all'></a></div></td><td><button class='noselect' data-mini='true' id='verify-api'>" +
+                _("Verify") +
+                "</button></td></tr></table></div>"),
         void 0 !== controller.options.hp0 &&
-        (l +=
-            "<div class='ui-field-contain'><label for='o12'>" +
-            _("HTTP Port (restart required)") +
-            "</label><input data-mini='true' type='number' pattern='[0-9]*' id='o12' value='" +
-            (256 * controller.options.hp1 + controller.options.hp0) +
-            "'></div>"),
+            (l +=
+                "<div class='ui-field-contain'><label for='o12'>" +
+                _("HTTP Port (restart required)") +
+                "</label><input data-mini='true' type='number' pattern='[0-9]*' id='o12' value='" +
+                (256 * controller.options.hp1 + controller.options.hp0) +
+                "'></div>"),
         void 0 !== controller.options.devid &&
-        (l +=
-            "<div class='ui-field-contain'><label for='o26'>" +
-            _("Device ID (restart required)") +
-            "<button data-helptext='" +
-            _("Device ID modifies the last byte of the MAC address.") +
-            "' class='help-icon btn-no-border ui-btn ui-icon-info ui-btn-icon-notext'></button></label><input data-mini='true' type='number' pattern='[0-9]*' max='255' id='o26' value='" +
-            controller.options.devid +
-            "'></div>"),
+            (l +=
+                "<div class='ui-field-contain'><label for='o26'>" +
+                _("Device ID (restart required)") +
+                "<button data-helptext='" +
+                _("Device ID modifies the last byte of the MAC address.") +
+                "' class='help-icon btn-no-border ui-btn ui-icon-info ui-btn-icon-notext'></button></label><input data-mini='true' type='number' pattern='[0-9]*' max='255' id='o26' value='" +
+                controller.options.devid +
+                "'></div>"),
         void 0 !== controller.options.rlp
             ? (l +=
-                "<div class='ui-field-contain duration-field'><label for='o30'>" +
-                _("Relay Pulse") +
-                "<button data-helptext='" +
-                _("Relay pulsing is used for special situations where rapid pulsing is needed in the output with a range from 1 to 2000 milliseconds. A zero value disables the pulsing option.") +
-                "' class='help-icon btn-no-border ui-btn ui-icon-info ui-btn-icon-notext'></button></label><button data-mini='true' id='o30' value='" +
-                controller.options.rlp +
-                "'>" +
-                controller.options.rlp +
-                "ms</button></div>")
+                  "<div class='ui-field-contain duration-field'><label for='o30'>" +
+                  _("Relay Pulse") +
+                  "<button data-helptext='" +
+                  _("Relay pulsing is used for special situations where rapid pulsing is needed in the output with a range from 1 to 2000 milliseconds. A zero value disables the pulsing option.") +
+                  "' class='help-icon btn-no-border ui-btn ui-icon-info ui-btn-icon-notext'></button></label><button data-mini='true' id='o30' value='" +
+                  controller.options.rlp +
+                  "'>" +
+                  controller.options.rlp +
+                  "ms</button></div>")
             : !0 !== checkOSVersion(215) &&
-            void 0 !== controller.options.bst &&
-            (l +=
-                "<div class='ui-field-contain duration-field'><label for='o30'>" +
-                _("Boost Time") +
-                "<button data-helptext='" +
-                _("Boost time changes how long the boost converter is activated with a range from 0 to 1000 milliseconds.") +
-                "' class='help-icon btn-no-border ui-btn ui-icon-info ui-btn-icon-notext'></button></label><button data-mini='true' id='o30' value='" +
-                controller.options.bst +
-                "'>" +
-                controller.options.bst +
-                "ms</button></div>"),
+              void 0 !== controller.options.bst &&
+              (l +=
+                  "<div class='ui-field-contain duration-field'><label for='o30'>" +
+                  _("Boost Time") +
+                  "<button data-helptext='" +
+                  _("Boost time changes how long the boost converter is activated with a range from 0 to 1000 milliseconds.") +
+                  "' class='help-icon btn-no-border ui-btn ui-icon-info ui-btn-icon-notext'></button></label><button data-mini='true' id='o30' value='" +
+                  controller.options.bst +
+                  "'>" +
+                  controller.options.bst +
+                  "ms</button></div>"),
         void 0 !== controller.options.ntp &&
-        checkOSVersion(210) &&
-        ((s = [controller.options.ntp1, controller.options.ntp2, controller.options.ntp3, controller.options.ntp4].join(".")),
+            checkOSVersion(210) &&
+            ((s = [controller.options.ntp1, controller.options.ntp2, controller.options.ntp3, controller.options.ntp4].join(".")),
             (l +=
                 "<div class='" +
                 (1 === controller.options.ntp ? "" : "hidden ") +
@@ -6582,8 +6582,8 @@ function showOptions(section) {
                 s +
                 "</button></div>")),
         void 0 !== controller.options.dhcp &&
-        checkOSVersion(210) &&
-        ((s = [controller.options.ip1, controller.options.ip2, controller.options.ip3, controller.options.ip4].join(".")),
+            checkOSVersion(210) &&
+            ((s = [controller.options.ip1, controller.options.ip2, controller.options.ip3, controller.options.ip4].join(".")),
             (r = [controller.options.gw1, controller.options.gw2, controller.options.gw3, controller.options.gw4].join(".")),
             (l =
                 (l +=
@@ -6606,7 +6606,7 @@ function showOptions(section) {
                 r +
                 "</button></div>"),
             void 0 !== controller.options.subn1 &&
-            ((s = [controller.options.subn1, controller.options.subn2, controller.options.subn3, controller.options.subn4].join(".")),
+                ((s = [controller.options.subn1, controller.options.subn2, controller.options.subn3, controller.options.subn4].join(".")),
                 (l +=
                     "<div class='" +
                     (1 === controller.options.dhcp ? "hidden " : "") +
@@ -6618,7 +6618,7 @@ function showOptions(section) {
                     s +
                     "</button></div>")),
             void 0 !== controller.options.dns1 &&
-            ((r = [controller.options.dns1, controller.options.dns2, controller.options.dns3, controller.options.dns4].join(".")),
+                ((r = [controller.options.dns1, controller.options.dns2, controller.options.dns3, controller.options.dns4].join(".")),
                 (l +=
                     "<div class='" +
                     (1 === controller.options.dhcp ? "hidden " : "") +
@@ -6638,7 +6638,7 @@ function showOptions(section) {
             (l =
                 (l =
                     (l =
-                        (l += "</fieldset><fieldset data-role='collapsible' data-theme='b'" + ("string" == typeof section && "reset" === section ? " data-collapsed='false'" : "") + "><legend>" + _("Reset") + "</legend>") +
+                        (l += "</fieldset><fieldset data-role='collapsible' data-theme='b'" + ("string" == typeof e && "reset" === e ? " data-collapsed='false'" : "") + "><legend>" + _("Reset") + "</legend>") +
                         "<button data-mini='true' class='center-div reset-log'>" +
                         _("Clear Log Data") +
                         "</button>") +
@@ -6681,21 +6681,21 @@ function showOptions(section) {
                     !1 === e
                         ? "" === i.val() && (i.removeClass("green"), c.find("#o1").selectmenu("enable"))
                         : (checkOSVersion(210) && c.find("#o1").selectmenu("disable"),
-                            "string" == typeof e
-                                ? i.val(e).find("span").text(e)
-                                : ((e[0] = parseFloat(e[0]).toFixed(5)),
-                                    (e[1] = parseFloat(e[1]).toFixed(5)),
-                                    "string" == typeof t &&
+                          "string" == typeof e
+                              ? i.val(e).find("span").text(e)
+                              : ((e[0] = parseFloat(e[0]).toFixed(5)),
+                                (e[1] = parseFloat(e[1]).toFixed(5)),
+                                "string" == typeof t &&
                                     validateWULocation(t, function (e) {
                                         e ? i.addClass("green") : i.removeClass("green");
                                     }),
-                                    (n = c.find("#wto")) && void 0 !== n.val() && n.val(escapeJSON($.extend({}, unescapeJSON(n.val()), { pws: t || "" }))),
-                                    i.val(e),
-                                    coordsToLocation(e[0], e[1], function (e) {
-                                        i.find("span").text(e);
-                                    })),
-                            d.eq(2).prop("disabled", !1),
-                            c.find(".submit").addClass("hasChanges")),
+                                (n = c.find("#wto")) && void 0 !== n.val() && n.val(escapeJSON($.extend({}, unescapeJSON(n.val()), { pws: t || "" }))),
+                                i.val(e),
+                                coordsToLocation(e[0], e[1], function (e) {
+                                    i.find("span").text(e);
+                                })),
+                          d.eq(2).prop("disabled", !1),
+                          c.find(".submit").addClass("hasChanges")),
                         i.prop("disabled", !1);
                 });
         }),
@@ -6764,24 +6764,24 @@ function showOptions(section) {
             "2" === e ? c.find("#o41").parents(".ui-field-contain").removeClass("hidden") : (21 !== t && 50 !== t) || c.find("#o41").parents(".ui-field-contain").addClass("hidden"),
                 "1" === e || "3" === e || "240" === e
                     ? c
-                        .find("#o" + (t + 1))
-                        .parent()
-                        .removeClass("hidden")
+                          .find("#o" + (t + 1))
+                          .parent()
+                          .removeClass("hidden")
                     : c
-                        .find("#o" + (t + 1))
-                        .parent()
-                        .addClass("hidden"),
+                          .find("#o" + (t + 1))
+                          .parent()
+                          .addClass("hidden"),
                 "240" === $("input[name='o21'][type='radio']:checked").val() || "240" === $("input[name='o50'][type='radio']:checked").val() ? c.find("#prgswitch").removeClass("hidden") : c.find("#prgswitch").addClass("hidden"),
                 "240" === $("input[name='o52'][type='radio']:checked").val() ? c.find("#prgswitch-2").removeClass("hidden") : c.find("#prgswitch-2").addClass("hidden"),
                 "1" === e || "3" === e
                     ? c
-                        .find("#o" + (t + 4) + ",#o" + (t + 5))
-                        .parent()
-                        .removeClass("hidden")
+                          .find("#o" + (t + 4) + ",#o" + (t + 5))
+                          .parent()
+                          .removeClass("hidden")
                     : c
-                        .find("#o" + (t + 4) + ",#o" + (t + 5))
-                        .parent()
-                        .addClass("hidden");
+                          .find("#o" + (t + 4) + ",#o" + (t + 5))
+                          .parent()
+                          .addClass("hidden");
         }),
         c.find("#o21").on("change", function () {
             c.find("#o22").parent().toggleClass("hidden", $(this).is(":checked"));
@@ -6808,85 +6808,85 @@ function showOptions(section) {
                 c.find(".submit").addClass("hasChanges"),
                 "ip_addr" === n || "gateway" === n || "dns" === n || "ntp_addr" === n || "subnet" === n
                     ? showIPRequest({
-                        title: i,
-                        ip: t.val().split("."),
-                        callback: function (e) {
-                            t.val(e.join(".")).text(e.join("."));
-                        },
-                    })
+                          title: i,
+                          ip: t.val().split("."),
+                          callback: function (e) {
+                              t.val(e.join(".")).text(e.join("."));
+                          },
+                      })
                     : "o19" === n || "o38" === n
-                        ? showSingleDurationInput({
-                            data: t.val(),
-                            title: i,
-                            callback: function (e) {
-                                t.val(e).text(e + "s");
-                            },
-                            label: _("Seconds"),
-                            maximum: checkOSVersion(220) ? 600 : 60,
-                            minimum: checkOSVersion(220) ? -600 : 0,
-                            helptext: o,
-                        })
-                        : "o30" === n
-                            ? showSingleDurationInput({
-                                data: t.val(),
-                                title: i,
-                                callback: function (e) {
-                                    t.val(e).text(e + "ms");
-                                },
-                                label: _("Milliseconds"),
-                                maximum: 2e3,
-                                helptext: o,
-                            })
-                            : "o20" === n || "o39" === n
-                                ? showSingleDurationInput({
-                                    data: t.val(),
-                                    title: i,
-                                    callback: function (e) {
-                                        t.val(e).text(e + "s");
-                                    },
-                                    label: _("Seconds"),
-                                    maximum: checkOSVersion(220) ? 600 : 0,
-                                    minimum: checkOSVersion(220) ? -600 : -60,
-                                    helptext: o,
-                                })
-                                : "o23" === n
-                                    ? showSingleDurationInput({
-                                        data: t.val(),
-                                        title: i,
-                                        callback: function (e) {
-                                            t.val(e).text(e + "%");
-                                        },
-                                        label: _("% Watering"),
-                                        maximum: 250,
-                                        helptext: o,
-                                    })
-                                    : "o17" === n
-                                        ? ((e = 0),
-                                            checkOSVersion(210) && (a = checkOSVersion(214) ? 57600 : 64800),
-                                            checkOSVersion(211) && ((e = -3540), (a = 3540)),
-                                            checkOSVersion(217) && ((e = -600), (a = 600)),
-                                            showSingleDurationInput({
-                                                data: t.val(),
-                                                title: i,
-                                                label: _("Seconds"),
-                                                callback: function (e) {
-                                                    t.val(e), t.text(dhms2str(sec2dhms(e)));
-                                                },
-                                                maximum: a,
-                                                minimum: e,
-                                            }))
-                                        : ("o54" !== n && "o55" !== n && "o56" !== n && "o57" !== n) ||
-                                        showSingleDurationInput({
-                                            data: t.val(),
-                                            title: i,
-                                            callback: function (e) {
-                                                t.val(e).text(e + "m");
-                                            },
-                                            label: _("Minutes"),
-                                            maximum: 240,
-                                            minimum: 0,
-                                            helptext: o,
-                                        }),
+                    ? showSingleDurationInput({
+                          data: t.val(),
+                          title: i,
+                          callback: function (e) {
+                              t.val(e).text(e + "s");
+                          },
+                          label: _("Seconds"),
+                          maximum: checkOSVersion(220) ? 600 : 60,
+                          minimum: checkOSVersion(220) ? -600 : 0,
+                          helptext: o,
+                      })
+                    : "o30" === n
+                    ? showSingleDurationInput({
+                          data: t.val(),
+                          title: i,
+                          callback: function (e) {
+                              t.val(e).text(e + "ms");
+                          },
+                          label: _("Milliseconds"),
+                          maximum: 2e3,
+                          helptext: o,
+                      })
+                    : "o20" === n || "o39" === n
+                    ? showSingleDurationInput({
+                          data: t.val(),
+                          title: i,
+                          callback: function (e) {
+                              t.val(e).text(e + "s");
+                          },
+                          label: _("Seconds"),
+                          maximum: checkOSVersion(220) ? 600 : 0,
+                          minimum: checkOSVersion(220) ? -600 : -60,
+                          helptext: o,
+                      })
+                    : "o23" === n
+                    ? showSingleDurationInput({
+                          data: t.val(),
+                          title: i,
+                          callback: function (e) {
+                              t.val(e).text(e + "%");
+                          },
+                          label: _("% Watering"),
+                          maximum: 250,
+                          helptext: o,
+                      })
+                    : "o17" === n
+                    ? ((e = 0),
+                      checkOSVersion(210) && (a = checkOSVersion(214) ? 57600 : 64800),
+                      checkOSVersion(211) && ((e = -3540), (a = 3540)),
+                      checkOSVersion(217) && ((e = -600), (a = 600)),
+                      showSingleDurationInput({
+                          data: t.val(),
+                          title: i,
+                          label: _("Seconds"),
+                          callback: function (e) {
+                              t.val(e), t.text(dhms2str(sec2dhms(e)));
+                          },
+                          maximum: a,
+                          minimum: e,
+                      }))
+                    : ("o54" !== n && "o55" !== n && "o56" !== n && "o57" !== n) ||
+                      showSingleDurationInput({
+                          data: t.val(),
+                          title: i,
+                          callback: function (e) {
+                              t.val(e).text(e + "m");
+                          },
+                          label: _("Minutes"),
+                          maximum: 240,
+                          minimum: 0,
+                          helptext: o,
+                      }),
                 !1
             );
         }),
@@ -6900,10 +6900,10 @@ function showOptions(section) {
                 .parents(".ui-field-contain")
                 .toggle(0 !== parseInt(c.find("#o18").val())),
                 void 0 !== controller.options.mas2 &&
-                c
-                    .find("#o38,#o39")
-                    .parents(".ui-field-contain")
-                    .toggle(0 !== parseInt(c.find("#o37").val()));
+                    c
+                        .find("#o38,#o39")
+                        .parents(".ui-field-contain")
+                        .toggle(0 !== parseInt(c.find("#o37").val()));
         }),
         c.find("#o31").on("change", function () {
             c.find("#o23").prop("disabled", 0 !== parseInt(this.value)),
@@ -6918,15 +6918,15 @@ function showOptions(section) {
         }),
         c.find("#o49").on("click", function () {
             var e = {
-                program: _("Program Start"),
-                sensor1: _("Sensor 1 Update"),
-                flow: _("Flow Sensor Update"),
-                weather: _("Weather Adjustment Update"),
-                reboot: _("Controller Reboot"),
-                run: _("Station Run"),
-                sensor2: _("Sensor 2 Update"),
-                rain: _("Rain Delay Update"),
-            },
+                    program: _("Program Start"),
+                    sensor1: _("Sensor 1 Update"),
+                    flow: _("Flow Sensor Update"),
+                    weather: _("Weather Adjustment Update"),
+                    reboot: _("Controller Reboot"),
+                    run: _("Station Run"),
+                    sensor2: _("Sensor 2 Update"),
+                    rain: _("Rain Delay Update"),
+                },
                 t = this,
                 n = parseInt(t.value),
                 i = "",
@@ -6936,15 +6936,15 @@ function showOptions(section) {
                     ($.each(e, function (e, t) {
                         (i += "<label for='ifttt-" + e + "'><input class='needsclick' data-iconpos='right' id='ifttt-" + e + "' type='checkbox' " + (getBitFromByte(n, o) ? "checked='checked'" : "") + ">" + t + "</label>"), o++;
                     }),
-                        $(
-                            "<div data-role='popup' data-theme='a'><div data-role='controlgroup' data-mini='true' class='tight'><div class='ui-bar ui-bar-a'>" +
+                    $(
+                        "<div data-role='popup' data-theme='a'><div data-role='controlgroup' data-mini='true' class='tight'><div class='ui-bar ui-bar-a'>" +
                             _("Select IFTTT Events") +
                             "</div>" +
                             i +
                             "<input data-wrapper-class='attrib-submit' class='submit' data-theme='b' type='submit' value='" +
                             _("Submit") +
                             "' /></div></div>"
-                        ));
+                    ));
             s.find(".submit").on("click", function () {
                 (o = 0),
                     $.each(e, function (e) {
@@ -6961,8 +6961,8 @@ function showOptions(section) {
                 e = $.extend({}, { en: 0, host: "server", port: 1883, user: "", pass: "" }, unescapeJSON(n)),
                 i =
                     ($(".ui-popup-active").find("[data-role='popup']").popup("close"),
-                        $(
-                            "<div data-role='popup' data-theme='a' id='mqttSettings'><div data-role='header' data-theme='b'><h1>" +
+                    $(
+                        "<div data-role='popup' data-theme='a' id='mqttSettings'><div data-role='header' data-theme='b'><h1>" +
                             _("MQTT Settings") +
                             "</h1></div><div class='ui-content'><label for='enable'>" +
                             _("Enable") +
@@ -7001,7 +7001,7 @@ function showOptions(section) {
                             "' required /></div></div></div><button class='submit' data-theme='b'>" +
                             _("Submit") +
                             "</button></div></div>"
-                        ));
+                    ));
             i.find("#enable").on("change", function () {
                 this.checked ? i.find(".mqtt-input").textinput("enable") : i.find(".mqtt-input").textinput("disable");
             }),
@@ -7018,8 +7018,8 @@ function showOptions(section) {
                 e = $.extend({}, { en: 0, token: "", server: "ws.cloud.openthings.io", port: 80 }, unescapeJSON(n)),
                 i =
                     ($(".ui-popup-active").find("[data-role='popup']").popup("close"),
-                        $(
-                            "<div data-role='popup' data-theme='a' id='otcSettings'><div data-role='header' data-theme='b'><h1>" +
+                    $(
+                        "<div data-role='popup' data-theme='a' id='otcSettings'><div data-role='header' data-theme='b'><h1>" +
                             _("OpenThings Cloud (OTC) Settings") +
                             "</h1></div><div class='ui-content'><label for='enable'>" +
                             _("Enable") +
@@ -7050,7 +7050,7 @@ function showOptions(section) {
                             "' required /></div></div></div><button class='submit' data-theme='b'>" +
                             _("Submit") +
                             "</button></div></div>"
-                        ));
+                    ));
             i.find("#enable").on("change", function () {
                 this.checked ? i.find(".otc-input").textinput("enable") : i.find(".otc-input").textinput("disable");
             }),
@@ -7059,8 +7059,8 @@ function showOptions(section) {
                     i.find("#enable").prop("checked") && 32 !== i.find("#token").val().length
                         ? showerror(_("OpenThings Token must be 32 characters long."))
                         : ((e = { en: i.find("#enable").prop("checked") ? 1 : 0, token: i.find("#token").val(), server: i.find("#server").val(), port: parseInt(i.find("#port").val()) }),
-                            i.popup("close"),
-                            n !== escapeJSON(e) && ((t.value = escapeJSON(e)), d.eq(2).prop("disabled", !1), c.find(".submit").addClass("hasChanges")));
+                          i.popup("close"),
+                          n !== escapeJSON(e) && ((t.value = escapeJSON(e)), d.eq(2).prop("disabled", !1), c.find(".submit").addClass("hasChanges")));
                 }),
                 i.css("max-width", "380px"),
                 openPopup(i, { positionTo: "window" });
@@ -7085,78 +7085,78 @@ function showOptions(section) {
         $.mobile.pageContainer.append(c);
 }
 var showHomeMenu = (function () {
-    var t, n, i, o;
-    return function (e) {
-        (e = e instanceof $ ? e : $(e)),
-            $(".ui-popup-active").find("[data-role='popup']").popup("close"),
-            (t = $(".ui-page-active")),
-            (n = t.attr("id")),
-            (i = t.hasClass("show-hidden")),
-            (o = $(
-                "<div data-role='popup' data-theme='a' id='mainMenu'><ul data-role='listview' data-inset='true' data-corners='false'><li data-role='list-divider'>" +
-                _("Information") +
-                "</li><li><a href='#preview' class='squeeze'>" +
-                _("Preview Programs") +
-                "</a></li>" +
-                (checkOSVersion(206) || checkOSPiVersion("1.9") ? "<li><a href='#logs'>" + _("View Logs") + "</a></li>" : "") +
-                "<li data-role='list-divider'>" +
-                _("Programs and Settings") +
-                "</li><li><a href='#raindelay'>" +
-                _("Change Rain Delay") +
-                "</a></li>" +
-                (Supported.pausing()
-                    ? StationQueue.isPaused()
-                        ? "<li><a href='#globalpause'>" + _("Resume Station Runs") + "</a></li>"
-                        : -1 <= StationQueue.isActive()
-                            ? "<li><a href='#globalpause'>" + _("Pause Station Runs") + "</a></li>"
-                            : ""
-                    : "") +
-                "<li><a href='#runonce'>" +
-                _("Run-Once Program") +
-                "</a></li><li><a href='#programs'>" +
-                _("Edit Programs") +
-                "</a></li><li><a href='#os-options'>" +
-                _("Edit Options") +
-                "</a></li>" +
-                (checkOSVersion(210) ? "" : "<li><a href='#manual'>" + _("Manual Control") + "</a></li>") +
-                ("sprinklers" === n || "runonce" === n || "programs" === n || "manual" === n || "addprogram" === n
-                    ? "</ul><div class='ui-grid-a ui-mini tight'><div class='ui-block-a'><a class='ui-btn tight' href='#show-hidden'>" +
-                    _(i ? "Hide" : "Show") +
-                    " " +
-                    _("Disabled") +
-                    "</a></div><div class='ui-block-b'><a class='ui-btn red tight' href='#stop-all'>" +
-                    _("Stop All Stations") +
-                    "</a></div></div>"
-                    : "<li><a class='ui-btn red' href='#stop-all'>" + _("Stop All Stations") + "</a></li></ul>") +
-                "</div>"
-            )).on("click", "a", function () {
-                var e = $(this).attr("href");
-                return (
-                    o.popup("close"),
-                    "#stop-all" === e
-                        ? stopAllStations()
-                        : "#show-hidden" === e
+        var t, n, i, o;
+        return function (e) {
+            (e = e instanceof $ ? e : $(e)),
+                $(".ui-popup-active").find("[data-role='popup']").popup("close"),
+                (t = $(".ui-page-active")),
+                (n = t.attr("id")),
+                (i = t.hasClass("show-hidden")),
+                (o = $(
+                    "<div data-role='popup' data-theme='a' id='mainMenu'><ul data-role='listview' data-inset='true' data-corners='false'><li data-role='list-divider'>" +
+                        _("Information") +
+                        "</li><li><a href='#preview' class='squeeze'>" +
+                        _("Preview Programs") +
+                        "</a></li>" +
+                        (checkOSVersion(206) || checkOSPiVersion("1.9") ? "<li><a href='#logs'>" + _("View Logs") + "</a></li>" : "") +
+                        "<li data-role='list-divider'>" +
+                        _("Programs and Settings") +
+                        "</li><li><a href='#raindelay'>" +
+                        _("Change Rain Delay") +
+                        "</a></li>" +
+                        (Supported.pausing()
+                            ? StationQueue.isPaused()
+                                ? "<li><a href='#globalpause'>" + _("Resume Station Runs") + "</a></li>"
+                                : -1 <= StationQueue.isActive()
+                                ? "<li><a href='#globalpause'>" + _("Pause Station Runs") + "</a></li>"
+                                : ""
+                            : "") +
+                        "<li><a href='#runonce'>" +
+                        _("Run-Once Program") +
+                        "</a></li><li><a href='#programs'>" +
+                        _("Edit Programs") +
+                        "</a></li><li><a href='#os-options'>" +
+                        _("Edit Options") +
+                        "</a></li>" +
+                        (checkOSVersion(210) ? "" : "<li><a href='#manual'>" + _("Manual Control") + "</a></li>") +
+                        ("sprinklers" === n || "runonce" === n || "programs" === n || "manual" === n || "addprogram" === n
+                            ? "</ul><div class='ui-grid-a ui-mini tight'><div class='ui-block-a'><a class='ui-btn tight' href='#show-hidden'>" +
+                              _(i ? "Hide" : "Show") +
+                              " " +
+                              _("Disabled") +
+                              "</a></div><div class='ui-block-b'><a class='ui-btn red tight' href='#stop-all'>" +
+                              _("Stop All Stations") +
+                              "</a></div></div>"
+                            : "<li><a class='ui-btn red' href='#stop-all'>" + _("Stop All Stations") + "</a></li></ul>") +
+                        "</div>"
+                )).on("click", "a", function () {
+                    var e = $(this).attr("href");
+                    return (
+                        o.popup("close"),
+                        "#stop-all" === e
+                            ? stopAllStations()
+                            : "#show-hidden" === e
                             ? i
                                 ? ($(".station-hidden").hide(), t.removeClass("show-hidden"))
                                 : ($(".station-hidden").show(), t.addClass("show-hidden"))
                             : "#raindelay" === e
-                                ? showRainDelay()
-                                : "#globalpause" === e
-                                    ? showPause()
-                                    : checkChanges(function () {
-                                        changePage(e);
-                                    }),
-                    !1
-                );
-            }),
-            $("#mainMenu").remove(),
-            o.one("popupafterclose", function () {
-                e.show();
-            }),
-            openPopup(o, { positionTo: e }),
-            e.hide();
-    };
-})(),
+                            ? showRainDelay()
+                            : "#globalpause" === e
+                            ? showPause()
+                            : checkChanges(function () {
+                                  changePage(e);
+                              }),
+                        !1
+                    );
+                }),
+                $("#mainMenu").remove(),
+                o.one("popupafterclose", function () {
+                    e.show();
+                }),
+                openPopup(o, { positionTo: e }),
+                e.hide();
+        };
+    })(),
     showHome = (function () {
         function d(e) {
             var t = Station.getName(e),
@@ -7205,8 +7205,8 @@ var showHomeMenu = (function () {
                     (Supported.groups() ? "data-gid='" + Station.getGIDValue(e) + "' " : "") +
                     "></span>"),
                 Station.isMaster(e) ||
-                ((n || i) &&
-                    ((f += "<p class='rem center'>" + (i ? _("Running") + " " + o : _("Scheduled") + " " + (Station.getStartTime(e) ? _("for") + " " + dateToString(new Date(1e3 * Station.getStartTime(e))) : o))),
+                    ((n || i) &&
+                        ((f += "<p class='rem center'>" + (i ? _("Running") + " " + o : _("Scheduled") + " " + (Station.getStartTime(e) ? _("for") + " " + dateToString(new Date(1e3 * Station.getStartTime(e))) : o))),
                         0 < a && (f += " <span id=" + (s ? "'pause" : "'countdown-") + e + "' class='nobr'>(" + sec2hms(a) + " " + _("remaining") + ")</span>"),
                         (f += "</p>"))),
                 (f += "</div><hr style='display:none' class='content-divider'" + (Supported.groups() ? "divider-gid=" + Station.getGIDValue(e) : "") + "></div>");
@@ -7239,26 +7239,26 @@ var showHomeMenu = (function () {
                                     !0 === e
                                         ? u(!0)
                                         : (!1 === e || -1 === e
-                                            ? (t = _("Unable to reach the remote station."))
-                                            : -2 === e
-                                                ? (t = _("Password on remote controller does not match the password on this controller."))
-                                                : -3 === e && (t = _("Remote controller is not configured as an extender. Would you like to do this now?")),
-                                            p.one("popupafterclose", function () {
-                                                $.mobile.loading("hide"), n.css("opacity", "");
-                                            }),
-                                            $.mobile.loading("show", {
-                                                html: "<h1>" + t + "</h1><button class='ui-btn cancel'>" + _("Cancel") + "</button><button class='ui-btn continue'>" + _("Continue") + "</button>",
-                                                textVisible: !0,
-                                                theme: "b",
-                                            }),
-                                            (n = $(".ui-loader")).css("opacity", ".96"),
-                                            n.find(".cancel").one("click", function () {
-                                                $.mobile.loading("hide"), n.css("opacity", "");
-                                            }),
-                                            n.find(".continue").one("click", function () {
-                                                $.mobile.loading("hide"), n.css("opacity", ""), -3 === e && convertRemoteToExtender(a), u(!0);
-                                            }),
-                                            p.find(".attrib-submit").removeClass("ui-disabled"));
+                                              ? (t = _("Unable to reach the remote station."))
+                                              : -2 === e
+                                              ? (t = _("Password on remote controller does not match the password on this controller."))
+                                              : -3 === e && (t = _("Remote controller is not configured as an extender. Would you like to do this now?")),
+                                          p.one("popupafterclose", function () {
+                                              $.mobile.loading("hide"), n.css("opacity", "");
+                                          }),
+                                          $.mobile.loading("show", {
+                                              html: "<h1>" + t + "</h1><button class='ui-btn cancel'>" + _("Cancel") + "</button><button class='ui-btn continue'>" + _("Continue") + "</button>",
+                                              textVisible: !0,
+                                              theme: "b",
+                                          }),
+                                          (n = $(".ui-loader")).css("opacity", ".96"),
+                                          n.find(".cancel").one("click", function () {
+                                              $.mobile.loading("hide"), n.css("opacity", "");
+                                          }),
+                                          n.find(".continue").one("click", function () {
+                                              $.mobile.loading("hide"), n.css("opacity", ""), -3 === e && convertRemoteToExtender(a), u(!0);
+                                          }),
+                                          p.find(".attrib-submit").removeClass("ui-disabled"));
                                 })
                             );
                         r.data("specialData", a);
@@ -7282,12 +7282,12 @@ var showHomeMenu = (function () {
             if ("number" != typeof c) return !1;
             if (
                 (Supported.special() && (p += "<ul class='tabs'><li class='current' data-tab='tab-basic'>" + _("Basic") + "</li><li data-tab='tab-advanced'>" + _("Advanced") + "</li></ul>"),
+                (p =
                     (p =
-                        (p =
-                            (p += "<div id='tab-basic' class='tab-content current'>") +
-                            ("<div class='ui-bar-a ui-bar'>" + _("Station Name") + ":</div><input class='bold center' data-corners='false' data-wrapper-class='tight stn-name ui-btn' id='stn-name' type='text' value=\"" + l.text() + '">')) +
-                        ("<button class='changeBackground'>" + ("string" != typeof v[g].images[c] ? _("Add") : _("Change")) + " " + _("Image") + "</button>")),
-                    Station.isMaster(c) ||
+                        (p += "<div id='tab-basic' class='tab-content current'>") +
+                        ("<div class='ui-bar-a ui-bar'>" + _("Station Name") + ":</div><input class='bold center' data-corners='false' data-wrapper-class='tight stn-name ui-btn' id='stn-name' type='text' value=\"" + l.text() + '">')) +
+                    ("<button class='changeBackground'>" + ("string" != typeof v[g].images[c] ? _("Add") : _("Change")) + " " + _("Image") + "</button>")),
+                Station.isMaster(c) ||
                     (Supported.master(MASTER_STATION_1) &&
                         (p +=
                             "<label for='um'><input class='needsclick' data-iconpos='right' id='um' type='checkbox' " +
@@ -7297,29 +7297,29 @@ var showHomeMenu = (function () {
                             " " +
                             (Supported.master(MASTER_STATION_2) ? "1" : "") +
                             "</label>"),
-                        Supported.master(MASTER_STATION_2) &&
+                    Supported.master(MASTER_STATION_2) &&
                         (p += "<label for='um2'><input class='needsclick' data-iconpos='right' id='um2' type='checkbox' " + (1 === r.data("um2") ? "checked='checked'" : "") + ">" + _("Use Master") + " 2</label>"),
-                        Supported.ignoreRain() && (p += "<label for='ir'><input class='needsclick' data-iconpos='right' id='ir' type='checkbox' " + (1 === r.data("ir") ? "checked='checked'" : "") + ">" + _("Ignore Rain") + "</label>"),
-                        Supported.ignoreSensor(IGNORE_SENSOR_1) &&
+                    Supported.ignoreRain() && (p += "<label for='ir'><input class='needsclick' data-iconpos='right' id='ir' type='checkbox' " + (1 === r.data("ir") ? "checked='checked'" : "") + ">" + _("Ignore Rain") + "</label>"),
+                    Supported.ignoreSensor(IGNORE_SENSOR_1) &&
                         (p += "<label for='sn1'><input class='needsclick' data-iconpos='right' id='sn1' type='checkbox' " + (1 === r.data("sn1") ? "checked='checked'" : "") + ">" + _("Ignore Sensor 1") + "</label>"),
-                        Supported.ignoreSensor(IGNORE_SENSOR_2) &&
+                    Supported.ignoreSensor(IGNORE_SENSOR_2) &&
                         (p += "<label for='sn2'><input class='needsclick' data-iconpos='right' id='sn2' type='checkbox' " + (1 === r.data("sn2") ? "checked='checked'" : "") + ">" + _("Ignore Sensor 2") + "</label>"),
-                        Supported.actRelay() && (p += "<label for='ar'><input class='needsclick' data-iconpos='right' id='ar' type='checkbox' " + (1 === r.data("ar") ? "checked='checked'" : "") + ">" + _("Activate Relay") + "</label>"),
-                        Supported.disabled() && (p += "<label for='sd'><input class='needsclick' data-iconpos='right' id='sd' type='checkbox' " + (1 === r.data("sd") ? "checked='checked'" : "") + ">" + _("Disable") + "</label>"),
-                        Supported.sequential() &&
+                    Supported.actRelay() && (p += "<label for='ar'><input class='needsclick' data-iconpos='right' id='ar' type='checkbox' " + (1 === r.data("ar") ? "checked='checked'" : "") + ">" + _("Activate Relay") + "</label>"),
+                    Supported.disabled() && (p += "<label for='sd'><input class='needsclick' data-iconpos='right' id='sd' type='checkbox' " + (1 === r.data("sd") ? "checked='checked'" : "") + ">" + _("Disable") + "</label>"),
+                    Supported.sequential() &&
                         !Supported.groups() &&
                         (p += "<label for='us'><input class='needsclick' data-iconpos='right' id='us' type='checkbox' " + (1 === r.data("us") ? "checked='checked'" : "") + ">" + _("Sequential") + "</label>")),
-                    (p =
-                        (p += "<div class='ui-bar-a ui-bar'>" + _("Station Notes") + ":</div><textarea data-corners='false' class='tight stn-notes' id='stn-notes'>" + (v[g].notes[c] || "") + "</textarea>") +
-                        "</div>" +
-                        "<div id='tab-advanced' class='tab-content'>"),
-                    Supported.groups() &&
+                (p =
+                    (p += "<div class='ui-bar-a ui-bar'>" + _("Station Notes") + ":</div><textarea data-corners='false' class='tight stn-notes' id='stn-notes'>" + (v[g].notes[c] || "") + "</textarea>") +
+                    "</div>" +
+                    "<div id='tab-advanced' class='tab-content'>"),
+                Supported.groups() &&
                     !Station.isMaster(c) &&
                     (p +=
                         "<div class='ui-bar-a ui-bar seq-container'>" +
                         _("Sequential Group") +
                         ":</div><select id='gid' class='seqgrp' data-mini='true'></select><div><p id='prohibit-change' class='center hidden' style='color: #ff0033;'>Changing group designation is prohibited while station is running</p></div>"),
-                    Supported.special() &&
+                Supported.special() &&
                     (p +=
                         "<div class='ui-bar-a ui-bar'>" +
                         _("Station Type") +
@@ -7340,13 +7340,13 @@ var showHomeMenu = (function () {
                         (checkOSVersion(217) ? ">" : " disabled>") +
                         _("HTTP") +
                         "</option></select><div id='specialOpts'></div>"),
-                    (p = (p += "</div>") + ("<input data-wrapper-class='attrib-submit' data-theme='b' type='submit' value='" + _("Submit") + "' /></form></fieldset></div>")),
-                    (p = $(p)
-                        .enhanceWithin()
-                        .on("submit", "form", function () {
-                            return u(c), !1;
-                        })),
-                    Supported.groups())
+                (p = (p += "</div>") + ("<input data-wrapper-class='attrib-submit' data-theme='b' type='submit' value='" + _("Submit") + "' /></form></fieldset></div>")),
+                (p = $(p)
+                    .enhanceWithin()
+                    .on("submit", "form", function () {
+                        return u(c), !1;
+                    })),
+                Supported.groups())
             ) {
                 var e = p.find("select.seqgrp"),
                     t = p.find("span.seqgrp"),
@@ -7383,18 +7383,18 @@ var showHomeMenu = (function () {
                             t
                                 .append(
                                     "<div class='ui-bar-a ui-bar'>" +
-                                    _("Remote Address") +
-                                    ":</div><input class='center' data-corners='false' data-wrapper-class='tight ui-btn stn-name' id='remote-address' required='true' type='text' pattern='^(?:[0-9]{1,3}.){3}[0-9]{1,3}$' value='" +
-                                    n.ip +
-                                    "'><div class='ui-bar-a ui-bar'>" +
-                                    _("Remote Port") +
-                                    ":</div><input class='center' data-corners='false' data-wrapper-class='tight ui-btn stn-name' id='remote-port' required='true' type='number' placeholder='80' min='0' max='65535' value='" +
-                                    n.port +
-                                    "'><div class='ui-bar-a ui-bar'>" +
-                                    _("Remote Station (index)") +
-                                    ":</div><input class='center' data-corners='false' data-wrapper-class='tight ui-btn stn-name' id='remote-station' required='true' type='number' min='1' max='200' placeholder='1' value='" +
-                                    (n.station + 1) +
-                                    "'>"
+                                        _("Remote Address") +
+                                        ":</div><input class='center' data-corners='false' data-wrapper-class='tight ui-btn stn-name' id='remote-address' required='true' type='text' pattern='^(?:[0-9]{1,3}.){3}[0-9]{1,3}$' value='" +
+                                        n.ip +
+                                        "'><div class='ui-bar-a ui-bar'>" +
+                                        _("Remote Port") +
+                                        ":</div><input class='center' data-corners='false' data-wrapper-class='tight ui-btn stn-name' id='remote-port' required='true' type='number' placeholder='80' min='0' max='65535' value='" +
+                                        n.port +
+                                        "'><div class='ui-bar-a ui-bar'>" +
+                                        _("Remote Station (index)") +
+                                        ":</div><input class='center' data-corners='false' data-wrapper-class='tight ui-btn stn-name' id='remote-station' required='true' type='number' min='1' max='200' placeholder='1' value='" +
+                                        (n.station + 1) +
+                                        "'>"
                                 )
                                 .enhanceWithin();
                     else if (3 === e) {
@@ -7405,10 +7405,10 @@ var showHomeMenu = (function () {
                             (controller.settings.gpio
                                 ? (s = controller.settings.gpio)
                                 : "OSPi" === getHWVersion()
-                                    ? (s = [5, 6, 7, 8, 9, 10, 11, 12, 13, 16, 18, 19, 20, 21, 23, 24, 25, 26])
-                                    : "2.3" === getHWVersion() && (s = [2, 10, 12, 13, 14, 15, 18, 19]),
-                                i === e && ((n = n.split("")), (o = parseInt(n[0] + n[1])), (a = parseInt(n[2]))),
-                                s.length)
+                                ? (s = [5, 6, 7, 8, 9, 10, 11, 12, 13, 16, 18, 19, 20, 21, 23, 24, 25, 26])
+                                : "2.3" === getHWVersion() && (s = [2, 10, 12, 13, 14, 15, 18, 19]),
+                            i === e && ((n = n.split("")), (o = parseInt(n[0] + n[1])), (a = parseInt(n[2]))),
+                            s.length)
                         ) {
                             for (var r = "<div class='ui-bar-a ui-bar'>" + _("GPIO Pin") + ":</div><select class='center' data-corners='false' data-wrapper-class='tight ui-btn stn-name' id='gpio-pin'>", l = 0; l < s.length; l++)
                                 r += "<option value='" + s[l] + "' " + (s[l] === o ? "selected='selected'" : "") + ">" + s[l];
@@ -7430,9 +7430,9 @@ var showHomeMenu = (function () {
                     } else
                         4 === e &&
                             ((n = i === e ? n.split(",") : ["server", "80", "On", "Off"]),
-                                t
-                                    .append(
-                                        "<div class='ui-bar-a ui-bar'>" +
+                            t
+                                .append(
+                                    "<div class='ui-bar-a ui-bar'>" +
                                         _("Server Name") +
                                         ":</div><input class='center  validate-length' data-corners='false' data-wrapper-class='tight ui-btn stn-name' id='http-server' required='true' type='text' value='" +
                                         n[0] +
@@ -7453,21 +7453,21 @@ var showHomeMenu = (function () {
                                         "</p><span>" +
                                         _("Characters remaining") +
                                         ": </span><span id='character-count'>placeholder</span></div>"
-                                    )
-                                    .enhanceWithin(),
-                                d(),
-                                $(".validate-length").on("input", d));
+                                )
+                                .enhanceWithin(),
+                            d(),
+                            $(".validate-length").on("input", d));
                     return !1;
                 }),
                 Station.isSpecial(c)
                     ? updateControllerStationSpecial(function () {
-                        p
-                            .find("#hs")
-                            .removeClass("ui-disabled")
-                            .find("option[data-hs='" + controller.special[c].st + "']")
-                            .prop("selected", !0),
-                            p.find("#hs").change();
-                    })
+                          p
+                              .find("#hs")
+                              .removeClass("ui-disabled")
+                              .find("option[data-hs='" + controller.special[c].st + "']")
+                              .prop("selected", !0),
+                              p.find("#hs").change();
+                      })
                     : (p.find("#hs").removeClass("ui-disabled"), p.find("option[data-hs='0']").prop("selected", !0), p.find("#hs").change()),
                 p.find(".changeBackground").on("click", function (e) {
                     e.preventDefault();
@@ -7496,7 +7496,7 @@ var showHomeMenu = (function () {
             t.sort(n).detach().appendTo(e), (Supported.groups() && groupView ? a : s)(e, t);
         }
         function h(t) {
-            (t = t || function () { }),
+            (t = t || function () {}),
                 (g = m.val()),
                 storage.get("sites", function (e) {
                     "object" != typeof (v = parseSites(e.sites))[g].images || $.isEmptyObject(v[g].images) ? ((v[g].images = {}), b.removeClass("has-images")) : b.addClass("has-images"),
@@ -7511,25 +7511,25 @@ var showHomeMenu = (function () {
             n,
             v,
             b = $(
-                "<div data-role='page' id='sprinklers'>" +
-                "<div class='ui-panel-wrapper'>" +
-                "<div class='ui-content' role='main'>" +
-                "<div class='ui-grid-a ui-body ui-corner-all info-card noweather'>" +
-                "<div class='ui-block-a'>" +
-                "<div id='weather' class='pointer'></div>" +
-                "</div>" +
-                "<div class='ui-block-b center home-info pointer'>" +
-                //                                   "<div class='sitename bold'></div>"+
-                "<div id='clock-s' class='nobr'></div>" +
-                _("Water Level") + ": <span class='waterlevel'></span>%</br> " +
-                "Controller Temp " + "<span class='ospi_temp'></span>" + "\xB0 " +
-                " " + "<span class='ospi_fuse red ospi_blink bold'></span>" +
-                "</div>" +
-                "</div>" +
-                "<div id='os-stations-list' class='card-group center'></div>" +
-                "</div>" +
-                "</div>" +
-
+                "<div data-role='page' id='sprinklers'>"+
+                    "<div class='ui-panel-wrapper'>"+
+                        "<div class='ui-content' role='main'>"+
+                            "<div class='ui-grid-a ui-body ui-corner-all info-card noweather'>"+
+                                "<div class='ui-block-a'>"+
+                                    "<div id='weather' class='pointer'></div>"+
+                                "</div>"+
+                                "<div class='ui-block-b center home-info pointer'>"+
+ //                                   "<div class='sitename bold'></div>"+
+                                    "<div id='clock-s' class='nobr'></div>" +
+                                    _("Water Level") + ": <span class='waterlevel'></span>%</br> "+
+                                    "Controller Temp " + "<span class='ospi_temp'></span>"+"\xB0 "+
+                                    " "+"<span class='ospi_fuse red ospi_blink bold'></span>"+
+                                "</div>"+
+                            "</div>"+
+                            "<div id='os-stations-list' class='card-group center'></div>"+
+                        "</div>"+
+                    "</div>"+
+                    
                 "</div>"
             ),
             y = function (e, t) {
@@ -7537,13 +7537,13 @@ var showHomeMenu = (function () {
                     val: t,
                     station: e,
                     update: function () {
-                        b.find("#countdown-" + e).text("(" + sec2hms(this.val) + " " + _("remaining") + ")");
+                        b.find("#countdown-" + e).text("(" + sec2hms(this.val) + " " + _("remaining") +")");
                     },
                     done: function () {
                         b.find("#countdown-" + e)
                             .parent("p")
                             .empty()
-                            //   .siblings(".station-status")
+                         //   .siblings(".station-status")
                             .removeClass("on")
                             .addClass("off");
                     },
@@ -7553,15 +7553,15 @@ var showHomeMenu = (function () {
                 for (var t, n, i, o, a = !0 === checkOSVersion(208), s = {}, r = {}, l = {}, c = {}, d = {}, u = {}, p = {}, h = {}, f = {}, m = {}, g = 0; g < controller.settings.nbrd; g++)
                     for (
                         Supported.master(MASTER_STATION_1) && (s["m" + g] = 0),
-                        Supported.master(MASTER_STATION_2) && (r["n" + g] = 0),
-                        Supported.sequential() && (l["q" + g] = 0),
-                        Supported.special() && (c["p" + g] = 0),
-                        Supported.ignoreRain() && (d["i" + g] = 0),
-                        Supported.ignoreSensor(IGNORE_SENSOR_1) && (u["j" + g] = 0),
-                        Supported.ignoreSensor(IGNORE_SENSOR_2) && (p["k" + g] = 0),
-                        Supported.actRelay() && (h["a" + g] = 0),
-                        Supported.disabled() && (f["d" + g] = 0),
-                        o = 0;
+                            Supported.master(MASTER_STATION_2) && (r["n" + g] = 0),
+                            Supported.sequential() && (l["q" + g] = 0),
+                            Supported.special() && (c["p" + g] = 0),
+                            Supported.ignoreRain() && (d["i" + g] = 0),
+                            Supported.ignoreSensor(IGNORE_SENSOR_1) && (u["j" + g] = 0),
+                            Supported.ignoreSensor(IGNORE_SENSOR_2) && (p["k" + g] = 0),
+                            Supported.actRelay() && (h["a" + g] = 0),
+                            Supported.disabled() && (f["d" + g] = 0),
+                            o = 0;
                         o < 8;
                         o++
                     )
@@ -7576,29 +7576,29 @@ var showHomeMenu = (function () {
                             Supported.actRelay() && (h["a" + g] = h["a" + g] + (t.data("ar") << o)),
                             Supported.disabled() && (f["d" + g] = f["d" + g] + (t.data("sd") << o)),
                             n === e &&
-                            ((m["s" + n] = a
-                                ? b
-                                    .find("#station_" + n)
-                                    .text()
-                                    .replace(/\s/g, "_")
-                                : b.find("#station_" + n).text()),
+                                ((m["s" + n] = a
+                                    ? b
+                                          .find("#station_" + n)
+                                          .text()
+                                          .replace(/\s/g, "_")
+                                    : b.find("#station_" + n).text()),
                                 Supported.special() && t.data("hs") && ((c.st = t.data("hs")), (c.sd = t.data("specialData")), (c.sid = e)),
                                 Supported.groups()) &&
-                            (i = t.attr("data-gid"));
+                                (i = t.attr("data-gid"));
                 $.mobile.loading("show"),
                     sendToOS(
                         "/cs?pw=&" +
-                        $.param(m) +
-                        (Supported.master(MASTER_STATION_1) ? "&" + $.param(s) : "") +
-                        (Supported.master(MASTER_STATION_2) ? "&" + $.param(r) : "") +
-                        (Supported.sequential() ? "&" + $.param(l) : "") +
-                        (Supported.special() ? "&" + $.param(c) : "") +
-                        (Supported.ignoreRain() ? "&" + $.param(d) : "") +
-                        (Supported.ignoreSensor(IGNORE_SENSOR_1) ? "&" + $.param(u) : "") +
-                        (Supported.ignoreSensor(IGNORE_SENSOR_2) ? "&" + $.param(p) : "") +
-                        (Supported.actRelay() ? "&" + $.param(h) : "") +
-                        (Supported.disabled() ? "&" + $.param(f) : "") +
-                        (Supported.groups() ? "&g" + e + "=" + i : "")
+                            $.param(m) +
+                            (Supported.master(MASTER_STATION_1) ? "&" + $.param(s) : "") +
+                            (Supported.master(MASTER_STATION_2) ? "&" + $.param(r) : "") +
+                            (Supported.sequential() ? "&" + $.param(l) : "") +
+                            (Supported.special() ? "&" + $.param(c) : "") +
+                            (Supported.ignoreRain() ? "&" + $.param(d) : "") +
+                            (Supported.ignoreSensor(IGNORE_SENSOR_1) ? "&" + $.param(u) : "") +
+                            (Supported.ignoreSensor(IGNORE_SENSOR_2) ? "&" + $.param(p) : "") +
+                            (Supported.actRelay() ? "&" + $.param(h) : "") +
+                            (Supported.disabled() ? "&" + $.param(f) : "") +
+                            (Supported.groups() ? "&g" + e + "=" + i : "")
                     ).done(function () {
                         showerror(_("Stations have been updated")),
                             updateController(function () {
@@ -7616,12 +7616,12 @@ var showHomeMenu = (function () {
                 return a < o
                     ? -1
                     : o < a
-                        ? 1
-                        : (o = Station.getGIDValue(Card.getSID(e))) < (a = Station.getGIDValue(Card.getSID(t)))
-                            ? -1
-                            : a < o
-                                ? 1
-                                : ((e = Station.getStatus(n)), (t = Station.getStatus(i)) < e ? -1 : e < t ? 1 : n < i ? -1 : i < n ? 1 : 0);
+                    ? 1
+                    : (o = Station.getGIDValue(Card.getSID(e))) < (a = Station.getGIDValue(Card.getSID(t)))
+                    ? -1
+                    : a < o
+                    ? 1
+                    : ((e = Station.getStatus(n)), (t = Station.getStatus(i)) < e ? -1 : e < t ? 1 : n < i ? -1 : i < n ? 1 : 0);
             },
             o = function (e, t) {
                 var e = $(e),
@@ -7686,36 +7686,36 @@ var showHomeMenu = (function () {
                             0 === a.length
                                 ? ((f = ""), d(c), r.append(f))
                                 : (a.find(".ui-body > img").attr("src", s ? "data:image/jpeg;base64," + v[g].images[c] : getAppURLPath() + "img/placeholder.png"),
-                                    Station.isDisabled(c) ? (b.hasClass("show-hidden") || a.hide(), a.addClass("station-hidden")) : a.show().removeClass("station-hidden"),
-                                    a.find("#station_" + c).text(controller.stations.snames[c]),
-                                    a
-                                        .find(".special-station")
-                                        .removeClass("hidden")
-                                        .addClass(Station.isSpecial(c) ? "" : "hidden"),
-                                    a
-                                        .find(".station-status")
-                                        .removeClass("on off wait")
-                                        .addClass(t ? "on" : e ? "wait" : "off"),
-                                    Station.isMaster(c) ? a.find(".station-settings").removeClass("ui-icon-gear").addClass("ui-icon-master") : a.find(".station-settings").removeClass("ui-icon-master").addClass("ui-icon-gear"),
-                                    a
-                                        .find(".station-settings")
-                                        .data({
-                                            um: Supported.master(MASTER_STATION_1) ? StationAttribute.getMasterOperation(c, MASTER_STATION_1) : void 0,
-                                            um2: Supported.master(MASTER_STATION_2) ? StationAttribute.getMasterOperation(c, MASTER_STATION_2) : void 0,
-                                            ir: Supported.ignoreRain() ? StationAttribute.getIgnoreRain(c) : void 0,
-                                            sn1: Supported.ignoreSensor(IGNORE_SENSOR_1) ? StationAttribute.getIgnoreSensor(c, IGNORE_SENSOR_1) : void 0,
-                                            sn2: Supported.ignoreSensor(IGNORE_SENSOR_2) ? StationAttribute.getIgnoreSensor(c, IGNORE_SENSOR_2) : void 0,
-                                            ar: Supported.actRelay() ? StationAttribute.getActRelay(c) : void 0,
-                                            sd: Supported.disabled() ? StationAttribute.getDisabled(c) : void 0,
-                                            us: Supported.sequential() ? StationAttribute.getSequential(c) : void 0,
-                                            hs: Supported.special() ? StationAttribute.getSpecial(c) : void 0,
-                                            gid: Supported.groups() ? Station.getGIDValue(c) : void 0,
-                                        }),
-                                    Station.isMaster(c) || (!e && !t)
-                                        ? a.find(".rem").remove()
-                                        : ((s = t ? _("Running") + " " + n : _("Scheduled") + " " + (Station.getStartTime(c) ? _("for") + " " + dateToString(new Date(1e3 * Station.getStartTime(c))) : n)),
-                                            0 < i && ((s += " <span id=" + (o ? "'pause" : "'countdown-") + c + "' class='nobr'>(" + sec2hms(i) + " " + _("remaining") + " " + ")</span>"), controller.status[c]) && y(c, i),
-                                            0 === a.find(".rem").length ? a.find(".ui-body").append("<p class='rem center'>" + s + "</p>") : a.find(".rem").html(s)));
+                                  Station.isDisabled(c) ? (b.hasClass("show-hidden") || a.hide(), a.addClass("station-hidden")) : a.show().removeClass("station-hidden"),
+                                  a.find("#station_" + c).text(controller.stations.snames[c]),
+                                  a
+                                      .find(".special-station")
+                                      .removeClass("hidden")
+                                      .addClass(Station.isSpecial(c) ? "" : "hidden"),
+                                  a
+                                      .find(".station-status")
+                                      .removeClass("on off wait")
+                                      .addClass(t ? "on" : e ? "wait" : "off"),
+                                  Station.isMaster(c) ? a.find(".station-settings").removeClass("ui-icon-gear").addClass("ui-icon-master") : a.find(".station-settings").removeClass("ui-icon-master").addClass("ui-icon-gear"),
+                                  a
+                                      .find(".station-settings")
+                                      .data({
+                                          um: Supported.master(MASTER_STATION_1) ? StationAttribute.getMasterOperation(c, MASTER_STATION_1) : void 0,
+                                          um2: Supported.master(MASTER_STATION_2) ? StationAttribute.getMasterOperation(c, MASTER_STATION_2) : void 0,
+                                          ir: Supported.ignoreRain() ? StationAttribute.getIgnoreRain(c) : void 0,
+                                          sn1: Supported.ignoreSensor(IGNORE_SENSOR_1) ? StationAttribute.getIgnoreSensor(c, IGNORE_SENSOR_1) : void 0,
+                                          sn2: Supported.ignoreSensor(IGNORE_SENSOR_2) ? StationAttribute.getIgnoreSensor(c, IGNORE_SENSOR_2) : void 0,
+                                          ar: Supported.actRelay() ? StationAttribute.getActRelay(c) : void 0,
+                                          sd: Supported.disabled() ? StationAttribute.getDisabled(c) : void 0,
+                                          us: Supported.sequential() ? StationAttribute.getSequential(c) : void 0,
+                                          hs: Supported.special() ? StationAttribute.getSpecial(c) : void 0,
+                                          gid: Supported.groups() ? Station.getGIDValue(c) : void 0,
+                                      }),
+                                  Station.isMaster(c) || (!e && !t)
+                                      ? a.find(".rem").remove()
+                                      : ((s = t ?  _("Running") + " " + n : _("Scheduled") + " " + (Station.getStartTime(c) ? _("for") + " " + dateToString(new Date(1e3 * Station.getStartTime(c))) : n)),
+                                        0 < i && ((s += " <span id=" + (o ? "'pause" : "'countdown-") + c + "' class='nobr'>(" + sec2hms(i) + " " + _("remaining") + " " + ")</span>"), controller.status[c]) && y(c, i),
+                                        0 === a.find(".rem").length ? a.find(".ui-body").append("<p class='rem center'>" + s + "</p>") : a.find(".rem").html(s)));
                     p();
                 }
             };
@@ -7792,11 +7792,11 @@ var showHomeMenu = (function () {
                             return (
                                 -1 !== e.attr("src").indexOf("data:image/jpeg;base64")
                                     ? areYouSure(_("Do you want to delete the current image?"), "", function () {
-                                        delete v[g].images[t], storage.set({ sites: JSON.stringify(v) }, cloudSaveSites), S();
-                                    })
+                                          delete v[g].images[t], storage.set({ sites: JSON.stringify(v) }, cloudSaveSites), S();
+                                      })
                                     : getPicture(function (e) {
-                                        (v[g].images[t] = e), storage.set({ sites: JSON.stringify(v) }, cloudSaveSites), S();
-                                    }),
+                                          (v[g].images[t] = e), storage.set({ sites: JSON.stringify(v) }, cloudSaveSites), S();
+                                      }),
                                 !1
                             );
                         })
@@ -7831,18 +7831,18 @@ var showHomeMenu = (function () {
     })(),
     showStart = (function () {
         var e = $(
-            "<div data-role='page' id='start'><ul data-role='none' id='welcome_list' class='ui-listview ui-listview-inset ui-corner-all'><li><div class='logo' id='welcome_logo'></div></li><li class='ui-li-static ui-body-inherit ui-first-child ui-last-child ui-li-separate'><p class='rain-desc'>" +
-            _("Welcome to the OpenSprinkler application. This app only works with the OpenSprinkler controller which must be installed and setup on your home network.") +
-            "</p><a class='iab iabNoScale ui-btn ui-mini center' target='_blank' href='https://opensprinkler.com/product/opensprinkler/'>" +
-            _("Purchase OpenSprinkler") +
-            "</a></li><li class='ui-first-child ui-last-child'><a href='#' class='ui-btn center cloud-login'>" +
-            _("OpenSprinkler.com Login") +
-            "</a></li><hr class='content-divider'><li id='auto-scan' class='ui-first-child'><a href='#' class='ui-btn ui-btn-icon-right ui-icon-carat-r'>" +
-            _("Scan For Device") +
-            "</a></li><li class='ui-first-child ui-last-child'><a class='ui-btn ui-btn-icon-right ui-icon-carat-r' data-rel='popup' href='#addnew'>" +
-            _("Add Controller") +
-            "</a></li></ul></div>"
-        ),
+                "<div data-role='page' id='start'><ul data-role='none' id='welcome_list' class='ui-listview ui-listview-inset ui-corner-all'><li><div class='logo' id='welcome_logo'></div></li><li class='ui-li-static ui-body-inherit ui-first-child ui-last-child ui-li-separate'><p class='rain-desc'>" +
+                    _("Welcome to the OpenSprinkler application. This app only works with the OpenSprinkler controller which must be installed and setup on your home network.") +
+                    "</p><a class='iab iabNoScale ui-btn ui-mini center' target='_blank' href='https://opensprinkler.com/product/opensprinkler/'>" +
+                    _("Purchase OpenSprinkler") +
+                    "</a></li><li class='ui-first-child ui-last-child'><a href='#' class='ui-btn center cloud-login'>" +
+                    _("OpenSprinkler.com Login") +
+                    "</a></li><hr class='content-divider'><li id='auto-scan' class='ui-first-child'><a href='#' class='ui-btn ui-btn-icon-right ui-icon-carat-r'>" +
+                    _("Scan For Device") +
+                    "</a></li><li class='ui-first-child ui-last-child'><a class='ui-btn ui-btn-icon-right ui-icon-carat-r' data-rel='popup' href='#addnew'>" +
+                    _("Add Controller") +
+                    "</a></li></ul></div>"
+            ),
             t = function () {
                 i.addClass("ui-first-child").find("a.ui-btn").text(_("Add Controller")), n.hide();
             },
@@ -7874,11 +7874,11 @@ var showHomeMenu = (function () {
             }
         );
     })();
-function showGuidedSetup() { }
-function parseRemoteStationData(hexStr) {
-    hexStr = hexStr.split("");
-    for (var octet, octets = [], result = {}, o = 0; o < 8; o++) (octet = parseInt(hexStr[o] + hexStr[o + 1], 16) || 0), octets.push(octet), o++;
-    return (result.ip = octets.join(".")), (result.port = parseInt(hexStr[8] + hexStr[9] + hexStr[10] + hexStr[11], 16)), (result.station = parseInt(hexStr[12] + hexStr[13], 16)), result;
+function showGuidedSetup() {}
+function parseRemoteStationData(e) {
+    e = e.split("");
+    for (var t, n = [], i = {}, o = 0; o < 8; o++) (t = parseInt(e[o] + e[o + 1], 16) || 0), n.push(t), o++;
+    return (i.ip = n.join(".")), (i.port = parseInt(e[8] + e[9] + e[10] + e[11], 16)), (i.station = parseInt(e[12] + e[13], 16)), i;
 }
 function verifyRemoteStation(e, t) {
     (e = parseRemoteStationData(e)),
@@ -7891,18 +7891,17 @@ function verifyRemoteStation(e, t) {
             }
         );
 }
-function convertRemoteToExtender(hexStr) {
-    var remote = parseRemoteStationData(hexStr);
-    $.ajax({ url: "http://" + remote.ip + ":" + remote.port + "/cv?re=1&pw=" + encodeURIComponent(currPass), type: "GET", dataType: "json" });
+function convertRemoteToExtender(e) {
+    (e = parseRemoteStationData(e)), $.ajax({ url: "http://" + e.ip + ":" + e.port + "/cv?re=1&pw=" + encodeURIComponent(currPass), type: "GET", dataType: "json" });
 }
-function refreshStatus(onComplete) {
-    var doRefresh;
+function refreshStatus(e) {
+    var t;
     isControllerConnected() &&
-        ((onComplete = onComplete || function () { }),
-            (doRefresh = function () {
-                $("html").trigger("datarefresh"), checkStatus(), onComplete();
-            }),
-            checkOSVersion(216) ? updateController(doRefresh, networkFail) : $.when(updateControllerStatus(), updateControllerSettings(), updateControllerOptions()).then(doRefresh, networkFail));
+        ((e = e || function () {}),
+        (t = function () {
+            $("html").trigger("datarefresh"), checkStatus(), e();
+        }),
+        checkOSVersion(216) ? updateController(t, networkFail) : $.when(updateControllerStatus(), updateControllerSettings(), updateControllerOptions()).then(t, networkFail));
 }
 function refreshData() {
     isControllerConnected() && (checkOSVersion(216) ? updateController(null, networkFail) : $.when(updateControllerPrograms(), updateControllerStations()).fail(networkFail));
@@ -7915,24 +7914,24 @@ function changeStatus(e, color, n, i) {
 
     var o = $("#footer-running"),
         a = "";
-    (i = i || function () { }),
+    (i = i || function () {}),
         1 < e &&
-        (timers.statusbar = {
-            val: e,
-            type: "statusbar",
-            update: function () {
-                $("#countdown").text("(" + sec2hms(this.val) + " " + _("remaining") + ")");
-            },
-        }),
+            (timers.statusbar = {
+                val: e,
+                type: "statusbar",
+                update: function () {
+                    $("#countdown").text("(" + sec2hms(this.val) + " " + _("remaining") + ")");
+                },
+            }),
         isControllerConnected() && void 0 !== controller.settings.curr && (a += _("Current") + ": " + controller.settings.curr + " mA "),
         !isControllerConnected() ||
-        (2 !== controller.options.urs && 2 !== controller.options.sn1t) ||
-        void 0 === controller.settings.flcrt ||
-        void 0 === controller.settings.flwrt ||
-        (flowcount = ((flowCountToVolume(controller.settings.flcrt) / (controller.settings.flwrt / 60)).toFixed(2)),
-            flowcount = isMetric ? flowcount : (flowcount * 0.264172).toFixed(2),
-            (a += "<span style='padding-left:5px'>" + _("Flow") + ": " + flowcount + (isMetric ? " L/min" : " G/min") + "</span>")
-        ),
+            (2 !== controller.options.urs && 2 !== controller.options.sn1t) ||
+            void 0 === controller.settings.flcrt ||
+            void 0 === controller.settings.flwrt ||
+            (flowcount = ((flowCountToVolume(controller.settings.flcrt) / (controller.settings.flwrt / 60)).toFixed(2)),
+             flowcount = isMetric ? flowcount : (flowcount * 0.264172).toFixed(2),
+                (a += "<span style='padding-left:5px'>" + _("Flow") + ": " + flowcount + (isMetric?" L/min" :" G/min")  +"</span>")
+            ),
         (a = "" !== a ? n + "<p class='running-text smaller center'>" + a + "</p>" : n),
         o.removeClass().addClass(color).html(a).off("click").on("click", i);
 }
@@ -7982,53 +7981,53 @@ function checkStatus() {
                     i
                         ? changeStatus(Station.getRemainingRuntime(a), "green", n, goHome)
                         : controller.settings.rd
-                            ? changeStatus(0, "red", "<p class='running-text center pointer'>" + _("Rain delay until") + " " + dateToString(new Date(1e3 * controller.settings.rdst)) + "</p>", function () {
-                                areYouSure(_("Do you want to turn off rain delay?"), "", function () {
-                                    showLoading("#footer-running"),
-                                        sendToOS("/cv?pw=&rd=0").done(function () {
-                                            refreshStatus(updateWeather);
-                                        });
-                                });
-                            })
-                            : 1 === controller.options.urs && 1 === controller.settings.rs
-                                ? changeStatus(0, "red", "<p class='running-text center'>" + _("Rain detected") + "</p>")
-                                : 1 === controller.settings.sn1
-                                    ? changeStatus(0, "red", "<p class='running-text center'>Sensor 1 (" + (3 === controller.options.sn1t ? _("Soil") : _("Rain")) + _(") Activated") + "</p>")
-                                    : 1 === controller.settings.sn2
-                                        ? changeStatus(0, "red", "<p class='running-text center'>Sensor 2 (" + (3 === controller.options.sn2t ? _("Soil") : _("Rain")) + _(") Activated") + "</p>")
-                                        : 1 === controller.settings.mm
-                                            ? changeStatus(0, "red", "<p class='running-text center pointer'>" + _("Manual mode enabled") + "</p>", function () {
-                                                areYouSure(_("Do you want to turn off manual mode?"), "", function () {
-                                                    showLoading("#footer-running"),
-                                                        sendToOS("/cv?pw=&mm=0").done(function () {
-                                                            updateController();
-                                                        });
-                                                });
-                                            })
-                                            : changeStatus(
-                                                0,
-                                                "transparent",
-                                                0 !== (s = controller.settings.lrun[2])
-                                                    ? "<p class='running-text smaller center pointer'>" +
-                                                    pidname(controller.settings.lrun[1]) +
-                                                    " " +
-                                                    _("last ran station") +
-                                                    " " +
-                                                    controller.stations.snames[controller.settings.lrun[0]] +
-                                                    " " +
-                                                    _("for") +
-                                                    " " +
-                                                    ((s / 60) >> 0) +
-                                                    "m " +
-                                                    (s % 60) +
-                                                    "s " +
-                                                    _("on") +
-                                                    " " +
-                                                    dateToString(new Date(1e3 * (controller.settings.lrun[3] - s))) +
-                                                    "</p>"
-                                                    : "<p class='running-text smaller center pointer'>" + _("System Idle") + "</p>",
-                                                goHome
-                                            );
+                        ? changeStatus(0, "red", "<p class='running-text center pointer'>" + _("Rain delay until") + " " + dateToString(new Date(1e3 * controller.settings.rdst)) + "</p>", function () {
+                              areYouSure(_("Do you want to turn off rain delay?"), "", function () {
+                                  showLoading("#footer-running"),
+                                      sendToOS("/cv?pw=&rd=0").done(function () {
+                                          refreshStatus(updateWeather);
+                                      });
+                              });
+                          })
+                        : 1 === controller.options.urs && 1 === controller.settings.rs
+                        ? changeStatus(0, "red", "<p class='running-text center'>" + _("Rain detected") + "</p>")
+                        : 1 === controller.settings.sn1
+                        ? changeStatus(0, "red", "<p class='running-text center'>Sensor 1 (" + (3 === controller.options.sn1t ? _("Soil") : _("Rain")) + _(") Activated") + "</p>")
+                        : 1 === controller.settings.sn2
+                        ? changeStatus(0, "red", "<p class='running-text center'>Sensor 2 (" + (3 === controller.options.sn2t ? _("Soil") : _("Rain")) + _(") Activated") + "</p>")
+                        : 1 === controller.settings.mm
+                        ? changeStatus(0, "red", "<p class='running-text center pointer'>" + _("Manual mode enabled") + "</p>", function () {
+                              areYouSure(_("Do you want to turn off manual mode?"), "", function () {
+                                  showLoading("#footer-running"),
+                                      sendToOS("/cv?pw=&mm=0").done(function () {
+                                          updateController();
+                                      });
+                              });
+                          })
+                        : changeStatus(
+                              0,
+                              "transparent",
+                              0 !== (s = controller.settings.lrun[2])
+                                  ? "<p class='running-text smaller center pointer'>" +
+                                        pidname(controller.settings.lrun[1]) +
+                                        " " +
+                                        _("last ran station") +
+                                        " " +
+                                        controller.stations.snames[controller.settings.lrun[0]] +
+                                        " " +
+                                        _("for") +
+                                        " " +
+                                        ((s / 60) >> 0) +
+                                        "m " +
+                                        (s % 60) +
+                                        "s " +
+                                        _("on") +
+                                        " " +
+                                        dateToString(new Date(1e3 * (controller.settings.lrun[3] - s))) +
+                                        "</p>"
+                                  : "<p class='running-text smaller center pointer'>" + _("System Idle") + "</p>",
+                              goHome
+                          );
                 }
             }
         else
@@ -8042,28 +8041,28 @@ function checkStatus() {
             });
     else changeStatus(0, "transparent", "<p class='running-text smaller'></p>");
 }
-function calculateTotalRunningTime(durations) {
-    var stationDelay = controller.options.sdt;
+function calculateTotalRunningTime(n) {
+    var i = controller.options.sdt;
     if (Supported.groups()) {
-        var groupTotals = new Array(NUM_SEQ_GROUPS).fill(0),
-            parallelMax = 0,
-            seqMax = 0;
-        $.each(controller.stations.snames, function (idx) {
-            var dur = durations[idx],
-                gid = Station.getGIDValue(idx);
-            0 < dur && (gid !== PARALLEL_GID_VALUE ? (groupTotals[gid] += dur + stationDelay) : parallelMax < dur && (parallelMax = dur));
+        var o = new Array(NUM_SEQ_GROUPS).fill(0),
+            a = 0,
+            e = 0;
+        $.each(controller.stations.snames, function (e) {
+            var t = n[e],
+                e = Station.getGIDValue(e);
+            0 < t && (e !== PARALLEL_GID_VALUE ? (o[e] += t + i) : a < t && (a = t));
         });
-        for (var g = 0; g < NUM_SEQ_GROUPS; g++) groupTotals[g] > stationDelay && (groupTotals[g] -= stationDelay), groupTotals[g] > seqMax && (seqMax = groupTotals[g]);
-        return Math.max(seqMax, parallelMax);
+        for (var t = 0; t < NUM_SEQ_GROUPS; t++) o[t] > i && (o[t] -= i), o[t] > e && (e = o[t]);
+        return Math.max(e, a);
     }
     return (
-        (parallelMax = seqMax = 0),
-        $.each(controller.stations.snames, function (idx) {
-            var dur = durations[idx];
-            0 < dur && (Station.isSequential(idx) ? (seqMax += dur + stationDelay) : parallelMax < dur && (parallelMax = dur));
+        (a = o = 0),
+        $.each(controller.stations.snames, function (e) {
+            var t = n[e];
+            0 < t && (Station.isSequential(e) ? (o += t + i) : a < t && (a = t));
         }),
-        stationDelay < seqMax && (seqMax -= stationDelay),
-        Math.max(seqMax, parallelMax)
+        i < o && (o -= i),
+        Math.max(o, a)
     );
 }
 function updateTimers() {
@@ -8078,8 +8077,8 @@ function updateTimers() {
                     (timers[n].val <= 0
                         ? ("statusbar" === n && (showLoading("#footer-running"), refreshStatus()), "function" == typeof timers[n].done && timers[n].done(), delete timers[n])
                         : "clock" === n
-                            ? (++timers[n].val, timers[n].update())
-                            : ("statusbar" !== n && "number" != typeof timers[n].station) || (--timers[n].val, timers[n].update()));
+                        ? (++timers[n].val, timers[n].update())
+                        : ("statusbar" !== n && "number" != typeof timers[n].station) || (--timers[n].val, timers[n].update()));
     }, 1e3);
 }
 function removeStationTimers() {
@@ -8087,96 +8086,96 @@ function removeStationTimers() {
 }
 //BTW, there is no "settings" "mm" is the config
 var getManual = (function () {
-    function e() {
-        var e, t, n, i;
-        return (
-            controller.settings.mm
-                ? ((n = (e = $(this)).closest("li")),
-                    (n = (t = a.index(n)) + 1),
-                    (i = r.val()),
-                    e.hasClass("yellow") ||
-                    ((o = controller.status[t]
-                        ? checkOSPiVersion("2.1")
-                            ? "/sn?sid=" + n + "&set_to=0&pw="
-                            : "/sn" + n + "=0"
-                        : checkOSPiVersion("2.1")
-                            ? "/sn?sid=" + n + "&set_to=1&set_time=" + i + "&pw="
-                            : "/sn" + n + "=1&t=" + i),
-                        e.removeClass("green").addClass("yellow"),
-                        e.html("<p class='ui-icon ui-icon-loading mini-load'></p>"),
-                        sendToOS(o).always(function () {
-                            setTimeout(s, 1e3, t);
-                        })))
-                : showerror(_("Manual mode is not enabled. Please enable manual mode then try again.")),
-            !1
-        );
-    }
-    var o,
-        t,
-        a,
-        i = $(
-            "<div data-role='page' id='manual'><div class='ui-content' role='main'><p class='center'>" +
-            _("With manual mode turned on, tap a station to toggle it.") +
-            "</p><fieldset data-role='collapsible' data-collapsed='false' data-mini='true'><legend>" +
-            _("Options") +
-            "</legend><div class='ui-field-contain'><label for='mmm'><b>" +
-            _("Manual Mode") +
-            "</b></label><input type='checkbox' data-on-text='On' data-off-text='Off' data-role='flipswitch' name='mmm' id='mmm'></div><p class='rain-desc smaller center' style='padding-top:5px'>" +
-            _("Station timer prevents a station from running indefinitely and will automatically turn it off after the set duration (or when toggled off)") +
-            "</p><div class='ui-field-contain duration-input'><label for='auto-off'><b>" +
-            _("Station Timer") +
-            "</b></label><button data-mini='true' name='auto-off' id='auto-off' value='3600'>1h</button></div></fieldset><div id='manual-station-list'></div></div></div>"
-        ),
-        s = function (t) {
-            updateControllerStatus().done(function () {
-                var e = a.eq(t).find("a");
-                controller.options.mas && (controller.status[controller.options.mas - 1] ? a.eq(controller.options.mas - 1).addClass("green") : a.eq(controller.options.mas - 1).removeClass("green")),
-                    e.text(controller.stations.snames[t]),
-                    controller.status[t] ? e.removeClass("yellow").addClass("green") : e.removeClass("green yellow");
-            });
-        },
-        r = i.find("#auto-off");
-    return (
-        i.on("pagehide", function () {
-            i.detach();
-        }),
-        storage.get("autoOff", function (e) {
-            e.autoOff && (r.val(e.autoOff), r.text(dhms2str(sec2dhms(e.autoOff))));
-        }),
-        r.on("click", function () {
-            var t = $(this),
-                e = i.find("label[for='" + t.attr("id") + "']").text();
+        function e() {
+            var e, t, n, i;
             return (
-                showDurationBox({
-                    seconds: t.val(),
-                    title: e,
-                    callback: function (e) {
-                        t.val(e), t.text(dhms2str(sec2dhms(e))), storage.set({ autoOff: e });
-                    },
-                    maximum: 32768,
-                }),
+                controller.settings.mm
+                    ? ((n = (e = $(this)).closest("li")),
+                      (n = (t = a.index(n)) + 1),
+                      (i = r.val()),
+                      e.hasClass("yellow") ||
+                          ((o = controller.status[t]
+                              ? checkOSPiVersion("2.1")
+                                  ? "/sn?sid=" + n + "&set_to=0&pw="
+                                  : "/sn" + n + "=0"
+                              : checkOSPiVersion("2.1")
+                              ? "/sn?sid=" + n + "&set_to=1&set_time=" + i + "&pw="
+                              : "/sn" + n + "=1&t=" + i),
+                          e.removeClass("green").addClass("yellow"),
+                          e.html("<p class='ui-icon ui-icon-loading mini-load'></p>"),
+                          sendToOS(o).always(function () {
+                              setTimeout(s, 1e3, t);
+                          })))
+                    : showerror(_("Manual mode is not enabled. Please enable manual mode then try again.")),
                 !1
             );
-        }),
-        i.find("#mmm").on("change", flipSwitched),
-        function () {
-            var n = "<li data-role='list-divider' data-theme='a'>" + _("Sprinkler Stations") + "</li>";
-            i.find("#mmm").prop("checked", !!controller.settings.mm),
-                $.each(controller.stations.snames, function (e, t) {
-                    Station.isMaster(e)
-                        ? (n += "<li data-icon='false' class='center" + (controller.status[e] ? " green" : "") + (Station.isDisabled(e) ? " station-hidden' style='display:none" : "") + "'>" + t + " (" + _("Master") + ")</li>")
-                        : (n += "<li data-icon='false'><a class='mm_station center" + (controller.status[e] ? " green" : "") + (Station.isDisabled(e) ? " station-hidden' style='display:none" : "") + "'>" + t + "</a></li>");
-                }),
-                (t = $("<ul data-role='listview' data-inset='true' id='mm_list'>" + n + "</ul>")),
-                (a = t.children("li").slice(1)),
-                t.find(".mm_station").on("vclick", e),
-                i.find("#manual-station-list").html(t).enhanceWithin(),
-                changeHeader({ title: _("Manual Control"), leftBtn: { icon: "carat-l", text: _("Back"), class: "ui-toolbar-back-btn", on: goBack } }),
-                $("#manual").remove(),
-                $.mobile.pageContainer.append(i);
         }
-    );
-})(),
+        var o,
+            t,
+            a,
+            i = $(
+                "<div data-role='page' id='manual'><div class='ui-content' role='main'><p class='center'>" +
+                    _("With manual mode turned on, tap a station to toggle it.") +
+                    "</p><fieldset data-role='collapsible' data-collapsed='false' data-mini='true'><legend>" +
+                    _("Options") +
+                    "</legend><div class='ui-field-contain'><label for='mmm'><b>" +
+                    _("Manual Mode") +
+                    "</b></label><input type='checkbox' data-on-text='On' data-off-text='Off' data-role='flipswitch' name='mmm' id='mmm'></div><p class='rain-desc smaller center' style='padding-top:5px'>" +
+                    _("Station timer prevents a station from running indefinitely and will automatically turn it off after the set duration (or when toggled off)") +
+                    "</p><div class='ui-field-contain duration-input'><label for='auto-off'><b>" +
+                    _("Station Timer") +
+                    "</b></label><button data-mini='true' name='auto-off' id='auto-off' value='3600'>1h</button></div></fieldset><div id='manual-station-list'></div></div></div>"
+            ),
+            s = function (t) {
+                updateControllerStatus().done(function () {
+                    var e = a.eq(t).find("a");
+                    controller.options.mas && (controller.status[controller.options.mas - 1] ? a.eq(controller.options.mas - 1).addClass("green") : a.eq(controller.options.mas - 1).removeClass("green")),
+                        e.text(controller.stations.snames[t]),
+                        controller.status[t] ? e.removeClass("yellow").addClass("green") : e.removeClass("green yellow");
+                });
+            },
+            r = i.find("#auto-off");
+        return (
+            i.on("pagehide", function () {
+                i.detach();
+            }),
+            storage.get("autoOff", function (e) {
+                e.autoOff && (r.val(e.autoOff), r.text(dhms2str(sec2dhms(e.autoOff))));
+            }),
+            r.on("click", function () {
+                var t = $(this),
+                    e = i.find("label[for='" + t.attr("id") + "']").text();
+                return (
+                    showDurationBox({
+                        seconds: t.val(),
+                        title: e,
+                        callback: function (e) {
+                            t.val(e), t.text(dhms2str(sec2dhms(e))), storage.set({ autoOff: e });
+                        },
+                        maximum: 32768,
+                    }),
+                    !1
+                );
+            }),
+            i.find("#mmm").on("change", flipSwitched),
+            function () {
+                var n = "<li data-role='list-divider' data-theme='a'>" + _("Sprinkler Stations") + "</li>";
+                i.find("#mmm").prop("checked", !!controller.settings.mm),
+                    $.each(controller.stations.snames, function (e, t) {
+                        Station.isMaster(e)
+                            ? (n += "<li data-icon='false' class='center" + (controller.status[e] ? " green" : "") + (Station.isDisabled(e) ? " station-hidden' style='display:none" : "") + "'>" + t + " (" + _("Master") + ")</li>")
+                            : (n += "<li data-icon='false'><a class='mm_station center" + (controller.status[e] ? " green" : "") + (Station.isDisabled(e) ? " station-hidden' style='display:none" : "") + "'>" + t + "</a></li>");
+                    }),
+                    (t = $("<ul data-role='listview' data-inset='true' id='mm_list'>" + n + "</ul>")),
+                    (a = t.children("li").slice(1)),
+                    t.find(".mm_station").on("vclick", e),
+                    i.find("#manual-station-list").html(t).enhanceWithin(),
+                    changeHeader({ title: _("Manual Control"), leftBtn: { icon: "carat-l", text: _("Back"), class: "ui-toolbar-back-btn", on: goBack } }),
+                    $("#manual").remove(),
+                    $.mobile.pageContainer.append(i);
+            }
+        );
+    })(),
     getRunonce = (function () {
         function i(e) {
             (c.l = e), $("<option value='l' selected='selected'>" + _("Last Used Program") + "</option>").insertAfter(h.find("#rprog").find("option[value='t']")), f(e);
@@ -8222,36 +8221,36 @@ var getManual = (function () {
                     (p = checkOSVersion(210) ? controller.programs.pd[a][5] : _("Program") + " " + (a + 1)), (r += "<option value='" + a + "'>" + p + "</option>");
                 if (
                     ((s += (r += "</select>") + "<form>"),
-                        $.each(controller.stations.snames, function (e, t) {
-                            Station.isMaster(e)
-                                ? (s +=
-                                    "<div class='ui-field-contain duration-input" +
-                                    (Station.isDisabled(e) ? " station-hidden' style='display:none" : "") +
-                                    "'><label for='zone-" +
-                                    e +
-                                    "'>" +
-                                    t +
-                                    ":</label><button disabled='true' data-mini='true' name='zone-" +
-                                    e +
-                                    "' id='zone-" +
-                                    e +
-                                    "' value='0'>Master</button></div>")
-                                : (s +=
-                                    "<div class='ui-field-contain duration-input" +
-                                    (Station.isDisabled(e) ? " station-hidden' style='display:none" : "") +
-                                    "'><label for='zone-" +
-                                    e +
-                                    "'>" +
-                                    t +
-                                    ":</label><button data-mini='true' name='zone-" +
-                                    e +
-                                    "' id='zone-" +
-                                    e +
-                                    "' value='0'>0s</button></div>");
-                        }),
-                        (s += "</form><a class='ui-btn ui-corner-all ui-shadow rsubmit' href='#'>" + _("Submit") + "</a><a class='ui-btn ui-btn-b ui-corner-all ui-shadow rreset' href='#'>" + _("Reset") + "</a>"),
-                        h.find(".ui-content").html(s).enhanceWithin(),
-                        "object" == typeof controller.settings.rodur)
+                    $.each(controller.stations.snames, function (e, t) {
+                        Station.isMaster(e)
+                            ? (s +=
+                                  "<div class='ui-field-contain duration-input" +
+                                  (Station.isDisabled(e) ? " station-hidden' style='display:none" : "") +
+                                  "'><label for='zone-" +
+                                  e +
+                                  "'>" +
+                                  t +
+                                  ":</label><button disabled='true' data-mini='true' name='zone-" +
+                                  e +
+                                  "' id='zone-" +
+                                  e +
+                                  "' value='0'>Master</button></div>")
+                            : (s +=
+                                  "<div class='ui-field-contain duration-input" +
+                                  (Station.isDisabled(e) ? " station-hidden' style='display:none" : "") +
+                                  "'><label for='zone-" +
+                                  e +
+                                  "'>" +
+                                  t +
+                                  ":</label><button data-mini='true' name='zone-" +
+                                  e +
+                                  "' id='zone-" +
+                                  e +
+                                  "' value='0'>0s</button></div>");
+                    }),
+                    (s += "</form><a class='ui-btn ui-corner-all ui-shadow rsubmit' href='#'>" + _("Submit") + "</a><a class='ui-btn ui-btn-b ui-corner-all ui-shadow rreset' href='#'>" + _("Reset") + "</a>"),
+                    h.find(".ui-content").html(s).enhanceWithin(),
+                    "object" == typeof controller.settings.rodur)
                 ) {
                     var n = 0;
                     for (a = 0; a < controller.settings.rodur.length; a++) n += controller.settings.rodur[a];
@@ -8265,12 +8264,12 @@ var getManual = (function () {
                     "s" === e
                         ? o()
                         : "t" === e
-                            ? f(
-                                Array.apply(null, Array(controller.stations.snames.length)).map(function () {
-                                    return 60;
-                                })
-                            )
-                            : void 0 !== c[e] && f(c[e]);
+                        ? f(
+                              Array.apply(null, Array(controller.stations.snames.length)).map(function () {
+                                  return 60;
+                              })
+                          )
+                        : void 0 !== c[e] && f(c[e]);
                 }),
                     h.on("click", ".rsubmit", submitRunonce).on("click", ".rreset", o),
                     h.find("[id^='zone-']").on("click", function () {
@@ -8298,19 +8297,19 @@ var getManual = (function () {
             }
         );
     })();
-function submitRunonce(durations) {
-    durations instanceof Array ||
-        ((durations = []),
-            $("#runonce")
-                .find("[id^='zone-']")
-                .each(function () {
-                    durations.push(parseInt(this.value) || 0);
-                }),
-            durations.push(0));
-    function doSubmit() {
+function submitRunonce(e) {
+    e instanceof Array ||
+        ((e = []),
+        $("#runonce")
+            .find("[id^='zone-']")
+            .each(function () {
+                e.push(parseInt(this.value) || 0);
+            }),
+        e.push(0));
+    function t() {
         $.mobile.loading("show"),
-            storage.set({ runonce: JSON.stringify(durations) }),
-            sendToOS("/cr?pw=&t=" + JSON.stringify(durations)).done(function () {
+            storage.set({ runonce: JSON.stringify(e) }),
+            sendToOS("/cr?pw=&t=" + JSON.stringify(e)).done(function () {
                 $.mobile.loading("hide"),
                     $.mobile.document.one("pageshow", function () {
                         showerror(_("Run-once program has been scheduled"));
@@ -8319,12 +8318,12 @@ function submitRunonce(durations) {
                     goBack();
             });
     }
-    var activeStation = StationQueue.isActive();
-    -1 !== activeStation
-        ? areYouSure(_("Do you want to stop the currently running program?"), pidname(Station.getPID(activeStation)), function () {
-            $.mobile.loading("show"), stopStations(doSubmit);
-        })
-        : doSubmit();
+    var n = StationQueue.isActive();
+    -1 !== n
+        ? areYouSure(_("Do you want to stop the currently running program?"), pidname(Station.getPID(n)), function () {
+              $.mobile.loading("show"), stopStations(t);
+          })
+        : t();
 }
 var getPreview = (function () {
     var R,
@@ -8347,14 +8346,14 @@ var getPreview = (function () {
         q,
         f = $(
             "<div data-role='page' id='preview'><div class='ui-content' role='main'><div id='preview_header' class='input_with_buttons'><button class='preview-minus ui-btn ui-btn-icon-notext ui-icon-carat-l btn-no-border'></button><input class='center' type='date' name='preview_date' id='preview_date'><button class='preview-plus ui-btn ui-btn-icon-notext ui-icon-carat-r btn-no-border'></button></div><div id='timeline'></div><div data-role='controlgroup' data-type='horizontal' id='timeline-navigation'><a class='ui-btn ui-corner-all ui-icon-plus ui-btn-icon-notext btn-no-border' title='" +
-            _("Zoom in") +
-            "'></a><a class='ui-btn ui-corner-all ui-icon-minus ui-btn-icon-notext btn-no-border' title='" +
-            _("Zoom out") +
-            "'></a><a class='ui-btn ui-corner-all ui-icon-carat-l ui-btn-icon-notext btn-no-border' title='" +
-            _("Move left") +
-            "'></a><a class='ui-btn ui-corner-all ui-icon-carat-r ui-btn-icon-notext btn-no-border' title='" +
-            _("Move right") +
-            "'></a></div></div></div>"
+                _("Zoom in") +
+                "'></a><a class='ui-btn ui-corner-all ui-icon-minus ui-btn-icon-notext btn-no-border' title='" +
+                _("Zoom out") +
+                "'></a><a class='ui-btn ui-corner-all ui-icon-carat-l ui-btn-icon-notext btn-no-border' title='" +
+                _("Move left") +
+                "'></a><a class='ui-btn ui-corner-all ui-icon-carat-r ui-btn-icon-notext btn-no-border' title='" +
+                _("Move right") +
+                "'></a></div></div></div>"
         ),
         m = f.find("#timeline"),
         g = f.find("#timeline-navigation");
@@ -8409,14 +8408,14 @@ var getPreview = (function () {
                             Station.isMaster(M) ||
                                 (U
                                     ? controller.stations.stn_dis[C] & (1 << D) ||
-                                    (n[4][M] &&
-                                        0 === p[M] &&
-                                        (_ = 0) <
-                                        (_ =
-                                            2 & n[0] && ((0 < controller.options.uwt && l === a) || 0 === controller.options.uwt)
-                                                ? ((getStationDuration(n[4][M], r) * controller.options.wl) / 100) >> 0
-                                                : getStationDuration(n[4][M], r)) &&
-                                        (q ? f.length < c && f.push({ st: -1, dur: _, sid: M, pid: x + 1, gid: controller.stations.stn_grp ? controller.stations.stn_grp[M] : -1, pl: 1 }) : ((p[M] = _), (u[M] = x + 1)), (T = 1)))
+                                      (n[4][M] &&
+                                          0 === p[M] &&
+                                          (_ = 0) <
+                                              (_ =
+                                                  2 & n[0] && ((0 < controller.options.uwt && l === a) || 0 === controller.options.uwt)
+                                                      ? ((getStationDuration(n[4][M], r) * controller.options.wl) / 100) >> 0
+                                                      : getStationDuration(n[4][M], r)) &&
+                                          (q ? f.length < c && f.push({ st: -1, dur: _, sid: M, pid: x + 1, gid: controller.stations.stn_grp ? controller.stations.stn_grp[M] : -1, pl: 1 }) : ((p[M] = _), (u[M] = x + 1)), (T = 1)))
                                     : n[7 + C] & (1 << D) && ((p[M] = ((n[6] * controller.options.wl) / 100) >> 0), (u[M] = x + 1), (T = 1)));
                         }
                 if (T) {
@@ -8430,15 +8429,15 @@ var getPreview = (function () {
                                 0 <= (w = f[i]).st ||
                                     0 === w.dur ||
                                     ((A = (M = w.sid) >> 3),
-                                        (N = 7 & M),
-                                        -1 === w.gid
-                                            ? controller.stations.stn_seq[A] & (1 << N)
-                                                ? ((w.st = I), (I = (I += w.dur) + controller.options.sdt))
-                                                : ((w.st = O), O++)
-                                            : w.gid !== PARALLEL_GID_VALUE
-                                                ? ((w.st = E[w.gid]), (E[w.gid] += w.dur), (E[w.gid] += controller.options.sdt))
-                                                : ((w.st = O), O++),
-                                        (k = 1));
+                                    (N = 7 & M),
+                                    -1 === w.gid
+                                        ? controller.stations.stn_seq[A] & (1 << N)
+                                            ? ((w.st = I), (I = (I += w.dur) + controller.options.sdt))
+                                            : ((w.st = O), O++)
+                                        : w.gid !== PARALLEL_GID_VALUE
+                                        ? ((w.st = E[w.gid]), (E[w.gid] += w.dur), (E[w.gid] += controller.options.sdt))
+                                        : ((w.st = O), O++),
+                                    (k = 1));
                         else
                             for (M = 0; M < c; M++)
                                 (A = M >> 3),
@@ -8470,27 +8469,27 @@ var getPreview = (function () {
                 else if ((s++, V)) for (M = 0; M < 8 * controller.settings.nbrd; M++) 0 < u[M] && 60 * s >= p[M] && ((d[M] = -1), (u[M] = 0), (p[M] = 0), (h[M] = 0));
             } while (s < 1440);
         }),
-        (H = function (currentTime, programs, pidMap, simDay) {
+        (H = function (e, t, n, i) {
             for (var o = 0; o < 8 * controller.settings.nbrd; o++) {
-                var hasMaster2,
-                    masterOp1,
-                    masterOp2,
-                    l = pidMap[o];
+                var a,
+                    s,
+                    r,
+                    l = n[o];
                 255 !== l &&
-                    (l = programs[l]).pl &&
-                    ((hasMaster2 = void 0 !== controller.options.mas2),
-                        (masterOp1 = controller.stations.masop[o >> 3] & (1 << o % 8)),
-                        (masterOp2 = hasMaster2 && controller.stations.masop2[o >> 3] & (1 << o % 8)),
-                        Station.isMaster(o) ||
+                    (l = t[l]).pl &&
+                    ((a = void 0 !== controller.options.mas2),
+                    (s = controller.stations.masop[o >> 3] & (1 << o % 8)),
+                    (r = a && controller.stations.masop2[o >> 3] & (1 << o % 8)),
+                    Station.isMaster(o) ||
                         (0 < controller.options.mas &&
-                            masterOp1 &&
-                            R.push({ start: l.st + controller.options.mton, end: l.st + l.dur + controller.options.mtof, content: "", className: "master", shortname: "M" + (hasMaster2 ? "1" : ""), group: "Master", station: o }),
-                            hasMaster2 &&
+                            s &&
+                            R.push({ start: l.st + controller.options.mton, end: l.st + l.dur + controller.options.mtof, content: "", className: "master", shortname: "M" + (a ? "1" : ""), group: "Master", station: o }),
+                        a &&
                             0 < controller.options.mas2 &&
-                            masterOp2 &&
+                            r &&
                             R.push({ start: l.st + controller.options.mton2, end: l.st + l.dur + controller.options.mtof2, content: "", className: "master", shortname: "M2", group: "Master 2", station: o })),
-                        u(o, l.st, l.pid, l.st + l.dur, simDay),
-                        (l.pl = 0));
+                    u(o, l.st, l.pid, l.st + l.dur, i),
+                    (l.pl = 0));
             }
         }),
         (B = function (e, t, n, i, o, a) {
@@ -8498,28 +8497,28 @@ var getPreview = (function () {
                 n[d] &&
                     (V
                         ? o[d] &&
-                        ((s = void 0 !== controller.options.mas2),
-                            (r = controller.stations.masop[d >> 3] & (1 << d % 8)),
-                            (l = s && controller.stations.masop2[d >> 3] & (1 << d % 8)),
-                            Station.isMaster(d) ||
-                            (0 < controller.options.mas &&
-                                r &&
-                                R.push({ start: t[d] + controller.options.mton, end: i[d] + controller.options.mtof, content: "", className: "master", shortname: "M" + (s ? "1" : ""), group: "Master", station: d }),
-                                s &&
-                                0 < controller.options.mas2 &&
-                                l &&
-                                R.push({ start: t[d] + controller.options.mton2, end: i[d] + controller.options.mtof2, content: "", className: "master", shortname: "M2", group: "Master 2", station: d })),
-                            u(d, t[d], n[d], i[d], a),
-                            (o[d] = 0),
-                            controller.stations.stn_seq[d >> 3] & (1 << (7 & d))) &&
-                        (c = c > i[d] ? c : i[d])
+                          ((s = void 0 !== controller.options.mas2),
+                          (r = controller.stations.masop[d >> 3] & (1 << d % 8)),
+                          (l = s && controller.stations.masop2[d >> 3] & (1 << d % 8)),
+                          Station.isMaster(d) ||
+                              (0 < controller.options.mas &&
+                                  r &&
+                                  R.push({ start: t[d] + controller.options.mton, end: i[d] + controller.options.mtof, content: "", className: "master", shortname: "M" + (s ? "1" : ""), group: "Master", station: d }),
+                              s &&
+                                  0 < controller.options.mas2 &&
+                                  l &&
+                                  R.push({ start: t[d] + controller.options.mton2, end: i[d] + controller.options.mtof2, content: "", className: "master", shortname: "M2", group: "Master 2", station: d })),
+                          u(d, t[d], n[d], i[d], a),
+                          (o[d] = 0),
+                          controller.stations.stn_seq[d >> 3] & (1 << (7 & d))) &&
+                          (c = c > i[d] ? c : i[d])
                         : 1 === controller.options.seq
-                            ? (Station.isMaster(d) &&
-                                controller.stations.masop[d >> 3] & (1 << d % 8) &&
-                                R.push({ start: t[d] + controller.options.mton, end: i[d] + controller.options.mtof, content: "", className: "master", shortname: "M", group: "Master", station: d }),
-                                u(d, t[d], n[d], i[d], a),
-                                (c = i[d]))
-                            : (u(d, e, n[d], i[d], a), Station.isMaster(d) && controller.stations.masop[d >> 3] & (1 << d % 8) && (c = c > i[d] ? c : i[d])));
+                        ? (Station.isMaster(d) &&
+                              controller.stations.masop[d >> 3] & (1 << d % 8) &&
+                              R.push({ start: t[d] + controller.options.mton, end: i[d] + controller.options.mtof, content: "", className: "master", shortname: "M", group: "Master", station: d }),
+                          u(d, t[d], n[d], i[d], a),
+                          (c = i[d]))
+                        : (u(d, e, n[d], i[d], a), Station.isMaster(d) && controller.stations.masop[d >> 3] & (1 << d % 8) && (c = c > i[d] ? c : i[d])));
             return V || (0 === controller.options.seq && 0 < controller.options.mas && R.push({ start: e, end: c, content: "", className: "master", shortname: "M", group: "Master", station: d })), c;
         }),
         (u = function (e, t, n, i, o) {
@@ -8622,88 +8621,88 @@ var getPreview = (function () {
                 g.hide(),
                 R.length
                     ? (R.sort(sortByStation),
-                        (n = []),
-                        (t = new Date(c[0], c[1] - 1, c[2], 24)),
-                        $.each(R, function () {
-                            var e = this.start + this.end;
-                            (this.start = new Date(c[0], c[1] - 1, c[2], 0, 0, this.start)),
-                                86400 < e
-                                    ? ((e = Math.floor(this.end / 86400)), (this.end = new Date(c[0], c[1] - 1, parseInt(c[2]) + e, 0, 0, this.end % 86400)), (t = t > this.end ? t : this.end))
-                                    : (this.end = new Date(c[0], c[1] - 1, c[2], 0, 0, this.end)),
-                                (n[this.group] = this.shortname);
-                        }),
-                        (o = {
-                            width: "100%",
-                            editable: !1,
-                            axisOnTop: !0,
-                            eventMargin: 10,
-                            eventMarginAxis: 0,
-                            min: new Date(c[0], c[1] - 1, c[2], 0),
-                            max: t,
-                            selectable: !0,
-                            showMajorLabels: !1,
-                            zoomMax: 864e5,
-                            zoomMin: 36e5,
-                            groupsChangeable: !1,
-                            showNavigation: !1,
-                            groupsOrder: "none",
-                            groupMinHeight: 20,
-                        }),
-                        (e = function () {
-                            i.redraw();
-                        }),
-                        (i = new links.Timeline(m[0], o)),
-                        (o = new Date(p)).setMinutes(o.getMinutes() + o.getTimezoneOffset()),
-                        i.setCurrentTime(o),
-                        links.events.addListener(i, "select", function () {
-                            var e = i.getSelection();
-                            e.length && void 0 !== e[0].row && changePage("#programs", { programToExpand: parseInt(i.getItem(e[0].row).pid) });
-                        }),
-                        $.mobile.window.on("resize", e),
-                        f.one("pagehide", function () {
-                            $.mobile.window.off("resize", e);
-                        }),
-                        i.draw(R),
-                        f.find(".timeline-groups-text").each(function () {
-                            var e = $(this),
-                                t = n[e.text()];
-                            e.attr("data-shortname", t);
-                        }),
-                        f
-                            .find(".timeline-groups-axis")
-                            .children()
-                            .first()
-                            .html("<div class='timeline-axis-text center dayofweek' data-shortname='" + getDayName(d, "short") + "'>" + getDayName(d) + "</div>"),
-                        isAndroid
-                            ? (g
+                      (n = []),
+                      (t = new Date(c[0], c[1] - 1, c[2], 24)),
+                      $.each(R, function () {
+                          var e = this.start + this.end;
+                          (this.start = new Date(c[0], c[1] - 1, c[2], 0, 0, this.start)),
+                              86400 < e
+                                  ? ((e = Math.floor(this.end / 86400)), (this.end = new Date(c[0], c[1] - 1, parseInt(c[2]) + e, 0, 0, this.end % 86400)), (t = t > this.end ? t : this.end))
+                                  : (this.end = new Date(c[0], c[1] - 1, c[2], 0, 0, this.end)),
+                              (n[this.group] = this.shortname);
+                      }),
+                      (o = {
+                          width: "100%",
+                          editable: !1,
+                          axisOnTop: !0,
+                          eventMargin: 10,
+                          eventMarginAxis: 0,
+                          min: new Date(c[0], c[1] - 1, c[2], 0),
+                          max: t,
+                          selectable: !0,
+                          showMajorLabels: !1,
+                          zoomMax: 864e5,
+                          zoomMin: 36e5,
+                          groupsChangeable: !1,
+                          showNavigation: !1,
+                          groupsOrder: "none",
+                          groupMinHeight: 20,
+                      }),
+                      (e = function () {
+                          i.redraw();
+                      }),
+                      (i = new links.Timeline(m[0], o)),
+                      (o = new Date(p)).setMinutes(o.getMinutes() + o.getTimezoneOffset()),
+                      i.setCurrentTime(o),
+                      links.events.addListener(i, "select", function () {
+                          var e = i.getSelection();
+                          e.length && void 0 !== e[0].row && changePage("#programs", { programToExpand: parseInt(i.getItem(e[0].row).pid) });
+                      }),
+                      $.mobile.window.on("resize", e),
+                      f.one("pagehide", function () {
+                          $.mobile.window.off("resize", e);
+                      }),
+                      i.draw(R),
+                      f.find(".timeline-groups-text").each(function () {
+                          var e = $(this),
+                              t = n[e.text()];
+                          e.attr("data-shortname", t);
+                      }),
+                      f
+                          .find(".timeline-groups-axis")
+                          .children()
+                          .first()
+                          .html("<div class='timeline-axis-text center dayofweek' data-shortname='" + getDayName(d, "short") + "'>" + getDayName(d) + "</div>"),
+                      isAndroid
+                          ? (g
                                 .find(".ui-icon-plus")
                                 .off("click")
                                 .on("click", function () {
                                     return i.zoom(0.4), !1;
                                 }),
-                                g
-                                    .find(".ui-icon-minus")
-                                    .off("click")
-                                    .on("click", function () {
-                                        return i.zoom(-0.4), !1;
-                                    }),
-                                g
-                                    .find(".ui-icon-carat-l")
-                                    .off("click")
-                                    .on("click", function () {
-                                        return i.move(-0.2), !1;
-                                    }),
-                                g
-                                    .find(".ui-icon-carat-r")
-                                    .off("click")
-                                    .on("click", function () {
-                                        return i.move(0.2), !1;
-                                    }),
-                                g.show())
-                            : g.hide(),
-                        m.on("swiperight swipeleft", function (e) {
-                            e.stopImmediatePropagation();
-                        }))
+                            g
+                                .find(".ui-icon-minus")
+                                .off("click")
+                                .on("click", function () {
+                                    return i.zoom(-0.4), !1;
+                                }),
+                            g
+                                .find(".ui-icon-carat-l")
+                                .off("click")
+                                .on("click", function () {
+                                    return i.move(-0.2), !1;
+                                }),
+                            g
+                                .find(".ui-icon-carat-r")
+                                .off("click")
+                                .on("click", function () {
+                                    return i.move(0.2), !1;
+                                }),
+                            g.show())
+                          : g.hide(),
+                      m.on("swiperight swipeleft", function (e) {
+                          e.stopImmediatePropagation();
+                      }))
                     : f.find("#timeline").html("<p align='center'>" + _("No stations set to run on this day.") + "</p>");
         }),
         function () {
@@ -8754,19 +8753,19 @@ var getLogs = (function () {
                 if (a.hasOwnProperty(e) && 0 !== (t = a[e].length)) {
                     for (
                         s[d] =
-                        "<div data-role='collapsible' data-collapsed='true'><h2>" +
-                        (checkOSVersion(210) && "day" === i ? "<a class='ui-btn red ui-btn-corner-all delete-day day-" + e + "'>" + _("delete") + "</a>" : "") +
-                        "<div class='ui-btn-up-c ui-btn-corner-all custom-count-pos'>" +
-                        t +
-                        " " +
-                        _(1 === t ? "run" : "runs") +
-                        "</div>" +
-                        ("station" === i ? m[e] : dateToString(new Date(1e3 * e * 60 * 60 * 24)).slice(0, -9)) +
-                        "</h2>",
-                        r[e] && (s[d] += "<span style='border:none' class='" + (100 !== r[e] ? (r[e] < 100 ? "green " : "red ") : "") + "ui-body ui-body-a'>" + _("Average") + " " + _("Water Level") + ": " + r[e] + "%</span>"),
-                        l[e] && (s[d] += "<span style='border:none' class='ui-body ui-body-a'>" + _("Total Water Used") + ": " + l[e] + " G</span>"),
-                        s[d] += c,
-                        n = 0;
+                            "<div data-role='collapsible' data-collapsed='true'><h2>" +
+                            (checkOSVersion(210) && "day" === i ? "<a class='ui-btn red ui-btn-corner-all delete-day day-" + e + "'>" + _("delete") + "</a>" : "") +
+                            "<div class='ui-btn-up-c ui-btn-corner-all custom-count-pos'>" +
+                            t +
+                            " " +
+                            _(1 === t ? "run" : "runs") +
+                            "</div>" +
+                            ("station" === i ? m[e] : dateToString(new Date(1e3 * e * 60 * 60 * 24)).slice(0, -9)) +
+                            "</h2>",
+                            r[e] && (s[d] += "<span style='border:none' class='" + (100 !== r[e] ? (r[e] < 100 ? "green " : "red ") : "") + "ui-body ui-body-a'>" + _("Average") + " " + _("Water Level") + ": " + r[e] + "%</span>"),
+                            l[e] && (s[d] += "<span style='border:none' class='ui-body ui-body-a'>" + _("Total Water Used") + ": " + l[e] + " G</span>"),
+                            s[d] += c,
+                            n = 0;
                         n < a[e].length;
                         n++
                     ) {
@@ -8812,45 +8811,45 @@ var getLogs = (function () {
         i < o
             ? (k(), showerror(_("Start time cannot be greater than end time")))
             : ((e = 0),
-                $.mobile.loading("show"),
-                3154e4 < i - o &&
-                (showerror(_("The requested time span exceeds the maximum of 1 year and has been adjusted"), 3500),
-                    (i = u().start).setFullYear(i.getFullYear() + 1),
-                    $("#log_end").val(i.getFullYear() + "-" + pad(i.getMonth() + 1) + "-" + pad(i.getDate())),
-                    (e = 500)),
-                (t = $.Deferred().resolve()),
-                (n = $.Deferred().resolve()),
-                checkOSVersion(211) && (t = sendToOS("/jl?pw=&type=wl&" + l(), "json")),
-                checkOSVersion(216) && (n = sendToOS("/jl?pw=&type=fl&" + l())),
-                setTimeout(function () {
-                    $.when(sendToOS("/jl?pw=&" + l(), "json"), t, n).then(a, s);
-                }, e));
+              $.mobile.loading("show"),
+              3154e4 < i - o &&
+                  (showerror(_("The requested time span exceeds the maximum of 1 year and has been adjusted"), 3500),
+                  (i = u().start).setFullYear(i.getFullYear() + 1),
+                  $("#log_end").val(i.getFullYear() + "-" + pad(i.getMonth() + 1) + "-" + pad(i.getDate())),
+                  (e = 500)),
+              (t = $.Deferred().resolve()),
+              (n = $.Deferred().resolve()),
+              checkOSVersion(211) && (t = sendToOS("/jl?pw=&type=wl&" + l(), "json")),
+              checkOSVersion(216) && (n = sendToOS("/jl?pw=&type=fl&" + l())),
+              setTimeout(function () {
+                  $.when(sendToOS("/jl?pw=&" + l(), "json"), t, n).then(a, s);
+              }, e));
     }
     var m,
         e,
         t,
         h = $(
             "<div data-role='page' id='logs'><div class='ui-content' role='main'><fieldset data-role='controlgroup' data-type='horizontal' data-mini='true' class='log_type'><input data-mini='true' type='radio' name='log_type' id='log_timeline' value='timeline'><label for='log_timeline'>" +
-            _("Timeline") +
-            "</label><input data-mini='true' type='radio' name='log_type' id='log_table' value='table'><label for='log_table'>" +
-            _("Table") +
-            "</label></fieldset><fieldset data-role='collapsible' data-mini='true' id='log_options' class='center'><legend>" +
-            _("Options") +
-            "</legend><fieldset data-role='controlgroup' data-type='horizontal' id='table_sort'><p class='tight'>" +
-            _("Grouping:") +
-            "</p><input data-mini='true' type='radio' name='table-group' id='table-sort-day' value='day' checked='checked'><label for='table-sort-day'>" +
-            _("Day") +
-            "</label><input data-mini='true' type='radio' name='table-group' id='table-sort-station' value='station'><label for='table-sort-station'>" +
-            _("Station") +
-            "</label></fieldset><div class='ui-field-contain'><label for='log_start'>" +
-            _("Start:") +
-            "</label><input data-mini='true' type='date' id='log_start'><label for='log_end'>" +
-            _("End:") +
-            "</label><input data-mini='true' type='date' id='log_end'></div><a data-role='button' data-icon='action' class='export_logs' href='#' data-mini='true'>" +
-            _("Export") +
-            "</a><a data-role='button' class='red clear_logs' href='#' data-mini='true' data-icon='alert'>" +
-            _("Clear Logs") +
-            "</a></fieldset><div id='logs_list' class='center'></div></div></div>"
+                _("Timeline") +
+                "</label><input data-mini='true' type='radio' name='log_type' id='log_table' value='table'><label for='log_table'>" +
+                _("Table") +
+                "</label></fieldset><fieldset data-role='collapsible' data-mini='true' id='log_options' class='center'><legend>" +
+                _("Options") +
+                "</legend><fieldset data-role='controlgroup' data-type='horizontal' id='table_sort'><p class='tight'>" +
+                _("Grouping:") +
+                "</p><input data-mini='true' type='radio' name='table-group' id='table-sort-day' value='day' checked='checked'><label for='table-sort-day'>" +
+                _("Day") +
+                "</label><input data-mini='true' type='radio' name='table-group' id='table-sort-station' value='station'><label for='table-sort-station'>" +
+                _("Station") +
+                "</label></fieldset><div class='ui-field-contain'><label for='log_start'>" +
+                _("Start:") +
+                "</label><input data-mini='true' type='date' id='log_start'><label for='log_end'>" +
+                _("End:") +
+                "</label><input data-mini='true' type='date' id='log_end'></div><a data-role='button' data-icon='action' class='export_logs' href='#' data-mini='true'>" +
+                _("Export") +
+                "</a><a data-role='button' class='red clear_logs' href='#' data-mini='true' data-icon='alert'>" +
+                _("Clear Logs") +
+                "</a></fieldset><div id='logs_list' class='center'></div></div></div>"
         ),
         f = h.find("#logs_list"),
         g = h.find("#table_sort"),
@@ -8915,21 +8914,21 @@ var getLogs = (function () {
                 o = [];
             return (
                 c.length &&
-                ((n.avgWaterLevel = 0),
+                    ((n.avgWaterLevel = 0),
                     $.each(c, function () {
                         (e[Math.floor(this[3] / 60 / 60 / 24)] = this[2]), (n.avgWaterLevel += this[2]);
                     }),
                     (n.avgWaterLevel = parseFloat((n.avgWaterLevel / c.length).toFixed(2)))),
                 d.length &&
-                ((n.totalVolume = 0),
+                    ((n.totalVolume = 0),
                     $.each(d, function () {
                         var e,
-                            //                           t = flowCountToVolume(this[0]);
-                            t = flowCountToVolume(this[4]);
+ //                           t = flowCountToVolume(this[0]);
+                        t = flowCountToVolume(this[4]);
                         "timeline" === i
                             ? ((e = new Date(parseInt(1e3 * this[3]))),
-                                (e = new Date(e.getUTCFullYear(), e.getUTCMonth(), e.getUTCDate(), e.getUTCHours(), e.getUTCMinutes(), e.getUTCSeconds())),
-                                o.push({ start: new Date(e.getTime() - parseInt(1e3 * this[2])), end: e, className: "", content: t + " G", shortname: _("FS"), group: _("Flow Sensor") }))
+                              (e = new Date(e.getUTCFullYear(), e.getUTCMonth(), e.getUTCDate(), e.getUTCHours(), e.getUTCMinutes(), e.getUTCSeconds())),
+                              o.push({ start: new Date(e.getTime() - parseInt(1e3 * this[2])), end: e, className: "", content: t + " G", shortname: _("FS"), group: _("Flow Sensor") }))
                             : ((e = Math.floor(this[3] / 60 / 60 / 24)), (o[e] = o[e] ? o[e] + t : t)),
                             (n.totalVolume += t);
                     })),
@@ -8941,9 +8940,9 @@ var getLogs = (function () {
             h.find("#log_table").prop("checked")
                 ? r()
                 : h.find("#log_timeline").prop("checked") &&
-                (b.length < 1
-                    ? k()
-                    : (g.hide(),
+                  (b.length < 1
+                      ? k()
+                      : (g.hide(),
                         f.show(),
                         v.collapsible("collapse"),
                         (e = y("timeline")),
@@ -8994,37 +8993,37 @@ var getLogs = (function () {
             return 0 === e.totalCount || 0 === e.totalRuntime
                 ? ""
                 : ((t = void 0 !== e.avgWaterLevel),
-                    "<div class='ui-body-a smaller' id='logs_summary'><div><span class='bold'>" +
-                    _("Total Station Events") +
-                    "</span>: " +
-                    e.totalCount +
-                    "</div><div><span class='bold'>" +
-                    _("Total Runtime") +
-                    "</span>: " +
-                    dhms2str(sec2dhms(e.totalRuntime)) +
-                    "</div>" +
-                    (t
-                        ? "<div><span class='bold'>" +
-                        _("Average") +
-                        " " +
-                        _("Water Level") +
-                        "</span>: <span class='" +
-                        (100 !== e.avgWaterLevel ? (e.avgWaterLevel < 100 ? "green-text" : "red-text") : "") +
-                        "'>" +
-                        e.avgWaterLevel +
-                        "%</span></div>"
-                        : "") +
-                    (void 0 !== e.totalVolume && 0 < e.totalVolume
-                        ? "<div><span class='bold'>" +
-                        _("Total Water Used") +
-                        "</span>: " +
-                        e.totalVolume +
-                        //                            " L" +
-                        " G" +
-                        (t && e.avgWaterLevel < 100 ? " (<span class='green-text'>" + (e.totalVolume - e.totalVolume * (e.avgWaterLevel / 100)).toFixed(0) + " G saved</span>)" : "") +
-                        "</div>"
-                        : "") +
-                    "</div>");
+                  "<div class='ui-body-a smaller' id='logs_summary'><div><span class='bold'>" +
+                      _("Total Station Events") +
+                      "</span>: " +
+                      e.totalCount +
+                      "</div><div><span class='bold'>" +
+                      _("Total Runtime") +
+                      "</span>: " +
+                      dhms2str(sec2dhms(e.totalRuntime)) +
+                      "</div>" +
+                      (t
+                          ? "<div><span class='bold'>" +
+                            _("Average") +
+                            " " +
+                            _("Water Level") +
+                            "</span>: <span class='" +
+                            (100 !== e.avgWaterLevel ? (e.avgWaterLevel < 100 ? "green-text" : "red-text") : "") +
+                            "'>" +
+                            e.avgWaterLevel +
+                            "%</span></div>"
+                          : "") +
+                      (void 0 !== e.totalVolume && 0 < e.totalVolume
+                          ? "<div><span class='bold'>" +
+                            _("Total Water Used") +
+                            "</span>: " +
+                            e.totalVolume +
+//                            " L" +
+                            " G" +
+                            (t && e.avgWaterLevel < 100 ? " (<span class='green-text'>" + (e.totalVolume - e.totalVolume * (e.avgWaterLevel / 100)).toFixed(0) + " G saved</span>)" : "") +
+                            "</div>"
+                          : "") +
+                      "</div>");
         },
         k = function () {
             (b = []), v.collapsible("expand"), g.hide(), f.show().html(_("No entries found in the selected date range"));
@@ -9043,11 +9042,11 @@ var getLogs = (function () {
         }),
         isiOS
             ? o.add(T).on("blur", function () {
-                h.hasClass("ui-page-active") && p();
-            })
+                  h.hasClass("ui-page-active") && p();
+              })
             : o.add(T).change(function () {
-                clearTimeout(e), (e = setTimeout(p, 1e3));
-            }),
+                  clearTimeout(e), (e = setTimeout(p, 1e3));
+              }),
         g.find("input[name='table-group']").change(function () {
             r();
         }),
@@ -9071,33 +9070,33 @@ var getLogs = (function () {
         }
     );
 })();
-function clearLogs(callback) {
+function clearLogs(t) {
     areYouSure(_("Are you sure you want to clear ALL your log data?"), "", function () {
-        var endpoint = isOSPi() ? "/cl?pw=" : "/dl?pw=&day=all";
+        var e = isOSPi() ? "/cl?pw=" : "/dl?pw=&day=all";
         $.mobile.loading("show"),
-            sendToOS(endpoint).done(function () {
-                "function" == typeof callback && callback(), showerror(_("Logs have been cleared"));
+            sendToOS(e).done(function () {
+                "function" == typeof t && t(), showerror(_("Logs have been cleared"));
             });
     });
 }
-function clearPrograms(callback) {
+function clearPrograms(e) {
     areYouSure(_("Are you sure you want to delete ALL programs?"), "", function () {
         $.mobile.loading("show"),
             sendToOS("/dp?pw=&pid=-1").done(function () {
-                "function" == typeof callback && callback(), showerror(_("Programs have been deleted"));
+                "function" == typeof e && e(), showerror(_("Programs have been deleted"));
             });
     });
 }
-function resetAllOptions(callback) {
+function resetAllOptions(t) {
     areYouSure(_("Are you sure you want to delete all settings and return to the default settings?"), "", function () {
-        var params = isOSPi()
+        var e = isOSPi()
             ? "otz=32&ontp=1&onbrd=0&osdt=0&omas=0&omton=0&omtoff=0&orst=1&owl=100&orlp=0&ouwt=0&olg=1&oloc=Boston,MA"
-            : ((params =
-                "o2=1&o3=1&o12=80&o13=0&o15=0&o17=0&o18=0&o19=0&o20=0&o22=1&o23=100&o26=0&o27=110&o28=100&o29=15&o30=320&o31=0&o36=1&o37=0&o38=0&o39=0&o41=100&o42=0&o43=0&o44=8&o45=8&o46=8&o47=8&o48=0&o49=0&o50=0&o51=1&o52=0&o53=1&o54=0&o55=0&o56=0&o57=0&"),
-                checkOSVersion(2199) ? (params += "o32=0&o33=0&o34=0&o35=0&") : (params += "o32=216&o33=239&o34=35&o35=12&"),
-                transformKeysinString((params += "loc=Boston,MA&wto=%22key%22%3A%22%22")));
-        sendToOS("/co?pw=&" + params).done(function () {
-            "function" == typeof callback && callback(), updateController(updateWeather);
+            : ((e =
+                  "o2=1&o3=1&o12=80&o13=0&o15=0&o17=0&o18=0&o19=0&o20=0&o22=1&o23=100&o26=0&o27=110&o28=100&o29=15&o30=320&o31=0&o36=1&o37=0&o38=0&o39=0&o41=100&o42=0&o43=0&o44=8&o45=8&o46=8&o47=8&o48=0&o49=0&o50=0&o51=1&o52=0&o53=1&o54=0&o55=0&o56=0&o57=0&"),
+              checkOSVersion(2199) ? (e += "o32=0&o33=0&o34=0&o35=0&") : (e += "o32=216&o33=239&o34=35&o35=12&"),
+              transformKeysinString((e += "loc=Boston,MA&wto=%22key%22%3A%22%22")));
+        sendToOS("/co?pw=&" + e).done(function () {
+            "function" == typeof t && t(), updateController(updateWeather);
         });
     });
 }
@@ -9124,29 +9123,29 @@ var getPrograms = (function () {
                             n.removeClass("hasChanges"), t.collapsible("collapse");
                         }
                     ),
-                        e.preventDefault());
+                    e.preventDefault());
             },
             collapsibleexpand: function () {
                 expandProgram($(this));
             },
         }),
             checkOSVersion(210) &&
-            e
-                .find(".move-up")
-                .removeClass("hidden")
-                .on("click", function () {
-                    var e = $(this).parents("fieldset"),
-                        e = parseInt(e.attr("id").split("-")[1]);
-                    return (
-                        $.mobile.loading("show"),
-                        sendToOS("/up?pw=&pid=" + e).done(function () {
-                            updateControllerPrograms(function () {
-                                $.mobile.loading("hide"), n.trigger("programrefresh");
-                            });
-                        }),
-                        !1
-                    );
-                }),
+                e
+                    .find(".move-up")
+                    .removeClass("hidden")
+                    .on("click", function () {
+                        var e = $(this).parents("fieldset"),
+                            e = parseInt(e.attr("id").split("-")[1]);
+                        return (
+                            $.mobile.loading("show"),
+                            sendToOS("/up?pw=&pid=" + e).done(function () {
+                                updateControllerPrograms(function () {
+                                    $.mobile.loading("hide"), n.trigger("programrefresh");
+                                });
+                            }),
+                            !1
+                        );
+                    }),
             e.find(".program-copy").on("click", function () {
                 return changePage("#addprogram", { copyID: parseInt($(this).parents("fieldset").attr("id").split("-")[1]) }), !1;
             }),
@@ -9183,22 +9182,22 @@ var getPrograms = (function () {
         }
     );
 })();
-function expandProgram($collapsible) {
-    var o = parseInt($collapsible.attr("id").split("-")[1]);
-    $collapsible
+function expandProgram(t) {
+    var o = parseInt(t.attr("id").split("-")[1]);
+    t
         .find(".ui-collapsible-content")
         .html(makeProgram(o))
         .enhanceWithin()
         .on("change input click", function (e) {
-            ("click" === e.type && "BUTTON" !== e.target.tagName) || ($(this).off("change input click"), $collapsible.find("[id^='submit-']").addClass("hasChanges"));
+            ("click" === e.type && "BUTTON" !== e.target.tagName) || ($(this).off("change input click"), t.find("[id^='submit-']").addClass("hasChanges"));
         }),
-        $collapsible.find("[id^='submit-']").on("click", function () {
+        t.find("[id^='submit-']").on("click", function () {
             return submitProgram(o), !1;
         }),
-        $collapsible.find("[id^='delete-']").on("click", function () {
+        t.find("[id^='delete-']").on("click", function () {
             return deleteProgram(o), !1;
         }),
-        $collapsible.find("[id^='run-']").on("click", function () {
+        t.find("[id^='run-']").on("click", function () {
             return (
                 areYouSure(_("Are you sure you want to start " + (checkOSVersion(210) ? controller.programs.pd[o][5] : "Program " + o) + " now?"), "", function () {
                     function t() {
@@ -9232,49 +9231,49 @@ function expandProgram($collapsible) {
             );
         });
 }
-function readProgram(pd) {
-    return (checkOSVersion(210) ? readProgram21 : readProgram183)(pd);
+function readProgram(e) {
+    return (checkOSVersion(210) ? readProgram21 : readProgram183)(e);
 }
-function readProgram183(pd) {
-    var daysByte = pd[1],
-        intervalByte = pd[2],
-        is_even = !1,
-        is_odd = !1,
-        is_interval = !1,
-        days = "",
-        stationBits = "",
-        prog = {};
-    prog.en = pd[0];
-    for (var c = 0; c < controller.programs.nboards; c++) for (var d = pd[7 + c], u = 0; u < 8; u++) stationBits += d & (1 << u) ? "1" : "0";
-    if (((prog.stations = stationBits), (prog.duration = pd[6]), (prog.start = pd[3]), (prog.end = pd[4]), (prog.interval = pd[5]), 128 & daysByte && 1 < intervalByte)) (days = [intervalByte, 127 & daysByte]), (is_interval = !0);
+function readProgram183(e) {
+    var t = e[1],
+        n = e[2],
+        i = !1,
+        o = !1,
+        a = !1,
+        s = "",
+        r = "",
+        l = {};
+    l.en = e[0];
+    for (var c = 0; c < controller.programs.nboards; c++) for (var d = e[7 + c], u = 0; u < 8; u++) r += d & (1 << u) ? "1" : "0";
+    if (((l.stations = r), (l.duration = e[6]), (l.start = e[3]), (l.end = e[4]), (l.interval = e[5]), 128 & t && 1 < n)) (s = [n, 127 & t]), (a = !0);
     else {
-        for (var p = 0; p < 7; p++) days += daysByte & (1 << p) ? "1" : "0";
-        128 & daysByte && 0 === intervalByte && (is_even = !0), 128 & daysByte && 1 === intervalByte && (is_odd = !0);
+        for (var p = 0; p < 7; p++) s += t & (1 << p) ? "1" : "0";
+        128 & t && 0 === n && (i = !0), 128 & t && 1 === n && (o = !0);
     }
-    return (prog.days = days), (prog.is_even = is_even), (prog.is_odd = is_odd), (prog.is_interval = is_interval), prog;
+    return (l.days = s), (l.is_even = i), (l.is_odd = o), (l.is_interval = a), l;
 }
-function readProgram21(pd) {
-    var daysByte = pd[1],
-        intervalByte = pd[2],
-        dayType = (pd[0] >> 2) & 3,
-        startType = (pd[0] >> 4) & 3,
-        multiStart = (pd[0] >> 6) & 1,
-        days = "",
-        prog = { repeat: 0, interval: 0 };
+function readProgram21(e) {
+    var t = e[1],
+        n = e[2],
+        i = (e[0] >> 2) & 3,
+        o = (e[0] >> 4) & 3,
+        a = (e[0] >> 6) & 1,
+        s = "",
+        r = { repeat: 0, interval: 0 };
     if (
-        ((prog.en = (pd[0] >> 0) & 1),
-            (prog.weather = (pd[0] >> 1) & 1),
-            (prog.is_even = 2 == dayType),
-            (prog.is_odd = 1 == dayType),
-            (prog.is_interval = 3 == startType),
-            (prog.stations = pd[4]),
-            (prog.name = pd[5]),
-            0 == multiStart ? ((prog.start = pd[3][0]), (prog.repeat = pd[3][1]), (prog.interval = pd[3][2])) : 1 == multiStart && (prog.start = pd[3]),
-            3 == startType)
+        ((r.en = (e[0] >> 0) & 1),
+        (r.weather = (e[0] >> 1) & 1),
+        (r.is_even = 2 == i),
+        (r.is_odd = 1 == i),
+        (r.is_interval = 3 == o),
+        (r.stations = e[4]),
+        (r.name = e[5]),
+        0 == a ? ((r.start = e[3][0]), (r.repeat = e[3][1]), (r.interval = e[3][2])) : 1 == a && (r.start = e[3]),
+        3 == o)
     )
-        days = [intervalByte, daysByte];
-    else if (0 == startType) for (var l = 0; l < 7; l++) days += daysByte & (1 << l) ? "1" : "0";
-    return (prog.days = days), prog;
+        s = [n, t];
+    else if (0 == o) for (var l = 0; l < 7; l++) s += t & (1 << l) ? "1" : "0";
+    return (r.days = s), r;
 }
 function getStartTime(e, t) {
     var n = 2047 & e,
@@ -9287,16 +9286,16 @@ function getStartTime(e, t) {
     }
     return e;
 }
-function readStartTime(encoded) {
-    var offset = 2047 & encoded,
-        label = _("Sunrise");
-    if ((encoded >> 13) & 1) label = _("Sunset");
-    else if (1 & !(encoded >> 14)) return minutesToTime(encoded);
-    return label + (0 !== (offset = (encoded >> 12) & 1 ? -offset : offset) ? (0 < offset ? "+" : "") + dhms2str(sec2dhms(60 * offset)) : "");
+function readStartTime(e) {
+    var t = 2047 & e,
+        n = _("Sunrise");
+    if ((e >> 13) & 1) n = _("Sunset");
+    else if (1 & !(e >> 14)) return minutesToTime(e);
+    return n + (0 !== (t = (e >> 12) & 1 ? -t : t) ? (0 < t ? "+" : "") + dhms2str(sec2dhms(60 * t)) : "");
 }
-function pidname(pid) {
-    var name = _("Program") + " " + pid;
-    return 255 === pid || 99 === pid ? (name = _("Manual program")) : 254 === pid || 98 === pid ? (name = _("Run-once program")) : checkOSVersion(210) && pid <= controller.programs.pd.length && (name = controller.programs.pd[pid - 1][5]), name;
+function pidname(e) {
+    var t = _("Program") + " " + e;
+    return 255 === e || 99 === e ? (t = _("Manual program")) : 254 === e || 98 === e ? (t = _("Run-once program")) : checkOSVersion(210) && e <= controller.programs.pd.length && (t = controller.programs.pd[e - 1][5]), t;
 }
 function updateProgramHeader() {
     $("#programs_list")
@@ -9337,12 +9336,11 @@ function makeProgram183(e, t) {
         l = "",
         c = t ? "new" : e,
         d = "new" === e ? { en: 0, weather: 0, is_interval: 0, is_even: 0, is_odd: 0, duration: 0, interval: 0, start: 0, end: 0, days: [0, 0] } : readProgram(controller.programs.pd[e]);
-    if ("string" == typeof d.days) for (i = (n = d.days.split("")).length; i--;) n[i] = 0 | n[i];
+    if ("string" == typeof d.days) for (i = (n = d.days.split("")).length; i--; ) n[i] = 0 | n[i];
     else n = [0, 0, 0, 0, 0, 0, 0];
     if (void 0 !== d.stations) for (i = (a = d.stations.split("")).length - 1; 0 <= i; i--) a[i] = 0 | a[i];
     for (
         l =
-        (l =
             (l =
                 (l =
                     (l =
@@ -9350,85 +9348,86 @@ function makeProgram183(e, t) {
                             (l =
                                 (l =
                                     (l =
-                                        l +
-                                        ("<label for='en-" + c + "'><input data-mini='true' type='checkbox' " + (d.en || "new" === e ? "checked='checked'" : "") + " name='en-" + c + "' id='en-" + c + "'>" + _("Enabled") + "</label>") +
-                                        "<fieldset data-role='controlgroup' data-type='horizontal' class='center'>") +
+                                        (l =
+                                            l +
+                                            ("<label for='en-" + c + "'><input data-mini='true' type='checkbox' " + (d.en || "new" === e ? "checked='checked'" : "") + " name='en-" + c + "' id='en-" + c + "'>" + _("Enabled") + "</label>") +
+                                            "<fieldset data-role='controlgroup' data-type='horizontal' class='center'>") +
+                                        ("<input data-mini='true' type='radio' name='rad_days-" +
+                                            c +
+                                            "' id='days_week-" +
+                                            c +
+                                            "' value='days_week-" +
+                                            c +
+                                            "' " +
+                                            (d.is_interval ? "" : "checked='checked'") +
+                                            "><label for='days_week-" +
+                                            c +
+                                            "'>" +
+                                            _("Weekly") +
+                                            "</label>")) +
                                     ("<input data-mini='true' type='radio' name='rad_days-" +
                                         c +
-                                        "' id='days_week-" +
+                                        "' id='days_n-" +
                                         c +
-                                        "' value='days_week-" +
+                                        "' value='days_n-" +
                                         c +
                                         "' " +
-                                        (d.is_interval ? "" : "checked='checked'") +
-                                        "><label for='days_week-" +
+                                        (d.is_interval ? "checked='checked'" : "") +
+                                        "><label for='days_n-" +
                                         c +
                                         "'>" +
-                                        _("Weekly") +
+                                        _("Interval") +
                                         "</label>")) +
-                                ("<input data-mini='true' type='radio' name='rad_days-" +
-                                    c +
-                                    "' id='days_n-" +
-                                    c +
-                                    "' value='days_n-" +
-                                    c +
-                                    "' " +
-                                    (d.is_interval ? "checked='checked'" : "") +
-                                    "><label for='days_n-" +
-                                    c +
-                                    "'>" +
-                                    _("Interval") +
-                                    "</label>")) +
-                            ("</fieldset><div id='input_days_week-" + c + "' " + (d.is_interval ? "style='display:none'" : "") + ">")) +
-                        ("<div class='center'><p class='tight'>" + _("Restrictions") + "</p><select data-inline='true' data-iconpos='left' data-mini='true' id='days_rst-" + c + "'>")) +
-                    ("<option value='none' " + (d.is_even || d.is_odd ? "" : "selected='selected'") + ">" + _("None") + "</option>")) +
-                ("<option value='odd' " + (!d.is_even && d.is_odd ? "selected='selected'" : "") + ">" + _("Odd Days Only") + "</option>")) +
-            ("<option value='even' " + (!d.is_odd && d.is_even ? "selected='selected'" : "") + ">" + _("Even Days Only") + "</option>") +
-            "</select></div>") +
-        ("<div class='center'><p class='tight'>" +
-            _("Days of the Week") +
-            "</p><select " +
-            (560 < $.mobile.window.width() ? "data-inline='true' " : "") +
-            "data-iconpos='left' data-mini='true' multiple='multiple' data-native-menu='false' id='d-" +
-            c +
-            "'><option>" +
-            _("Choose day(s)") +
-            "</option>"),
-        o = 0;
+                                ("</fieldset><div id='input_days_week-" + c + "' " + (d.is_interval ? "style='display:none'" : "") + ">")) +
+                            ("<div class='center'><p class='tight'>" + _("Restrictions") + "</p><select data-inline='true' data-iconpos='left' data-mini='true' id='days_rst-" + c + "'>")) +
+                        ("<option value='none' " + (d.is_even || d.is_odd ? "" : "selected='selected'") + ">" + _("None") + "</option>")) +
+                    ("<option value='odd' " + (!d.is_even && d.is_odd ? "selected='selected'" : "") + ">" + _("Odd Days Only") + "</option>")) +
+                ("<option value='even' " + (!d.is_odd && d.is_even ? "selected='selected'" : "") + ">" + _("Even Days Only") + "</option>") +
+                "</select></div>") +
+            ("<div class='center'><p class='tight'>" +
+                _("Days of the Week") +
+                "</p><select " +
+                (560 < $.mobile.window.width() ? "data-inline='true' " : "") +
+                "data-iconpos='left' data-mini='true' multiple='multiple' data-native-menu='false' id='d-" +
+                c +
+                "'><option>" +
+                _("Choose day(s)") +
+                "</option>"),
+            o = 0;
         o < r.length;
         o++
     )
         l += "<option " + (!d.is_interval && n[o] ? "selected='selected'" : "") + " value='" + o + "'>" + r[o] + "</option>";
     for (
         l =
-        (l =
             (l =
-                (l = l + "</select></div></div>" + ("<div " + (d.is_interval ? "" : "style='display:none'") + " id='input_days_n-" + c + "' class='ui-grid-a'>")) +
-                ("<div class='ui-block-a'><label class='center' for='every-" +
+                (l =
+                    (l = l + "</select></div></div>" + ("<div " + (d.is_interval ? "" : "style='display:none'") + " id='input_days_n-" + c + "' class='ui-grid-a'>")) +
+                    ("<div class='ui-block-a'><label class='center' for='every-" +
+                        c +
+                        "'>" +
+                        _("Interval (Days)") +
+                        "</label><input data-wrapper-class='pad_buttons' data-mini='true' type='number' name='every-" +
+                        c +
+                        "' pattern='[0-9]*' id='every-" +
+                        c +
+                        "' value='" +
+                        d.days[0] +
+                        "'></div>")) +
+                ("<div class='ui-block-b'><label class='center' for='starting-" +
                     c +
                     "'>" +
-                    _("Interval (Days)") +
-                    "</label><input data-wrapper-class='pad_buttons' data-mini='true' type='number' name='every-" +
+                    _("Starting In") +
+                    "</label><input data-wrapper-class='pad_buttons' data-mini='true' type='number' name='starting-" +
                     c +
-                    "' pattern='[0-9]*' id='every-" +
+                    "' pattern='[0-9]*' id='starting-" +
                     c +
                     "' value='" +
-                    d.days[0] +
-                    "'></div>")) +
-            ("<div class='ui-block-b'><label class='center' for='starting-" +
-                c +
-                "'>" +
-                _("Starting In") +
-                "</label><input data-wrapper-class='pad_buttons' data-mini='true' type='number' name='starting-" +
-                c +
-                "' pattern='[0-9]*' id='starting-" +
-                c +
-                "' value='" +
-                d.days[1] +
-                "'></div>") +
-            "</div>") +
-        ("<fieldset data-role='controlgroup'><legend>" + _("Stations:") + "</legend>"),
-        o = 0;
+                    d.days[1] +
+                    "'></div>") +
+                "</div>") +
+            ("<fieldset data-role='controlgroup'><legend>" + _("Stations:") + "</legend>"),
+            o = 0;
         o < controller.stations.snames.length;
         o++
     )
@@ -9520,26 +9519,26 @@ function makeProgram183(e, t) {
         !0 === t || "new" === e
             ? (l += "<input data-mini='true' data-icon='check' type='submit' data-theme='b' name='submit-" + c + "' id='submit-" + c + "' value='" + _("Save New Program") + "'>")
             : (l =
-                (l =
-                    (l += "<button data-mini='true' data-icon='check' data-theme='b' name='submit-" + c + "' id='submit-" + c + "'>" + _("Save Changes to Program") + " " + (e + 1) + "</button>") +
-                    "<button data-mini='true' data-icon='arrow-r' name='run-" +
-                    c +
-                    "' id='run-" +
-                    c +
-                    "'>" +
-                    _("Run Program") +
-                    " " +
-                    (e + 1) +
-                    "</button>") +
-                "<button data-mini='true' data-icon='delete' class='red bold' data-theme='b' name='delete-" +
-                c +
-                "' id='delete-" +
-                c +
-                "'>" +
-                _("Delete Program") +
-                " " +
-                (e + 1) +
-                "</button>"),
+                  (l =
+                      (l += "<button data-mini='true' data-icon='check' data-theme='b' name='submit-" + c + "' id='submit-" + c + "'>" + _("Save Changes to Program") + " " + (e + 1) + "</button>") +
+                      "<button data-mini='true' data-icon='arrow-r' name='run-" +
+                      c +
+                      "' id='run-" +
+                      c +
+                      "'>" +
+                      _("Run Program") +
+                      " " +
+                      (e + 1) +
+                      "</button>") +
+                  "<button data-mini='true' data-icon='delete' class='red bold' data-theme='b' name='delete-" +
+                  c +
+                  "' id='delete-" +
+                  c +
+                  "'>" +
+                  _("Delete Program") +
+                  " " +
+                  (e + 1) +
+                  "</button>"),
         (s = $(l)).find("input[name^='rad_days']").on("change", function () {
             var e = $(this).val().split("-")[0],
                 t = "n" === (e = e.split("_")[1]) ? "week" : "n";
@@ -9605,134 +9604,134 @@ function makeProgram21(e, t) {
         u = "",
         p = t ? "new" : e,
         h = "new" === e ? { name: "", en: 0, weather: 0, is_interval: 0, is_even: 0, is_odd: 0, interval: 0, start: 0, days: [0, 0], repeat: 0, stations: [] } : readProgram(controller.programs.pd[e]);
-    if ("string" == typeof h.days) for (i = (n = h.days.split("")).length; i--;) n[i] = 0 | n[i];
+    if ("string" == typeof h.days) for (i = (n = h.days.split("")).length; i--; ) n[i] = 0 | n[i];
     else n = [0, 0, 0, 0, 0, 0, 0];
     for (
         a = "object" == typeof h.start ? h.start : [h.start, -1, -1, -1],
-        u =
-        (u =
-            (u =
-                (u = (u += "<div style='margin-top:5px' class='ui-corner-all'>") + ("<div class='ui-bar ui-bar-a'><h3>" + _("Basic Settings") + "</h3></div>") + "<div class='ui-body ui-body-a center'>") +
-                ("<label for='name-" +
+            u =
+                (u =
+                    (u =
+                        (u = (u += "<div style='margin-top:5px' class='ui-corner-all'>") + ("<div class='ui-bar ui-bar-a'><h3>" + _("Basic Settings") + "</h3></div>") + "<div class='ui-body ui-body-a center'>") +
+                        ("<label for='name-" +
+                            p +
+                            "'>" +
+                            _("Program Name") +
+                            "</label><input data-mini='true' type='text' name='name-" +
+                            p +
+                            "' id='name-" +
+                            p +
+                            "' maxlength='" +
+                            controller.programs.pnsize +
+                            "' placeholder='" +
+                            _("Program") +
+                            " " +
+                            (controller.programs.pd.length + 1) +
+                            "' value=\"" +
+                            h.name +
+                            '">')) +
+                    ("<label for='en-" + p + "'><input data-mini='true' type='checkbox' " + (h.en || "new" === e ? "checked='checked'" : "") + " name='en-" + p + "' id='en-" + p + "'>" + _("Enabled") + "</label>")) +
+                ("<label for='uwt-" + p + "'><input data-mini='true' type='checkbox' " + (h.weather ? "checked='checked'" : "") + " name='uwt-" + p + "' id='uwt-" + p + "'>" + _("Use Weather Adjustment") + "</label>"),
+            Supported.dateRange() &&
+                ((l = Program.getDateRangeStart(p)),
+                (c = Program.getDateRangeEnd(p)),
+                (u =
+                    (u =
+                        (u +=
+                            "<label for='use-dr-" +
+                            p +
+                            "'><input data-mini='true' type='checkbox' " +
+                            (Program.isDateRangeEnabled(p) ? "checked='checked'" : "") +
+                            " name='use-dr-" +
+                            p +
+                            "' id='use-dr-" +
+                            p +
+                            "'>" +
+                            _("Enable Date Range") +
+                            "</label>") +
+                        "<div id='date-range-options-" +
+                        p +
+                        "'" +
+                        (Program.isDateRangeEnabled(p) ? "" : "style='display:none'") +
+                        ">") +
+                    "<div class='ui-grid-a' style=''><div class='ui-block-a drfrom'><label class='center' for='from-dr-" +
                     p +
                     "'>" +
-                    _("Program Name") +
-                    "</label><input data-mini='true' type='text' name='name-" +
+                    _("From (mm/dd)") +
+                    "</label><div class='dr-input'><input type='text' placeholder='MM/DD' id='from-dr-" +
                     p +
-                    "' id='name-" +
+                    "' value=" +
+                    decodeDate(l) +
+                    "></input></div></div><div class='ui-block-b drto'><label class='center' for='to-dr-" +
                     p +
-                    "' maxlength='" +
-                    controller.programs.pnsize +
-                    "' placeholder='" +
-                    _("Program") +
-                    " " +
-                    (controller.programs.pd.length + 1) +
-                    "' value=\"" +
-                    h.name +
-                    '">')) +
-            ("<label for='en-" + p + "'><input data-mini='true' type='checkbox' " + (h.en || "new" === e ? "checked='checked'" : "") + " name='en-" + p + "' id='en-" + p + "'>" + _("Enabled") + "</label>")) +
-        ("<label for='uwt-" + p + "'><input data-mini='true' type='checkbox' " + (h.weather ? "checked='checked'" : "") + " name='uwt-" + p + "' id='uwt-" + p + "'>" + _("Use Weather Adjustment") + "</label>"),
-        Supported.dateRange() &&
-        ((l = Program.getDateRangeStart(p)),
-            (c = Program.getDateRangeEnd(p)),
-            (u =
-                (u =
-                    (u +=
-                        "<label for='use-dr-" +
-                        p +
-                        "'><input data-mini='true' type='checkbox' " +
-                        (Program.isDateRangeEnabled(p) ? "checked='checked'" : "") +
-                        " name='use-dr-" +
-                        p +
-                        "' id='use-dr-" +
-                        p +
-                        "'>" +
-                        _("Enable Date Range") +
-                        "</label>") +
-                    "<div id='date-range-options-" +
+                    "'>" +
+                    _("To (mm/dd)") +
+                    "</label><div class='dr-input'><input type='text' placeholder='MM/DD' id='to-dr-" +
                     p +
-                    "'" +
-                    (Program.isDateRangeEnabled(p) ? "" : "style='display:none'") +
-                    ">") +
-                "<div class='ui-grid-a' style=''><div class='ui-block-a drfrom'><label class='center' for='from-dr-" +
-                p +
-                "'>" +
-                _("From (mm/dd)") +
-                "</label><div class='dr-input'><input type='text' placeholder='MM/DD' id='from-dr-" +
-                p +
-                "' value=" +
-                decodeDate(l) +
-                "></input></div></div><div class='ui-block-b drto'><label class='center' for='to-dr-" +
-                p +
-                "'>" +
-                _("To (mm/dd)") +
-                "</label><div class='dr-input'><input type='text' placeholder='MM/DD' id='to-dr-" +
-                p +
-                "' value=" +
-                decodeDate(c) +
-                "></input></div></div></div></div>")),
-        u =
-        (u =
-            (u =
+                    "' value=" +
+                    decodeDate(c) +
+                    "></input></div></div></div></div>")),
+            u =
                 (u =
                     (u =
                         (u =
                             (u =
-                                (u +=
-                                    "<label class='center' for='start_1-" +
-                                    p +
-                                    "'>" +
-                                    _("Start Time") +
-                                    "</label><button class='timefield' data-mini='true' id='start_1-" +
-                                    p +
-                                    "' value='" +
-                                    a[0] +
-                                    "'>" +
-                                    readStartTime(a[0]) +
-                                    "</button>") +
-                                "</div></div></div></div>" +
-                                "<div style='margin-top:10px' class='ui-corner-all'>") +
-                            ("<div class='ui-bar ui-bar-a'><h3>" + _("Program Type") + "</h3></div>")) +
-                        "<div class='ui-body ui-body-a'>" +
-                        "<fieldset data-role='controlgroup' data-type='horizontal' class='center'>") +
-                    ("<input data-mini='true' type='radio' name='rad_days-" +
-                        p +
-                        "' id='days_week-" +
-                        p +
-                        "' value='days_week-" +
-                        p +
-                        "' " +
-                        (h.is_interval ? "" : "checked='checked'") +
-                        "><label for='days_week-" +
-                        p +
-                        "'>" +
-                        _("Weekly") +
-                        "</label>")) +
-                ("<input data-mini='true' type='radio' name='rad_days-" +
+                                (u =
+                                    (u =
+                                        (u +=
+                                            "<label class='center' for='start_1-" +
+                                            p +
+                                            "'>" +
+                                            _("Start Time") +
+                                            "</label><button class='timefield' data-mini='true' id='start_1-" +
+                                            p +
+                                            "' value='" +
+                                            a[0] +
+                                            "'>" +
+                                            readStartTime(a[0]) +
+                                            "</button>") +
+                                        "</div></div></div></div>" +
+                                        "<div style='margin-top:10px' class='ui-corner-all'>") +
+                                    ("<div class='ui-bar ui-bar-a'><h3>" + _("Program Type") + "</h3></div>")) +
+                                "<div class='ui-body ui-body-a'>" +
+                                "<fieldset data-role='controlgroup' data-type='horizontal' class='center'>") +
+                            ("<input data-mini='true' type='radio' name='rad_days-" +
+                                p +
+                                "' id='days_week-" +
+                                p +
+                                "' value='days_week-" +
+                                p +
+                                "' " +
+                                (h.is_interval ? "" : "checked='checked'") +
+                                "><label for='days_week-" +
+                                p +
+                                "'>" +
+                                _("Weekly") +
+                                "</label>")) +
+                        ("<input data-mini='true' type='radio' name='rad_days-" +
+                            p +
+                            "' id='days_n-" +
+                            p +
+                            "' value='days_n-" +
+                            p +
+                            "' " +
+                            (h.is_interval ? "checked='checked'" : "") +
+                            "><label for='days_n-" +
+                            p +
+                            "'>" +
+                            _("Interval") +
+                            "</label>")) +
+                    "</fieldset>" +
+                    ("<div id='input_days_week-" + p + "' " + (h.is_interval ? "style='display:none'" : "") + ">")) +
+                ("<div class='center'><p class='tight'>" +
+                    _("Days of the Week") +
+                    "</p><select " +
+                    (560 < $.mobile.window.width() ? "data-inline='true' " : "") +
+                    "data-iconpos='left' data-mini='true' multiple='multiple' data-native-menu='false' id='d-" +
                     p +
-                    "' id='days_n-" +
-                    p +
-                    "' value='days_n-" +
-                    p +
-                    "' " +
-                    (h.is_interval ? "checked='checked'" : "") +
-                    "><label for='days_n-" +
-                    p +
-                    "'>" +
-                    _("Interval") +
-                    "</label>")) +
-            "</fieldset>" +
-            ("<div id='input_days_week-" + p + "' " + (h.is_interval ? "style='display:none'" : "") + ">")) +
-        ("<div class='center'><p class='tight'>" +
-            _("Days of the Week") +
-            "</p><select " +
-            (560 < $.mobile.window.width() ? "data-inline='true' " : "") +
-            "data-iconpos='left' data-mini='true' multiple='multiple' data-native-menu='false' id='d-" +
-            p +
-            "'><option>" +
-            _("Choose day(s)") +
-            "</option>"),
-        m = 0;
+                    "'><option>" +
+                    _("Choose day(s)") +
+                    "</option>"),
+            m = 0;
         m < d.length;
         m++
     )
@@ -9793,119 +9792,119 @@ function makeProgram21(e, t) {
     for (var f = $("#programs").hasClass("show-hidden") ? "" : "' style='display:none", m = 0; m < controller.stations.snames.length; m++)
         Station.isMaster(m)
             ? (u +=
-                "<div class='ui-field-contain duration-input" +
-                (Station.isDisabled(m) ? " station-hidden" + f : "") +
-                "'><label for='station_" +
-                m +
-                "-" +
-                p +
-                "'>" +
-                controller.stations.snames[m] +
-                ":</label><button disabled='true' data-mini='true' name='station_" +
-                m +
-                "-" +
-                p +
-                "' id='station_" +
-                m +
-                "-" +
-                p +
-                "' value='0'>" +
-                _("Master") +
-                "</button></div>")
+                  "<div class='ui-field-contain duration-input" +
+                  (Station.isDisabled(m) ? " station-hidden" + f : "") +
+                  "'><label for='station_" +
+                  m +
+                  "-" +
+                  p +
+                  "'>" +
+                  controller.stations.snames[m] +
+                  ":</label><button disabled='true' data-mini='true' name='station_" +
+                  m +
+                  "-" +
+                  p +
+                  "' id='station_" +
+                  m +
+                  "-" +
+                  p +
+                  "' value='0'>" +
+                  _("Master") +
+                  "</button></div>")
             : ((s = h.stations[m] || 0),
-                (u +=
-                    "<div class='ui-field-contain duration-input" +
-                    (Station.isDisabled(m) ? " station-hidden" + f : "") +
-                    "'><label for='station_" +
-                    m +
-                    "-" +
-                    p +
-                    "'>" +
-                    controller.stations.snames[m] +
-                    ":</label><button " +
-                    (0 < s ? "class='green' " : "") +
-                    "data-mini='true' name='station_" +
-                    m +
-                    "-" +
-                    p +
-                    "' id='station_" +
-                    m +
-                    "-" +
-                    p +
-                    "' value='" +
-                    s +
-                    "'>" +
-                    getDurationText(s) +
-                    "</button></div>"));
+              (u +=
+                  "<div class='ui-field-contain duration-input" +
+                  (Station.isDisabled(m) ? " station-hidden" + f : "") +
+                  "'><label for='station_" +
+                  m +
+                  "-" +
+                  p +
+                  "'>" +
+                  controller.stations.snames[m] +
+                  ":</label><button " +
+                  (0 < s ? "class='green' " : "") +
+                  "data-mini='true' name='station_" +
+                  m +
+                  "-" +
+                  p +
+                  "' id='station_" +
+                  m +
+                  "-" +
+                  p +
+                  "' value='" +
+                  s +
+                  "'>" +
+                  getDurationText(s) +
+                  "</button></div>"));
     for (
         u =
-        (u =
             (u =
                 (u =
                     (u =
                         (u =
                             (u =
-                                (u = (u = u + "</div></div>" + "<div style='margin-top:10px' class='ui-corner-all'>") + ("<div class='ui-bar ui-bar-a'><h3>" + _("Additional Start Times") + "</h3></div>")) +
-                                "<div class='ui-body ui-body-a'>" +
-                                "<fieldset data-role='controlgroup' data-type='horizontal' class='center'>") +
+                                (u =
+                                    (u = (u = u + "</div></div>" + "<div style='margin-top:10px' class='ui-corner-all'>") + ("<div class='ui-bar ui-bar-a'><h3>" + _("Additional Start Times") + "</h3></div>")) +
+                                    "<div class='ui-body ui-body-a'>" +
+                                    "<fieldset data-role='controlgroup' data-type='horizontal' class='center'>") +
+                                ("<input data-mini='true' type='radio' name='stype-" +
+                                    p +
+                                    "' id='stype_repeat-" +
+                                    p +
+                                    "' value='stype_repeat-" +
+                                    p +
+                                    "' " +
+                                    ("object" == typeof h.start ? "" : "checked='checked'") +
+                                    "><label for='stype_repeat-" +
+                                    p +
+                                    "'>" +
+                                    _("Repeating") +
+                                    "</label>")) +
                             ("<input data-mini='true' type='radio' name='stype-" +
                                 p +
-                                "' id='stype_repeat-" +
+                                "' id='stype_set-" +
                                 p +
-                                "' value='stype_repeat-" +
+                                "' value='stype_set-" +
                                 p +
                                 "' " +
-                                ("object" == typeof h.start ? "" : "checked='checked'") +
-                                "><label for='stype_repeat-" +
+                                ("object" == typeof h.start ? "checked='checked'" : "") +
+                                "><label for='stype_set-" +
                                 p +
                                 "'>" +
-                                _("Repeating") +
-                                "</label>")) +
-                        ("<input data-mini='true' type='radio' name='stype-" +
-                            p +
-                            "' id='stype_set-" +
-                            p +
-                            "' value='stype_set-" +
-                            p +
-                            "' " +
-                            ("object" == typeof h.start ? "checked='checked'" : "") +
-                            "><label for='stype_set-" +
-                            p +
-                            "'>" +
-                            _("Fixed") +
-                            "</label>") +
-                        "</fieldset>") +
-                    ("<div " + ("object" == typeof h.start ? "style='display:none'" : "") + " id='input_stype_repeat-" + p + "'>") +
-                    "<div class='ui-grid-a'>") +
-                ("<div class='ui-block-a'><label class='pad_buttons center' for='interval-" +
+                                _("Fixed") +
+                                "</label>") +
+                            "</fieldset>") +
+                        ("<div " + ("object" == typeof h.start ? "style='display:none'" : "") + " id='input_stype_repeat-" + p + "'>") +
+                        "<div class='ui-grid-a'>") +
+                    ("<div class='ui-block-a'><label class='pad_buttons center' for='interval-" +
+                        p +
+                        "'>" +
+                        _("Repeat Every") +
+                        "</label><button class='pad_buttons' data-mini='true' name='interval-" +
+                        p +
+                        "' id='interval-" +
+                        p +
+                        "' value='" +
+                        60 * h.interval +
+                        "'>" +
+                        dhms2str(sec2dhms(60 * h.interval)) +
+                        "</button></div>")) +
+                ("<div class='ui-block-b'><label class='pad_buttons center' for='repeat-" +
                     p +
                     "'>" +
-                    _("Repeat Every") +
-                    "</label><button class='pad_buttons' data-mini='true' name='interval-" +
+                    _("Repeat Count") +
+                    "</label><button class='pad_buttons' data-mini='true' name='repeat-" +
                     p +
-                    "' id='interval-" +
+                    "' id='repeat-" +
                     p +
                     "' value='" +
-                    60 * h.interval +
+                    h.repeat +
                     "'>" +
-                    dhms2str(sec2dhms(60 * h.interval)) +
-                    "</button></div>")) +
-            ("<div class='ui-block-b'><label class='pad_buttons center' for='repeat-" +
-                p +
-                "'>" +
-                _("Repeat Count") +
-                "</label><button class='pad_buttons' data-mini='true' name='repeat-" +
-                p +
-                "' id='repeat-" +
-                p +
-                "' value='" +
-                h.repeat +
-                "'>" +
-                h.repeat +
-                "</button></div>") +
-            "</div></div>") +
-        ("<table style='width:100%;" + ("object" == typeof h.start ? "" : "display:none") + "' id='input_stype_set-" + p + "'><tr><th class='center'>" + _("Enable") + "</th><th>" + _("Start Time") + "</th></tr>"),
-        m = 1;
+                    h.repeat +
+                    "</button></div>") +
+                "</div></div>") +
+            ("<table style='width:100%;" + ("object" == typeof h.start ? "" : "display:none") + "' id='input_stype_set-" + p + "'><tr><th class='center'>" + _("Enable") + "</th><th>" + _("Start Time") + "</th></tr>"),
+            m = 1;
         m < 4;
         m++
     )
@@ -9932,30 +9931,30 @@ function makeProgram21(e, t) {
         !0 === t || "new" === e
             ? (u += "<button data-mini='true' data-icon='check' data-theme='b' id='submit-" + p + "'>" + _("Save New Program") + "</button>")
             : (u =
-                (u =
-                    (u += "<button data-mini='true' data-icon='check' data-theme='b' id='submit-" + p + "'>" + _("Save Changes to") + " <span class='program-name'>" + h.name + "</span></button>") +
-                    "<button data-mini='true' data-icon='arrow-r' id='run-" +
-                    p +
-                    "'>" +
-                    _("Run") +
-                    " <span class='program-name'>" +
-                    h.name +
-                    "</span></button>") +
-                "<button data-mini='true' data-icon='delete' class='bold red' data-theme='b' id='delete-" +
-                p +
-                "'>" +
-                _("Delete") +
-                " <span class='program-name'>" +
-                h.name +
-                "</span></button>"),
+                  (u =
+                      (u += "<button data-mini='true' data-icon='check' data-theme='b' id='submit-" + p + "'>" + _("Save Changes to") + " <span class='program-name'>" + h.name + "</span></button>") +
+                      "<button data-mini='true' data-icon='arrow-r' id='run-" +
+                      p +
+                      "'>" +
+                      _("Run") +
+                      " <span class='program-name'>" +
+                      h.name +
+                      "</span></button>") +
+                  "<button data-mini='true' data-icon='delete' class='bold red' data-theme='b' id='delete-" +
+                  p +
+                  "'>" +
+                  _("Delete") +
+                  " <span class='program-name'>" +
+                  h.name +
+                  "</span></button>"),
         (o = $(u)).find("input[name^='rad_days'],input[name^='stype']").on("change", function () {
             var e = $(this).val().split("-")[0].split("_");
             $("[id^='input_" + e[0] + "_']").hide(), $("#input_" + e[0] + "_" + e[1] + "-" + p).show();
         }),
         Supported.dateRange() &&
-        o.find("#use-dr-" + p).on("click", function () {
-            o.find("#date-range-options-" + p).toggle();
-        }),
+            o.find("#use-dr-" + p).on("click", function () {
+                o.find("#date-range-options-" + p).toggle();
+            }),
         o.find("[id^='interval-']").on("click", function () {
             var t = $(this),
                 e = o.find("label[for='" + t.attr("id") + "']").text();
@@ -10011,10 +10010,10 @@ function makeProgram21(e, t) {
         o
     );
 }
-function addProgram(programId) {
-    programId = 0 <= programId ? programId : "new";
-    var $page = $("<div data-role='page' id='addprogram'><div class='ui-content' role='main' id='newprogram'><fieldset id='program-new'></fieldset></div></div>"),
-        $header = changeHeader({
+function addProgram(e) {
+    e = 0 <= e ? e : "new";
+    var t = $("<div data-role='page' id='addprogram'><div class='ui-content' role='main' id='newprogram'><fieldset id='program-new'></fieldset></div></div>"),
+        n = changeHeader({
             title: _("Add Program"),
             leftBtn: { icon: "carat-l", text: _("Back"), class: "ui-toolbar-back-btn", on: checkChangesBeforeBack },
             rightBtn: {
@@ -10025,68 +10024,68 @@ function addProgram(programId) {
                 },
             },
         });
-    $page
+    t
         .find("#program-new")
-        .html(makeProgram(programId, !0))
+        .html(makeProgram(e, !0))
         .one("change input", function () {
-            $header.eq(2).prop("disabled", !1).addClass("hasChanges");
+            n.eq(2).prop("disabled", !1).addClass("hasChanges");
         }),
-        $page.find("[id^='submit-']").on("click", function () {
+        t.find("[id^='submit-']").on("click", function () {
             return submitProgram("new"), !1;
         }),
-        $page.one("pagehide", function () {
-            $page.remove();
+        t.one("pagehide", function () {
+            t.remove();
         }),
-        "string" == typeof programId && $header.eq(2).prop("disabled", !0),
+        "string" == typeof e && n.eq(2).prop("disabled", !0),
         $("#addprogram").remove(),
-        $.mobile.pageContainer.append($page);
+        $.mobile.pageContainer.append(t);
 }
-function deleteProgram(programIdx) {
-    var name = pidname(parseInt(programIdx) + 1);
-    areYouSure(_("Are you sure you want to delete program") + " " + name + "?", "", function () {
+function deleteProgram(e) {
+    var t = pidname(parseInt(e) + 1);
+    areYouSure(_("Are you sure you want to delete program") + " " + t + "?", "", function () {
         $.mobile.loading("show"),
-            sendToOS("/dp?pw=&pid=" + programIdx).done(function () {
+            sendToOS("/dp?pw=&pid=" + e).done(function () {
                 $.mobile.loading("hide"),
                     updateControllerPrograms(function () {
-                        $("#programs").trigger("programrefresh"), showerror(_("Program") + " " + name + " " + _("deleted"));
+                        $("#programs").trigger("programrefresh"), showerror(_("Program") + " " + t + " " + _("deleted"));
                     });
             });
     });
 }
-function submitProgram(programId) {
-    $("#program-" + programId)
+function submitProgram(e) {
+    $("#program-" + e)
         .find(".hasChanges")
         .removeClass("hasChanges"),
-        (checkOSVersion(210) ? submitProgram21 : submitProgram183)(programId);
+        (checkOSVersion(210) ? submitProgram21 : submitProgram183)(e);
 }
-function submitProgram183(programId) {
-    var daysArr,
-        dayIdx,
-        bitIdx,
-        progData = [],
-        days = [0, 0],
-        hasStation = 0,
-        enabled = $("#en-" + programId).is(":checked") ? 1 : 0;
-    if (((progData[0] = enabled), $("#days_week-" + programId).is(":checked"))) {
-        for (daysArr = null === (daysArr = $("#d-" + programId).val()) ? [] : parseIntArray(daysArr), dayIdx = 0; dayIdx < 7; dayIdx++) -1 !== $.inArray(dayIdx, daysArr) && (days[0] |= 1 << dayIdx);
-        if (0 === days[0]) return void showerror(_("Error: You have not selected any days of the week."));
-        "odd" === $("#days_rst-" + programId).val() ? ((days[0] |= 128), (days[1] = 1)) : "even" === $("#days_rst-" + programId).val() && ((days[0] |= 128), (days[1] = 0));
-    } else if ($("#days_n-" + programId).is(":checked")) {
-        if (((days[1] = parseInt($("#every-" + programId).val(), 10)), !(2 <= days[1] && days[1] <= 128))) return void showerror(_("Error: Interval days must be between 2 and 128."));
-        if (((days[0] = parseInt($("#starting-" + programId).val(), 10)), !(0 <= days[0] && days[0] < days[1]))) return void showerror(_("Error: Starting in days wrong."));
-        days[0] |= 128;
+function submitProgram183(e) {
+    var t,
+        n,
+        i,
+        o = [],
+        a = [0, 0],
+        s = 0,
+        r = $("#en-" + e).is(":checked") ? 1 : 0;
+    if (((o[0] = r), $("#days_week-" + e).is(":checked"))) {
+        for (t = null === (t = $("#d-" + e).val()) ? [] : parseIntArray(t), n = 0; n < 7; n++) -1 !== $.inArray(n, t) && (a[0] |= 1 << n);
+        if (0 === a[0]) return void showerror(_("Error: You have not selected any days of the week."));
+        "odd" === $("#days_rst-" + e).val() ? ((a[0] |= 128), (a[1] = 1)) : "even" === $("#days_rst-" + e).val() && ((a[0] |= 128), (a[1] = 0));
+    } else if ($("#days_n-" + e).is(":checked")) {
+        if (((a[1] = parseInt($("#every-" + e).val(), 10)), !(2 <= a[1] && a[1] <= 128))) return void showerror(_("Error: Interval days must be between 2 and 128."));
+        if (((a[0] = parseInt($("#starting-" + e).val(), 10)), !(0 <= a[0] && a[0] < a[1]))) return void showerror(_("Error: Starting in days wrong."));
+        a[0] |= 128;
     }
-    if (((progData[1] = days[0]), (progData[2] = days[1]), (progData[3] = parseInt($("#start-" + programId).val())), (progData[4] = parseInt($("#end-" + programId).val())), progData[3] > progData[4])) showerror(_("Error: Start time must be prior to end time."));
+    if (((o[1] = a[0]), (o[2] = a[1]), (o[3] = parseInt($("#start-" + e).val())), (o[4] = parseInt($("#end-" + e).val())), o[3] > o[4])) showerror(_("Error: Start time must be prior to end time."));
     else {
-        progData[5] = parseInt($("#interval-" + programId).val() / 60);
-        for (var nBoards = $("[id^=station_][id$=-" + programId + "]").length / 8, stationBits = ((progData[6] = parseInt($("#duration-" + programId).val())), [0]), brd = 0; brd < nBoards; brd++)
-            for (bitIdx = stationBits[brd] = 0; bitIdx < 8; bitIdx++) $("#station_" + (8 * brd + bitIdx) + "-" + programId).is(":checked") && ((stationBits[brd] |= 1 << bitIdx), (hasStation = 1));
-        (progData = JSON.stringify(progData.concat(stationBits))),
-            0 === hasStation
+        o[5] = parseInt($("#interval-" + e).val() / 60);
+        for (var l = $("[id^=station_][id$=-" + e + "]").length / 8, c = ((o[6] = parseInt($("#duration-" + e).val())), [0]), d = 0; d < l; d++)
+            for (i = c[d] = 0; i < 8; i++) $("#station_" + (8 * d + i) + "-" + e).is(":checked") && ((c[d] |= 1 << i), (s = 1));
+        (o = JSON.stringify(o.concat(c))),
+            0 === s
                 ? showerror(_("Error: You have not selected any stations."))
                 : ($.mobile.loading("show"),
-                    "new" === programId
-                        ? sendToOS("/cp?pw=&pid=-1&v=" + progData).done(function () {
+                  "new" === e
+                      ? sendToOS("/cp?pw=&pid=-1&v=" + o).done(function () {
                             $.mobile.loading("hide"),
                                 updateControllerPrograms(function () {
                                     $.mobile.document.one("pageshow", function () {
@@ -10095,7 +10094,7 @@ function submitProgram183(programId) {
                                         goBack();
                                 });
                         })
-                        : sendToOS("/cp?pw=&pid=" + programId + "&v=" + progData).done(function () {
+                      : sendToOS("/cp?pw=&pid=" + e + "&v=" + o).done(function () {
                             $.mobile.loading("hide"),
                                 updateControllerPrograms(function () {
                                     updateProgramHeader();
@@ -10104,72 +10103,69 @@ function submitProgram183(programId) {
                         }));
     }
 }
-function submitProgram21(programId, force) {
-    var daysArr,
-        dayIdx,
-        queryStr,
-        progData = [],
-        days = [0, 0],
-        startTimes = [0, 0, 0, 0],
-        hasStation = 0,
-        enabled = $("#en-" + programId).is(":checked") ? 1 : 0,
-        useWeather = $("#uwt-" + programId).is(":checked") ? 1 : 0,
-        flags = 0,
-        minInterval = checkOSVersion(2199) ? 1 : 2,
-        dateRangeStr = "";
-    flags = flags | (enabled << 0) | (useWeather << 1);
-    if (("odd" === $("#days_rst-" + programId).val() ? (flags |= 4) : "even" === $("#days_rst-" + programId).val() && (flags |= 8), $("#days_n-" + programId).is(":checked"))) {
-        if (((flags |= 48), (days[1] = parseInt($("#every-" + programId).val(), 10)), !(minInterval <= days[1] && days[1] <= 128))) return void showerror(_("Error: Interval days must be between " + minInterval + " and 128."));
-        if (((days[0] = parseInt($("#starting-" + programId).val(), 10)), !(0 <= days[0] && days[0] < days[1]))) return void showerror(_("Error: Starting in days wrong."));
-    } else if ($("#days_week-" + programId).is(":checked")) {
-        for (flags |= 0, daysArr = null === (daysArr = $("#d-" + programId).val()) ? [] : parseIntArray(daysArr), dayIdx = 0; dayIdx < 7; dayIdx++) -1 !== $.inArray(dayIdx, daysArr) && (days[0] |= 1 << dayIdx);
-        if (0 === days[0]) return void showerror(_("Error: You have not selected any days of the week."));
+function submitProgram21(e, t) {
+    var n,
+        i,
+        o,
+        a = [],
+        s = [0, 0],
+        r = [0, 0, 0, 0],
+        l = 0,
+        c = $("#en-" + e).is(":checked") ? 1 : 0,
+        d = $("#uwt-" + e).is(":checked") ? 1 : 0,
+        u = 0,
+        p = checkOSVersion(2199) ? 1 : 2,
+        u = u | (c << 0) | (d << 1);
+    if (("odd" === $("#days_rst-" + e).val() ? (u |= 4) : "even" === $("#days_rst-" + e).val() && (u |= 8), $("#days_n-" + e).is(":checked"))) {
+        if (((u |= 48), (s[1] = parseInt($("#every-" + e).val(), 10)), !(p <= s[1] && s[1] <= 128))) return void showerror(_("Error: Interval days must be between " + p + " and 128."));
+        if (((s[0] = parseInt($("#starting-" + e).val(), 10)), !(0 <= s[0] && s[0] < s[1]))) return void showerror(_("Error: Starting in days wrong."));
+    } else if ($("#days_week-" + e).is(":checked")) {
+        for (u |= 0, n = null === (n = $("#d-" + e).val()) ? [] : parseIntArray(n), i = 0; i < 7; i++) -1 !== $.inArray(i, n) && (s[0] |= 1 << i);
+        if (0 === s[0]) return void showerror(_("Error: You have not selected any days of the week."));
     }
-    $("#stype_repeat-" + programId).is(":checked")
-        ? ((flags |= 0), (startTimes[0] = parseInt($("#start_1-" + programId).val())), (startTimes[1] = parseInt($("#repeat-" + programId).val())), (startTimes[2] = parseInt($("#interval-" + programId).val() / 60)))
-        : $("#stype_set-" + programId).is(":checked") &&
-        ((flags |= 64),
-            $("[id^='start_'][id$='-" + programId + "']").each(function (idx, el) {
-                var val = parseInt(el.value);
-                ("number" != typeof val || (0 < idx && !$("#ust_" + (idx + 1)).is(":checked"))) && (val = -1), (startTimes[idx] = val);
-            }));
-    var $stations = $("[id^=station_][id$=-" + programId + "]"),
-        durations = [];
+    $("#stype_repeat-" + e).is(":checked")
+        ? ((u |= 0), (r[0] = parseInt($("#start_1-" + e).val())), (r[1] = parseInt($("#repeat-" + e).val())), (r[2] = parseInt($("#interval-" + e).val() / 60)))
+        : $("#stype_set-" + e).is(":checked") &&
+          ((u |= 64),
+          $("[id^='start_'][id$='-" + e + "']").each(function (e, t) {
+              t = parseInt(t.value);
+              ("number" != typeof t || (0 < e && !$("#ust_" + (e + 1)).is(":checked"))) && (t = -1), (r[e] = t);
+          }));
+    var c = $("[id^=station_][id$=-" + e + "]"),
+        h = [];
     if (
-        ($stations.each(function () {
-            var dur = parseInt(this.value);
-            0 < parseInt(dur) && (hasStation = 1), durations.push(dur);
+        (c.each(function () {
+            var e = parseInt(this.value);
+            0 < parseInt(e) && (l = 1), h.push(e);
         }),
-            (progData[0] = flags),
-            (progData[1] = days[0]),
-            (progData[2] = days[1]),
-            (progData[3] = startTimes),
-            (progData[4] = durations),
-            (queryStr = $("#name-" + programId).val()),
-            (dateRangeStr = ""),
-            Supported.dateRange())
+        (a[0] = u),
+        (a[1] = s[0]),
+        (a[2] = s[1]),
+        (a[3] = r),
+        (a[4] = h),
+        (o = $("#name-" + e).val()),
+        (d = ""),
+        Supported.dateRange())
     ) {
-        var useDateRange = $("#use-dr-" + programId).is(":checked"),
-            fromDate = $("#from-dr-" + programId).val(),
-            toDate = $("#to-dr-" + programId).val();
-        if (!isValidDateRange(fromDate, toDate)) return void showerror(_("Error: date range is malformed"));
-        (dateRangeStr = "&endr=" + (useDateRange ? 1 : 0) + "&from=" + encodeDate(fromDate) + "&to=" + encodeDate(toDate)), (progData[0] |= useDateRange ? 128 : 0);
+        var p = $("#use-dr-" + e).is(":checked"),
+            c = $("#from-dr-" + e).val(),
+            f = $("#to-dr-" + e).val();
+        if (!isValidDateRange(c, f)) return void showerror(_("Error: date range is malformed"));
+        (d = "&endr=" + (p ? 1 : 0) + "&from=" + encodeDate(c) + "&to=" + encodeDate(f)), (a[0] |= p ? 128 : 0);
     }
-    var params = "&v=" + JSON.stringify(progData) + "&name=" + encodeURIComponent(queryStr);
-    if (0 === hasStation) showerror(_("Error: You have not selected any stations."));
+    if (((c = "&v=" + JSON.stringify(a) + "&name=" + encodeURIComponent(o)), 0 === l)) showerror(_("Error: You have not selected any stations."));
     else {
-        if (!force && $("#stype_repeat-" + programId).is(":checked") && 0 < startTimes[1]) {
-            var totalRunTime = calculateTotalRunningTime(durations),
-                repeatSec = 60 * startTimes[2];
-            if (repeatSec < totalRunTime)
-                return void areYouSure(_("Warning: The repeat interval (" + repeatSec + " sec) is less than the program run time (" + totalRunTime + " sec)."), _("Do you want to continue?"), function () {
-                    submitProgram21(programId, !0);
+        if (!t && $("#stype_repeat-" + e).is(":checked") && 0 < r[1]) {
+            (f = calculateTotalRunningTime(h)), (p = 60 * r[2]);
+            if (p < f)
+                return void areYouSure(_("Warning: The repeat interval (" + p + " sec) is less than the program run time (" + f + " sec)."), _("Do you want to continue?"), function () {
+                    submitProgram21(e, !0);
                 });
         }
-        force || 3 != ((flags >> 4) & 3) || 1 & days[1] || !(0 < ((flags >> 2) & 3))
+        t || 3 != ((u >> 4) & 3) || 1 & s[1] || !(0 < ((u >> 2) & 3))
             ? ($.mobile.loading("show"),
-                "new" === programId
-                    ? sendToOS("/cp?pw=&pid=-1" + params + dateRangeStr).done(function () {
+              "new" === e
+                  ? sendToOS("/cp?pw=&pid=-1" + c + d).done(function () {
                         $.mobile.loading("hide"),
                             updateControllerPrograms(function () {
                                 $.mobile.document.one("pageshow", function () {
@@ -10178,25 +10174,25 @@ function submitProgram21(programId, force) {
                                     goBack();
                             });
                     })
-                    : sendToOS("/cp?pw=&pid=" + programId + params + dateRangeStr).done(function () {
+                  : sendToOS("/cp?pw=&pid=" + e + c + d).done(function () {
                         $.mobile.loading("hide"),
                             updateControllerPrograms(function () {
                                 updateProgramHeader(),
-                                    $("#program-" + programId)
+                                    $("#program-" + e)
                                         .find(".program-name")
-                                        .text(queryStr);
+                                        .text(o);
                             }),
                             showerror(_("Program has been updated"));
                     }))
             : areYouSure(_("Warning: The use of odd/even restrictions with the selected interval day may result in the program not running at all."), _("Do you want to continue?"), function () {
-                submitProgram21(programId, !0);
-            });
+                  submitProgram21(e, !0);
+              });
     }
 }
-function raindelay(seconds) {
+function raindelay(e) {
     return (
         $.mobile.loading("show"),
-        sendToOS("/cv?pw=&rd=" + seconds / 3600).done(function () {
+        sendToOS("/cv?pw=&rd=" + e / 3600).done(function () {
             $.mobile.loading("hide"), showLoading("#footer-running"), refreshStatus(updateWeather), showerror(_("Rain delay has been successfully set"));
         }),
         !1
@@ -10204,16 +10200,16 @@ function raindelay(seconds) {
 }
 function getExportMethod() {
     var e = $(
-        "<div data-role='popup' data-theme='a'><div class='ui-bar ui-bar-a'>" +
-        _("Select Export Method") +
-        "</div><div data-role='controlgroup' class='tight'><a class='ui-btn hidden fileMethod'>" +
-        _("File") +
-        "</a><a class='ui-btn pasteMethod'>" +
-        _("Email") +
-        "</a><a class='ui-btn localMethod'>" +
-        _("Internal (within app)") +
-        "</a></div></div>"
-    ),
+            "<div data-role='popup' data-theme='a'><div class='ui-bar ui-bar-a'>" +
+                _("Select Export Method") +
+                "</div><div data-role='controlgroup' class='tight'><a class='ui-btn hidden fileMethod'>" +
+                _("File") +
+                "</a><a class='ui-btn pasteMethod'>" +
+                _("Email") +
+                "</a><a class='ui-btn localMethod'>" +
+                _("Internal (within app)") +
+                "</a></div></div>"
+        ),
         t = encodeURIComponent(JSON.stringify(controller)),
         n = "OpenSprinkler Data Export on " + dateToString(new Date()),
         i =
@@ -10225,7 +10221,7 @@ function getExportMethod() {
                     .on("click", function () {
                         e.popup("close");
                     }),
-                "mailto:?subject=" + encodeURIComponent(n) + "&body=" + t);
+            "mailto:?subject=" + encodeURIComponent(n) + "&body=" + t);
     e
         .find(".pasteMethod")
         .attr("href", i)
@@ -10240,15 +10236,15 @@ function getExportMethod() {
         }),
         openPopup(e, { positionTo: $("#sprinklers-settings").find(".export_config") });
 }
-function getImportMethod(localBackup) {
+function getImportMethod(e) {
     function t() {
         var t = $(
-            "<div data-role='popup' data-theme='a' id='paste_config'><p class='ui-bar'><textarea class='textarea' rows='10' placeholder='" +
-            _("Paste your backup here") +
-            "'></textarea><button data-mini='true' data-theme='b'>" +
-            _("Import") +
-            "</button></p></div>"
-        ),
+                "<div data-role='popup' data-theme='a' id='paste_config'><p class='ui-bar'><textarea class='textarea' rows='10' placeholder='" +
+                    _("Paste your backup here") +
+                    "'></textarea><button data-mini='true' data-theme='b'>" +
+                    _("Import") +
+                    "</button></p></div>"
+            ),
             e = $.mobile.window.width();
         t.find("button").on("click", function () {
             var e = t.find("textarea").val();
@@ -10264,14 +10260,14 @@ function getImportMethod(localBackup) {
     }
     var n = $(
         "<div data-role='popup' data-theme='a'><div class='ui-bar ui-bar-a'>" +
-        _("Select Import Method") +
-        "</div><div data-role='controlgroup' class='tight'><button class='hidden fileMethod'>" +
-        _("File") +
-        "</button><button class='pasteMethod'>" +
-        _("Email (copy/paste)") +
-        "</button><button class='hidden localMethod'>" +
-        _("Internal (within app)") +
-        "</button></div></div>"
+            _("Select Import Method") +
+            "</div><div data-role='controlgroup' class='tight'><button class='hidden fileMethod'>" +
+            _("File") +
+            "</button><button class='pasteMethod'>" +
+            _("Email (copy/paste)") +
+            "</button><button class='hidden localMethod'>" +
+            _("Internal (within app)") +
+            "</button></div></div>"
     );
     if (isFileCapable)
         n.find(".fileMethod")
@@ -10289,146 +10285,146 @@ function getImportMethod(localBackup) {
                                 showerror(_("Unable to read the configuration file. Please check the file and try again."));
                             }
                         }),
-                            t.readAsText(e));
+                        t.readAsText(e));
                 });
                 return e.appendTo("#sprinklers-settings"), e.click(), !1;
             });
-    else if (!localBackup) return void t();
+    else if (!e) return void t();
     n.find(".pasteMethod").on("click", function () {
         return n.popup("close"), t(), !1;
     }),
-        localBackup &&
-        n
-            .find(".localMethod")
-            .removeClass("hidden")
-            .on("click", function () {
-                return n.popup("close"), importConfig(JSON.parse(localBackup)), !1;
-            }),
+        e &&
+            n
+                .find(".localMethod")
+                .removeClass("hidden")
+                .on("click", function () {
+                    return n.popup("close"), importConfig(JSON.parse(e)), !1;
+                }),
         openPopup(n, { positionTo: $("#sprinklers-settings").find(".import_config") });
 }
 function importConfig(p) {
     var e = "";
     "object" == typeof p && p.settings
         ? (((!checkOSVersion(210) || "object" != typeof p.options || (p.options.hp0 === controller.options.hp0 && p.options.hp1 === controller.options.hp1)) &&
-            p.options.dhcp === controller.options.dhcp &&
-            p.options.devid === controller.options.devid) ||
-            (e = _("Warning: Network changes will be made and the device may no longer be accessible from this address.")),
-            areYouSure(_("Are you sure you want to restore the configuration?"), e, function () {
-                $.mobile.loading("show");
-                function e(e) {
-                    return keyIndex[e] === i;
-                }
-                var t,
-                    n,
-                    i,
-                    o,
-                    a,
-                    s = "/cs?pw=",
-                    r = "/co?pw=",
-                    l = Math.ceil(p.stations.snames.length / 16),
-                    c = new Array(l).fill("/cs?pw="),
-                    d = isOSPi();
-                for (t in p.options)
-                    p.options.hasOwnProperty(t) &&
-                        keyIndex.hasOwnProperty(t) &&
-                        ((i = keyIndex[t]),
-                            (-1 !== $.inArray(i, [2, 14, 16, 21, 22, 25, 36]) && 0 === p.options[t]) ||
-                            (3 === i
-                                ? checkOSVersion(210) && 1 === controller.options.dhcp && (r += "&o3=1")
-                                : (d && void 0 === (i = Object.keys(keyIndex).find(e))) || ((o = !0 === checkOSVersion(208) && "string" == typeof p.options[t] ? p.options[t].replace(/\s/g, "_") : p.options[t]), (r += "&o" + i + "=" + o))));
-                for (
-                    !d && "number" == typeof p.options.fwv && p.options.fwv < 211 && checkOSVersion(211) && (r += "&o36=1"),
-                    "object" == typeof p.settings.wto && checkOSVersion(215) && (r += "&wto=" + escapeJSON(p.settings.wto)),
-                    "string" == typeof p.settings.ifkey && checkOSVersion(217) && (r += "&ifkey=" + p.settings.ifkey),
-                    "string" == typeof p.settings.dname && checkOSVersion(2191) && (r += "&dname=" + p.settings.dname),
-                    "object" == typeof p.settings.mqtt && checkOSVersion(2191) && (r += "&mqtt=" + escapeJSON(p.settings.mqtt)),
-                    "object" == typeof p.settings.otc && checkOSVersion(2191) && (r += "&otc=" + escapeJSON(p.settings.otc)),
-                    r += "&" + (d ? "o" : "") + "loc=" + p.settings.loc,
-                    n = 0;
-                    n < l;
-                    n++
-                )
-                    for (t = 16 * n; t < 16 * (n + 1) && t < p.stations.snames.length; t++) (a = !0 === checkOSVersion(208) ? p.stations.snames[t].replace(/\s/g, "_") : p.stations.snames[t]), (c[n] += "&s" + t + "=" + encodeURIComponent(a));
-                for (t = 0; t < p.stations.masop.length; t++) s += "&m" + t + "=" + p.stations.masop[t];
-                if ("object" == typeof p.stations.masop2) for (t = 0; t < p.stations.masop2.length; t++) s += "&n" + t + "=" + p.stations.masop2[t];
-                if ("object" == typeof p.stations.ignore_rain) for (t = 0; t < p.stations.ignore_rain.length; t++) s += "&i" + t + "=" + p.stations.ignore_rain[t];
-                if ("object" == typeof p.stations.ignore_sn1) for (t = 0; t < p.stations.ignore_sn1.length; t++) s += "&j" + t + "=" + p.stations.ignore_sn1[t];
-                if ("object" == typeof p.stations.ignore_sn2) for (t = 0; t < p.stations.ignore_sn2.length; t++) s += "&k" + t + "=" + p.stations.ignore_sn2[t];
-                if ("object" == typeof p.stations.stn_dis) for (t = 0; t < p.stations.stn_dis.length; t++) s += "&d" + t + "=" + p.stations.stn_dis[t];
-                if ("object" == typeof p.stations.stn_spe) for (t = 0; t < p.stations.stn_spe.length; t++) s += "&p" + t + "=" + p.stations.stn_spe[t];
-                if ("object" == typeof p.stations.stn_seq) for (t = 0; t < p.stations.stn_seq.length; t++) s += "&q" + t + "=" + p.stations.stn_seq[t];
-                else if (!d && "number" == typeof p.options.fwv && p.options.fwv < 211 && !checkOSVersion(211)) for (var u = 0; u < p.settings.nbrd; u++) s += "&q" + u + "=" + (1 === p.options.seq ? 255 : 0);
-                if ("object" == typeof p.stations.act_relay) for (t = 0; t < p.stations.act_relay.length; t++) s += "&a" + t + "=" + p.stations.act_relay[t];
-                (p.special = p.special || {}),
-                    $.when(
-                        sendToOS(transformKeysinString(r)),
-                        sendToOS(s),
-                        sendToOS("/dp?pw=&pid=-1"),
-                        $.each(c, function (e, t) {
-                            sendToOS(t);
-                        }),
-                        $.each(p.programs.pd, function (e, t) {
-                            var n = "";
-                            if (d && "number" == typeof p.options.fwv && 210 <= p.options.fwv) return showerror(_("Program data is newer than the device firmware and cannot be imported")), !1;
-                            if (!d && "number" == typeof p.options.fwv && 210 <= p.options.fwv && !checkOSVersion(210)) return showerror(_("Program data is newer than the device firmware and cannot be imported")), !1;
-                            if (
-                                (!d && "number" == typeof p.options.fwv && 210 <= p.options.fwv && checkOSVersion(210) && ((n = "&name=" + t[5]), (t = t.slice(0, 5))),
-                                    !d && "number" == typeof p.options.fwv && p.options.fwv < 210 && checkOSVersion(210))
-                            ) {
-                                var i,
-                                    o,
-                                    a,
-                                    s = readProgram183(t),
-                                    r = t.length - 7,
-                                    l = [],
-                                    c = 0;
-                                for (c |= s.en << 0, s.is_even ? (c |= 8) : s.is_odd ? (c |= 4) : (c |= 0), s.is_interval ? (c |= 48) : (c |= 0), t[0] = c |= 0, o = 0; o < r; o++)
-                                    for (i = t[7 + o], a = 0; a < 8; a++) l.push(i & (1 << a) ? s.duration : 0);
-                                (t[3] = [s.start, parseInt((s.end - s.start) / s.interval), s.interval, 0]), (t[4] = l), (t = t.slice(0, 5)), (n = "&name=" + _("Program") + " " + (e + 1));
-                            }
-                            sendToOS("/cp?pw=&pid=-1&v=" + JSON.stringify(t) + n);
-                        }),
-                        $.each(p.special, function (e, t) {
-                            checkOSVersion(216) && sendToOS("/cs?pw=&sid=" + e + "&st=" + t.st + "&sd=" + encodeURIComponent(t.sd));
-                        })
-                    ).then(
-                        function () {
-                            setTimeout(function () {
-                                updateController(
-                                    function () {
-                                        $.mobile.loading("hide"), showerror(_("Backup restored to your device")), updateWeather(), goHome(!0);
-                                    },
-                                    function () {
-                                        $.mobile.loading("hide"), networkFail();
-                                    }
-                                );
-                            }, 1500);
-                        },
-                        function () {
-                            $.mobile.loading("hide"), showerror(_("Unable to import configuration."));
-                        }
-                    );
-            }))
+              p.options.dhcp === controller.options.dhcp &&
+              p.options.devid === controller.options.devid) ||
+              (e = _("Warning: Network changes will be made and the device may no longer be accessible from this address.")),
+          areYouSure(_("Are you sure you want to restore the configuration?"), e, function () {
+              $.mobile.loading("show");
+              function e(e) {
+                  return keyIndex[e] === i;
+              }
+              var t,
+                  n,
+                  i,
+                  o,
+                  a,
+                  s = "/cs?pw=",
+                  r = "/co?pw=",
+                  l = Math.ceil(p.stations.snames.length / 16),
+                  c = new Array(l).fill("/cs?pw="),
+                  d = isOSPi();
+              for (t in p.options)
+                  p.options.hasOwnProperty(t) &&
+                      keyIndex.hasOwnProperty(t) &&
+                      ((i = keyIndex[t]),
+                      (-1 !== $.inArray(i, [2, 14, 16, 21, 22, 25, 36]) && 0 === p.options[t]) ||
+                          (3 === i
+                              ? checkOSVersion(210) && 1 === controller.options.dhcp && (r += "&o3=1")
+                              : (d && void 0 === (i = Object.keys(keyIndex).find(e))) || ((o = !0 === checkOSVersion(208) && "string" == typeof p.options[t] ? p.options[t].replace(/\s/g, "_") : p.options[t]), (r += "&o" + i + "=" + o))));
+              for (
+                  !d && "number" == typeof p.options.fwv && p.options.fwv < 211 && checkOSVersion(211) && (r += "&o36=1"),
+                      "object" == typeof p.settings.wto && checkOSVersion(215) && (r += "&wto=" + escapeJSON(p.settings.wto)),
+                      "string" == typeof p.settings.ifkey && checkOSVersion(217) && (r += "&ifkey=" + p.settings.ifkey),
+                      "string" == typeof p.settings.dname && checkOSVersion(2191) && (r += "&dname=" + p.settings.dname),
+                      "object" == typeof p.settings.mqtt && checkOSVersion(2191) && (r += "&mqtt=" + escapeJSON(p.settings.mqtt)),
+                      "object" == typeof p.settings.otc && checkOSVersion(2191) && (r += "&otc=" + escapeJSON(p.settings.otc)),
+                      r += "&" + (d ? "o" : "") + "loc=" + p.settings.loc,
+                      n = 0;
+                  n < l;
+                  n++
+              )
+                  for (t = 16 * n; t < 16 * (n + 1) && t < p.stations.snames.length; t++) (a = !0 === checkOSVersion(208) ? p.stations.snames[t].replace(/\s/g, "_") : p.stations.snames[t]), (c[n] += "&s" + t + "=" + encodeURIComponent(a));
+              for (t = 0; t < p.stations.masop.length; t++) s += "&m" + t + "=" + p.stations.masop[t];
+              if ("object" == typeof p.stations.masop2) for (t = 0; t < p.stations.masop2.length; t++) s += "&n" + t + "=" + p.stations.masop2[t];
+              if ("object" == typeof p.stations.ignore_rain) for (t = 0; t < p.stations.ignore_rain.length; t++) s += "&i" + t + "=" + p.stations.ignore_rain[t];
+              if ("object" == typeof p.stations.ignore_sn1) for (t = 0; t < p.stations.ignore_sn1.length; t++) s += "&j" + t + "=" + p.stations.ignore_sn1[t];
+              if ("object" == typeof p.stations.ignore_sn2) for (t = 0; t < p.stations.ignore_sn2.length; t++) s += "&k" + t + "=" + p.stations.ignore_sn2[t];
+              if ("object" == typeof p.stations.stn_dis) for (t = 0; t < p.stations.stn_dis.length; t++) s += "&d" + t + "=" + p.stations.stn_dis[t];
+              if ("object" == typeof p.stations.stn_spe) for (t = 0; t < p.stations.stn_spe.length; t++) s += "&p" + t + "=" + p.stations.stn_spe[t];
+              if ("object" == typeof p.stations.stn_seq) for (t = 0; t < p.stations.stn_seq.length; t++) s += "&q" + t + "=" + p.stations.stn_seq[t];
+              else if (!d && "number" == typeof p.options.fwv && p.options.fwv < 211 && !checkOSVersion(211)) for (var u = 0; u < p.settings.nbrd; u++) s += "&q" + u + "=" + (1 === p.options.seq ? 255 : 0);
+              if ("object" == typeof p.stations.act_relay) for (t = 0; t < p.stations.act_relay.length; t++) s += "&a" + t + "=" + p.stations.act_relay[t];
+              (p.special = p.special || {}),
+                  $.when(
+                      sendToOS(transformKeysinString(r)),
+                      sendToOS(s),
+                      sendToOS("/dp?pw=&pid=-1"),
+                      $.each(c, function (e, t) {
+                          sendToOS(t);
+                      }),
+                      $.each(p.programs.pd, function (e, t) {
+                          var n = "";
+                          if (d && "number" == typeof p.options.fwv && 210 <= p.options.fwv) return showerror(_("Program data is newer than the device firmware and cannot be imported")), !1;
+                          if (!d && "number" == typeof p.options.fwv && 210 <= p.options.fwv && !checkOSVersion(210)) return showerror(_("Program data is newer than the device firmware and cannot be imported")), !1;
+                          if (
+                              (!d && "number" == typeof p.options.fwv && 210 <= p.options.fwv && checkOSVersion(210) && ((n = "&name=" + t[5]), (t = t.slice(0, 5))),
+                              !d && "number" == typeof p.options.fwv && p.options.fwv < 210 && checkOSVersion(210))
+                          ) {
+                              var i,
+                                  o,
+                                  a,
+                                  s = readProgram183(t),
+                                  r = t.length - 7,
+                                  l = [],
+                                  c = 0;
+                              for (c |= s.en << 0, s.is_even ? (c |= 8) : s.is_odd ? (c |= 4) : (c |= 0), s.is_interval ? (c |= 48) : (c |= 0), t[0] = c |= 0, o = 0; o < r; o++)
+                                  for (i = t[7 + o], a = 0; a < 8; a++) l.push(i & (1 << a) ? s.duration : 0);
+                              (t[3] = [s.start, parseInt((s.end - s.start) / s.interval), s.interval, 0]), (t[4] = l), (t = t.slice(0, 5)), (n = "&name=" + _("Program") + " " + (e + 1));
+                          }
+                          sendToOS("/cp?pw=&pid=-1&v=" + JSON.stringify(t) + n);
+                      }),
+                      $.each(p.special, function (e, t) {
+                          checkOSVersion(216) && sendToOS("/cs?pw=&sid=" + e + "&st=" + t.st + "&sd=" + encodeURIComponent(t.sd));
+                      })
+                  ).then(
+                      function () {
+                          setTimeout(function () {
+                              updateController(
+                                  function () {
+                                      $.mobile.loading("hide"), showerror(_("Backup restored to your device")), updateWeather(), goHome(!0);
+                                  },
+                                  function () {
+                                      $.mobile.loading("hide"), networkFail();
+                                  }
+                              );
+                          }, 1500);
+                      },
+                      function () {
+                          $.mobile.loading("hide"), showerror(_("Unable to import configuration."));
+                      }
+                  );
+          }))
         : showerror(_("Invalid configuration"));
 }
 var showAbout = (function () {
     var e,
         t = $(
             "<div data-role='page' id='about'><div class='ui-content' role='main'><ul data-role='listview' data-inset='true'><li><p>" +
-            _("User manual for OpenSprinkler is available at") +
-            " <a class='iab' target='_blank' href='https://openthings.freshdesk.com/support/solutions/folders/5000147083'>https://support.openthings.io</a></p></li></ul><ul data-role='listview' data-inset='true'><li><p>" +
-            _("This is open source software: source code and changelog for this application can be found at") +
-            " <a class='iab squeeze' target='_blank' href='https://github.com/OpenSprinkler/OpenSprinkler-App/'>https://github.com/OpenSprinkler/OpenSprinkler-App/</a></p><p>" +
-            _("Language localization is crowdsourced using Transifex available at") +
-            " <a class='iab squeeze' target='_blank' href='https://www.transifex.com/albahra/opensprinkler/'>https://www.transifex.com/albahra/opensprinkler/</a></p><p>" +
-            _("Open source attributions") +
-            ": <a class='iab iabNoScale squeeze' target='_blank' href='https://github.com/OpenSprinkler/OpenSprinkler-App/wiki/List-of-Integrated-Libraries'>https://github.com/OpenSprinkler/OpenSprinkler-App/wiki/List-of-Integrated-Libraries</a></p></li></ul><p class='smaller'>" +
-            _("App Version") +
-            ": 2.3.3<br>" +
-            _("Firmware") +
-            ": <span class='firmware'></span><br><span class='hardwareLabel'>" +
-            _("Hardware Version") +
-            ":</span> <span class='hardware'></span></p></div></div>"
+                _("User manual for OpenSprinkler is available at") +
+                " <a class='iab' target='_blank' href='https://openthings.freshdesk.com/support/solutions/folders/5000147083'>https://support.openthings.io</a></p></li></ul><ul data-role='listview' data-inset='true'><li><p>" +
+                _("This is open source software: source code and changelog for this application can be found at") +
+                " <a class='iab squeeze' target='_blank' href='https://github.com/OpenSprinkler/OpenSprinkler-App/'>https://github.com/OpenSprinkler/OpenSprinkler-App/</a></p><p>" +
+                _("Language localization is crowdsourced using Transifex available at") +
+                " <a class='iab squeeze' target='_blank' href='https://www.transifex.com/albahra/opensprinkler/'>https://www.transifex.com/albahra/opensprinkler/</a></p><p>" +
+                _("Open source attributions") +
+                ": <a class='iab iabNoScale squeeze' target='_blank' href='https://github.com/OpenSprinkler/OpenSprinkler-App/wiki/List-of-Integrated-Libraries'>https://github.com/OpenSprinkler/OpenSprinkler-App/wiki/List-of-Integrated-Libraries</a></p></li></ul><p class='smaller'>" +
+                _("App Version") +
+                ": 2.3.3<br>" +
+                _("Firmware") +
+                ": <span class='firmware'></span><br><span class='hardwareLabel'>" +
+                _("Hardware Version") +
+                ":</span> <span class='hardware'></span></p></div></div>"
         );
     return function () {
         (e = void 0 === controller.options.hwv),
@@ -10446,16 +10442,16 @@ var showAbout = (function () {
             $.mobile.pageContainer.append(t);
     };
 })();
-function stopStations(callback) {
+function stopStations(e) {
     $.mobile.loading("show"),
         sendToOS("/cv?pw=&rsn=1").done(function () {
             setTimeout(function () {
-                $.mobile.loading("hide"), callback();
+                $.mobile.loading("hide"), e();
             }, 1e3);
         });
 }
-function flowCountToVolume(pulseCount) {
-    return parseFloat(((pulseCount * ((controller.options.fpr1 << 8) + controller.options.fpr0)) / 100).toFixed(2));
+function flowCountToVolume(e) {
+    return parseFloat(((e * ((controller.options.fpr1 << 8) + controller.options.fpr0)) / 100).toFixed(2));
 }
 function isOSPi() {
     return !(!controller || "object" != typeof controller.options || "string" != typeof controller.options.fwv || -1 === controller.options.fwv.search(/ospi/i));
@@ -10473,24 +10469,24 @@ function checkPW(e, t) {
     );
 }
 function changePassword(o) {
-    o = $.extend({}, { fixIncorrect: !1, name: "", callback: function () { }, cancel: function () { } }, o);
+    o = $.extend({}, { fixIncorrect: !1, name: "", callback: function () {}, cancel: function () {} }, o);
     var t = isOSPi(),
         n = !1,
         a = $(
             "<div data-role='popup' class='modal' id='changePassword' data-theme='a' data-overlay-theme='b'><ul data-role='listview' data-inset='true'>" +
-            (!0 === o.fixIncorrect ? "" : "<li data-role='list-divider'>" + _("Change Password") + "</li>") +
-            "<li>" +
-            (!0 === o.fixIncorrect ? "<p class='rain-desc red-text bold'>" + _("Incorrect password for ") + o.name + ". " + _("Please re-enter password to try again.") + "</p>" : "") +
-            "<form method='post' novalidate><label for='npw'>" +
-            (!0 === o.fixIncorrect ? _("Password:") : _("New Password") + ":") +
-            "</label><input type='password' name='npw' id='npw' value=''" +
-            (t ? "" : " maxlength='32'") +
-            ">" +
-            (!0 === o.fixIncorrect ? "" : "<label for='cpw'>" + _("Confirm New Password") + ":</label><input type='password' name='cpw' id='cpw' value=''" + (t ? "" : " maxlength='32'") + ">") +
-            (!0 === o.fixIncorrect ? "<label for='save_pw'>" + _("Save Password") + "</label><input type='checkbox' data-wrapper-class='save_pw' name='save_pw' id='save_pw' data-mini='true'>" : "") +
-            "<input type='submit' value='" +
-            _("Submit") +
-            "'></form></li></ul></div>"
+                (!0 === o.fixIncorrect ? "" : "<li data-role='list-divider'>" + _("Change Password") + "</li>") +
+                "<li>" +
+                (!0 === o.fixIncorrect ? "<p class='rain-desc red-text bold'>" + _("Incorrect password for ") + o.name + ". " + _("Please re-enter password to try again.") + "</p>" : "") +
+                "<form method='post' novalidate><label for='npw'>" +
+                (!0 === o.fixIncorrect ? _("Password:") : _("New Password") + ":") +
+                "</label><input type='password' name='npw' id='npw' value=''" +
+                (t ? "" : " maxlength='32'") +
+                ">" +
+                (!0 === o.fixIncorrect ? "" : "<label for='cpw'>" + _("Confirm New Password") + ":</label><input type='password' name='cpw' id='cpw' value=''" + (t ? "" : " maxlength='32'") + ">") +
+                (!0 === o.fixIncorrect ? "<label for='save_pw'>" + _("Save Password") + "</label><input type='checkbox' data-wrapper-class='save_pw' name='save_pw' id='save_pw' data-mini='true'>" : "") +
+                "<input type='submit' value='" +
+                _("Submit") +
+                "'></form></li></ul></div>"
         );
     a.find("form").on("submit", function () {
         var i = a.find("#npw").val(),
@@ -10498,34 +10494,34 @@ function changePassword(o) {
         return (
             !0 === o.fixIncorrect
                 ? ((n = !0),
-                    storage.get(["sites"], function (e) {
-                        function t(e) {
-                            (currPass = e), (n[o.name].os_pw = a.find("#save_pw").is(":checked") ? e : ""), storage.set({ sites: JSON.stringify(n) }, cloudSaveSites), a.popup("close"), o.callback();
-                        }
-                        var n = parseSites(e.sites);
-                        checkPW(md5(i), function (e) {
-                            t(!0 === e ? md5(i) : i);
-                        });
-                    }))
+                  storage.get(["sites"], function (e) {
+                      function t(e) {
+                          (currPass = e), (n[o.name].os_pw = a.find("#save_pw").is(":checked") ? e : ""), storage.set({ sites: JSON.stringify(n) }, cloudSaveSites), a.popup("close"), o.callback();
+                      }
+                      var n = parseSites(e.sites);
+                      checkPW(md5(i), function (e) {
+                          t(!0 === e ? md5(i) : i);
+                      });
+                  }))
                 : i !== e
-                    ? showerror(_("The passwords don't match. Please try again."))
-                    : "" === i
-                        ? showerror(_("Password cannot be empty"))
-                        : (!t && 32 < i.length && showerror(_("Password cannot be longer than 32 characters")),
-                            checkOSVersion(213) && ((i = md5(i)), (e = md5(e))),
-                            $.mobile.loading("show"),
-                            sendToOS("/sp?pw=&npw=" + encodeURIComponent(i) + "&cpw=" + encodeURIComponent(e), "json").done(function (e) {
-                                e = e.result;
-                                !e || 1 < e
-                                    ? showerror(_(2 === e ? "Please check the current device password is correct then try again" : "Unable to change password. Please try again."))
-                                    : (storage.get(["sites", "current_site"], function (e) {
-                                        var t = parseSites(e.sites);
-                                        (t[e.current_site].os_pw = i), (currPass = i), storage.set({ sites: JSON.stringify(t) }, cloudSaveSites);
-                                    }),
-                                        $.mobile.loading("hide"),
-                                        a.popup("close"),
-                                        showerror(_("Password changed successfully")));
-                            })),
+                ? showerror(_("The passwords don't match. Please try again."))
+                : "" === i
+                ? showerror(_("Password cannot be empty"))
+                : (!t && 32 < i.length && showerror(_("Password cannot be longer than 32 characters")),
+                  checkOSVersion(213) && ((i = md5(i)), (e = md5(e))),
+                  $.mobile.loading("show"),
+                  sendToOS("/sp?pw=&npw=" + encodeURIComponent(i) + "&cpw=" + encodeURIComponent(e), "json").done(function (e) {
+                      e = e.result;
+                      !e || 1 < e
+                          ? showerror(_(2 === e ? "Please check the current device password is correct then try again" : "Unable to change password. Please try again."))
+                          : (storage.get(["sites", "current_site"], function (e) {
+                                var t = parseSites(e.sites);
+                                (t[e.current_site].os_pw = i), (currPass = i), storage.set({ sites: JSON.stringify(t) }, cloudSaveSites);
+                            }),
+                            $.mobile.loading("hide"),
+                            a.popup("close"),
+                            showerror(_("Password changed successfully")));
+                  })),
             !1
         );
     }),
@@ -10537,12 +10533,12 @@ function changePassword(o) {
             .enhanceWithin(),
         o.fixIncorrect
             ? storage.get(["sites", "current_site"], function (e) {
-                var t = parseSites(e.sites),
-                    n = e.current_site,
-                    i = md5(t[n].os_pw);
-                isMD5(t[n].os_pw)
-                    ? a.popup("open")
-                    : ((e = "/jc?pw=" + i),
+                  var t = parseSites(e.sites),
+                      n = e.current_site,
+                      i = md5(t[n].os_pw);
+                  isMD5(t[n].os_pw)
+                      ? a.popup("open")
+                      : ((e = "/jc?pw=" + i),
                         $.ajax({ url: currToken ? "https://cloud.openthings.io/forward/v1/" + currToken + e : currPrefix + currIp + e, type: "GET", dataType: "json" }).then(
                             function () {
                                 (t[n].os_pw = currPass = i), storage.set({ sites: JSON.stringify(t) }, cloudSaveSites), o.callback();
@@ -10551,28 +10547,28 @@ function changePassword(o) {
                                 a.popup("open");
                             }
                         ));
-            })
+              })
             : a.popup("open");
 }
 function requestCloudAuth(e) {
-    e = e || function () { };
+    e = e || function () {};
     var t = $(
-        "<div data-role='popup' class='modal' id='requestCloudAuth' data-theme='a'><ul data-role='listview' data-inset='true'><li data-role='list-divider'>" +
-        _("OpenSprinkler.com Login") +
-        "</li><li><p class='rain-desc tight'>" +
-        _("Use your OpenSprinkler.com login and password to securely sync sites between all your devices.") +
-        "<br><br>" +
-        _("Don't have an account?") +
-        " <a href='https://opensprinkler.com/my-account/' class='iab'>" +
-        _("Register here") +
-        "</a></p></li><li><form method='post' novalidate><label for='cloudUser'>" +
-        _("Username:") +
-        "</label><input type='text' name='cloudUser' id='cloudUser' autocomplete='off' autocorrect='off' autocapitalize='off' spellcheck='false'><label for='cloudPass'>" +
-        _("Password:") +
-        "</label><input type='password' name='cloudPass' id='cloudPass'><input type='submit' value='" +
-        _("Submit") +
-        "'></form></li></ul></div>"
-    ),
+            "<div data-role='popup' class='modal' id='requestCloudAuth' data-theme='a'><ul data-role='listview' data-inset='true'><li data-role='list-divider'>" +
+                _("OpenSprinkler.com Login") +
+                "</li><li><p class='rain-desc tight'>" +
+                _("Use your OpenSprinkler.com login and password to securely sync sites between all your devices.") +
+                "<br><br>" +
+                _("Don't have an account?") +
+                " <a href='https://opensprinkler.com/my-account/' class='iab'>" +
+                _("Register here") +
+                "</a></p></li><li><form method='post' novalidate><label for='cloudUser'>" +
+                _("Username:") +
+                "</label><input type='text' name='cloudUser' id='cloudUser' autocomplete='off' autocorrect='off' autocapitalize='off' spellcheck='false'><label for='cloudPass'>" +
+                _("Password:") +
+                "</label><input type='password' name='cloudPass' id='cloudPass'><input type='submit' value='" +
+                _("Submit") +
+                "'></form></li></ul></div>"
+        ),
         n = !1;
     t.find("form").on("submit", function () {
         return (
@@ -10628,67 +10624,67 @@ function cloudSaveSites(t) {
 }
 */
 function cloudSaveSites(t) {
-    "function" != typeof t && (t = function () { }),
-        mytime = new Date().getTime().toString(),
-        storage.get(["sites"], function (e) {
-            $.ajax({
-                type: "POST",
-                dataType: "text",
-                url: currPrefix + currIp + "/cx?pw=" + currPass + "&local&_=" + mytime,
-                data: JSON.stringify({ notes: JSON.parse(e.sites).Local.notes, images: JSON.parse(e.sites).Local.images }),
-                success: function (e) { t(!0) },
-                fail: function () { t(!1) },
-            });
+    "function" != typeof t && (t = function () {}),
+    mytime = new Date().getTime().toString(),
+    storage.get(["sites"], function (e) {
+        $.ajax({
+            type: "POST",
+            dataType: "text",
+            url: currPrefix+currIp+"/cx?pw="+currPass+"&local&_="+mytime,
+            data: JSON.stringify({notes:JSON.parse(e.sites).Local.notes,images:JSON.parse(e.sites).Local.images}),
+            success: function (e) {t(!0)},
+            fail: function () {t(!1)},
         });
+    });
 }
 
 function fetchLocal() {
     mytime = new Date().getTime().toString();
-    url = currPrefix + currIp + "/jx?pw=" + currPass + "&local&_=" + mytime;
+    url = currPrefix+currIp+"/jx?pw="+currPass+"&local&_="+mytime;
     $.get(url,
-        function (data) {
-            storage.get(["sites"], function (e) {
+        function(data){
+            storage.get(["sites"], function(e){
                 sites = (JSON.parse(e.sites)),
-                    sites.Local.notes = data.notes,
-                    sites.Local.images = data.images,
-                    storage.set({ sites: JSON.stringify(sites) })
+                sites.Local.notes = data.notes,
+                sites.Local.images = data.images,
+                storage.set({sites: JSON.stringify(sites)})
             })
         })
 }
 
 function cloudGetSites(i) {
-    (i = i || function () { }),
+    (i = i || function () {}),
         storage.get(["cloudToken", "cloudDataToken"], function (n) {
             void 0 === n.cloudToken || null === n.cloudToken
                 ? i(!1)
                 : void 0 === n.cloudDataToken || null === n.cloudDataToken
-                    ? (handleInvalidDataToken(), i(!1))
-                    : $.ajax({
-                        type: "POST",
-                        dataType: "json",
-                        url: "https://opensprinkler.com/wp-admin/admin-ajax.php",
-                        data: { action: "getSites", token: n.cloudToken },
-                        success: function (e) {
-                            if (!1 === e.success || "" === e.sites) "BAD_TOKEN" === e.message && handleExpiredLogin(), i(!1, e.message);
-                            else {
-                                var t;
-                                storage.set({ cloudToken: e.token });
-                                try {
-                                    t = sjcl.decrypt(n.cloudDataToken, e.sites);
-                                } catch (e) {
-                                    "ccm: tag doesn't match" === e.message && handleInvalidDataToken(), i(!1);
-                                }
-                                try {
-                                    i(JSON.parse(t));
-                                } catch (e) {
-                                    i(!1);
-                                }
-                            }
-                        },
-                        fail: function () {
-                            i(!1);
-                        },
-                    });
+                ? (handleInvalidDataToken(), i(!1))
+                : $.ajax({
+                      type: "POST",
+                      dataType: "json",
+                      url: "https://opensprinkler.com/wp-admin/admin-ajax.php",
+                      data: { action: "getSites", token: n.cloudToken },
+                      success: function (e) {
+                          if (!1 === e.success || "" === e.sites) "BAD_TOKEN" === e.message && handleExpiredLogin(), i(!1, e.message);
+                          else {
+                              var t;
+                              storage.set({ cloudToken: e.token });
+                              try {
+                                  t = sjcl.decrypt(n.cloudDataToken, e.sites);
+                              } catch (e) {
+                                  "ccm: tag doesn't match" === e.message && handleInvalidDataToken(), i(!1);
+                              }
+                              try {
+                                  i(JSON.parse(t));
+                              } catch (e) {
+                                  i(!1);
+                              }
+                          }
+                      },
+                      fail: function () {
+                          i(!1);
+                      },
+                  });
         });
 }
 function cloudSyncStart() {
@@ -10697,62 +10693,62 @@ function cloudSyncStart() {
         "start" === o
             ? (0 < Object.keys(i).length && storage.set({ sites: JSON.stringify(i) }), changePage("#site-control"))
             : (updateLoginButtons(),
-                storage.get("sites", function (t) {
-                    var e, n;
-                    JSON.stringify(i) !== t.sites &&
-                        ((t.sites = parseSites(t.sites)),
-                            currLocal
-                                ? findLocalSiteName(i, function (e) {
-                                    !1 === e
-                                        ? areYouSure(
-                                            _("Do you wish to add this location to your cloud synced site list?"),
-                                            _("This site is not found in the currently synced site list but may be added now."),
-                                            function () {
-                                                (i[currIp] = t.sites.Local), storage.set({ sites: JSON.stringify(i) }, cloudSaveSites), storage.set({ current_site: currIp }), updateSiteList(Object.keys(i), currIp);
-                                            },
-                                            function () {
-                                                storage.remove("cloudToken", updateLoginButtons);
-                                            }
-                                        )
-                                        : (storage.set({ sites: JSON.stringify(i) }, cloudSaveSites), storage.set({ current_site: e }), updateSiteList(Object.keys(i), e));
+              storage.get("sites", function (t) {
+                  var e, n;
+                  JSON.stringify(i) !== t.sites &&
+                      ((t.sites = parseSites(t.sites)),
+                      currLocal
+                          ? findLocalSiteName(i, function (e) {
+                                !1 === e
+                                    ? areYouSure(
+                                          _("Do you wish to add this location to your cloud synced site list?"),
+                                          _("This site is not found in the currently synced site list but may be added now."),
+                                          function () {
+                                              (i[currIp] = t.sites.Local), storage.set({ sites: JSON.stringify(i) }, cloudSaveSites), storage.set({ current_site: currIp }), updateSiteList(Object.keys(i), currIp);
+                                          },
+                                          function () {
+                                              storage.remove("cloudToken", updateLoginButtons);
+                                          }
+                                      )
+                                    : (storage.set({ sites: JSON.stringify(i) }, cloudSaveSites), storage.set({ current_site: e }), updateSiteList(Object.keys(i), e));
+                            })
+                          : 0 < Object.keys(i).length
+                          ? ((e = $(
+                                "<div data-role='popup' data-theme='a' data-overlay-theme='b'><div class='ui-bar ui-bar-a'>" +
+                                    _("Select Merge Method") +
+                                    "</div><div data-role='controlgroup' class='tight'><button class='merge'>" +
+                                    _("Merge") +
+                                    "</button><button class='replaceLocal'>" +
+                                    _("Replace local with cloud") +
+                                    "</button><button class='replaceCloud'>" +
+                                    _("Replace cloud with local") +
+                                    "</button></div></div>"
+                            )),
+                            (n = function () {
+                                storage.set({ sites: JSON.stringify(i) }, cloudSaveSites), e.popup("close"), "site-control" === o && changePage("#site-control");
+                            }),
+                            e.find(".merge").on("click", function () {
+                                (i = $.extend({}, t.sites, i)), n();
+                            }),
+                            e.find(".replaceLocal").on("click", function () {
+                                n();
+                            }),
+                            e.find(".replaceCloud").on("click", function () {
+                                (i = t.sites), n();
+                            }),
+                            e
+                                .one("popupafterclose", function () {
+                                    e.popup("destroy").remove();
                                 })
-                                : 0 < Object.keys(i).length
-                                    ? ((e = $(
-                                        "<div data-role='popup' data-theme='a' data-overlay-theme='b'><div class='ui-bar ui-bar-a'>" +
-                                        _("Select Merge Method") +
-                                        "</div><div data-role='controlgroup' class='tight'><button class='merge'>" +
-                                        _("Merge") +
-                                        "</button><button class='replaceLocal'>" +
-                                        _("Replace local with cloud") +
-                                        "</button><button class='replaceCloud'>" +
-                                        _("Replace cloud with local") +
-                                        "</button></div></div>"
-                                    )),
-                                        (n = function () {
-                                            storage.set({ sites: JSON.stringify(i) }, cloudSaveSites), e.popup("close"), "site-control" === o && changePage("#site-control");
-                                        }),
-                                        e.find(".merge").on("click", function () {
-                                            (i = $.extend({}, t.sites, i)), n();
-                                        }),
-                                        e.find(".replaceLocal").on("click", function () {
-                                            n();
-                                        }),
-                                        e.find(".replaceCloud").on("click", function () {
-                                            (i = t.sites), n();
-                                        }),
-                                        e
-                                            .one("popupafterclose", function () {
-                                                e.popup("destroy").remove();
-                                            })
-                                            .popup({ history: !1, positionTo: "window" })
-                                            .enhanceWithin()
-                                            .popup("open"))
-                                    : cloudSaveSites());
-                }));
+                                .popup({ history: !1, positionTo: "window" })
+                                .enhanceWithin()
+                                .popup("open"))
+                          : cloudSaveSites());
+              }));
     });
 }
 function cloudSync(n) {
-    "function" != typeof n && (n = function () { }),
+    "function" != typeof n && (n = function () {}),
         storage.get(["cloudToken", "current_site"], function (t) {
             "string" == typeof t.cloudToken &&
                 cloudGetSites(function (e) {
@@ -10773,18 +10769,18 @@ function handleCorruptedWeatherOptions(n) {
                 var e = $(this).parent(),
                     t = $(
                         "<div data-role='popup' data-theme='a' class='modal ui-content' id='weatherOptionCorruption'><h3 class='center'>" +
-                        _("Weather option data has corrupted") +
-                        "</h3><h5 class='center'>" +
-                        _("Please note this may indicate other data corruption as well, please verify all settings.") +
-                        "</h5><h6 class='center'>" +
-                        _("Below is the corrupt data which could not be parsed but may be useful for restoration.") +
-                        "</h6><code>" +
-                        n[0].substr(7) +
-                        "</code><a class='ui-btn ui-corner-all ui-shadow red reset-options' style='width:80%;margin:5px auto;' href='#'>" +
-                        _("Reset All Options") +
-                        "</a><a class='ui-btn ui-corner-all ui-shadow submit' style='width:80%;margin:5px auto;' href='#'>" +
-                        _("Dismiss") +
-                        "</a></div>"
+                            _("Weather option data has corrupted") +
+                            "</h3><h5 class='center'>" +
+                            _("Please note this may indicate other data corruption as well, please verify all settings.") +
+                            "</h5><h6 class='center'>" +
+                            _("Below is the corrupt data which could not be parsed but may be useful for restoration.") +
+                            "</h6><code>" +
+                            n[0].substr(7) +
+                            "</code><a class='ui-btn ui-corner-all ui-shadow red reset-options' style='width:80%;margin:5px auto;' href='#'>" +
+                            _("Reset All Options") +
+                            "</a><a class='ui-btn ui-corner-all ui-shadow submit' style='width:80%;margin:5px auto;' href='#'>" +
+                            _("Dismiss") +
+                            "</a></div>"
                     );
                 return (
                     t.find(".submit").on("click", function () {
@@ -10805,7 +10801,7 @@ function handleCorruptedWeatherOptions(n) {
                 );
             },
         }),
-            (corruptionNotificationShown = !0));
+        (corruptionNotificationShown = !0));
 }
 function handleExpiredLogin() {
     storage.remove(["cloudToken"], updateLoginButtons),
@@ -10832,12 +10828,12 @@ function handleInvalidDataToken() {
                 var e = $(this).parent(),
                     t = $(
                         "<div data-role='popup' data-theme='a' class='modal ui-content' id='dataPassword'><p class='tight rain-desc'>" +
-                        _("Please enter your OpenSprinkler.com password. If you have recently changed your password, you may need to enter your previous password to decrypt the data.") +
-                        "</p><form><input type='password' id='dataPasswordInput' name='dataPasswordInput' placeholder='" +
-                        _("Password") +
-                        "' /><input type='submit' data-theme='b' value='" +
-                        _("Submit") +
-                        "' /></form></div>"
+                            _("Please enter your OpenSprinkler.com password. If you have recently changed your password, you may need to enter your previous password to decrypt the data.") +
+                            "</p><form><input type='password' id='dataPasswordInput' name='dataPasswordInput' placeholder='" +
+                            _("Password") +
+                            "' /><input type='submit' data-theme='b' value='" +
+                            _("Submit") +
+                            "' /></form></div>"
                     ),
                     n = !1;
                 return (
@@ -10907,47 +10903,47 @@ function checkPublicAccess(e) {
     0 === e ||
         currToken ||
         ((e = intToIP(e)),
-            (t = currIp.match(/.*:(\d+)/)),
-            (n = function () {
-                storage.get("ignoreRemoteFailed", function (e) {
-                    "1" !== e.ignoreRemoteFailed &&
-                        addNotification({
-                            title: _("Remote access is not enabled"),
-                            desc: _("Click here to troubleshoot remote access issues"),
-                            on: function () {
-                                return (
-                                    window.open(
-                                        "https://openthings.freshdesk.com/support/solutions/articles/5000569763",
-                                        "_blank",
-                                        "location=" + (isAndroid ? "yes" : "no") + ",enableViewportScale=yes,toolbarposition=top,closebuttoncaption=" + _("Back")
-                                    ),
-                                    !1
-                                );
-                            },
-                            off: function () {
-                                return storage.set({ ignoreRemoteFailed: "1" }), !0;
-                            },
-                        });
-                });
-            }),
-            e !== currIp &&
+        (t = currIp.match(/.*:(\d+)/)),
+        (n = function () {
+            storage.get("ignoreRemoteFailed", function (e) {
+                "1" !== e.ignoreRemoteFailed &&
+                    addNotification({
+                        title: _("Remote access is not enabled"),
+                        desc: _("Click here to troubleshoot remote access issues"),
+                        on: function () {
+                            return (
+                                window.open(
+                                    "https://openthings.freshdesk.com/support/solutions/articles/5000569763",
+                                    "_blank",
+                                    "location=" + (isAndroid ? "yes" : "no") + ",enableViewportScale=yes,toolbarposition=top,closebuttoncaption=" + _("Back")
+                                ),
+                                !1
+                            );
+                        },
+                        off: function () {
+                            return storage.set({ ignoreRemoteFailed: "1" }), !0;
+                        },
+                    });
+            });
+        }),
+        e !== currIp &&
             !isLocalIP(e) &&
             isLocalIP(currIp) &&
             ((t = t ? parseInt(t[1]) : 80),
-                $.ajax({ url: currPrefix + e + ":" + t + "/jo?pw=" + currPass, global: !1, dataType: "json", type: "GET" }).then(function (e) {
-                    ("object" != typeof e || !e.hasOwnProperty("fwv") || e.fwv !== controller.options.fwv || (checkOSVersion(214) && controller.options.ip4 !== e.ip4)) && n();
-                }, n)));
+            $.ajax({ url: currPrefix + e + ":" + t + "/jo?pw=" + currPass, global: !1, dataType: "json", type: "GET" }).then(function (e) {
+                ("object" != typeof e || !e.hasOwnProperty("fwv") || e.fwv !== controller.options.fwv || (checkOSVersion(214) && controller.options.ip4 !== e.ip4)) && n();
+            }, n)));
 }
 function logout(e) {
-    "function" != typeof e && (e = function () { }),
+    "function" != typeof e && (e = function () {}),
         areYouSure(_("Are you sure you want to logout?"), "", function () {
             currLocal
                 ? storage.remove(["sites", "current_site", "lang", "provider", "wapikey", "runonce", "cloudToken"], function () {
-                    location.reload();
-                })
+                      location.reload();
+                  })
                 : storage.remove(["cloudToken"], function () {
-                    updateLoginButtons(), e();
-                });
+                      updateLoginButtons(), e();
+                  });
         });
 }
 function updateLoginButtons() {
@@ -10958,11 +10954,11 @@ function updateLoginButtons() {
         null === e.cloudToken || void 0 === e.cloudToken
             ? (t.removeClass("hidden"), currLocal || n.addClass("hidden"), n.find("a").text(_("Logout")), "site-control" === i.attr("id") && i.find(".logged-in-alert").remove())
             : (n
-                .removeClass("hidden")
-                .find("a")
-                .text(_("Logout") + " (" + getTokenUser(e.cloudToken) + ")"),
-                t.addClass("hidden"),
-                "site-control" === i.attr("id") && 0 === i.find(".logged-in-alert").length && i.find(".ui-content").prepend(addSyncStatus(e.cloudToken)));
+                  .removeClass("hidden")
+                  .find("a")
+                  .text(_("Logout") + " (" + getTokenUser(e.cloudToken) + ")"),
+              t.addClass("hidden"),
+              "site-control" === i.attr("id") && 0 === i.find(".logged-in-alert").length && i.find(".ui-content").prepend(addSyncStatus(e.cloudToken)));
     });
 }
 function addNotification(e) {
@@ -10989,21 +10985,21 @@ function showNotifications() {
     if (0 !== notifications.length) {
         for (
             var e = $("#notificationPanel"),
-            t = $("#footer-menu"),
-            n = [
-                $("<li data-role='list-divider'>" + _("Notifications") + "<button class='ui-btn ui-btn-icon-notext ui-icon-delete btn-no-border clear-all delete'></button></li>").on("click", ".clear-all", function () {
-                    var e = $(this);
-                    e.hasClass("clear")
-                        ? clearNotifications()
-                        : (e.removeClass("delete ui-btn-icon-notext ui-icon-delete").addClass("clear").text(_("Clear")),
-                            setTimeout(function () {
-                                $.mobile.document.one("click", function () {
-                                    e.removeClass("clear").addClass("delete ui-btn-icon-notext ui-icon-delete").text("");
-                                });
-                            }, 1));
-                }),
-            ],
-            i = notifications.length - 1;
+                t = $("#footer-menu"),
+                n = [
+                    $("<li data-role='list-divider'>" + _("Notifications") + "<button class='ui-btn ui-btn-icon-notext ui-icon-delete btn-no-border clear-all delete'></button></li>").on("click", ".clear-all", function () {
+                        var e = $(this);
+                        e.hasClass("clear")
+                            ? clearNotifications()
+                            : (e.removeClass("delete ui-btn-icon-notext ui-icon-delete").addClass("clear").text(_("Clear")),
+                              setTimeout(function () {
+                                  $.mobile.document.one("click", function () {
+                                      e.removeClass("clear").addClass("delete ui-btn-icon-notext ui-icon-delete").text("");
+                                  });
+                              }, 1));
+                    }),
+                ],
+                i = notifications.length - 1;
             0 <= i;
             i--
         )
@@ -11041,53 +11037,53 @@ function checkFirmwareUpdate() {
                                     n = o[0].html_url,
                                     i = $(
                                         "<div data-role='popup' class='modal' data-theme='a'><h3 class='center' style='margin-bottom:0'>" +
-                                        _("Latest") +
-                                        " " +
-                                        _("Firmware") +
-                                        ": " +
-                                        o[0].name +
-                                        "</h3><h5 class='center' style='margin:0'>" +
-                                        _("This Controller") +
-                                        ": " +
-                                        getOSVersion() +
-                                        getOSMinorVersion() +
-                                        "</h5><a class='iab ui-btn ui-corner-all ui-shadow' style='width:80%;margin:5px auto;' target='_blank' href='" +
-                                        n +
-                                        "'>" +
-                                        _("View Changelog") +
-                                        "</a><a class='guide ui-btn ui-corner-all ui-shadow' style='width:80%;margin:5px auto;' href='#'>" +
-                                        _("Update Guide") +
-                                        "</a>" +
-                                        (t ? "<a class='update ui-btn ui-corner-all ui-shadow' style='width:80%;margin:5px auto;' href='#'>" + _("Update Now") + "</a>" : "") +
-                                        "<a class='dismiss ui-btn ui-btn-b ui-corner-all ui-shadow' style='width:80%;margin:5px auto;' href='#'>" +
-                                        _("Dismiss") +
-                                        "</a></div>"
+                                            _("Latest") +
+                                            " " +
+                                            _("Firmware") +
+                                            ": " +
+                                            o[0].name +
+                                            "</h3><h5 class='center' style='margin:0'>" +
+                                            _("This Controller") +
+                                            ": " +
+                                            getOSVersion() +
+                                            getOSMinorVersion() +
+                                            "</h5><a class='iab ui-btn ui-corner-all ui-shadow' style='width:80%;margin:5px auto;' target='_blank' href='" +
+                                            n +
+                                            "'>" +
+                                            _("View Changelog") +
+                                            "</a><a class='guide ui-btn ui-corner-all ui-shadow' style='width:80%;margin:5px auto;' href='#'>" +
+                                            _("Update Guide") +
+                                            "</a>" +
+                                            (t ? "<a class='update ui-btn ui-corner-all ui-shadow' style='width:80%;margin:5px auto;' href='#'>" + _("Update Now") + "</a>" : "") +
+                                            "<a class='dismiss ui-btn ui-btn-b ui-corner-all ui-shadow' style='width:80%;margin:5px auto;' href='#'>" +
+                                            _("Dismiss") +
+                                            "</a></div>"
                                     );
                                 i.find(".update").on("click", function () {
                                     30 === controller.options.hwv
                                         ? $("<a class='hidden iab' href='" + currPrefix + currIp + "/update'></a>")
-                                            .appendTo(i)
-                                            .click()
+                                              .appendTo(i)
+                                              .click()
                                         : sendToOS("/cv?pw=&update=1", "json").then(
-                                            function () {
-                                                showerror(_("Update successful")), i.find(".dismiss").click();
-                                            },
-                                            function () {
-                                                $.mobile.loading("show", {
-                                                    html:
-                                                        "<div class='center'>" +
-                                                        _("Update did not complete.") +
-                                                        "<br><a class='iab ui-btn' href='https://openthings.freshdesk.com/support/solutions/articles/5000631599-installing-and-updating-the-unified-firmware#upgrade'>" +
-                                                        _("Update Guide") +
-                                                        "</a></div>",
-                                                    textVisible: !0,
-                                                    theme: "b",
-                                                }),
-                                                    setTimeout(function () {
-                                                        $.mobile.loading("hide");
-                                                    }, 3e3);
-                                            }
-                                        );
+                                              function () {
+                                                  showerror(_("Update successful")), i.find(".dismiss").click();
+                                              },
+                                              function () {
+                                                  $.mobile.loading("show", {
+                                                      html:
+                                                          "<div class='center'>" +
+                                                          _("Update did not complete.") +
+                                                          "<br><a class='iab ui-btn' href='https://openthings.freshdesk.com/support/solutions/articles/5000631599-installing-and-updating-the-unified-firmware#upgrade'>" +
+                                                          _("Update Guide") +
+                                                          "</a></div>",
+                                                      textVisible: !0,
+                                                      theme: "b",
+                                                  }),
+                                                      setTimeout(function () {
+                                                          $.mobile.loading("hide");
+                                                      }, 3e3);
+                                              }
+                                          );
                                 }),
                                     i.find(".guide").on("click", function () {
                                         var e =
@@ -11129,8 +11125,8 @@ function checkOSVersion(e) {
     return !isOSPi() && (e === t || versionCompare(t.toString().split(""), e.toString().split("")));
 }
 function versionCompare(e, t) {
-    for (var n, i = Math.max(e.length, t.length); e.length < i;) e.push(0);
-    for (; t.length < i;) t.push(0);
+    for (var n, i = Math.max(e.length, t.length); e.length < i; ) e.push(0);
+    for (; t.length < i; ) t.push(0);
     for (var o = 0; o < i && 0 === (n = Math.max(-1, Math.min(1, e[o] - t[o]))); o++);
     return (n = -1 === n ? !1 : n);
 }
@@ -11151,20 +11147,20 @@ function getHWType() {
     return isOSPi() || "number" != typeof controller.options.hwt || 0 === controller.options.hwt
         ? ""
         : 172 === controller.options.hwt
-            ? " - AC"
-            : 220 === controller.options.hwt
-                ? " - DC"
-                : 26 === controller.options.hwt
-                    ? " - Latching"
-                    : "";
+        ? " - AC"
+        : 220 === controller.options.hwt
+        ? " - DC"
+        : 26 === controller.options.hwt
+        ? " - Latching"
+        : "";
 }
 function areYouSure(e, t, n, i, o) {
-    $("#sure").popup("destroy").remove(), (n = n || function () { }), (i = i || function () { });
+    $("#sure").popup("destroy").remove(), (n = n || function () {}), (i = i || function () {});
     var a = 0,
         s =
             ("object" == typeof o && (a = o.type === dialog.REMOVE_STATION && Groups.canShift(o.gid) && Station.isSequential(o.station)),
-                $(
-                    "<div data-role='popup' data-theme='a' id='sure'><h3 class='sure-1 center'>" +
+            $(
+                "<div data-role='popup' data-theme='a' id='sure'><h3 class='sure-1 center'>" +
                     e +
                     "</h3><p class='sure-2 center'>" +
                     t +
@@ -11175,7 +11171,7 @@ function areYouSure(e, t, n, i, o) {
                     "</a>" +
                     (a ? "<label><input id='shift-sta' type='checkbox'>Move up remaining stations in the same sequential group?</label>" : "") +
                     "</div>"
-                ));
+            ));
     s.find(".sure-do").one("click.sure", function () {
         return s.popup("close"), n(), !1;
     }),
@@ -11197,12 +11193,12 @@ function showIPRequest(i) {
             })
         );
     }
-    var e = { title: _("Enter IP Address"), ip: [0, 0, 0, 0], showBack: !0, callback: function () { } },
+    var e = { title: _("Enter IP Address"), ip: [0, 0, 0, 0], showBack: !0, callback: function () {} },
         a =
             ((i = $.extend({}, e, i)),
-                $("#ipInput").popup("destroy").remove(),
-                $(
-                    "<div data-role='popup' id='ipInput' data-theme='a'><div data-role='header' data-theme='b'><h1>" +
+            $("#ipInput").popup("destroy").remove(),
+            $(
+                "<div data-role='popup' id='ipInput' data-theme='a'><div data-role='header' data-theme='b'><h1>" +
                     i.title +
                     "</h1></div><div class='ui-content'><span><fieldset class='ui-grid-c incr'><div class='ui-block-a'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='plus' data-iconpos='bottom'></a></div><div class='ui-block-b'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='plus' data-iconpos='bottom'></a></div><div class='ui-block-c'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='plus' data-iconpos='bottom'></a></div><div class='ui-block-d'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='plus' data-iconpos='bottom'></a></div></fieldset><div class='ui-grid-c inputs'><div class='ui-block-a'><input data-wrapper-class='pad_buttons' class='ip_addr' type='number' pattern='[0-9]*' max='255' value='" +
                     i.ip[0] +
@@ -11215,7 +11211,7 @@ function showIPRequest(i) {
                     "'></div></div><fieldset class='ui-grid-c decr'><div class='ui-block-a'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='minus' data-iconpos='bottom'></a></div><div class='ui-block-b'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='minus' data-iconpos='bottom'></a></div><div class='ui-block-c'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='minus' data-iconpos='bottom'></a></div><div class='ui-block-d'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='minus' data-iconpos='bottom'></a></div></fieldset></span>" +
                     (i.showBack ? "<button class='submit' data-theme='b'>" + _("Submit") + "</button>" : "") +
                     "</div></div>"
-                ));
+            ));
     a.find("button.submit").on("click", function () {
         i.callback(o()), a.popup("destroy").remove();
     }),
@@ -11240,15 +11236,15 @@ function showIPRequest(i) {
         openPopup(a);
 }
 function showDurationBox(a) {
-    var e = { seconds: 0, title: _("Duration"), granularity: 0, preventCompression: !1, incrementalUpdate: !0, showBack: !0, showSun: !1, minimum: 0, callback: function () { } },
+    var e = { seconds: 0, title: _("Duration"), granularity: 0, preventCompression: !1, incrementalUpdate: !0, showBack: !0, showSun: !1, minimum: 0, callback: function () {} },
         t = 0,
         n =
             ((a = $.extend({}, e, a)),
-                $("#durationBox").popup("destroy").remove(),
-                (a.seconds = parseInt(a.seconds)),
-                65535 === a.seconds ? ((t = 1), (a.seconds = 0)) : 65534 === a.seconds && ((t = 2), (a.seconds = 0)),
-                checkOSVersion(217) && (a.preventCompression = !0),
-                ["days", "hours", "minutes", "seconds"]),
+            $("#durationBox").popup("destroy").remove(),
+            (a.seconds = parseInt(a.seconds)),
+            65535 === a.seconds ? ((t = 1), (a.seconds = 0)) : 65534 === a.seconds && ((t = 2), (a.seconds = 0)),
+            checkOSVersion(217) && (a.preventCompression = !0),
+            ["days", "hours", "minutes", "seconds"]),
         i = [_("Days"), _("Hours"), _("Minutes"), _("Seconds")],
         s = [86400, 3600, 60, 1],
         r = [0, 23, 59, 59],
@@ -11269,9 +11265,9 @@ function showDurationBox(a) {
             (-1 === t && (u() <= a.minimum || o <= 0)) ||
             (1 === t && u() + s[i] > a.maximum) ||
             (0 !== r[i] && 0 !== e && Math.abs(o) >= r[i] && (n.val(0), (n = g.find(".inputs input").eq(e - 1)), (o = parseInt(n.val()))),
-                n.val(o + t),
-                a.incrementalUpdate && a.callback(u()),
-                !a.preventCompression &&
+            n.val(o + t),
+            a.incrementalUpdate && a.callback(u()),
+            !a.preventCompression &&
                 checkOSVersion(210) &&
                 ((i = 1 === t)
                     ? (60 <= u() && p("seconds", i), 10800 <= u() && p("minutes", i))
@@ -11295,29 +11291,29 @@ function showDurationBox(a) {
     }
     for (
         var h = "<fieldset class='ui-grid-" + String.fromCharCode(95 + o) + " incr'>",
-        f = "<div class='ui-grid-" + String.fromCharCode(95 + o) + " inputs'>",
-        m = "<fieldset class='ui-grid-" + String.fromCharCode(95 + o) + " decr'>",
-        g = $(
-            "<div data-role='popup' id='durationBox' data-theme='a'><div data-role='header' data-theme='b'><h1>" +
-            a.title +
-            "</h1></div><div class='ui-content'>" +
-            (a.helptext ? "<p class='rain-desc center smaller'>" + a.helptext + "</p>" : "") +
-            "<span></span>" +
-            (a.showSun
-                ? "<div class='ui-grid-a useSun'><div class='ui-block-a'><button value='65534' class='ui-mini ui-btn rise " +
-                (2 === t ? "ui-btn-active" : "") +
-                "'>" +
-                _("Sunrise to Sunset") +
-                "</button></div><div class='ui-block-b'><button value='65535' class='ui-mini ui-btn set " +
-                (1 === t ? "ui-btn-active" : "") +
-                "'>" +
-                _("Sunset to Sunrise") +
-                "</button></div></div>"
-                : "") +
-            (a.showBack ? "<button class='submit' data-theme='b'>" + _("Submit") + "</button>" : "") +
-            "</div></div>"
-        ),
-        v = l;
+            f = "<div class='ui-grid-" + String.fromCharCode(95 + o) + " inputs'>",
+            m = "<fieldset class='ui-grid-" + String.fromCharCode(95 + o) + " decr'>",
+            g = $(
+                "<div data-role='popup' id='durationBox' data-theme='a'><div data-role='header' data-theme='b'><h1>" +
+                    a.title +
+                    "</h1></div><div class='ui-content'>" +
+                    (a.helptext ? "<p class='rain-desc center smaller'>" + a.helptext + "</p>" : "") +
+                    "<span></span>" +
+                    (a.showSun
+                        ? "<div class='ui-grid-a useSun'><div class='ui-block-a'><button value='65534' class='ui-mini ui-btn rise " +
+                          (2 === t ? "ui-btn-active" : "") +
+                          "'>" +
+                          _("Sunrise to Sunset") +
+                          "</button></div><div class='ui-block-b'><button value='65535' class='ui-mini ui-btn set " +
+                          (1 === t ? "ui-btn-active" : "") +
+                          "'>" +
+                          _("Sunset to Sunrise") +
+                          "</button></div></div>"
+                        : "") +
+                    (a.showBack ? "<button class='submit' data-theme='b'>" + _("Submit") + "</button>" : "") +
+                    "</div></div>"
+            ),
+            v = l;
         v < s.length - a.granularity;
         v++
     )
@@ -11357,14 +11353,14 @@ function showDurationBox(a) {
             return d(e, -1), !1;
         }),
         a.showSun &&
-        g.find(".useSun").on("click", "button", function () {
-            var e = $(this),
-                t = g.find(".useSun").find("button").not(e),
-                n = g.find("span").find(".ui-btn,input");
-            t.removeClass("ui-btn-active"),
-                e.hasClass("ui-btn-active") ? (e.removeClass("ui-btn-active"), n.prop("disabled", !1).removeClass("ui-disabled")) : (e.addClass("ui-btn-active"), n.prop("disabled", !0).addClass("ui-disabled")),
-                a.incrementalUpdate && a.callback(u());
-        }),
+            g.find(".useSun").on("click", "button", function () {
+                var e = $(this),
+                    t = g.find(".useSun").find("button").not(e),
+                    n = g.find("span").find(".ui-btn,input");
+                t.removeClass("ui-btn-active"),
+                    e.hasClass("ui-btn-active") ? (e.removeClass("ui-btn-active"), n.prop("disabled", !1).removeClass("ui-disabled")) : (e.addClass("ui-btn-active"), n.prop("disabled", !0).addClass("ui-disabled")),
+                    a.incrementalUpdate && a.callback(u());
+            }),
         g
             .css("max-width", "350px")
             .one("popupafteropen", function () {
@@ -11384,11 +11380,11 @@ function showSingleDurationInput(n) {
         var t = parseInt(a.val());
         (-1 === e && t === n.minimum) || (1 === e && t === n.maximum) || (a.val(t + e), n.updateOnChange && i(t + e));
     }
-    var t = { data: 0, title: _("Duration"), minimum: 0, label: "", updateOnChange: !0, showBack: !0, callback: function () { } },
+    var t = { data: 0, title: _("Duration"), minimum: 0, label: "", updateOnChange: !0, showBack: !0, callback: function () {} },
         o =
             ((n = $.extend({}, t, n)),
-                $(
-                    "<div data-role='popup' id='singleDuration' data-theme='a'><div data-role='header' data-theme='b'><h1>" +
+            $(
+                "<div data-role='popup' id='singleDuration' data-theme='a'><div data-role='header' data-theme='b'><h1>" +
                     n.title +
                     "</h1></div><div class='ui-content'>" +
                     (n.helptext ? "<p class='rain-desc center smaller'>" + n.helptext + "</p>" : "") +
@@ -11399,7 +11395,7 @@ function showSingleDurationInput(n) {
                     "'><button class='incr ui-btn ui-btn-icon-notext ui-icon-carat-r btn-no-border'></button></div>" +
                     (n.updateOnChange && !n.showBack ? "" : "<input type='submit' data-theme='b' value='" + _("Submit") + "'>") +
                     "</div></div>"
-                )),
+            )),
         a = o.find("input");
     holdButton(o.find(".incr"), function () {
         return e(1), !1;
@@ -11424,7 +11420,7 @@ function showSingleDurationInput(n) {
         openPopup(o);
 }
 function showDateTimeInput(a, n) {
-    $("#datetimeInput").popup("destroy").remove(), a instanceof Date || (a = new Date(1e3 * a)).setMinutes(a.getMinutes() - a.getTimezoneOffset()), (n = n || function () { });
+    $("#datetimeInput").popup("destroy").remove(), a instanceof Date || (a = new Date(1e3 * a)).setMinutes(a.getMinutes() - a.getTimezoneOffset()), (n = n || function () {});
     function s(e, t) {
         a["setUTC" + e](a["getUTC" + e]() + t), n(new Date(a.getTime())), i();
     }
@@ -11438,10 +11434,10 @@ function showDateTimeInput(a, n) {
                         "Month" === r[o]
                             ? "<p class='center'>" + l[e] + "</p>"
                             : "Date" === r[o]
-                                ? "<p class='center'>" + e + ",</p>"
-                                : "Hours" === r[o]
-                                    ? "<p style='width:90%;display:inline-block' class='center'>" + e + "</p><p style='display:inline-block'>:</p>"
-                                    : "<p class='center'>" + e + "</p>"),
+                            ? "<p class='center'>" + e + ",</p>"
+                            : "Hours" === r[o]
+                            ? "<p style='width:90%;display:inline-block' class='center'>" + e + "</p><p style='display:inline-block'>:</p>"
+                            : "<p class='center'>" + e + "</p>"),
                     (t += "<div class='ui-block-" + String.fromCharCode(97 + o) + "'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='plus' data-iconpos='bottom'></a></div>"),
                     (n += "<div id='" + r[o] + "' class='ui-block-" + String.fromCharCode(97 + o) + "'>" + e + "</div>"),
                     (i += "<div class='ui-block-" + String.fromCharCode(97 + o) + "'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='minus' data-iconpos='bottom'></a></div>");
@@ -11502,51 +11498,51 @@ function showTimeInput(l) {
     }
     var i,
         e,
-        t = { minutes: 0, title: _("Time"), incrementalUpdate: !0, showBack: !0, showSun: !1, callback: function () { } },
+        t = { minutes: 0, title: _("Time"), incrementalUpdate: !0, showBack: !0, showSun: !1, callback: function () {} },
         t = ((l = $.extend({}, t, l)), $("#timeInput").popup("destroy").remove(), 2047 & l.minutes),
         o = 0,
         u = ((l.minutes >> 12) & 1 && (t = -t), (l.minutes >> 14) & 1 ? (o = 1) : (l.minutes >> 13) & 1 && (o = 2), 719 < l.minutes),
         p = $(
             "<div data-role='popup' id='timeInput' data-theme='a'><div data-role='header' data-theme='b'><h1>" +
-            l.title +
-            "</h1></div><div class='ui-content'>" +
-            (l.helptext ? "<p class='pad-top rain-desc center smaller'>" + l.helptext + "</p>" : "") +
-            "<span><fieldset class='ui-grid-" +
-            (isMetric ? "a" : "b") +
-            " incr'><div class='ui-block-a'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='plus' data-iconpos='bottom'></a></div><div class='ui-block-b'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='plus' data-iconpos='bottom'></a></div>" +
-            (isMetric ? "" : "<div class='ui-block-c'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='plus' data-iconpos='bottom'></a></div>") +
-            "</fieldset><div class='ui-grid-" +
-            (isMetric ? "a" : "b") +
-            " inputs'><div class='ui-block-a'><input data-wrapper-class='pad_buttons' class='hour dontPad' type='number' pattern='[0-9]*' value='" +
-            (isMetric ? pad(((l.minutes / 60) >> 0) % 24) + "'>" : (parseInt(l.minutes / 60) % 12 == 0 ? 12 : parseInt(l.minutes / 60) % 12) + "'>") +
-            "</div><div class='ui-block-b'><input data-wrapper-class='pad_buttons' class='minute' type='number' pattern='[0-9]*' value='" +
-            pad(l.minutes % 60) +
-            "'></div>" +
-            (isMetric ? "" : "<div class='ui-block-c'><p class='center period'>" + c() + "</p></div>") +
-            "</div><fieldset class='ui-grid-" +
-            (isMetric ? "a" : "b") +
-            " decr'><div class='ui-block-a'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='minus' data-iconpos='bottom'></a></div><div class='ui-block-b'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='minus' data-iconpos='bottom'></a></div>" +
-            (isMetric ? "" : "<div class='ui-block-c'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='minus' data-iconpos='bottom'></a></div>") +
-            "</fieldset></span>" +
-            (l.showSun
-                ? "<div class='ui-grid-a useSun'><div class='ui-block-a'><button class='ui-mini ui-btn rise " +
-                (1 === o ? "ui-btn-active" : "") +
-                "'>" +
-                _("Use Sunrise") +
-                "</button></div><div class='ui-block-b'><button class='ui-mini ui-btn set " +
-                (2 === o ? "ui-btn-active" : "") +
-                "'>" +
-                _("Use Sunset") +
-                "</button></div></div><div class='offsetInput'" +
-                (0 === o ? " style='display: none;'" : "") +
-                "><h5 class='center tight'>" +
-                _("Offset (minutes)") +
-                "</h5><div class='input_with_buttons'><button class='decr ui-btn ui-btn-icon-notext ui-icon-carat-l btn-no-border'></button><input class='dontPad' type='number' pattern='[0-9]*' value='" +
-                t +
-                "'><button class='incr ui-btn ui-btn-icon-notext ui-icon-carat-r btn-no-border'></button></div></div>"
-                : "") +
-            (l.showBack ? "<button class='submit' data-theme='b'>" + _("Submit") + "</button>" : "") +
-            "</div></div>"
+                l.title +
+                "</h1></div><div class='ui-content'>" +
+                (l.helptext ? "<p class='pad-top rain-desc center smaller'>" + l.helptext + "</p>" : "") +
+                "<span><fieldset class='ui-grid-" +
+                (isMetric ? "a" : "b") +
+                " incr'><div class='ui-block-a'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='plus' data-iconpos='bottom'></a></div><div class='ui-block-b'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='plus' data-iconpos='bottom'></a></div>" +
+                (isMetric ? "" : "<div class='ui-block-c'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='plus' data-iconpos='bottom'></a></div>") +
+                "</fieldset><div class='ui-grid-" +
+                (isMetric ? "a" : "b") +
+                " inputs'><div class='ui-block-a'><input data-wrapper-class='pad_buttons' class='hour dontPad' type='number' pattern='[0-9]*' value='" +
+                (isMetric ? pad(((l.minutes / 60) >> 0) % 24) + "'>" : (parseInt(l.minutes / 60) % 12 == 0 ? 12 : parseInt(l.minutes / 60) % 12) + "'>") +
+                "</div><div class='ui-block-b'><input data-wrapper-class='pad_buttons' class='minute' type='number' pattern='[0-9]*' value='" +
+                pad(l.minutes % 60) +
+                "'></div>" +
+                (isMetric ? "" : "<div class='ui-block-c'><p class='center period'>" + c() + "</p></div>") +
+                "</div><fieldset class='ui-grid-" +
+                (isMetric ? "a" : "b") +
+                " decr'><div class='ui-block-a'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='minus' data-iconpos='bottom'></a></div><div class='ui-block-b'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='minus' data-iconpos='bottom'></a></div>" +
+                (isMetric ? "" : "<div class='ui-block-c'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='minus' data-iconpos='bottom'></a></div>") +
+                "</fieldset></span>" +
+                (l.showSun
+                    ? "<div class='ui-grid-a useSun'><div class='ui-block-a'><button class='ui-mini ui-btn rise " +
+                      (1 === o ? "ui-btn-active" : "") +
+                      "'>" +
+                      _("Use Sunrise") +
+                      "</button></div><div class='ui-block-b'><button class='ui-mini ui-btn set " +
+                      (2 === o ? "ui-btn-active" : "") +
+                      "'>" +
+                      _("Use Sunset") +
+                      "</button></div></div><div class='offsetInput'" +
+                      (0 === o ? " style='display: none;'" : "") +
+                      "><h5 class='center tight'>" +
+                      _("Offset (minutes)") +
+                      "</h5><div class='input_with_buttons'><button class='decr ui-btn ui-btn-icon-notext ui-icon-carat-l btn-no-border'></button><input class='dontPad' type='number' pattern='[0-9]*' value='" +
+                      t +
+                      "'><button class='incr ui-btn ui-btn-icon-notext ui-icon-carat-r btn-no-border'></button></div></div>"
+                    : "") +
+                (l.showBack ? "<button class='submit' data-theme='b'>" + _("Submit") + "</button>" : "") +
+                "</div></div>"
         );
     p.find("button.submit").on("click", function () {
         l.callback(d()), p.popup("destroy").remove();
@@ -11570,17 +11566,17 @@ function showTimeInput(l) {
             return 0 === e.find(".ui-disabled").length && n(t, -1), !1;
         }),
         l.showSun &&
-        (p.find(".useSun").on("click", "button", function () {
-            var e = $(this),
-                t = p.find(".useSun").find("button").not(e),
-                n = p.find(".offsetInput"),
-                i = p.find("span").find(".ui-btn,input,p");
-            t.removeClass("ui-btn-active"),
-                e.hasClass("ui-btn-active")
-                    ? (e.removeClass("ui-btn-active"), n.slideUp(), i.prop("disabled", !1).removeClass("ui-disabled"))
-                    : (e.addClass("ui-btn-active"), n.slideDown(), i.prop("disabled", !0).addClass("ui-disabled")),
-                l.incrementalUpdate && l.callback(d());
-        }),
+            (p.find(".useSun").on("click", "button", function () {
+                var e = $(this),
+                    t = p.find(".useSun").find("button").not(e),
+                    n = p.find(".offsetInput"),
+                    i = p.find("span").find(".ui-btn,input,p");
+                t.removeClass("ui-btn-active"),
+                    e.hasClass("ui-btn-active")
+                        ? (e.removeClass("ui-btn-active"), n.slideUp(), i.prop("disabled", !1).removeClass("ui-disabled"))
+                        : (e.addClass("ui-btn-active"), n.slideDown(), i.prop("disabled", !0).addClass("ui-disabled")),
+                    l.incrementalUpdate && l.callback(d());
+            }),
             (i = p.find(".offsetInput").find("input")),
             (e = function (e) {
                 var t = parseInt(i.val());
@@ -11638,19 +11634,19 @@ function closePanel(e) {
     var t = $(".ui-panel-open");
     0 < t.length
         ? (t.one("panelclose", function () {
-            e();
-        }),
-            t.panel("close"))
+              e();
+          }),
+          t.panel("close"))
         : e();
 }
 function changeHeader(e) {
     var t = $("#header"),
         n =
-            ("" === (e = $.extend(!0, {}, { title: "", class: "", animate: !0, leftBtn: { icon: "", class: "", text: "", on: function () { } }, rightBtn: { icon: "", class: "", text: "", on: function () { } } }, e)).title &&
+            ("" === (e = $.extend(!0, {}, { title: "", class: "", animate: !0, leftBtn: { icon: "", class: "", text: "", on: function () {} }, rightBtn: { icon: "", class: "", text: "", on: function () {} } }, e)).title &&
                 "" === e.class &&
                 (e.class = "logo"),
-                $(
-                    "<button data-icon='" +
+            $(
+                "<button data-icon='" +
                     e.leftBtn.icon +
                     "' " +
                     ("" === e.leftBtn.text ? "data-iconpos='notext' " : "") +
@@ -11671,7 +11667,7 @@ function changeHeader(e) {
                     "'>" +
                     e.rightBtn.text +
                     "</button>"
-                )),
+            )),
         i = e.animate ? "fast" : 0;
     return (
         t
@@ -11706,10 +11702,10 @@ function getPicture(o) {
                         n = i.height,
                         t =
                             (n < t ? 200 < t && ((n *= 200 / t), (t = 200)) : 200 < n && ((t *= 200 / n), (n = 200)),
-                                (e.width = t),
-                                (e.height = n),
-                                e.getContext("2d").drawImage(i, 0, 0, t, n),
-                                e.toDataURL("image/jpeg", 0.5).replace("data:image/jpeg;base64,", ""));
+                            (e.width = t),
+                            (e.height = n),
+                            e.getContext("2d").drawImage(i, 0, 0, t, n),
+                            e.toDataURL("image/jpeg", 0.5).replace("data:image/jpeg;base64,", ""));
                     a.remove(), o(t);
                 }),
                     (i.src = e.target.result);
@@ -11723,7 +11719,7 @@ function goHome(e) {
         ($.mobile.document.one("pageshow", function () {
             delete $.mobile.navigate.history.getActive().transition;
         }),
-            changePage("#sprinklers", !0 === e ? { firstLoad: !0, showLoading: !1, transition: "none" } : { reverse: !0 }));
+        changePage("#sprinklers", !0 === e ? { firstLoad: !0, showLoading: !1, transition: "none" } : { reverse: !0 }));
 }
 function goBack() {
     var e = $(".ui-page-active");
@@ -11734,7 +11730,7 @@ function goBack() {
         else if ("sprinklers" === e || "start" === e || t)
             try {
                 navigator.app.exitApp();
-            } catch (e) { }
+            } catch (e) {}
         else 0 < pageHistoryCount && pageHistoryCount--, 0 === pageHistoryCount ? navigator.app.exitApp() : ((goingBack = !0), $.mobile.back());
     }
 }
@@ -11743,7 +11739,7 @@ function checkChangesBeforeBack() {
 }
 function checkChanges(e) {
     var t = $(".ui-page-active").find(".hasChanges");
-    if (((e = e || function () { }), 0 !== t.length))
+    if (((e = e || function () {}), 0 !== t.length))
         return (
             areYouSure(
                 _("Do you want to save your changes?"),
@@ -11757,17 +11753,17 @@ function checkChanges(e) {
         );
     e();
 }
-function showerror(message, duration) {
-    (duration = duration || 2500),
+function showerror(e, t) {
+    (t = t || 2500),
         clearTimeout(errorTimeout),
-        $.mobile.loading("show", { text: message, textVisible: !0, textonly: !0, theme: "b" }),
+        $.mobile.loading("show", { text: e, textVisible: !0, textonly: !0, theme: "b" }),
         (errorTimeout = setTimeout(function () {
             $.mobile.loading("hide");
-        }, duration));
+        }, t));
 }
 function loadLocalSettings() {
-    storage.get("isMetric", function (stored) {
-        switch (stored.isMetric) {
+    storage.get("isMetric", function (e) {
+        switch (e.isMetric) {
             case "true":
                 isMetric = !0;
                 break;
@@ -11775,8 +11771,8 @@ function loadLocalSettings() {
                 isMetric = !1;
         }
     }),
-        storage.get("groupView", function (stored) {
-            switch (stored.groupView) {
+        storage.get("groupView", function (e) {
+            switch (e.groupView) {
                 case "true":
                     groupView = !0;
                     break;
@@ -11785,62 +11781,62 @@ function loadLocalSettings() {
             }
         });
 }
-function fixInputClick($container) {
+function fixInputClick(e) {
     FastClick.notNeeded(document.body) ||
-        ($container.find("input[type='checkbox']:not([data-role='flipswitch']),.ui-select > .ui-btn").addClass("needsclick"),
-            $container.find(".ui-collapsible-heading-toggle").on("click", function () {
-                var $btn = $(this);
-                setTimeout(function () {
-                    $btn.removeClass("ui-btn-active");
-                }, 100);
-            }));
+        (e.find("input[type='checkbox']:not([data-role='flipswitch']),.ui-select > .ui-btn").addClass("needsclick"),
+        e.find(".ui-collapsible-heading-toggle").on("click", function () {
+            var e = $(this);
+            setTimeout(function () {
+                e.removeClass("ui-btn-active");
+            }, 100);
+        }));
 }
-function holdButton($buttons, handler) {
-    var repeatInterval;
-    $buttons.on(isTouchCapable ? "tap" : "click", handler)
-        .on("taphold", function (event) {
-            repeatInterval = setInterval(function () {
-                handler(event);
+function holdButton(e, t) {
+    var n;
+    e.on(isTouchCapable ? "tap" : "click", t)
+        .on("taphold", function (e) {
+            n = setInterval(function () {
+                t(e);
             }, 100);
         })
         .on("vmouseup vmouseout vmousecancel touchend", function () {
-            clearInterval(repeatInterval);
+            clearInterval(n);
         })
-        .on("touchmove", function (event) {
-            event.preventDefault();
+        .on("touchmove", function (e) {
+            e.preventDefault();
         });
 }
-function insertStyle(cssText) {
-    var styleEl = document.createElement("style");
-    (styleEl.innerHTML = cssText), document.head.appendChild(styleEl);
+function insertStyle(e) {
+    var t = document.createElement("style");
+    (t.innerHTML = e), document.head.appendChild(t);
 }
-function parseIntArray(arr) {
-    for (var idx = 0; idx < arr.length; idx++) arr[idx] = +arr[idx];
-    return arr;
+function parseIntArray(e) {
+    for (var t = 0; t < e.length; t++) e[t] = +e[t];
+    return e;
 }
-function getDurationText(seconds) {
-    return 65535 === seconds ? _("Sunset to Sunrise") : 65534 === seconds ? _("Sunrise to Sunset") : dhms2str(sec2dhms(seconds));
+function getDurationText(e) {
+    return 65535 === e ? _("Sunset to Sunrise") : 65534 === e ? _("Sunrise to Sunset") : dhms2str(sec2dhms(e));
 }
-function sec2hms(totalSeconds) {
-    var result = "",
-        hours = Math.max(0, parseInt(totalSeconds / 3600) % 24),
-        minutes = Math.max(0, parseInt(totalSeconds / 60) % 60),
-        secs = totalSeconds % 60;
-    return hours && (result += pad(hours) + ":"), result + pad(minutes) + ":" + pad(secs);
+function sec2hms(e) {
+    var t = "",
+        n = Math.max(0, parseInt(e / 3600) % 24),
+        i = Math.max(0, parseInt(e / 60) % 60),
+        e = e % 60;
+    return n && (t += pad(n) + ":"), t + pad(i) + ":" + pad(e);
 }
-function sec2dhms(totalSeconds) {
-    var sign = totalSeconds < 0 ? -1 : 1;
+function sec2dhms(e) {
+    var t = e < 0 ? -1 : 1;
     return (
-        (totalSeconds = Math.abs(totalSeconds)),
-        { days: Math.max(0, parseInt(totalSeconds / 86400)) * sign, hours: Math.max(0, parseInt((totalSeconds % 86400) / 3600)) * sign, minutes: Math.max(0, parseInt(((totalSeconds % 86400) % 3600) / 60)) * sign, seconds: Math.max(0, parseInt(((totalSeconds % 86400) % 3600) % 60)) * sign }
+        (e = Math.abs(e)),
+        { days: Math.max(0, parseInt(e / 86400)) * t, hours: Math.max(0, parseInt((e % 86400) / 3600)) * t, minutes: Math.max(0, parseInt(((e % 86400) % 3600) / 60)) * t, seconds: Math.max(0, parseInt(((e % 86400) % 3600) % 60)) * t }
     );
 }
-function dhms2str(dhms) {
-    var result = "";
-    return dhms.days && (result += dhms.days + _("d") + " "), dhms.hours && (result += dhms.hours + _("h") + " "), dhms.minutes && (result += dhms.minutes + _("m") + " "), dhms.seconds && (result += dhms.seconds + _("s") + " "), (result = "" === result ? "0" + _("s") : result).trim();
+function dhms2str(e) {
+    var t = "";
+    return e.days && (t += e.days + _("d") + " "), e.hours && (t += e.hours + _("h") + " "), e.minutes && (t += e.minutes + _("m") + " "), e.seconds && (t += e.seconds + _("s") + " "), (t = "" === t ? "0" + _("s") : t).trim();
 }
-function dhms2sec(dhms) {
-    return parseInt(86400 * dhms.days + 3600 * dhms.hours + 60 * dhms.minutes + dhms.seconds);
+function dhms2sec(e) {
+    return parseInt(86400 * e.days + 3600 * e.hours + 60 * e.minutes + e.seconds);
 }
 function isControllerConnected() {
     return !(
@@ -11853,75 +11849,75 @@ function isControllerConnected() {
         $.isEmptyObject(controller.stations)
     );
 }
-function exportObj(selector, data, emailSubject) {
-    var mailtoUrl;
-    (data = encodeURIComponent(JSON.stringify(data))),
+function exportObj(e, t, n) {
+    var i;
+    (t = encodeURIComponent(JSON.stringify(t))),
         isFileCapable
-            ? $(selector).attr({ href: "data:text/json;charset=utf-8," + data, download: "backup-" + new Date().toLocaleDateString().replace(/\//g, "-") + ".json" })
-            : ((emailSubject = emailSubject || "OpenSprinkler Data Export on " + dateToString(new Date())),
-                (mailtoUrl = "mailto:?subject=" + encodeURIComponent(emailSubject) + "&body=" + data),
-                $(selector)
-                    .attr("href", mailtoUrl)
-                    .on("click", function () {
-                        window.open(mailtoUrl);
-                    }));
+            ? $(e).attr({ href: "data:text/json;charset=utf-8," + t, download: "backup-" + new Date().toLocaleDateString().replace(/\//g, "-") + ".json" })
+            : ((n = n || "OpenSprinkler Data Export on " + dateToString(new Date())),
+              (i = "mailto:?subject=" + encodeURIComponent(n) + "&body=" + t),
+              $(e)
+                  .attr("href", i)
+                  .on("click", function () {
+                      window.open(i);
+                  }));
 }
-function sortObj(obj, sortBy) {
-    var key,
-        keys = [];
-    for (key in obj) obj.hasOwnProperty(key) && keys.push(key);
-    "function" == typeof sortBy
-        ? keys.sort(sortBy)
-        : "value" === sortBy
-            ? keys.sort(function (a, b) {
-                (a = obj[a]), (b = obj[b]);
-                return a < b ? -1 : b < a ? 1 : 0;
-            })
-            : keys.sort();
-    for (var result = {}, idx = 0; idx < keys.length; idx++) result[keys[idx]] = obj[keys[idx]];
-    return result;
+function sortObj(n, e) {
+    var t,
+        i = [];
+    for (t in n) n.hasOwnProperty(t) && i.push(t);
+    "function" == typeof e
+        ? i.sort(e)
+        : "value" === e
+        ? i.sort(function (e, t) {
+              (e = n[e]), (t = n[t]);
+              return e < t ? -1 : t < e ? 1 : 0;
+          })
+        : i.sort();
+    for (var o = {}, a = 0; a < i.length; a++) o[i[a]] = n[i[a]];
+    return o;
 }
-function getDayName(date, format) {
-    var fullNames = [_("Sunday"), _("Monday"), _("Tuesday"), _("Wednesday"), _("Thursday"), _("Friday"), _("Saturday")],
-        shortNames = [_("Sun"), _("Mon"), _("Tue"), _("Wed"), _("Thu"), _("Fri"), _("Sat")];
-    return ("short" === format ? shortNames : fullNames)[date.getDay()];
+function getDayName(e, t) {
+    var n = [_("Sunday"), _("Monday"), _("Tuesday"), _("Wednesday"), _("Thursday"), _("Friday"), _("Saturday")],
+        i = [_("Sun"), _("Mon"), _("Tue"), _("Wed"), _("Thu"), _("Fri"), _("Sat")];
+    return ("short" === t ? i : n)[e.getDay()];
 }
-function pad(num) {
-    num = String(num);
-    return (num = 1 === num.length ? "0" + num : num);
+function pad(e) {
+    e = String(e);
+    return (e = 1 === e.length ? "0" + e : e);
 }
-function htmlEscape(str) {
-    return String(str).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/'/g, "&#39;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+function htmlEscape(e) {
+    return String(e).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/'/g, "&#39;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
-function _(key) {
-    return ("object" == typeof language && language.hasOwnProperty(key) && language[key]) || key;
+function _(e) {
+    return ("object" == typeof language && language.hasOwnProperty(e) && language[e]) || e;
 }
 function setLang() {
     $("[data-translate]").text(function () {
-        var $el = $(this),
-            key = $el.data("translate");
-        if (!$el.is("input[type='submit']")) return _(key);
-        $el.val(_(key)), 0 < $el.parent("div.ui-btn").length && $el.button("refresh");
+        var e = $(this),
+            t = e.data("translate");
+        if (!e.is("input[type='submit']")) return _(t);
+        e.val(_(t)), 0 < e.parent("div.ui-btn").length && e.button("refresh");
     }),
         $(".ui-toolbar-back-btn").text(_("Back")),
         checkCurrLang();
 }
-function updateLang(langCode) {
+function updateLang(e) {
     (language = {}),
-        void 0 === langCode
-            ? storage.get("lang", function (stored) {
-                updateLang((stored.lang || navigator.language || navigator.browserLanguage || navigator.systemLanguage || navigator.userLanguage || "en").substring(0, 2));
-            })
-            : (storage.set({ lang: langCode }),
-                "en" === (currLang = langCode)
-                    ? setLang()
-                    : $.getJSON(getAppURLPath() + "locale/" + langCode + ".js", function (translations) {
-                        (language = translations.messages), setLang();
+        void 0 === e
+            ? storage.get("lang", function (e) {
+                  updateLang((e.lang || navigator.language || navigator.browserLanguage || navigator.systemLanguage || navigator.userLanguage || "en").substring(0, 2));
+              })
+            : (storage.set({ lang: e }),
+              "en" === (currLang = e)
+                  ? setLang()
+                  : $.getJSON(getAppURLPath() + "locale/" + e + ".js", function (e) {
+                        (language = e.messages), setLang();
                     }).fail(setLang));
 }
 function languageSelect() {
     $("#localization").popup("destroy").remove();
-    var langListHtml =
+    var n =
         "<div data-role='popup' data-theme='a' id='localization' data-corners='false'><ul data-inset='true' data-role='listview' id='lang' data-corners='false'><li data-role='list-divider' data-theme='b' class='center' data-translate='Localization'>" +
         _("Localization") +
         "</li>";
@@ -11960,155 +11956,155 @@ function languageSelect() {
                 sv: "Swedish",
                 ro: "Romanian",
             },
-            function (langCode, langName) {
-                langListHtml += "<li><a href='#' data-lang-code='" + langCode + "'><span data-translate='" + langName + "'>" + _(langName) + "</span> (" + langCode.toUpperCase() + ")</a></li>";
+            function (e, t) {
+                n += "<li><a href='#' data-lang-code='" + e + "'><span data-translate='" + t + "'>" + _(t) + "</span> (" + e.toUpperCase() + ")</a></li>";
             }
         ),
-        (langListHtml += "</ul></div>"),
-        (langListHtml = $(langListHtml)).find("a").on("click", function () {
+        (n += "</ul></div>"),
+        (n = $(n)).find("a").on("click", function () {
             updateLang($(this).data("lang-code"));
         }),
-        openPopup(langListHtml),
+        openPopup(n),
         !1
     );
 }
 function checkCurrLang() {
-    storage.get("lang", function (stored) {
-        var $popup = $("#localization");
-        $popup.find("a").each(function () {
-            var $link = $(this);
-            $link.data("lang-code") === stored.lang ? $link.removeClass("ui-icon-carat-r").addClass("ui-icon-check") : $link.removeClass("ui-icon-check").addClass("ui-icon-carat-r");
+    storage.get("lang", function (t) {
+        var e = $("#localization");
+        e.find("a").each(function () {
+            var e = $(this);
+            e.data("lang-code") === t.lang ? e.removeClass("ui-icon-carat-r").addClass("ui-icon-check") : e.removeClass("ui-icon-check").addClass("ui-icon-carat-r");
         }),
-            $popup.find("li.ui-last-child").removeClass("ui-last-child");
+            e.find("li.ui-last-child").removeClass("ui-last-child");
     });
 }
 function getAppURLPath() {
     return currLocal ? $.mobile.path.parseUrl($("head").find("script[src$='app.js']").attr("src")).hrefNoHash.slice(0, -9) : "";
 }
-function getUrlVars(url) {
-    for (var pair, params = {}, parts = url.slice(url.indexOf("?") + 1).split("&"), idx = 0; idx < parts.length; idx++) params[(pair = parts[idx].split("="))[0]] = decodeURIComponent(pair[1].replace(/\+/g, "%20"));
-    return params;
+function getUrlVars(e) {
+    for (var t, n = {}, i = e.slice(e.indexOf("?") + 1).split("&"), o = 0; o < i.length; o++) n[(t = i[o].split("="))[0]] = decodeURIComponent(t[1].replace(/\+/g, "%20"));
+    return n;
 }
-function escapeJSON(obj) {
-    return JSON.stringify(obj).replace(/\{|\}/g, "");
+function escapeJSON(e) {
+    return JSON.stringify(e).replace(/\{|\}/g, "");
 }
-function unescapeJSON(str) {
-    return JSON.parse("{" + str + "}");
+function unescapeJSON(e) {
+    return JSON.parse("{" + e + "}");
 }
-function isMD5(str) {
-    return /^[a-f0-9]{32}$/i.test(str);
+function isMD5(e) {
+    return /^[a-f0-9]{32}$/i.test(e);
 }
-function sortByStation(a, b) {
-    return a.station < b.station ? -1 : a.station > b.station ? 1 : 0;
+function sortByStation(e, t) {
+    return e.station < t.station ? -1 : e.station > t.station ? 1 : 0;
 }
-function minutesToTime(totalMinutes) {
-    var ampm = 719 < totalMinutes ? "PM" : "AM",
-        hours12 = parseInt(totalMinutes / 60) % 12;
-    return 0 === hours12 && (hours12 = 12), isMetric ? pad(((totalMinutes / 60) >> 0) % 24) + ":" + pad(totalMinutes % 60) : hours12 + ":" + pad(totalMinutes % 60) + " " + ampm;
+function minutesToTime(e) {
+    var t = 719 < e ? "PM" : "AM",
+        n = parseInt(e / 60) % 12;
+    return 0 === n && (n = 12), isMetric ? pad(((e / 60) >> 0) % 24) + ":" + pad(e % 60) : n + ":" + pad(e % 60) + " " + t;
 }
-function getBitFromByte(byte, bitPos) {
-    return 0 != (byte & (1 << bitPos));
+function getBitFromByte(e, t) {
+    return 0 != (e & (1 << t));
 }
 function getTimezoneOffset() {
-    var tzOffset = controller.options.tz - 48,
-        sign = 0 <= tzOffset ? 1 : -1;
-    return (60 * ((Math.abs(tzOffset) / 4) >> 0) + ((((Math.abs(tzOffset) % 4) * 15) / 10) >> 0) + (((Math.abs(tzOffset) % 4) * 15) % 10)) * sign;
+    var e = controller.options.tz - 48,
+        t = 0 <= e ? 1 : -1;
+    return (60 * ((Math.abs(e) / 4) >> 0) + ((((Math.abs(e) % 4) * 15) / 10) >> 0) + (((Math.abs(e) % 4) * 15) % 10)) * t;
 }
-function humaniseDuration(startTime, endTime) {
-    var unit,
-        elapsed = Math.floor((endTime - startTime) / 1e3),
-        isFuture = 0 < elapsed;
-    return (elapsed = Math.abs(elapsed)) < 10
+function humaniseDuration(e, t) {
+    var n,
+        t = Math.floor((t - e) / 1e3),
+        e = 0 < t;
+    return (t = Math.abs(t)) < 10
         ? _("Just Now")
-        : ((unit = _(
-            1 <= (unit = Math.floor(elapsed / 31536e3))
-                ? 1 < unit
-                    ? "years"
-                    : "year"
-                : 1 <= (unit = Math.floor(elapsed / 2592e3))
-                    ? 1 < unit
-                        ? "months"
-                        : "month"
-                    : 1 <= (unit = Math.floor(elapsed / 86400))
-                        ? 1 < unit
-                            ? "days"
-                            : "day"
-                        : 1 <= (unit = Math.floor(elapsed / 3600))
-                            ? 1 < unit
-                                ? "hours"
-                                : "hour"
-                            : 1 <= (unit = Math.floor(elapsed / 60))
-                                ? 1 < unit
-                                    ? "minutes"
-                                    : "minute"
-                                : 1 < (unit = elapsed)
-                                    ? "seconds"
-                                    : "second"
-        )),
-            isFuture ? _("In") + " " + unit + " " + unit : unit + " " + unit + " " + _("ago"));
+        : ((t = _(
+              1 <= (n = Math.floor(t / 31536e3))
+                  ? 1 < n
+                      ? "years"
+                      : "year"
+                  : 1 <= (n = Math.floor(t / 2592e3))
+                  ? 1 < n
+                      ? "months"
+                      : "month"
+                  : 1 <= (n = Math.floor(t / 86400))
+                  ? 1 < n
+                      ? "days"
+                      : "day"
+                  : 1 <= (n = Math.floor(t / 3600))
+                  ? 1 < n
+                      ? "hours"
+                      : "hour"
+                  : 1 <= (n = Math.floor(t / 60))
+                  ? 1 < n
+                      ? "minutes"
+                      : "minute"
+                  : 1 < (n = t)
+                  ? "seconds"
+                  : "second"
+          )),
+          e ? _("In") + " " + n + " " + t : n + " " + t + " " + _("ago"));
 }
-function dateToString(date, applyTzOffset, format) {
-    var dayNames = [_("Sun"), _("Mon"), _("Tue"), _("Wed"), _("Thu"), _("Fri"), _("Sat")],
-        monthNames = [_("Jan"), _("Feb"), _("Mar"), _("Apr"), _("May"), _("Jun"), _("Jul"), _("Aug"), _("Sep"), _("Oct"), _("Nov"), _("Dec")];
-    return 0 === date.getTime()
+function dateToString(e, t, n) {
+    var i = [_("Sun"), _("Mon"), _("Tue"), _("Wed"), _("Thu"), _("Fri"), _("Sat")],
+        o = [_("Jan"), _("Feb"), _("Mar"), _("Apr"), _("May"), _("Jun"), _("Jul"), _("Aug"), _("Sep"), _("Oct"), _("Nov"), _("Dec")];
+    return 0 === e.getTime()
         ? "--"
-        : (!1 !== applyTzOffset && date.setMinutes(date.getMinutes() + date.getTimezoneOffset()),
-            "de" === currLang
-                ? pad(date.getDate()) + "." + pad(date.getMonth() + 1) + "." + date.getFullYear() + " " + pad(date.getHours()) + ":" + pad(date.getMinutes()) + ":" + pad(date.getSeconds())
-                : 1 === format
-                    ? monthNames[date.getMonth()] + " " + pad(date.getDate()) + ", " + date.getFullYear() + " " + pad(date.getHours()) + ":" + pad(date.getMinutes()) + ":" + pad(date.getSeconds())
-                    : 2 === format
-                        ? monthNames[date.getMonth()] + " " + pad(date.getDate()) + ", " + pad(date.getHours()) + ":" + pad(date.getMinutes()) + ":" + pad(date.getSeconds())
-                        : dayNames[date.getDay()] + ", " + pad(date.getDate()) + " " + monthNames[date.getMonth()] + " " + date.getFullYear() + " " + pad(date.getHours()) + ":" + pad(date.getMinutes()) + ":" + pad(date.getSeconds()));
+        : (!1 !== t && e.setMinutes(e.getMinutes() + e.getTimezoneOffset()),
+          "de" === currLang
+              ? pad(e.getDate()) + "." + pad(e.getMonth() + 1) + "." + e.getFullYear() + " " + pad(e.getHours()) + ":" + pad(e.getMinutes()) + ":" + pad(e.getSeconds())
+              : 1 === n
+              ? o[e.getMonth()] + " " + pad(e.getDate()) + ", " + e.getFullYear() + " " + pad(e.getHours()) + ":" + pad(e.getMinutes()) + ":" + pad(e.getSeconds())
+              : 2 === n
+              ? o[e.getMonth()] + " " + pad(e.getDate()) + ", " + pad(e.getHours()) + ":" + pad(e.getMinutes()) + ":" + pad(e.getSeconds())
+              : i[e.getDay()] + ", " + pad(e.getDate()) + " " + o[e.getMonth()] + " " + e.getFullYear() + " " + pad(e.getHours()) + ":" + pad(e.getMinutes()) + ":" + pad(e.getSeconds()));
 }
-function transformKeys(optionsObj) {
-    var transformed;
+function transformKeys(n) {
+    var i;
     return checkOSVersion(219)
-        ? ((transformed = {}),
-            Object.keys(optionsObj).forEach(function (key) {
-                var match = key.match(/^o(\d+)$/);
-                match && match[1]
-                    ? (transformed[
-                        Object.keys(keyIndex).find(function (k) {
-                            return keyIndex[k] === parseInt(match[1], 10);
+        ? ((i = {}),
+          Object.keys(n).forEach(function (e) {
+              var t = e.match(/^o(\d+)$/);
+              t && t[1]
+                  ? (i[
+                        Object.keys(keyIndex).find(function (e) {
+                            return keyIndex[e] === parseInt(t[1], 10);
                         })
-                    ] = optionsObj[key])
-                    : (transformed[key] = optionsObj[key]);
-            }),
-            transformed)
-        : optionsObj;
+                    ] = n[e])
+                  : (i[e] = n[e]);
+          }),
+          i)
+        : n;
 }
-function transformKeysinString(queryString) {
-    var params = {},
-        parts =
-            (queryString.split("&").forEach(function (part) {
-                (part = part.split("=")), (params[part[0]] = part[1]);
+function transformKeysinString(e) {
+    var t = {},
+        n =
+            (e.split("&").forEach(function (e) {
+                (e = e.split("=")), (t[e[0]] = e[1]);
             }),
-                (params = transformKeys(params)),
-                []);
+            (t = transformKeys(t)),
+            []);
     return (
-        Object.keys(params).forEach(function (key) {
-            parts.push(key + "=" + params[key]);
+        Object.keys(t).forEach(function (e) {
+            n.push(e + "=" + t[e]);
         }),
-        (queryString = parts.join("&"))
+        (e = n.join("&"))
     );
 }
-function Supported() { }
-function Station() { }
+function Supported() {}
+function Station() {}
 ($.fn.focusInput = function () {
-    var range;
+    var e;
     return (
         this.get(0).setSelectionRange
             ? (this.focus(), this.get(0).setSelectionRange(0, this.val().length))
-            : this.get(0).createTextRange && ((range = this.get(0).createTextRange()).collapse(!0), range.moveEnd("character", this.val().length), range.moveStart("character", 0), range.select()),
+            : this.get(0).createTextRange && ((e = this.get(0).createTextRange()).collapse(!0), e.moveEnd("character", this.val().length), e.moveStart("character", 0), e.select()),
         this
     );
 }),
-    (Number.prototype.clamp = function (min, max) {
-        return Math.min(Math.max(this, min), max);
+    (Number.prototype.clamp = function (e, t) {
+        return Math.min(Math.max(this, e), t);
     }),
-    (Supported.master = function (masterNum) {
-        switch (masterNum) {
+    (Supported.master = function (e) {
+        switch (e) {
             case MASTER_STATION_1:
                 return !!controller.options.mas;
             case MASTER_STATION_2:
@@ -12120,8 +12116,8 @@ function Station() { }
     (Supported.ignoreRain = function () {
         return "object" == typeof controller.stations.ignore_rain;
     }),
-    (Supported.ignoreSensor = function (sensorNum) {
-        switch (sensorNum) {
+    (Supported.ignoreSensor = function (e) {
+        switch (e) {
             case IGNORE_SENSOR_1:
                 return "object" == typeof controller.stations.ignore_sn1;
             case IGNORE_SENSOR_2:
@@ -12151,167 +12147,167 @@ function Station() { }
     (Supported.dateRange = function () {
         return checkOSVersion(220);
     });
-var ProgramStatusOptions = { PID: 0, REM: 1, START: 2, GID: 3, GALLONS: 4 };
+var ProgramStatusOptions = { PID: 0, REM: 1, START: 2, GID: 3 , GALLONS: 4};
 function getNumberProgramStatusOptions() {
     if (!(controller.settings.ps.length <= 0)) return controller.settings.ps[0].length;
 }
-function StationAttribute() { }
-function CardList() { }
-function Card() { }
-function Groups() { }
-function StationQueue() { }
-function mapIndexToGIDValue(groupIndex) {
-    return groupIndex - NUM_SEQ_GROUPS ? groupIndex : PARALLEL_GID_VALUE;
+function StationAttribute() {}
+function CardList() {}
+function Card() {}
+function Groups() {}
+function StationQueue() {}
+function mapIndexToGIDValue(e) {
+    return e - NUM_SEQ_GROUPS ? e : PARALLEL_GID_VALUE;
 }
-function mapGIDValueToName(gidValue) {
-    switch (gidValue) {
+function mapGIDValueToName(e) {
+    switch (e) {
         case PARALLEL_GID_VALUE:
             return PARALLEL_GROUP_NAME;
         case MASTER_GID_VALUE:
             return MASTER_GROUP_NAME;
         default:
-            return String.fromCharCode(65 + gidValue);
+            return String.fromCharCode(65 + e);
     }
 }
-function mapGIDNameToValue(groupName) {
-    switch (groupName) {
+function mapGIDNameToValue(e) {
+    switch (e) {
         case PARALLEL_GROUP_NAME:
             return PARALLEL_GID_VALUE;
         case MASTER_GROUP_NAME:
             return MASTER_GID_VALUE;
         default:
-            return groupName.charCodeAt(0) - 65;
+            return e.charCodeAt(0) - 65;
     }
 }
-(Station.getName = function (stationIndex) {
-    return controller.stations.snames[stationIndex];
+(Station.getName = function (e) {
+    return controller.stations.snames[e];
 }),
-    (Station.setName = function (stationIndex, name) {
-        controller.settings.snames[stationIndex] = name;
+    (Station.setName = function (e, t) {
+        controller.settings.snames[e] = t;
     }),
-    (Station.getPID = function (stationIndex) {
-        return controller.settings.ps[stationIndex][ProgramStatusOptions.PID];
+    (Station.getPID = function (e) {
+        return controller.settings.ps[e][ProgramStatusOptions.PID];
     }),
-    (Station.setPID = function (stationIndex, pid) {
-        controller.settings.ps[stationIndex][ProgramStatusOptions.PID] = pid;
+    (Station.setPID = function (e, t) {
+        controller.settings.ps[e][ProgramStatusOptions.PID] = t;
     }),
-    (Station.getRemainingRuntime = function (stationIndex) {
-        return controller.settings.ps[stationIndex][ProgramStatusOptions.REM];
+    (Station.getRemainingRuntime = function (e) {
+        return controller.settings.ps[e][ProgramStatusOptions.REM];
     }),
-    (Station.setRemainingRuntime = function (stationIndex, runtime) {
-        controller.settings.ps[stationIndex][ProgramStatusOptions.REM] = runtime;
+    (Station.setRemainingRuntime = function (e, t) {
+        controller.settings.ps[e][ProgramStatusOptions.REM] = t;
     }),
-    (Station.getStartTime = function (stationIndex) {
-        return controller.settings.ps[stationIndex][ProgramStatusOptions.START];
+    (Station.getStartTime = function (e) {
+        return controller.settings.ps[e][ProgramStatusOptions.START];
     }),
-    (Station.setStartTime = function (stationIndex, startTime) {
-        controller.settings.ps[stationIndex][ProgramStatusOptions.START] = startTime;
+    (Station.setStartTime = function (e, t) {
+        controller.settings.ps[e][ProgramStatusOptions.START] = t;
     }),
-    (Station.getGIDValue = function (stationIndex) {
-        if (Supported.groups()) return controller.settings.ps[stationIndex][ProgramStatusOptions.GID];
+    (Station.getGIDValue = function (e) {
+        if (Supported.groups()) return controller.settings.ps[e][ProgramStatusOptions.GID];
     }),
-    (Station.setGIDValue = function (stationIndex, gidValue) {
-        Supported.groups() && (controller.settings.ps[stationIndex][ProgramStatusOptions.GID] = gidValue);
+    (Station.setGIDValue = function (e, t) {
+        Supported.groups() && (controller.settings.ps[e][ProgramStatusOptions.GID] = t);
     }),
-    (Station.getStatus = function (stationIndex) {
-        return controller.status[stationIndex];
+    (Station.getStatus = function (e) {
+        return controller.status[e];
     }),
-    (Station.setStatus = function (stationIndex, status) {
-        controller.status[stationIndex] = status;
+    (Station.setStatus = function (e, t) {
+        controller.status[e] = t;
     }),
-    (Station.isRunning = function (stationIndex) {
-        return 0 < Station.getStatus(stationIndex);
+    (Station.isRunning = function (e) {
+        return 0 < Station.getStatus(e);
     }),
-    (Station.isMaster = function (stationIndex) {
-        var master1 = "number" == typeof controller.options.mas ? controller.options.mas : 0,
-            master2 = "number" == typeof controller.options.mas2 ? controller.options.mas2 : 0;
-        return master1 === ++stationIndex ? 1 : master2 === stationIndex ? 2 : 0;
+    (Station.isMaster = function (e) {
+        var t = "number" == typeof controller.options.mas ? controller.options.mas : 0,
+            n = "number" == typeof controller.options.mas2 ? controller.options.mas2 : 0;
+        return t === ++e ? 1 : n === e ? 2 : 0;
     }),
-    (Station.isSequential = function (stationIndex) {
-        return 0 < StationAttribute.getSequential(stationIndex);
+    (Station.isSequential = function (e) {
+        return 0 < StationAttribute.getSequential(e);
     }),
-    (Station.isSpecial = function (stationIndex) {
-        return 0 < StationAttribute.getSpecial(stationIndex);
+    (Station.isSpecial = function (e) {
+        return 0 < StationAttribute.getSpecial(e);
     }),
-    (Station.isDisabled = function (stationIndex) {
-        return 0 < StationAttribute.getDisabled(stationIndex);
+    (Station.isDisabled = function (e) {
+        return 0 < StationAttribute.getDisabled(e);
     }),
-    (StationAttribute.getMasterOperation = function (stationIndex, masterNum) {
-        var byteArr,
-            bytePos = (stationIndex / 8) >> 0;
-        if (!Supported.master(masterNum)) return 0;
-        switch (masterNum) {
+    (StationAttribute.getMasterOperation = function (e, t) {
+        var n,
+            i = (e / 8) >> 0;
+        if (!Supported.master(t)) return 0;
+        switch (t) {
             case MASTER_STATION_1:
-                byteArr = controller.stations.masop;
+                n = controller.stations.masop;
                 break;
             case MASTER_STATION_2:
-                byteArr = controller.stations.masop2;
+                n = controller.stations.masop2;
                 break;
             default:
                 return 0;
         }
-        return byteArr[bytePos] & (1 << stationIndex % 8) ? 1 : 0;
+        return n[i] & (1 << e % 8) ? 1 : 0;
     }),
-    (StationAttribute.getIgnoreRain = function (stationIndex) {
-        return Supported.ignoreRain() && controller.stations.ignore_rain[(stationIndex / 8) >> 0] & (1 << stationIndex % 8) ? 1 : 0;
+    (StationAttribute.getIgnoreRain = function (e) {
+        return Supported.ignoreRain() && controller.stations.ignore_rain[(e / 8) >> 0] & (1 << e % 8) ? 1 : 0;
     }),
-    (StationAttribute.getIgnoreSensor = function (stationIndex, sensorNum) {
-        var byteArr,
-            bytePos = (stationIndex / 8) >> 0;
-        if (!Supported.ignoreSensor(sensorNum)) return 0;
-        switch (sensorNum) {
+    (StationAttribute.getIgnoreSensor = function (e, t) {
+        var n,
+            i = (e / 8) >> 0;
+        if (!Supported.ignoreSensor(t)) return 0;
+        switch (t) {
             case IGNORE_SENSOR_1:
-                byteArr = controller.stations.ignore_sn1;
+                n = controller.stations.ignore_sn1;
                 break;
             case IGNORE_SENSOR_2:
-                byteArr = controller.stations.ignore_sn2;
+                n = controller.stations.ignore_sn2;
                 break;
             default:
                 return 0;
         }
-        return byteArr[bytePos] & (1 << stationIndex % 8) ? 1 : 0;
+        return n[i] & (1 << e % 8) ? 1 : 0;
     }),
-    (StationAttribute.getActRelay = function (stationIndex) {
-        return Supported.actRelay() && controller.stations.act_relay[(stationIndex / 8) >> 0] & (1 << stationIndex % 8) ? 1 : 0;
+    (StationAttribute.getActRelay = function (e) {
+        return Supported.actRelay() && controller.stations.act_relay[(e / 8) >> 0] & (1 << e % 8) ? 1 : 0;
     }),
-    (StationAttribute.getDisabled = function (stationIndex) {
-        return Supported.disabled() && controller.stations.stn_dis[(stationIndex / 8) >> 0] & (1 << stationIndex % 8) ? 1 : 0;
+    (StationAttribute.getDisabled = function (e) {
+        return Supported.disabled() && controller.stations.stn_dis[(e / 8) >> 0] & (1 << e % 8) ? 1 : 0;
     }),
-    (StationAttribute.getSequential = function (stationIndex) {
-        return Supported.groups() ? (Station.getGIDValue !== PARALLEL_GID_VALUE ? 1 : 0) : Supported.sequential() && controller.stations.stn_seq[(stationIndex / 8) >> 0] & (1 << stationIndex % 8) ? 1 : 0;
+    (StationAttribute.getSequential = function (e) {
+        return Supported.groups() ? (Station.getGIDValue !== PARALLEL_GID_VALUE ? 1 : 0) : Supported.sequential() && controller.stations.stn_seq[(e / 8) >> 0] & (1 << e % 8) ? 1 : 0;
     }),
-    (StationAttribute.getSpecial = function (stationIndex) {
-        return Supported.special() && controller.stations.stn_spe[(stationIndex / 8) >> 0] & (1 << stationIndex % 8) ? 1 : 0;
+    (StationAttribute.getSpecial = function (e) {
+        return Supported.special() && controller.stations.stn_spe[(e / 8) >> 0] & (1 << e % 8) ? 1 : 0;
     }),
-    (CardList.getAllCards = function ($list) {
-        return $list.filter(".card");
+    (CardList.getAllCards = function (e) {
+        return e.filter(".card");
     }),
-    (CardList.getCardBySID = function ($list, stationId) {
-        return $list.filter("[data-station='" + stationId + "']");
+    (CardList.getCardBySID = function (e, t) {
+        return e.filter("[data-station='" + t + "']");
     }),
-    (CardList.getCardByIndex = function ($list, idx) {
-        return $($list[idx]);
+    (CardList.getCardByIndex = function (e, t) {
+        return $(e[t]);
     }),
-    (Card.getSID = function ($card) {
-        return $card.data("station");
+    (Card.getSID = function (e) {
+        return e.data("station");
     }),
-    (Card.getDivider = function ($card) {
-        return $card.find(".content-divider");
+    (Card.getDivider = function (e) {
+        return e.find(".content-divider");
     }),
-    (Card.getGroupLabel = function ($card) {
-        if (Supported.groups()) return $card.find(".station-gid");
+    (Card.getGroupLabel = function (e) {
+        if (Supported.groups()) return e.find(".station-gid");
     }),
-    (Card.setGroupLabel = function ($card, labelText) {
-        Supported.groups() && (($card = Card.getGroupLabel($card)).removeClass("hidden"), $card.text(labelText));
+    (Card.setGroupLabel = function (e, t) {
+        Supported.groups() && ((e = Card.getGroupLabel(e)).removeClass("hidden"), e.text(t));
     }),
-    (Card.getGIDValue = function ($card) {
-        return Supported.groups() ? (($card = $($card.children()[0]).children().filter("span")), ($card = $($card[$card.length - 1])), parseInt($card.attr("data-gid"))) : 0;
+    (Card.getGIDValue = function (e) {
+        return Supported.groups() ? ((e = $(e.children()[0]).children().filter("span")), (e = $(e[e.length - 1])), parseInt(e.attr("data-gid"))) : 0;
     }),
-    (Card.getGIDName = function ($card) {
-        return mapGIDValueToName(Station.getGIDValue(Card.getSID($card)));
+    (Card.getGIDName = function (e) {
+        return mapGIDValueToName(Station.getGIDValue(Card.getSID(e)));
     }),
-    (Card.isMasterStation = function ($card) {
-        return Station.isMaster(Card.getSID($card));
+    (Card.isMasterStation = function (e) {
+        return Station.isMaster(Card.getSID(e));
     }),
     (Groups.numActiveStations = function (t) {
         var n = $(".station-status.on, .station-status.wait").parents(".card"),
@@ -12338,7 +12334,7 @@ function mapGIDNameToValue(groupName) {
         return controller.settings.nq;
     });
 var dateRegex = /[0-9]{1,2}[\/][0-9]{1,2}/g;
-function Program() { }
+function Program() {}
 function extractDateFromString(e) {
     return e.match(dateRegex);
 }
@@ -12382,62 +12378,62 @@ function q(e) {
         s[t] ||
             void 0 === s.shouldRetry ||
             ((e[t] = !0),
-                (l = p.Deferred()),
-                (c = p.Deferred()),
-                (d = {}),
-                (u = 0),
-                (function o(a, t, n) {
-                    (t
-                        ? (function (e, t, n) {
-                            var i,
-                                o = s.shouldRetry;
-                            switch (typeof o) {
-                                case "number":
-                                    i = t < o;
-                                    break;
-                                case "boolean":
-                                    i = o;
-                                    break;
-                                case "function":
-                                    i = o(e, t, n);
-                            }
-                            return "object" == typeof i && "function" == typeof i.then
-                                ? p
+            (l = p.Deferred()),
+            (c = p.Deferred()),
+            (d = {}),
+            (u = 0),
+            (function o(a, t, n) {
+                (t
+                    ? (function (e, t, n) {
+                          var i,
+                              o = s.shouldRetry;
+                          switch (typeof o) {
+                              case "number":
+                                  i = t < o;
+                                  break;
+                              case "boolean":
+                                  i = o;
+                                  break;
+                              case "function":
+                                  i = o(e, t, n);
+                          }
+                          return "object" == typeof i && "function" == typeof i.then
+                              ? p
                                     .Deferred(function (e) {
                                         i.then(e.resolve, function () {
                                             e.resolve(!1);
                                         });
                                     })
                                     .promise()
-                                : p.when(i);
-                        })(t, u++, a.type || "GET")
-                        : p.when(!0)
-                    ).done(function (e) {
-                        !0 === e
-                            ? (t ? p.ajax(a) : i).then(
-                                function (e, t, n) {
-                                    (r = n.status), l.resolveWith(this, arguments), l.done(d[r]), c.resolveWith(this, [n, t]);
-                                },
-                                function (e, t) {
-                                    var n = arguments,
-                                        i = this;
-                                    o(a, e, function () {
-                                        (r = e.status), l.rejectWith(i, n), l.fail(d[r]), c.resolveWith(i, [e, t]);
-                                    });
-                                }
-                            )
-                            : n();
-                    });
-                })(p.extend({}, e, { success: p.noop, error: p.noop, complete: p.noop, statusCode: {} })),
-                i.complete && ((i.complete = c.done), (i.success = l.done), (i.error = l.fail)),
-                p.extend(i, l.promise()),
-                (i.statusCode = function (e) {
-                    var t, n;
-                    if (e)
-                        if ((n = l).state ? "pending" !== n.state() : n.isResolved() || n.isRejected()) l.then(e[r], e[r]);
-                        else for (t in e) d[t] = [d[t], e[t]];
-                    return this;
-                }));
+                              : p.when(i);
+                      })(t, u++, a.type || "GET")
+                    : p.when(!0)
+                ).done(function (e) {
+                    !0 === e
+                        ? (t ? p.ajax(a) : i).then(
+                              function (e, t, n) {
+                                  (r = n.status), l.resolveWith(this, arguments), l.done(d[r]), c.resolveWith(this, [n, t]);
+                              },
+                              function (e, t) {
+                                  var n = arguments,
+                                      i = this;
+                                  o(a, e, function () {
+                                      (r = e.status), l.rejectWith(i, n), l.fail(d[r]), c.resolveWith(i, [e, t]);
+                                  });
+                              }
+                          )
+                        : n();
+                });
+            })(p.extend({}, e, { success: p.noop, error: p.noop, complete: p.noop, statusCode: {} })),
+            i.complete && ((i.complete = c.done), (i.success = l.done), (i.error = l.fail)),
+            p.extend(i, l.promise()),
+            (i.statusCode = function (e) {
+                var t, n;
+                if (e)
+                    if ((n = l).state ? "pending" !== n.state() : n.isResolved() || n.isRejected()) l.then(e[r], e[r]);
+                    else for (t in e) d[t] = [d[t], e[t]];
+                return this;
+            }));
     });
 })(jQuery),
     !(function () {
@@ -12446,17 +12442,17 @@ function q(e) {
             var t;
             if (
                 ((e = e || {}),
-                    (this.trackingClick = !1),
-                    (this.trackingClickStart = 0),
-                    (this.targetElement = null),
-                    (this.touchStartX = 0),
-                    (this.touchStartY = 0),
-                    (this.lastTouchIdentifier = 0),
-                    (this.touchBoundary = e.touchBoundary || 10),
-                    (this.layer = o),
-                    (this.tapDelay = e.tapDelay || 200),
-                    (this.tapTimeout = e.tapTimeout || 700),
-                    !s.notNeeded(o))
+                (this.trackingClick = !1),
+                (this.trackingClickStart = 0),
+                (this.targetElement = null),
+                (this.touchStartX = 0),
+                (this.touchStartY = 0),
+                (this.lastTouchIdentifier = 0),
+                (this.touchBoundary = e.touchBoundary || 10),
+                (this.layer = o),
+                (this.tapDelay = e.tapDelay || 200),
+                (this.tapTimeout = e.tapTimeout || 700),
+                !s.notNeeded(o))
             ) {
                 for (var n = ["onMouse", "onClick", "onTouchStart", "onTouchMove", "onTouchEnd", "onTouchCancel"], i = 0, a = n.length; i < a; i++)
                     this[n[i]] = (function (e, t) {
@@ -12471,26 +12467,26 @@ function q(e) {
                     o.addEventListener("touchend", this.onTouchEnd, !1),
                     o.addEventListener("touchcancel", this.onTouchCancel, !1),
                     Event.prototype.stopImmediatePropagation ||
-                    ((o.removeEventListener = function (e, t, n) {
-                        var i = Node.prototype.removeEventListener;
-                        "click" === e ? i.call(o, e, t.hijacked || t, n) : i.call(o, e, t, n);
-                    }),
+                        ((o.removeEventListener = function (e, t, n) {
+                            var i = Node.prototype.removeEventListener;
+                            "click" === e ? i.call(o, e, t.hijacked || t, n) : i.call(o, e, t, n);
+                        }),
                         (o.addEventListener = function (e, t, n) {
                             var i = Node.prototype.addEventListener;
                             "click" === e
                                 ? i.call(
-                                    o,
-                                    e,
-                                    t.hijacked ||
-                                    (t.hijacked = function (e) {
-                                        e.propagationStopped || t(e);
-                                    }),
-                                    n
-                                )
+                                      o,
+                                      e,
+                                      t.hijacked ||
+                                          (t.hijacked = function (e) {
+                                              e.propagationStopped || t(e);
+                                          }),
+                                      n
+                                  )
                                 : i.call(o, e, t, n);
                         })),
                     "function" == typeof o.onclick &&
-                    ((t = o.onclick),
+                        ((t = o.onclick),
                         o.addEventListener(
                             "click",
                             function (e) {
@@ -12612,12 +12608,12 @@ function q(e) {
                 if (a - this.trackingClickStart > this.tapTimeout) return !0;
                 if (
                     ((this.cancelNextClick = !1),
-                        (this.lastClickTime = a),
-                        (t = this.trackingClickStart),
-                        (this.trackingClick = !1),
-                        (this.trackingClickStart = 0),
-                        d && ((i = e.changedTouches[0]), ((o = document.elementFromPoint(i.pageX - window.pageXOffset, i.pageY - window.pageYOffset) || o).fastClickScrollParent = this.targetElement.fastClickScrollParent)),
-                        "label" === (i = o.tagName.toLowerCase()))
+                    (this.lastClickTime = a),
+                    (t = this.trackingClickStart),
+                    (this.trackingClick = !1),
+                    (this.trackingClickStart = 0),
+                    d && ((i = e.changedTouches[0]), ((o = document.elementFromPoint(i.pageX - window.pageXOffset, i.pageY - window.pageYOffset) || o).fastClickScrollParent = this.targetElement.fastClickScrollParent)),
+                    "label" === (i = o.tagName.toLowerCase()))
                 ) {
                     if ((n = this.findControl(o))) {
                         if ((this.focus(o), r)) return !1;
@@ -12682,23 +12678,23 @@ function q(e) {
             }),
             "function" == typeof define && "object" == typeof define.amd && define.amd
                 ? define(function () {
-                    return s;
-                })
+                      return s;
+                  })
                 : "undefined" != typeof module && module.exports
-                    ? ((module.exports = s.attach), (module.exports.FastClick = s))
-                    : (window.FastClick = s);
+                ? ((module.exports = s.attach), (module.exports.FastClick = s))
+                : (window.FastClick = s);
     })(),
     "undefined" == typeof links && (links = {}),
     "undefined" == typeof google && (google = void 0),
     Array.prototype.indexOf ||
-    (Array.prototype.indexOf = function (e) {
-        for (var t = 0; t < this.length; t++) if (this[t] == e) return t;
-        return -1;
-    }),
+        (Array.prototype.indexOf = function (e) {
+            for (var t = 0; t < this.length; t++) if (this[t] == e) return t;
+            return -1;
+        }),
     Array.prototype.forEach ||
-    (Array.prototype.forEach = function (e, t) {
-        for (var n = 0, i = this.length; n < i; ++n) e.call(t || this, this[n], n, this);
-    }),
+        (Array.prototype.forEach = function (e, t) {
+            for (var n = 0, i = this.length; n < i; ++n) e.call(t || this, this[n], n, this);
+        }),
     (links.Timeline = function (e, t) {
         if (e) {
             (this.dom = {}),
@@ -12791,7 +12787,7 @@ function q(e) {
                 }),
                 this.setOptions(t),
                 (this.clientTimeOffset = 0);
-            for (var n = this.dom; n.container.hasChildNodes();) n.container.removeChild(n.container.firstChild);
+            for (var n = this.dom; n.container.hasChildNodes(); ) n.container.removeChild(n.container.firstChild);
             (this.step = new links.Timeline.StepDate()),
                 (this.itemTypes = { box: links.Timeline.ItemBox, range: links.Timeline.ItemRange, floatingRange: links.Timeline.ItemFloatingRange, dot: links.Timeline.ItemDot }),
                 (this.data = []),
@@ -12887,7 +12883,7 @@ function q(e) {
         }
     }),
     (links.Timeline.prototype.getItemIndex = function (e) {
-        for (var t = e, n = this.dom.items.frame, i = this.items, o = void 0; t.parentNode && t.parentNode !== n;) t = t.parentNode;
+        for (var t = e, n = this.dom.items.frame, i = this.items, o = void 0; t.parentNode && t.parentNode !== n; ) t = t.parentNode;
         if (t.parentNode === n)
             for (var a = 0, s = i.length; a < s; a++)
                 if (i[a].dom === t) {
@@ -12902,7 +12898,7 @@ function q(e) {
             i = this.clusters,
             o = void 0;
         if (this.clusters) {
-            for (; t.parentNode && t.parentNode !== n;) t = t.parentNode;
+            for (; t.parentNode && t.parentNode !== n; ) t = t.parentNode;
             if (t.parentNode === n)
                 for (var a = 0, s = i.length; a < s; a++)
                     if (i[a].dom === t) {
@@ -12931,10 +12927,10 @@ function q(e) {
         var i = {},
             i =
                 ((e && t) || (i = this.getDataRange(!0)),
-                    e || (t ? (i.min && i.min.valueOf() < t.valueOf() ? (e = i.min) : (e = new Date(t.valueOf())).setDate(e.getDate() - 7)) : (e = new Date()).setDate(e.getDate() - 3)),
-                    t || (i.max ? (t = i.max) : (t = new Date(e.valueOf())).setDate(t.getDate() + 7)),
-                    t <= e && (t = new Date(e.valueOf())).setDate(t.getDate() + 7),
-                    this.options.min || void 0),
+                e || (t ? (i.min && i.min.valueOf() < t.valueOf() ? (e = i.min) : (e = new Date(t.valueOf())).setDate(e.getDate() - 7)) : (e = new Date()).setDate(e.getDate() - 3)),
+                t || (i.max ? (t = i.max) : (t = new Date(e.valueOf())).setDate(t.getDate() + 7)),
+                t <= e && (t = new Date(e.valueOf())).setDate(t.getDate() + 7),
+                this.options.min || void 0),
             i = (null != i && e.valueOf() < i.valueOf() && (e = new Date(i.valueOf())), this.options.max || void 0);
         null != i && t.valueOf() > i.valueOf() && (t = new Date(i.valueOf())), this.applyRange(e, t), null == n || 1 == n ? this.render({ animate: !1 }) : this.recalcConversion();
     }),
@@ -12999,14 +12995,14 @@ function q(e) {
             o = this.size,
             a =
                 (n.frame || ((n.frame = document.createElement("DIV")), (n.frame.className = "timeline-frame ui-widget ui-widget-content ui-corner-all"), n.container.appendChild(n.frame), (e = !0)),
-                    i.autoHeight ? o.actualHeight + "px" : i.height || "100%"),
+                i.autoHeight ? o.actualHeight + "px" : i.height || "100%"),
             i = i.width || "100%";
         return (
             (e = (e = e || n.frame.style.height != a) || n.frame.style.width != i),
             (n.frame.style.height = a),
             (n.frame.style.width = i),
             n.content ||
-            ((n.content = document.createElement("DIV")),
+                ((n.content = document.createElement("DIV")),
                 (n.content.className = "timeline-content"),
                 n.frame.appendChild(n.content),
                 ((a = document.createElement("DIV")).style.position = "absolute"),
@@ -13019,24 +13015,24 @@ function q(e) {
                 (i = this.eventParams),
                 (t = this),
                 i.onMouseDown ||
-                ((i.onMouseDown = function (e) {
-                    t.onMouseDown(e);
-                }),
+                    ((i.onMouseDown = function (e) {
+                        t.onMouseDown(e);
+                    }),
                     links.Timeline.addEventListener(n.content, "mousedown", i.onMouseDown)),
                 i.onTouchStart ||
-                ((i.onTouchStart = function (e) {
-                    t.onTouchStart(e);
-                }),
+                    ((i.onTouchStart = function (e) {
+                        t.onTouchStart(e);
+                    }),
                     links.Timeline.addEventListener(n.content, "touchstart", i.onTouchStart)),
                 i.onMouseWheel ||
-                ((i.onMouseWheel = function (e) {
-                    t.onMouseWheel(e);
-                }),
+                    ((i.onMouseWheel = function (e) {
+                        t.onMouseWheel(e);
+                    }),
                     links.Timeline.addEventListener(n.content, "mousewheel", i.onMouseWheel)),
                 i.onDblClick ||
-                ((i.onDblClick = function (e) {
-                    t.onDblClick(e);
-                }),
+                    ((i.onDblClick = function (e) {
+                        t.onDblClick(e);
+                    }),
                     links.Timeline.addEventListener(n.content, "dblclick", i.onDblClick)),
                 (e = !0)),
             (n.content.style.left = o.contentLeft + "px"),
@@ -13062,21 +13058,21 @@ function q(e) {
             d = n.axisOnTop ? l : c,
             c =
                 ((e = i.axis.top !== c || i.axis.line !== d || i.axis.height !== l),
-                    (i.axis.top = c),
-                    (i.axis.line = d),
-                    (i.axis.height = l),
-                    (i.axis.labelMajorTop = n.axisOnTop ? 0 : d + (n.showMinorLabels ? a : 0)),
-                    (i.axis.labelMinorTop = n.axisOnTop ? (n.showMajorLabels ? r : 0) : d),
-                    (i.axis.lineMinorTop = n.axisOnTop ? i.axis.labelMinorTop : 0),
-                    (i.axis.lineMinorHeight = n.showMajorLabels ? i.frameHeight - r : i.frameHeight),
-                    (i.axis.lineMinorWidth = t && t.minorLines && t.minorLines.length ? t.minorLines[0].offsetWidth : 1),
-                    (i.axis.lineMajorWidth = t && t.majorLines && t.majorLines.length ? t.majorLines[0].offsetWidth : 1),
-                    (e = e || i.axis.characterMinorWidth !== o || i.axis.characterMinorHeight !== a || i.axis.characterMajorWidth !== s || i.axis.characterMajorHeight !== r),
-                    (i.axis.characterMinorWidth = o),
-                    (i.axis.characterMinorHeight = a),
-                    (i.axis.characterMajorWidth = s),
-                    (i.axis.characterMajorHeight = r),
-                    Math.max(i.frameHeight - l, 0));
+                (i.axis.top = c),
+                (i.axis.line = d),
+                (i.axis.height = l),
+                (i.axis.labelMajorTop = n.axisOnTop ? 0 : d + (n.showMinorLabels ? a : 0)),
+                (i.axis.labelMinorTop = n.axisOnTop ? (n.showMajorLabels ? r : 0) : d),
+                (i.axis.lineMinorTop = n.axisOnTop ? i.axis.labelMinorTop : 0),
+                (i.axis.lineMinorHeight = n.showMajorLabels ? i.frameHeight - r : i.frameHeight),
+                (i.axis.lineMinorWidth = t && t.minorLines && t.minorLines.length ? t.minorLines[0].offsetWidth : 1),
+                (i.axis.lineMajorWidth = t && t.majorLines && t.majorLines.length ? t.majorLines[0].offsetWidth : 1),
+                (e = e || i.axis.characterMinorWidth !== o || i.axis.characterMinorHeight !== a || i.axis.characterMajorWidth !== s || i.axis.characterMajorHeight !== r),
+                (i.axis.characterMinorWidth = o),
+                (i.axis.characterMinorHeight = a),
+                (i.axis.characterMajorWidth = s),
+                (i.axis.characterMajorHeight = r),
+                Math.max(i.frameHeight - l, 0));
         return (i.contentLeft = n.groupsOnRight ? 0 : i.groupsWidth), (i.contentWidth = Math.max(i.frameWidth - i.groupsWidth, 0)), (i.contentHeight = c), e;
     }),
     (links.Timeline.prototype.repaintAxis = function () {
@@ -13088,21 +13084,21 @@ function q(e) {
             a = t.axis,
             s =
                 (a || (t.axis = a = {}),
-                    i.axis.properties || (i.axis.properties = {}),
-                    a.minorTexts || (a.minorTexts = []),
-                    a.minorLines || (a.minorLines = []),
-                    a.majorTexts || (a.majorTexts = []),
-                    a.majorLines || (a.majorLines = []),
-                    a.frame || ((a.frame = document.createElement("DIV")), (a.frame.style.position = "absolute"), (a.frame.style.left = "0px"), (a.frame.style.top = "0px"), t.content.appendChild(a.frame)),
-                    t.content.removeChild(a.frame),
-                    (a.frame.style.width = i.contentWidth + "px"),
-                    (a.frame.style.height = i.axis.height + "px"),
-                    this.screenToTime(0)),
+                i.axis.properties || (i.axis.properties = {}),
+                a.minorTexts || (a.minorTexts = []),
+                a.minorLines || (a.minorLines = []),
+                a.majorTexts || (a.majorTexts = []),
+                a.majorLines || (a.majorLines = []),
+                a.frame || ((a.frame = document.createElement("DIV")), (a.frame.style.position = "absolute"), (a.frame.style.left = "0px"), (a.frame.style.top = "0px"), t.content.appendChild(a.frame)),
+                t.content.removeChild(a.frame),
+                (a.frame.style.width = i.contentWidth + "px"),
+                (a.frame.style.height = i.axis.height + "px"),
+                this.screenToTime(0)),
             r = this.screenToTime(i.contentWidth);
         i.axis.characterMinorWidth && ((this.minimumStep = this.screenToTime(6 * i.axis.characterMinorWidth) - this.screenToTime(0)), o.setRange(s, r, this.minimumStep));
         e = this.repaintAxisCharacters();
         this.repaintAxisStartOverwriting(), o.start();
-        for (var l = void 0, c = 0; !o.end() && c < 1e3;) {
+        for (var l = void 0, c = 0; !o.end() && c < 1e3; ) {
             c++;
             var d = o.getCurrent(),
                 d = this.timeToScreen(d),
@@ -13126,7 +13122,7 @@ function q(e) {
             i = this.dom.axis;
         return (
             i.characterMinor ||
-            ((e = document.createTextNode("0")),
+                ((e = document.createTextNode("0")),
                 ((t = document.createElement("DIV")).className = "timeline-axis-text timeline-axis-text-minor"),
                 t.appendChild(e),
                 (t.style.position = "absolute"),
@@ -13137,7 +13133,7 @@ function q(e) {
                 (i.characterMinor = t),
                 (n = !0)),
             i.characterMajor ||
-            ((e = document.createTextNode("0")),
+                ((e = document.createTextNode("0")),
                 ((t = document.createElement("DIV")).className = "timeline-axis-text timeline-axis-text-major"),
                 t.appendChild(e),
                 (t.style.position = "absolute"),
@@ -13155,22 +13151,22 @@ function q(e) {
         (e.minorTextNum = 0), (e.minorLineNum = 0), (e.majorTextNum = 0), (e.majorLineNum = 0);
     }),
     (links.Timeline.prototype.repaintAxisEndOverwriting = function () {
-        for (var e = this.dom, t = this.size.axis.properties, n = this.dom.axis.frame, i = e.axis.minorTexts, o = t.minorTextNum; i.length > o;) {
+        for (var e = this.dom, t = this.size.axis.properties, n = this.dom.axis.frame, i = e.axis.minorTexts, o = t.minorTextNum; i.length > o; ) {
             var a = i[o];
             n.removeChild(a), i.splice(o, 1);
         }
         var s = e.axis.minorLines;
-        for (o = t.minorLineNum; s.length > o;) {
+        for (o = t.minorLineNum; s.length > o; ) {
             var r = s[o];
             n.removeChild(r), s.splice(o, 1);
         }
         var l = e.axis.majorTexts;
-        for (o = t.majorTextNum; l.length > o;) {
+        for (o = t.majorTextNum; l.length > o; ) {
             var c = l[o];
             n.removeChild(c), l.splice(o, 1);
         }
         var d = e.axis.majorLines;
-        for (o = t.majorLineNum; d.length > o;) {
+        for (o = t.majorLineNum; d.length > o; ) {
             var u = d[o];
             n.removeChild(u), d.splice(o, 1);
         }
@@ -13184,20 +13180,20 @@ function q(e) {
             o = o.showMinorLabels || o.showMajorLabels;
         o
             ? (n.backgroundLine ||
-                (((e = document.createElement("DIV")).className = "timeline-axis"),
-                    (e.style.position = "absolute"),
-                    (e.style.left = "0px"),
-                    (e.style.width = "100%"),
-                    (e.style.border = "none"),
-                    n.frame.insertBefore(e, n.frame.firstChild),
-                    (n.backgroundLine = e)),
-                n.backgroundLine && ((n.backgroundLine.style.top = i.axis.top + "px"), (n.backgroundLine.style.height = i.axis.height + "px")))
+                  (((e = document.createElement("DIV")).className = "timeline-axis"),
+                  (e.style.position = "absolute"),
+                  (e.style.left = "0px"),
+                  (e.style.width = "100%"),
+                  (e.style.border = "none"),
+                  n.frame.insertBefore(e, n.frame.firstChild),
+                  (n.backgroundLine = e)),
+              n.backgroundLine && ((n.backgroundLine.style.top = i.axis.top + "px"), (n.backgroundLine.style.height = i.axis.height + "px")))
             : n.backgroundLine && (n.frame.removeChild(n.backgroundLine), delete n.backgroundLine),
             o
                 ? (n.line
-                    ? ((t = n.frame.removeChild(n.line)), n.frame.appendChild(t))
-                    : (((t = document.createElement("DIV")).className = "timeline-axis"), (t.style.position = "absolute"), (t.style.left = "0px"), (t.style.width = "100%"), (t.style.height = "0px"), n.frame.appendChild(t), (n.line = t)),
-                    (n.line.style.top = i.axis.line + "px"))
+                      ? ((t = n.frame.removeChild(n.line)), n.frame.appendChild(t))
+                      : (((t = document.createElement("DIV")).className = "timeline-axis"), (t.style.position = "absolute"), (t.style.left = "0px"), (t.style.width = "100%"), (t.style.height = "0px"), n.frame.appendChild(t), (n.line = t)),
+                  (n.line.style.top = i.axis.line + "px"))
                 : n.line && n.line.parentElement && (n.frame.removeChild(n.line), delete n.line);
     }),
     (links.Timeline.prototype.repaintAxisMinorText = function (e, t) {
@@ -13240,12 +13236,12 @@ function q(e) {
         r < s.length
             ? (n = s[r])
             : ((r = document.createTextNode(t)),
-                ((n = document.createElement("DIV")).className = "timeline-axis-text timeline-axis-text-major"),
-                n.appendChild(r),
-                (n.style.position = "absolute"),
-                (n.style.top = "0px"),
-                a.appendChild(n),
-                s.push(n)),
+              ((n = document.createElement("DIV")).className = "timeline-axis-text timeline-axis-text-major"),
+              n.appendChild(r),
+              (n.style.position = "absolute"),
+              (n.style.top = "0px"),
+              a.appendChild(n),
+              s.push(n)),
             (n.childNodes[0].nodeValue = t),
             (n.style.top = i.axis.labelMajorTop + "px"),
             (n.style.left = e + "px"),
@@ -13274,11 +13270,11 @@ function q(e) {
             o = this.renderedItems;
         for (
             i &&
-            i.forEach(function (e) {
-                e.itemsHeight = 0;
-            }),
-            e = 0,
-            t = o.length;
+                i.forEach(function (e) {
+                    e.itemsHeight = 0;
+                }),
+                e = 0,
+                t = o.length;
             e < t;
             e++
         ) {
@@ -13341,27 +13337,27 @@ function q(e) {
     (links.Timeline.prototype.repaintItems = function () {
         for (
             var e,
-            t,
-            n = this.dom,
-            i = this.size,
-            o = this,
-            a = this.renderedItems,
-            s = (n.items || (n.items = {}), n.items.frame),
-            r =
-                (s || (((s = document.createElement("DIV")).style.position = "relative"), n.content.appendChild(s), (n.items.frame = s)),
+                t,
+                n = this.dom,
+                i = this.size,
+                o = this,
+                a = this.renderedItems,
+                s = (n.items || (n.items = {}), n.items.frame),
+                r =
+                    (s || (((s = document.createElement("DIV")).style.position = "relative"), n.content.appendChild(s), (n.items.frame = s)),
                     (s.style.left = "0px"),
                     (s.style.top = i.items.top + "px"),
                     (s.style.height = "0px"),
                     n.content.removeChild(s),
                     this.renderQueue),
-            l = [],
-            i = 0 < r.show.length || 0 < r.update.length || 0 < r.hide.length;
+                l = [],
+                i = 0 < r.show.length || 0 < r.update.length || 0 < r.hide.length;
             (e = r.show.shift());
 
         )
             e.showDOM(s), e.getImageUrls(l), a.push(e);
-        for (; (e = r.update.shift());) e.updateDOM(s), e.getImageUrls(l), -1 == (t = this.renderedItems.indexOf(e)) && a.push(e);
-        for (; (e = r.hide.shift());) e.hideDOM(s), -1 != (t = this.renderedItems.indexOf(e)) && a.splice(t, 1);
+        for (; (e = r.update.shift()); ) e.updateDOM(s), e.getImageUrls(l), -1 == (t = this.renderedItems.indexOf(e)) && a.push(e);
+        for (; (e = r.hide.shift()); ) e.hideDOM(s), -1 != (t = this.renderedItems.indexOf(e)) && a.splice(t, 1);
         return (
             a.forEach(function (e) {
                 e.updatePosition(o);
@@ -13370,13 +13366,13 @@ function q(e) {
             this.repaintDragAreas(),
             n.content.appendChild(s),
             l.length &&
-            links.imageloader.loadAll(
-                l,
-                function () {
-                    o.render();
-                },
-                !1
-            ),
+                links.imageloader.loadAll(
+                    l,
+                    function () {
+                        o.render();
+                    },
+                    !1
+                ),
             i
         );
     }),
@@ -13402,12 +13398,12 @@ function q(e) {
             l = (r || (e.groups.itemLines = r = []), e.groups.frame);
         l ||
             (((l = document.createElement("DIV")).className = "timeline-groups-axis"),
-                (l.style.position = "absolute"),
-                (l.style.overflow = "hidden"),
-                (l.style.top = "0px"),
-                (l.style.height = "100%"),
-                e.frame.appendChild(l),
-                (e.groups.frame = l)),
+            (l.style.position = "absolute"),
+            (l.style.overflow = "hidden"),
+            (l.style.top = "0px"),
+            (l.style.height = "100%"),
+            e.frame.appendChild(l),
+            (e.groups.frame = l)),
             (l.style.left = i.groupsLeft + "px"),
             (l.style.width = void 0 !== n.groupsWidth ? n.groupsWidth : i.groupsWidth + "px"),
             (l.style.display = 0 == o.length ? "none" : "");
@@ -13456,18 +13452,18 @@ function q(e) {
             (e.groups.background.style.top = i.axis.top + "px"),
             (e.groups.background.style.height = i.axis.height + "px"),
             e.groups.line ||
-            (((v = document.createElement("DIV")).className = "timeline-axis"), (v.style.position = "absolute"), (v.style.left = "0px"), (v.style.width = "100%"), (v.style.height = "0px"), l.appendChild(v), (e.groups.line = v)),
+                (((v = document.createElement("DIV")).className = "timeline-axis"), (v.style.position = "absolute"), (v.style.left = "0px"), (v.style.width = "100%"), (v.style.height = "0px"), l.appendChild(v), (e.groups.line = v)),
             (e.groups.line.style.top = i.axis.line + "px"),
             e.groups.frame &&
-            o.length &&
-            ((v = []), links.imageloader.filterImageUrls(e.groups.frame, v), v.length) &&
-            links.imageloader.loadAll(
-                v,
-                function () {
-                    t.render();
-                },
-                !1
-            );
+                o.length &&
+                ((v = []), links.imageloader.filterImageUrls(e.groups.frame, v), v.length) &&
+                links.imageloader.loadAll(
+                    v,
+                    function () {
+                        t.render();
+                    },
+                    !1
+                );
     }),
     (links.Timeline.prototype.repaintCurrentTime = function () {
         var e,
@@ -13477,19 +13473,19 @@ function q(e) {
             o = this.size;
         n.showCurrentTime
             ? (i.currentTime ||
-                (((n = document.createElement("DIV")).className = "timeline-currenttime"), (n.style.position = "absolute"), (n.style.top = "0px"), (n.style.height = "100%"), i.contentTimelines.appendChild(n), (i.currentTime = n)),
-                (n = new Date()),
-                (n = new Date(n.valueOf() + this.clientTimeOffset)),
-                (o = (e = this.timeToScreen(n)) > -o.contentWidth && e < 2 * o.contentWidth),
-                (i.currentTime.style.display = o ? "" : "none"),
-                (i.currentTime.style.left = e + "px"),
-                (i.currentTime.title = "Current time: " + n),
-                null != this.currentTimeTimer && (clearTimeout(this.currentTimeTimer), delete this.currentTimeTimer),
-                (t = this),
-                (o = 1 / this.conversion.factor / 2) < 30 && (o = 30),
-                (this.currentTimeTimer = setTimeout(function () {
-                    t.repaintCurrentTime();
-                }, o)))
+                  (((n = document.createElement("DIV")).className = "timeline-currenttime"), (n.style.position = "absolute"), (n.style.top = "0px"), (n.style.height = "100%"), i.contentTimelines.appendChild(n), (i.currentTime = n)),
+              (n = new Date()),
+              (n = new Date(n.valueOf() + this.clientTimeOffset)),
+              (o = (e = this.timeToScreen(n)) > -o.contentWidth && e < 2 * o.contentWidth),
+              (i.currentTime.style.display = o ? "" : "none"),
+              (i.currentTime.style.left = e + "px"),
+              (i.currentTime.title = "Current time: " + n),
+              null != this.currentTimeTimer && (clearTimeout(this.currentTimeTimer), delete this.currentTimeTimer),
+              (t = this),
+              (o = 1 / this.conversion.factor / 2) < 30 && (o = 30),
+              (this.currentTimeTimer = setTimeout(function () {
+                  t.repaintCurrentTime();
+              }, o)))
             : i.currentTime && (i.contentTimelines.removeChild(i.currentTime), delete i.currentTime);
     }),
     (links.Timeline.prototype.repaintCustomTime = function () {
@@ -13499,23 +13495,23 @@ function q(e) {
             i = this.size;
         t.showCustomTime
             ? (n.customTime ||
-                (((t = document.createElement("DIV")).className = "timeline-customtime"),
-                    (t.style.position = "absolute"),
-                    (t.style.top = "0px"),
-                    (t.style.height = "100%"),
-                    ((e = document.createElement("DIV")).style.position = "relative"),
-                    (e.style.top = "0px"),
-                    (e.style.left = "-10px"),
-                    (e.style.height = "100%"),
-                    (e.style.width = "20px"),
-                    t.appendChild(e),
-                    n.contentTimelines.appendChild(t),
-                    (n.customTime = t),
-                    (this.customTime = new Date())),
-                (t = (e = this.timeToScreen(this.customTime)) > -i.contentWidth && e < 2 * i.contentWidth),
-                (n.customTime.style.display = t ? "" : "none"),
-                (n.customTime.style.left = e + "px"),
-                (n.customTime.title = "Time: " + this.customTime))
+                  (((t = document.createElement("DIV")).className = "timeline-customtime"),
+                  (t.style.position = "absolute"),
+                  (t.style.top = "0px"),
+                  (t.style.height = "100%"),
+                  ((e = document.createElement("DIV")).style.position = "relative"),
+                  (e.style.top = "0px"),
+                  (e.style.left = "-10px"),
+                  (e.style.height = "100%"),
+                  (e.style.width = "20px"),
+                  t.appendChild(e),
+                  n.contentTimelines.appendChild(t),
+                  (n.customTime = t),
+                  (this.customTime = new Date())),
+              (t = (e = this.timeToScreen(this.customTime)) > -i.contentWidth && e < 2 * i.contentWidth),
+              (n.customTime.style.display = t ? "" : "none"),
+              (n.customTime.style.left = e + "px"),
+              (n.customTime.title = "Time: " + this.customTime))
             : n.customTime && (n.contentTimelines.removeChild(n.customTime), delete n.customTime);
     }),
     (links.Timeline.prototype.repaintDeleteButton = function () {
@@ -13525,7 +13521,7 @@ function q(e) {
             i = t.items.deleteButton,
             t =
                 (i || (((i = document.createElement("DIV")).className = "timeline-navigation-delete"), (i.style.position = "absolute"), n.appendChild(i), (t.items.deleteButton = i)),
-                    this.selection && void 0 !== this.selection.index ? this.selection.index : -1),
+                this.selection && void 0 !== this.selection.index ? this.selection.index : -1),
             t = this.selection && void 0 !== this.selection.index ? this.items[t] : void 0;
         t && t.rendered && this.isEditable(t) ? ((e = t.getRight(this)), (t = t.top), (i.style.left = e + "px"), (i.style.top = t + "px"), (i.style.display = ""), n.removeChild(i), n.appendChild(i)) : (i.style.display = "none");
     }),
@@ -13540,27 +13536,27 @@ function q(e) {
             r = (s || (((s = document.createElement("DIV")).className = "timeline-event-range-drag-left"), (s.style.position = "absolute"), a.appendChild(s), (o.items.dragLeft = s)), o.items.dragRight),
             o =
                 (r || (((r = document.createElement("DIV")).className = "timeline-event-range-drag-right"), (r.style.position = "absolute"), a.appendChild(r), (o.items.dragRight = r)),
-                    this.selection && void 0 !== this.selection.index ? this.selection.index : -1),
+                this.selection && void 0 !== this.selection.index ? this.selection.index : -1),
             o = this.selection && void 0 !== this.selection.index ? this.items[o] : void 0;
         o && o.rendered && this.isEditable(o) && (o instanceof links.Timeline.ItemRange || o instanceof links.Timeline.ItemFloatingRange)
             ? ((e = o.getLeft(this)),
-                (t = o.getRight(this)),
-                (n = o.top),
-                (o = o.height),
-                (s.style.left = e + "px"),
-                (s.style.top = n + "px"),
-                (s.style.width = i.dragAreaWidth + "px"),
-                (s.style.height = o + "px"),
-                (s.style.display = ""),
-                a.removeChild(s),
-                a.appendChild(s),
-                (r.style.left = t - i.dragAreaWidth + "px"),
-                (r.style.top = n + "px"),
-                (r.style.width = i.dragAreaWidth + "px"),
-                (r.style.height = o + "px"),
-                (r.style.display = ""),
-                a.removeChild(r),
-                a.appendChild(r))
+              (t = o.getRight(this)),
+              (n = o.top),
+              (o = o.height),
+              (s.style.left = e + "px"),
+              (s.style.top = n + "px"),
+              (s.style.width = i.dragAreaWidth + "px"),
+              (s.style.height = o + "px"),
+              (s.style.display = ""),
+              a.removeChild(s),
+              a.appendChild(s),
+              (r.style.left = t - i.dragAreaWidth + "px"),
+              (r.style.top = n + "px"),
+              (r.style.width = i.dragAreaWidth + "px"),
+              (r.style.height = o + "px"),
+              (r.style.display = ""),
+              a.removeChild(r),
+              a.appendChild(r))
             : ((s.style.display = "none"), (r.style.display = "none"));
     }),
     (links.Timeline.prototype.repaintNavigation = function () {
@@ -13573,69 +13569,69 @@ function q(e) {
             s = n.navBar;
         s ||
             ((e = o.showButtonNew && o.editable),
-                ((t = o.showNavigation && (o.zoomable || o.moveable)) || e) &&
+            ((t = o.showNavigation && (o.zoomable || o.moveable)) || e) &&
                 (((s = document.createElement("DIV")).style.position = "absolute"),
-                    (s.className = "timeline-navigation ui-widget ui-state-highlight ui-corner-all"),
-                    o.groupsOnRight ? (s.style.left = "10px") : (s.style.right = "10px"),
-                    o.axisOnTop ? (s.style.bottom = "10px") : (s.style.top = "10px"),
-                    (n.navBar = s),
-                    a.appendChild(s)),
-                e &&
+                (s.className = "timeline-navigation ui-widget ui-state-highlight ui-corner-all"),
+                o.groupsOnRight ? (s.style.left = "10px") : (s.style.right = "10px"),
+                o.axisOnTop ? (s.style.bottom = "10px") : (s.style.top = "10px"),
+                (n.navBar = s),
+                a.appendChild(s)),
+            e &&
                 ((s.addButton = document.createElement("DIV")),
-                    (s.addButton.className = "timeline-navigation-new"),
-                    (s.addButton.title = o.CREATE_NEW_EVENT),
-                    ((n = document.createElement("SPAN")).className = "ui-icon ui-icon-circle-plus"),
-                    s.addButton.appendChild(n),
-                    links.Timeline.addEventListener(s.addButton, "mousedown", function (e) {
-                        links.Timeline.preventDefault(e), links.Timeline.stopPropagation(e);
-                        var e = i.size.contentWidth,
-                            e = i.screenToTime(e / 2),
-                            t = (o.snapEvents && i.step.snap(e), o.NEW),
-                            n = i.groups.length ? i.groups[0].content : void 0,
-                            e = (i.addItem({ start: e, content: t, group: n }, !0), i.items.length - 1);
-                        i.selectItem(e), (i.applyAdd = !0), i.trigger("add"), i.applyAdd ? (i.render({ animate: !1 }), i.selectItem(e)) : i.deleteItem(e);
-                    }),
-                    s.appendChild(s.addButton)),
-                e && t && links.Timeline.addClassName(s.addButton, "timeline-navigation-new-line"),
-                t &&
+                (s.addButton.className = "timeline-navigation-new"),
+                (s.addButton.title = o.CREATE_NEW_EVENT),
+                ((n = document.createElement("SPAN")).className = "ui-icon ui-icon-circle-plus"),
+                s.addButton.appendChild(n),
+                links.Timeline.addEventListener(s.addButton, "mousedown", function (e) {
+                    links.Timeline.preventDefault(e), links.Timeline.stopPropagation(e);
+                    var e = i.size.contentWidth,
+                        e = i.screenToTime(e / 2),
+                        t = (o.snapEvents && i.step.snap(e), o.NEW),
+                        n = i.groups.length ? i.groups[0].content : void 0,
+                        e = (i.addItem({ start: e, content: t, group: n }, !0), i.items.length - 1);
+                    i.selectItem(e), (i.applyAdd = !0), i.trigger("add"), i.applyAdd ? (i.render({ animate: !1 }), i.selectItem(e)) : i.deleteItem(e);
+                }),
+                s.appendChild(s.addButton)),
+            e && t && links.Timeline.addClassName(s.addButton, "timeline-navigation-new-line"),
+            t &&
                 (o.zoomable &&
                     ((s.zoomInButton = document.createElement("DIV")),
-                        (s.zoomInButton.className = "timeline-navigation-zoom-in"),
-                        (s.zoomInButton.title = this.options.ZOOM_IN),
-                        ((a = document.createElement("SPAN")).className = "ui-icon ui-icon-circle-zoomin"),
-                        s.zoomInButton.appendChild(a),
-                        links.Timeline.addEventListener(s.zoomInButton, "mousedown", function (e) {
-                            links.Timeline.preventDefault(e), links.Timeline.stopPropagation(e), i.zoom(0.4), i.trigger("rangechange"), i.trigger("rangechanged");
-                        }),
-                        s.appendChild(s.zoomInButton),
-                        (s.zoomOutButton = document.createElement("DIV")),
-                        (s.zoomOutButton.className = "timeline-navigation-zoom-out"),
-                        (s.zoomOutButton.title = this.options.ZOOM_OUT),
-                        ((n = document.createElement("SPAN")).className = "ui-icon ui-icon-circle-zoomout"),
-                        s.zoomOutButton.appendChild(n),
-                        links.Timeline.addEventListener(s.zoomOutButton, "mousedown", function (e) {
-                            links.Timeline.preventDefault(e), links.Timeline.stopPropagation(e), i.zoom(-0.4), i.trigger("rangechange"), i.trigger("rangechanged");
-                        }),
-                        s.appendChild(s.zoomOutButton)),
-                    o.moveable) &&
+                    (s.zoomInButton.className = "timeline-navigation-zoom-in"),
+                    (s.zoomInButton.title = this.options.ZOOM_IN),
+                    ((a = document.createElement("SPAN")).className = "ui-icon ui-icon-circle-zoomin"),
+                    s.zoomInButton.appendChild(a),
+                    links.Timeline.addEventListener(s.zoomInButton, "mousedown", function (e) {
+                        links.Timeline.preventDefault(e), links.Timeline.stopPropagation(e), i.zoom(0.4), i.trigger("rangechange"), i.trigger("rangechanged");
+                    }),
+                    s.appendChild(s.zoomInButton),
+                    (s.zoomOutButton = document.createElement("DIV")),
+                    (s.zoomOutButton.className = "timeline-navigation-zoom-out"),
+                    (s.zoomOutButton.title = this.options.ZOOM_OUT),
+                    ((n = document.createElement("SPAN")).className = "ui-icon ui-icon-circle-zoomout"),
+                    s.zoomOutButton.appendChild(n),
+                    links.Timeline.addEventListener(s.zoomOutButton, "mousedown", function (e) {
+                        links.Timeline.preventDefault(e), links.Timeline.stopPropagation(e), i.zoom(-0.4), i.trigger("rangechange"), i.trigger("rangechanged");
+                    }),
+                    s.appendChild(s.zoomOutButton)),
+                o.moveable) &&
                 ((s.moveLeftButton = document.createElement("DIV")),
-                    (s.moveLeftButton.className = "timeline-navigation-move-left"),
-                    (s.moveLeftButton.title = this.options.MOVE_LEFT),
-                    ((e = document.createElement("SPAN")).className = "ui-icon ui-icon-circle-arrow-w"),
-                    s.moveLeftButton.appendChild(e),
-                    links.Timeline.addEventListener(s.moveLeftButton, "mousedown", function (e) {
-                        links.Timeline.preventDefault(e), links.Timeline.stopPropagation(e), i.move(-0.2), i.trigger("rangechange"), i.trigger("rangechanged");
-                    }),
-                    s.appendChild(s.moveLeftButton),
-                    (s.moveRightButton = document.createElement("DIV")),
-                    (s.moveRightButton.className = "timeline-navigation-move-right"),
-                    (s.moveRightButton.title = this.options.MOVE_RIGHT),
-                    ((t = document.createElement("SPAN")).className = "ui-icon ui-icon-circle-arrow-e"),
-                    s.moveRightButton.appendChild(t),
-                    links.Timeline.addEventListener(s.moveRightButton, "mousedown", function (e) {
-                        links.Timeline.preventDefault(e), links.Timeline.stopPropagation(e), i.move(0.2), i.trigger("rangechange"), i.trigger("rangechanged");
-                    }),
-                    s.appendChild(s.moveRightButton)));
+                (s.moveLeftButton.className = "timeline-navigation-move-left"),
+                (s.moveLeftButton.title = this.options.MOVE_LEFT),
+                ((e = document.createElement("SPAN")).className = "ui-icon ui-icon-circle-arrow-w"),
+                s.moveLeftButton.appendChild(e),
+                links.Timeline.addEventListener(s.moveLeftButton, "mousedown", function (e) {
+                    links.Timeline.preventDefault(e), links.Timeline.stopPropagation(e), i.move(-0.2), i.trigger("rangechange"), i.trigger("rangechanged");
+                }),
+                s.appendChild(s.moveLeftButton),
+                (s.moveRightButton = document.createElement("DIV")),
+                (s.moveRightButton.className = "timeline-navigation-move-right"),
+                (s.moveRightButton.title = this.options.MOVE_RIGHT),
+                ((t = document.createElement("SPAN")).className = "ui-icon ui-icon-circle-arrow-e"),
+                s.moveRightButton.appendChild(t),
+                links.Timeline.addEventListener(s.moveRightButton, "mousedown", function (e) {
+                    links.Timeline.preventDefault(e), links.Timeline.stopPropagation(e), i.move(0.2), i.trigger("rangechange"), i.trigger("rangechanged");
+                }),
+                s.appendChild(s.moveRightButton)));
     }),
     (links.Timeline.prototype.setCurrentTime = function (e) {
         var t = new Date();
@@ -13683,25 +13679,25 @@ function q(e) {
             i = this;
         n.touchDown ||
             ((n.touchDown = !0),
-                (n.zoomed = !1),
-                this.onMouseDown(e),
-                n.onTouchMove ||
+            (n.zoomed = !1),
+            this.onMouseDown(e),
+            n.onTouchMove ||
                 ((n.onTouchMove = function (e) {
                     i.onTouchMove(e);
                 }),
-                    links.Timeline.addEventListener(document, "touchmove", n.onTouchMove)),
-                n.onTouchEnd ||
+                links.Timeline.addEventListener(document, "touchmove", n.onTouchMove)),
+            n.onTouchEnd ||
                 ((n.onTouchEnd = function (e) {
                     i.onTouchEnd(e);
                 }),
-                    links.Timeline.addEventListener(document, "touchend", n.onTouchEnd)),
-                (t = links.Timeline.getTarget(e)),
-                (t = this.getItemIndex(t)),
-                (n.doubleTapStartPrev = n.doubleTapStart),
-                (n.doubleTapStart = new Date().valueOf()),
-                (n.doubleTapItemPrev = n.doubleTapItem),
-                (n.doubleTapItem = t),
-                links.Timeline.preventDefault(e));
+                links.Timeline.addEventListener(document, "touchend", n.onTouchEnd)),
+            (t = links.Timeline.getTarget(e)),
+            (t = this.getItemIndex(t)),
+            (n.doubleTapStartPrev = n.doubleTapStart),
+            (n.doubleTapStart = new Date().valueOf()),
+            (n.doubleTapItemPrev = n.doubleTapItem),
+            (n.doubleTapItem = t),
+            links.Timeline.preventDefault(e));
     }),
     (links.Timeline.prototype.onTouchMove = function (e) {
         var t,
@@ -13710,13 +13706,13 @@ function q(e) {
         e.scale && 1 !== e.scale && (i.zoomed = !0),
             i.zoomed
                 ? this.options.zoomable &&
-                ((i.zoomed = !0),
-                    (t = e.scale),
-                    (t = (n = i.end.valueOf() - i.start.valueOf()) / t - n),
-                    (n = new Date(parseInt(i.start.valueOf() - t / 2))),
-                    (i = new Date(parseInt(i.end.valueOf() + t / 2))),
-                    this.setVisibleChartRange(n, i),
-                    this.trigger("rangechange"))
+                  ((i.zoomed = !0),
+                  (t = e.scale),
+                  (t = (n = i.end.valueOf() - i.start.valueOf()) / t - n),
+                  (n = new Date(parseInt(i.start.valueOf() - t / 2))),
+                  (i = new Date(parseInt(i.end.valueOf() + t / 2))),
+                  this.setVisibleChartRange(n, i),
+                  this.trigger("rangechange"))
                 : this.onMouseMove(e),
             links.Timeline.preventDefault(e);
     }),
@@ -13724,11 +13720,11 @@ function q(e) {
         var t = this.eventParams,
             n =
                 ((t.touchDown = !1),
-                    t.zoomed && this.trigger("rangechanged"),
-                    t.onTouchMove && (links.Timeline.removeEventListener(document, "touchmove", t.onTouchMove), delete t.onTouchMove),
-                    t.onTouchEnd && (links.Timeline.removeEventListener(document, "touchend", t.onTouchEnd), delete t.onTouchEnd),
-                    this.onMouseUp(e),
-                    new Date().valueOf()),
+                t.zoomed && this.trigger("rangechanged"),
+                t.onTouchMove && (links.Timeline.removeEventListener(document, "touchmove", t.onTouchMove), delete t.onTouchMove),
+                t.onTouchEnd && (links.Timeline.removeEventListener(document, "touchend", t.onTouchEnd), delete t.onTouchEnd),
+                this.onMouseUp(e),
+                new Date().valueOf()),
             i = links.Timeline.getTarget(e);
         this.getItemIndex(i), t.doubleTapStartPrev && n - t.doubleTapStartPrev < 500 && t.doubleTapItem == t.doubleTapItemPrev && ((t.touchDown = !0), this.onDblClick(e), (t.touchDown = !1)), links.Timeline.preventDefault(e);
     }),
@@ -13742,54 +13738,54 @@ function q(e) {
             s = this.dom;
         ((e.which ? 1 != e.which : 1 != e.button) && !o.touchDown) ||
             ((o.mouseX = links.Timeline.getPageX(e)),
-                (o.mouseY = links.Timeline.getPageY(e)),
-                (o.frameLeft = links.Timeline.getAbsoluteLeft(this.dom.content)),
-                (o.frameTop = links.Timeline.getAbsoluteTop(this.dom.content)),
-                (o.previousLeft = 0),
-                (o.previousOffset = 0),
-                (o.moved = !1),
-                (o.start = new Date(this.start.valueOf())),
-                (o.end = new Date(this.end.valueOf())),
-                (o.target = links.Timeline.getTarget(e)),
-                (n = s.items && s.items.dragLeft ? s.items.dragLeft : void 0),
-                (t = s.items && s.items.dragRight ? s.items.dragRight : void 0),
-                (o.itemDragLeft = o.target === n),
-                (o.itemDragRight = o.target === t),
-                o.itemDragLeft || o.itemDragRight
-                    ? ((o.itemIndex = this.selection && void 0 !== this.selection.index ? this.selection.index : void 0), delete o.clusterIndex)
-                    : ((o.itemIndex = this.getItemIndex(o.target)), (o.clusterIndex = this.getClusterIndex(o.target))),
-                (o.customTime = o.target === s.customTime || o.target.parentNode === s.customTime ? this.customTime : void 0),
-                (o.addItem = a.editable && e.ctrlKey),
-                o.addItem &&
+            (o.mouseY = links.Timeline.getPageY(e)),
+            (o.frameLeft = links.Timeline.getAbsoluteLeft(this.dom.content)),
+            (o.frameTop = links.Timeline.getAbsoluteTop(this.dom.content)),
+            (o.previousLeft = 0),
+            (o.previousOffset = 0),
+            (o.moved = !1),
+            (o.start = new Date(this.start.valueOf())),
+            (o.end = new Date(this.end.valueOf())),
+            (o.target = links.Timeline.getTarget(e)),
+            (n = s.items && s.items.dragLeft ? s.items.dragLeft : void 0),
+            (t = s.items && s.items.dragRight ? s.items.dragRight : void 0),
+            (o.itemDragLeft = o.target === n),
+            (o.itemDragRight = o.target === t),
+            o.itemDragLeft || o.itemDragRight
+                ? ((o.itemIndex = this.selection && void 0 !== this.selection.index ? this.selection.index : void 0), delete o.clusterIndex)
+                : ((o.itemIndex = this.getItemIndex(o.target)), (o.clusterIndex = this.getClusterIndex(o.target))),
+            (o.customTime = o.target === s.customTime || o.target.parentNode === s.customTime ? this.customTime : void 0),
+            (o.addItem = a.editable && e.ctrlKey),
+            o.addItem &&
                 ((n = o.mouseX - o.frameLeft),
-                    (t = o.mouseY - o.frameTop),
-                    (s = this.screenToTime(n)),
-                    a.snapEvents && this.step.snap(s),
-                    (n = new Date(s.valueOf())),
-                    (a = a.NEW),
-                    (t = this.getGroupFromHeight(t)),
-                    this.addItem({ start: s, end: n, content: a, group: this.getGroupName(t) }),
-                    (o.itemIndex = this.items.length - 1),
-                    delete o.clusterIndex,
-                    this.selectItem(o.itemIndex),
-                    (o.itemDragRight = !0)),
-                (s = this.items[o.itemIndex]),
-                (n = this.isSelected(o.itemIndex)),
-                (o.editItem = n && this.isEditable(s)),
-                o.editItem ? ((o.itemStart = s.start), (o.itemEnd = s.end), (o.itemGroup = s.group), (o.itemLeft = s.getLeft(this)), (o.itemRight = s.getRight(this))) : (this.dom.frame.style.cursor = "move"),
-                o.touchDown) ||
+                (t = o.mouseY - o.frameTop),
+                (s = this.screenToTime(n)),
+                a.snapEvents && this.step.snap(s),
+                (n = new Date(s.valueOf())),
+                (a = a.NEW),
+                (t = this.getGroupFromHeight(t)),
+                this.addItem({ start: s, end: n, content: a, group: this.getGroupName(t) }),
+                (o.itemIndex = this.items.length - 1),
+                delete o.clusterIndex,
+                this.selectItem(o.itemIndex),
+                (o.itemDragRight = !0)),
+            (s = this.items[o.itemIndex]),
+            (n = this.isSelected(o.itemIndex)),
+            (o.editItem = n && this.isEditable(s)),
+            o.editItem ? ((o.itemStart = s.start), (o.itemEnd = s.end), (o.itemGroup = s.group), (o.itemLeft = s.getLeft(this)), (o.itemRight = s.getRight(this))) : (this.dom.frame.style.cursor = "move"),
+            o.touchDown) ||
             ((i = this),
-                o.onMouseMove ||
+            o.onMouseMove ||
                 ((o.onMouseMove = function (e) {
                     i.onMouseMove(e);
                 }),
-                    links.Timeline.addEventListener(document, "mousemove", o.onMouseMove)),
-                o.onMouseUp ||
+                links.Timeline.addEventListener(document, "mousemove", o.onMouseMove)),
+            o.onMouseUp ||
                 ((o.onMouseUp = function (e) {
                     i.onMouseUp(e);
                 }),
-                    links.Timeline.addEventListener(document, "mouseup", o.onMouseUp)),
-                links.Timeline.preventDefault(e));
+                links.Timeline.addEventListener(document, "mouseup", o.onMouseUp)),
+            links.Timeline.preventDefault(e));
     }),
     (links.Timeline.prototype.onMouseMove = function (e) {
         e = e || window.event;
@@ -13808,53 +13804,53 @@ function q(e) {
             i.customTime
                 ? ((c = this.timeToScreen(i.customTime)), (this.customTime = this.screenToTime(c + r)), this.repaintCustomTime(), this.trigger("timechange"))
                 : i.editItem
-                    ? ((c = this.items[i.itemIndex]),
-                        i.itemDragLeft && s.timeChangeable
-                            ? ((n = i.itemLeft + r),
-                                (t = i.itemRight),
-                                (c.start = this.screenToTime(n)),
-                                s.snapEvents && (this.step.snap(c.start), (n = this.timeToScreen(c.start))),
-                                t < n && ((n = t), (c.start = this.screenToTime(n))),
-                                this.trigger("change"))
-                            : i.itemDragRight && s.timeChangeable
-                                ? ((n = i.itemLeft),
-                                    (t = i.itemRight + r),
-                                    (c.end = this.screenToTime(t)),
-                                    s.snapEvents && (this.step.snap(c.end), (t = this.timeToScreen(c.end))),
-                                    t < n && ((t = n), (c.end = this.screenToTime(t))),
-                                    this.trigger("change"))
-                                : s.timeChangeable &&
-                                ((n = i.itemLeft + r),
-                                    (c.start = this.screenToTime(n)),
-                                    s.snapEvents && (this.step.snap(c.start), (n = this.timeToScreen(c.start))),
-                                    c.end && ((t = n + (i.itemRight - i.itemLeft)), (c.end = this.screenToTime(t))),
-                                    this.trigger("change")),
-                        c.setPosition(n, t),
-                        (n = i.itemDragLeft || i.itemDragRight),
-                        this.groups.length && !n
-                            ? ((t = l - i.frameTop),
-                                (n = this.getGroupFromHeight(t)),
-                                s.groupsChangeable && c.group !== n ? ((l = this.items.indexOf(c)), this.changeItem(l, { group: this.getGroupName(n) })) : (this.repaintDeleteButton(), this.repaintDragAreas()))
-                            : this.render())
-                    : s.moveable &&
-                    ((t = i.end.valueOf() - i.start.valueOf()),
-                        (c = Math.round((-r / o.contentWidth) * t)),
-                        (l = new Date(i.start.valueOf() + c)),
-                        (n = new Date(i.end.valueOf() + c)),
-                        this.applyRange(l, n),
-                        (s = this.start.valueOf() - l.valueOf()) && (c += s),
-                        this.recalcConversion(),
-                        (r = i.previousLeft || 0),
-                        (n = parseFloat(a.items.frame.style.left) || 0),
-                        (l = (i.previousOffset || 0) + (n - r)),
-                        (s = (-c / t) * o.contentWidth + l),
-                        (a.items.frame.style.left = s + "px"),
-                        (i.previousOffset = l),
-                        (i.previousLeft = parseFloat(a.items.frame.style.left) || s),
-                        this.repaintCurrentTime(),
-                        this.repaintCustomTime(),
-                        this.repaintAxis(),
-                        this.trigger("rangechange")),
+                ? ((c = this.items[i.itemIndex]),
+                  i.itemDragLeft && s.timeChangeable
+                      ? ((n = i.itemLeft + r),
+                        (t = i.itemRight),
+                        (c.start = this.screenToTime(n)),
+                        s.snapEvents && (this.step.snap(c.start), (n = this.timeToScreen(c.start))),
+                        t < n && ((n = t), (c.start = this.screenToTime(n))),
+                        this.trigger("change"))
+                      : i.itemDragRight && s.timeChangeable
+                      ? ((n = i.itemLeft),
+                        (t = i.itemRight + r),
+                        (c.end = this.screenToTime(t)),
+                        s.snapEvents && (this.step.snap(c.end), (t = this.timeToScreen(c.end))),
+                        t < n && ((t = n), (c.end = this.screenToTime(t))),
+                        this.trigger("change"))
+                      : s.timeChangeable &&
+                        ((n = i.itemLeft + r),
+                        (c.start = this.screenToTime(n)),
+                        s.snapEvents && (this.step.snap(c.start), (n = this.timeToScreen(c.start))),
+                        c.end && ((t = n + (i.itemRight - i.itemLeft)), (c.end = this.screenToTime(t))),
+                        this.trigger("change")),
+                  c.setPosition(n, t),
+                  (n = i.itemDragLeft || i.itemDragRight),
+                  this.groups.length && !n
+                      ? ((t = l - i.frameTop),
+                        (n = this.getGroupFromHeight(t)),
+                        s.groupsChangeable && c.group !== n ? ((l = this.items.indexOf(c)), this.changeItem(l, { group: this.getGroupName(n) })) : (this.repaintDeleteButton(), this.repaintDragAreas()))
+                      : this.render())
+                : s.moveable &&
+                  ((t = i.end.valueOf() - i.start.valueOf()),
+                  (c = Math.round((-r / o.contentWidth) * t)),
+                  (l = new Date(i.start.valueOf() + c)),
+                  (n = new Date(i.end.valueOf() + c)),
+                  this.applyRange(l, n),
+                  (s = this.start.valueOf() - l.valueOf()) && (c += s),
+                  this.recalcConversion(),
+                  (r = i.previousLeft || 0),
+                  (n = parseFloat(a.items.frame.style.left) || 0),
+                  (l = (i.previousOffset || 0) + (n - r)),
+                  (s = (-c / t) * o.contentWidth + l),
+                  (a.items.frame.style.left = s + "px"),
+                  (i.previousOffset = l),
+                  (i.previousLeft = parseFloat(a.items.frame.style.left) || s),
+                  this.repaintCurrentTime(),
+                  this.repaintCustomTime(),
+                  this.repaintAxis(),
+                  this.trigger("rangechange")),
             links.Timeline.preventDefault(e);
     }),
     (links.Timeline.prototype.onMouseUp = function (e) {
@@ -13867,39 +13863,39 @@ function q(e) {
             t.customTime
                 ? this.trigger("timechanged")
                 : t.editItem
-                    ? ((e = this.items[t.itemIndex]),
-                        (t.moved || t.addItem) &&
-                        ((this.applyChange = !0),
-                            (this.applyAdd = !0),
-                            this.updateData(t.itemIndex, { start: e.start, end: e.end }),
-                            this.trigger(t.addItem ? "add" : "changed"),
-                            (e = this.items[t.itemIndex]),
-                            t.addItem
-                                ? this.applyAdd
-                                    ? this.updateData(t.itemIndex, { start: e.start, end: e.end, content: e.content, group: this.getGroupName(e.group) })
-                                    : this.deleteItem(t.itemIndex)
-                                : this.applyChange
-                                    ? this.updateData(t.itemIndex, { start: e.start, end: e.end })
-                                    : (delete this.applyChange,
-                                        delete this.applyAdd,
-                                        (e = this.items[t.itemIndex]).dom,
-                                        (e.start = t.itemStart),
-                                        (e.end = t.itemEnd),
-                                        (e.group = t.itemGroup),
-                                        e.setPosition(t.itemLeft, t.itemRight),
-                                        this.updateData(t.itemIndex, { start: t.itemStart, end: t.itemEnd })),
-                            this.options.cluster && this.clusterGenerator.updateData(),
-                            this.render()))
-                    : t.moved || t.zoomed
-                        ? (this.render(), ((t.moved && n.moveable) || (t.zoomed && n.zoomable)) && this.trigger("rangechanged"))
-                        : t.target === this.dom.items.deleteButton
-                            ? this.selection && void 0 !== this.selection.index && this.confirmDeleteItem(this.selection.index)
-                            : n.selectable &&
-                            (null != t.itemIndex
-                                ? this.isSelected(t.itemIndex) || (this.selectItem(t.itemIndex), this.trigger("select"))
-                                : null != t.clusterIndex
-                                    ? (this.selectCluster(t.clusterIndex), this.trigger("select"))
-                                    : n.unselectable && (this.unselectItem(), this.trigger("select")));
+                ? ((e = this.items[t.itemIndex]),
+                  (t.moved || t.addItem) &&
+                      ((this.applyChange = !0),
+                      (this.applyAdd = !0),
+                      this.updateData(t.itemIndex, { start: e.start, end: e.end }),
+                      this.trigger(t.addItem ? "add" : "changed"),
+                      (e = this.items[t.itemIndex]),
+                      t.addItem
+                          ? this.applyAdd
+                              ? this.updateData(t.itemIndex, { start: e.start, end: e.end, content: e.content, group: this.getGroupName(e.group) })
+                              : this.deleteItem(t.itemIndex)
+                          : this.applyChange
+                          ? this.updateData(t.itemIndex, { start: e.start, end: e.end })
+                          : (delete this.applyChange,
+                            delete this.applyAdd,
+                            (e = this.items[t.itemIndex]).dom,
+                            (e.start = t.itemStart),
+                            (e.end = t.itemEnd),
+                            (e.group = t.itemGroup),
+                            e.setPosition(t.itemLeft, t.itemRight),
+                            this.updateData(t.itemIndex, { start: t.itemStart, end: t.itemEnd })),
+                      this.options.cluster && this.clusterGenerator.updateData(),
+                      this.render()))
+                : t.moved || t.zoomed
+                ? (this.render(), ((t.moved && n.moveable) || (t.zoomed && n.zoomable)) && this.trigger("rangechanged"))
+                : t.target === this.dom.items.deleteButton
+                ? this.selection && void 0 !== this.selection.index && this.confirmDeleteItem(this.selection.index)
+                : n.selectable &&
+                  (null != t.itemIndex
+                      ? this.isSelected(t.itemIndex) || (this.selectItem(t.itemIndex), this.trigger("select"))
+                      : null != t.clusterIndex
+                      ? (this.selectCluster(t.clusterIndex), this.trigger("select"))
+                      : n.unselectable && (this.unselectItem(), this.trigger("select")));
     }),
     (links.Timeline.prototype.onDblClick = function (e) {
         var t,
@@ -13911,34 +13907,34 @@ function q(e) {
             null != n.itemIndex
                 ? (t = this.items[n.itemIndex]) && this.isEditable(t) && this.trigger("edit")
                 : i.editable &&
-                ((n.mouseX = links.Timeline.getPageX(e)),
-                    (n.mouseY = links.Timeline.getPageY(e)),
-                    (t = n.mouseX - links.Timeline.getAbsoluteLeft(o.content)),
-                    (o = n.mouseY - links.Timeline.getAbsoluteTop(o.content)),
-                    (t = this.screenToTime(t)),
-                    i.snapEvents && this.step.snap(t),
-                    (i = i.NEW),
-                    (o = this.getGroupFromHeight(o)),
-                    this.addItem({ start: t, content: i, group: this.getGroupName(o) }, !0),
-                    (n.itemIndex = this.items.length - 1),
-                    this.selectItem(n.itemIndex),
-                    (this.applyAdd = !0),
-                    this.trigger("add"),
-                    this.applyAdd ? (this.render({ animate: !1 }), this.selectItem(n.itemIndex)) : this.deleteItem(n.itemIndex)),
+                  ((n.mouseX = links.Timeline.getPageX(e)),
+                  (n.mouseY = links.Timeline.getPageY(e)),
+                  (t = n.mouseX - links.Timeline.getAbsoluteLeft(o.content)),
+                  (o = n.mouseY - links.Timeline.getAbsoluteTop(o.content)),
+                  (t = this.screenToTime(t)),
+                  i.snapEvents && this.step.snap(t),
+                  (i = i.NEW),
+                  (o = this.getGroupFromHeight(o)),
+                  this.addItem({ start: t, content: i, group: this.getGroupName(o) }, !0),
+                  (n.itemIndex = this.items.length - 1),
+                  this.selectItem(n.itemIndex),
+                  (this.applyAdd = !0),
+                  this.trigger("add"),
+                  this.applyAdd ? (this.render({ animate: !1 }), this.selectItem(n.itemIndex)) : this.deleteItem(n.itemIndex)),
             links.Timeline.preventDefault(e);
     }),
     (links.Timeline.prototype.onMouseWheel = function (e) {
         var t, n, i, o;
         this.options.zoomable &&
             ((e = e || window.event),
-                (n = 0),
-                e.wheelDelta ? (n = e.wheelDelta / 120) : e.detail && (n = -e.detail / 3),
-                n &&
+            (n = 0),
+            e.wheelDelta ? (n = e.wheelDelta / 120) : e.detail && (n = -e.detail / 3),
+            n &&
                 ((t = this),
-                    e.shiftKey ? t.move(-0.2 * n) : ((n = n / 5), (i = links.Timeline.getAbsoluteLeft(t.dom.content)), (o = null != (o = links.Timeline.getPageX(e)) && null != i ? t.screenToTime(o - i) : void 0), t.zoom(n, o)),
-                    t.trigger("rangechange"),
-                    t.trigger("rangechanged")),
-                links.Timeline.preventDefault(e));
+                e.shiftKey ? t.move(-0.2 * n) : ((n = n / 5), (i = links.Timeline.getAbsoluteLeft(t.dom.content)), (o = null != (o = links.Timeline.getPageX(e)) && null != i ? t.screenToTime(o - i) : void 0), t.zoom(n, o)),
+                t.trigger("rangechange"),
+                t.trigger("rangechanged")),
+            links.Timeline.preventDefault(e));
     }),
     (links.Timeline.prototype.zoom = function (e, t) {
         null == t && (t = new Date((this.start.valueOf() + this.end.valueOf()) / 2)), (e = (e = 1 <= e ? 0.9 : e) <= -1 ? -0.9 : e) < 0 && (e /= 1 + e);
@@ -14013,15 +14009,15 @@ function q(e) {
     (links.Timeline.Item = function (e, t) {
         if (
             (e && ((this.start = e.start), (this.end = e.end), (this.content = e.content), (this.className = e.className), (this.editable = e.editable), (this.group = e.group), (this.type = e.type)),
-                (this.top = 0),
-                (this.left = 0),
-                (this.width = 0),
-                (this.height = 0),
-                (this.lineWidth = 0),
-                (this.dotWidth = 0),
-                (this.dotHeight = 0),
-                (this.rendered = !1),
-                t)
+            (this.top = 0),
+            (this.left = 0),
+            (this.width = 0),
+            (this.height = 0),
+            (this.lineWidth = 0),
+            (this.dotWidth = 0),
+            (this.dotHeight = 0),
+            (this.rendered = !1),
+            t)
         )
             for (var n in t) t.hasOwnProperty(n) && (this[n] = t[n]);
     }),
@@ -14031,20 +14027,20 @@ function q(e) {
     (links.Timeline.Item.prototype.getImageUrls = function (e) {
         this.dom && links.imageloader.filterImageUrls(this.dom, e);
     }),
-    (links.Timeline.Item.prototype.select = function () { }),
-    (links.Timeline.Item.prototype.unselect = function () { }),
-    (links.Timeline.Item.prototype.createDOM = function () { }),
-    (links.Timeline.Item.prototype.showDOM = function () { }),
-    (links.Timeline.Item.prototype.hideDOM = function () { }),
-    (links.Timeline.Item.prototype.updateDOM = function () { }),
-    (links.Timeline.Item.prototype.updatePosition = function () { }),
+    (links.Timeline.Item.prototype.select = function () {}),
+    (links.Timeline.Item.prototype.unselect = function () {}),
+    (links.Timeline.Item.prototype.createDOM = function () {}),
+    (links.Timeline.Item.prototype.showDOM = function () {}),
+    (links.Timeline.Item.prototype.hideDOM = function () {}),
+    (links.Timeline.Item.prototype.updateDOM = function () {}),
+    (links.Timeline.Item.prototype.updatePosition = function () {}),
     (links.Timeline.Item.prototype.isRendered = function () {
         return this.rendered;
     }),
     (links.Timeline.Item.prototype.isVisible = function () {
         return !1;
     }),
-    (links.Timeline.Item.prototype.setPosition = function () { }),
+    (links.Timeline.Item.prototype.setPosition = function () {}),
     (links.Timeline.Item.prototype.getLeft = function () {
         return 0;
     }),
@@ -14099,16 +14095,16 @@ function q(e) {
             n = this.dom;
         n &&
             ((e = n.line),
-                (t = n.dot),
-                (n.firstChild.innerHTML = this.content),
-                (n.className = "timeline-event timeline-event-box ui-widget ui-state-default"),
-                (e.className = "timeline-event timeline-event-line ui-widget ui-state-default"),
-                (t.className = "timeline-event timeline-event-dot ui-widget ui-state-default"),
-                this.isCluster &&
+            (t = n.dot),
+            (n.firstChild.innerHTML = this.content),
+            (n.className = "timeline-event timeline-event-box ui-widget ui-state-default"),
+            (e.className = "timeline-event timeline-event-line ui-widget ui-state-default"),
+            (t.className = "timeline-event timeline-event-dot ui-widget ui-state-default"),
+            this.isCluster &&
                 (links.Timeline.addClassName(n, "timeline-event-cluster ui-widget-header"),
-                    links.Timeline.addClassName(e, "timeline-event-cluster ui-widget-header"),
-                    links.Timeline.addClassName(t, "timeline-event-cluster ui-widget-header")),
-                this.className) &&
+                links.Timeline.addClassName(e, "timeline-event-cluster ui-widget-header"),
+                links.Timeline.addClassName(t, "timeline-event-cluster ui-widget-header")),
+            this.className) &&
             (links.Timeline.addClassName(n, this.className), links.Timeline.addClassName(e, this.className), links.Timeline.addClassName(t, this.className));
     }),
     (links.Timeline.ItemBox.prototype.updatePosition = function (e) {
@@ -14119,19 +14115,19 @@ function q(e) {
             a = this.dom;
         a &&
             ((t = e.timeToScreen(this.start)),
-                (n = e.options.axisOnTop),
-                (i = e.size.axis.top),
-                (o = e.size.axis.height),
-                (e = e.options.box && e.options.box.align ? e.options.box.align : void 0),
-                (a.style.top = this.top + "px"),
-                (a.style.left = "right" == e ? t - this.width + "px" : "left" == e ? t + "px" : t - this.width / 2 + "px"),
-                (e = a.line),
-                (a = a.dot),
-                (e.style.left = t - this.lineWidth / 2 + "px"),
-                (a.style.left = t - this.dotWidth / 2 + "px"),
-                n
-                    ? ((e.style.top = o + "px"), (e.style.height = Math.max(this.top - o, 0) + "px"), (a.style.top = o - this.dotHeight / 2 + "px"))
-                    : ((e.style.top = this.top + this.height + "px"), (e.style.height = Math.max(i - this.top - this.height, 0) + "px"), (a.style.top = i - this.dotHeight / 2 + "px")));
+            (n = e.options.axisOnTop),
+            (i = e.size.axis.top),
+            (o = e.size.axis.height),
+            (e = e.options.box && e.options.box.align ? e.options.box.align : void 0),
+            (a.style.top = this.top + "px"),
+            (a.style.left = "right" == e ? t - this.width + "px" : "left" == e ? t + "px" : t - this.width / 2 + "px"),
+            (e = a.line),
+            (a = a.dot),
+            (e.style.left = t - this.lineWidth / 2 + "px"),
+            (a.style.left = t - this.dotWidth / 2 + "px"),
+            n
+                ? ((e.style.top = o + "px"), (e.style.height = Math.max(this.top - o, 0) + "px"), (a.style.top = o - this.dotHeight / 2 + "px"))
+                : ((e.style.top = this.top + this.height + "px"), (e.style.height = Math.max(i - this.top - this.height, 0) + "px"), (a.style.top = i - this.dotHeight / 2 + "px")));
     }),
     (links.Timeline.ItemBox.prototype.isVisible = function (e, t) {
         return !this.cluster && this.start > e && this.start < t;
@@ -14178,9 +14174,9 @@ function q(e) {
         var e = this.dom;
         e &&
             ((e.firstChild.innerHTML = this.content),
-                (e.className = "timeline-event timeline-event-range ui-widget ui-state-default"),
-                this.isCluster && links.Timeline.addClassName(e, "timeline-event-cluster ui-widget-header"),
-                this.className) &&
+            (e.className = "timeline-event timeline-event-range ui-widget ui-state-default"),
+            this.isCluster && links.Timeline.addClassName(e, "timeline-event-cluster ui-widget-header"),
+            this.className) &&
             links.Timeline.addClassName(e, this.className);
     }),
     (links.Timeline.ItemRange.prototype.updatePosition = function (e) {
@@ -14189,11 +14185,11 @@ function q(e) {
             i = this.dom;
         i &&
             ((t = e.size.contentWidth),
-                (n = e.timeToScreen(this.start)) < -t && (n = -t),
-                2 * t < (e = e.timeToScreen(this.end)) && (e = 2 * t),
-                (i.style.top = this.top + "px"),
-                (i.style.left = n + "px"),
-                (i.style.width = Math.max(e - n, 1) + "px"));
+            (n = e.timeToScreen(this.start)) < -t && (n = -t),
+            2 * t < (e = e.timeToScreen(this.end)) && (e = 2 * t),
+            (i.style.top = this.top + "px"),
+            (i.style.left = n + "px"),
+            (i.style.width = Math.max(e - n, 1) + "px"));
     }),
     (links.Timeline.ItemRange.prototype.isVisible = function (e, t) {
         return !this.cluster && this.end > e && this.start < t;
@@ -14240,9 +14236,9 @@ function q(e) {
         var e = this.dom;
         e &&
             ((e.firstChild.innerHTML = this.content),
-                (e.className = "timeline-event timeline-event-range ui-widget ui-state-default"),
-                this.isCluster && links.Timeline.addClassName(e, "timeline-event-cluster ui-widget-header"),
-                this.className) &&
+            (e.className = "timeline-event timeline-event-range ui-widget ui-state-default"),
+            this.isCluster && links.Timeline.addClassName(e, "timeline-event-cluster ui-widget-header"),
+            this.className) &&
             links.Timeline.addClassName(e, this.className);
     }),
     (links.Timeline.ItemFloatingRange.prototype.updatePosition = function (e) {
@@ -14305,21 +14301,21 @@ function q(e) {
         var e, t;
         this.dom &&
             ((t = (e = this.dom).dot),
-                (e.firstChild.innerHTML = this.content),
-                (e.className = "timeline-event-dot-container"),
-                (t.className = "timeline-event timeline-event-dot ui-widget ui-state-default"),
-                this.isCluster && (links.Timeline.addClassName(e, "timeline-event-cluster ui-widget-header"), links.Timeline.addClassName(t, "timeline-event-cluster ui-widget-header")),
-                this.className) &&
+            (e.firstChild.innerHTML = this.content),
+            (e.className = "timeline-event-dot-container"),
+            (t.className = "timeline-event timeline-event-dot ui-widget ui-state-default"),
+            this.isCluster && (links.Timeline.addClassName(e, "timeline-event-cluster ui-widget-header"), links.Timeline.addClassName(t, "timeline-event-cluster ui-widget-header")),
+            this.className) &&
             (links.Timeline.addClassName(e, this.className), links.Timeline.addClassName(t, this.className));
     }),
     (links.Timeline.ItemDot.prototype.updatePosition = function (e) {
         var t = this.dom;
         t &&
             ((e = e.timeToScreen(this.start)),
-                (t.style.top = this.top + "px"),
-                (t.style.left = e - this.dotWidth / 2 + "px"),
-                (t.content.style.marginLeft = 1.5 * this.dotWidth + "px"),
-                (t.dot.style.top = (this.height - this.dotHeight) / 2 + "px"));
+            (t.style.top = this.top + "px"),
+            (t.style.left = e - this.dotWidth / 2 + "px"),
+            (t.content.style.marginLeft = 1.5 * this.dotWidth + "px"),
+            (t.dot.style.top = (this.height - this.dotHeight) / 2 + "px"));
     }),
     (links.Timeline.ItemDot.prototype.isVisible = function (e, t) {
         return !this.cluster && this.start > e && this.start < t;
@@ -14423,8 +14419,8 @@ function q(e) {
             t.push((i = { content: e, labelTop: 0, lineTop: 0 })),
                 1 == this.options.groupsOrder
                     ? (t = t.sort(function (e, t) {
-                        return e.content > t.content ? 1 : e.content < t.content ? -1 : 0;
-                    }))
+                          return e.content > t.content ? 1 : e.content < t.content ? -1 : 0;
+                      }))
                     : "function" == typeof this.options.groupsOrder && (t = t.sort(this.options.groupsOrder));
             for (var a = 0, s = t.length; a < s; a++) n[t[a].content] = a;
         } else i = t[o];
@@ -14494,11 +14490,11 @@ function q(e) {
             (i.finalItems = this.stackCalculateFinal(i.sortedItems)),
             e || i.timer
                 ? ((t = this),
-                    (n = function () {
-                        var e = t.stackMoveOneStep(i.sortedItems, i.finalItems);
-                        t.repaint(), e ? delete i.timer : (i.timer = setTimeout(n, 30));
-                    }),
-                    i.timer || (i.timer = setTimeout(n, 30)))
+                  (n = function () {
+                      var e = t.stackMoveOneStep(i.sortedItems, i.finalItems);
+                      t.repaint(), e ? delete i.timer : (i.timer = setTimeout(n, 30));
+                  }),
+                  i.timer || (i.timer = setTimeout(n, 30)))
                 : this.stackMoveToFinal(i.sortedItems, i.finalItems);
     }),
     (links.Timeline.prototype.stackCancelAnimation = function () {
@@ -14518,12 +14514,12 @@ function q(e) {
                 this.options.customStackOrder && "function" == typeof this.options.customStackOrder
                     ? this.options.customStackOrder
                     : function (e, t) {
-                        return (e instanceof links.Timeline.ItemRange || e instanceof links.Timeline.ItemFloatingRange) && !(t instanceof links.Timeline.ItemRange || t instanceof links.Timeline.ItemFloatingRange)
-                            ? -1
-                            : e instanceof links.Timeline.ItemRange || e instanceof links.Timeline.ItemFloatingRange || !(t instanceof links.Timeline.ItemRange || t instanceof links.Timeline.ItemFloatingRange)
-                                ? e.left - t.left
-                                : 1;
-                    };
+                          return (e instanceof links.Timeline.ItemRange || e instanceof links.Timeline.ItemFloatingRange) && !(t instanceof links.Timeline.ItemRange || t instanceof links.Timeline.ItemFloatingRange)
+                              ? -1
+                              : e instanceof links.Timeline.ItemRange || e instanceof links.Timeline.ItemFloatingRange || !(t instanceof links.Timeline.ItemRange || t instanceof links.Timeline.ItemFloatingRange)
+                              ? e.left - t.left
+                              : 1;
+                      };
         return e.sort(t), e;
     }),
     (links.Timeline.prototype.stackCalculateFinal = function (e) {
@@ -14539,18 +14535,18 @@ function q(e) {
             var c = this.groups[j];
             l[c.content]
                 ? (this.finalItemsPosition(l[c.content], s, c).forEach(function (e) {
-                    r.push(e);
-                }),
-                    i ? (s += c.itemsHeight + o) : (s -= c.itemsHeight + o))
+                      r.push(e);
+                  }),
+                  i ? (s += c.itemsHeight + o) : (s -= c.itemsHeight + o))
                 : i
-                    ? (s += n.groupMinHeight + o)
-                    : (s -= n.groupMinHeight + o);
+                ? (s += n.groupMinHeight + o)
+                : (s -= n.groupMinHeight + o);
         }
         return (
             l.undefined &&
-            this.finalItemsPosition(l.undefined, s).forEach(function (e) {
-                r.push(e);
-            }),
+                this.finalItemsPosition(l.undefined, s).forEach(function (e) {
+                    r.push(e);
+                }),
             r
         );
     }),
@@ -14558,7 +14554,7 @@ function q(e) {
         for (var i = this.options, o = i.axisOnTop, a = i.eventMargin, s = this.initialItemsPosition(e, t), r = 0, l = s.length; r < l; r++) {
             var c,
                 d = s[r];
-            if (this.options.stackEvents) for (; null != (c = this.stackItemsCheckOverlap(s, r, 0, r - 1)) && ((d.top = o ? c.top + c.height + a : c.top - d.height - a), (d.bottom = d.top + d.height)), c;);
+            if (this.options.stackEvents) for (; null != (c = this.stackItemsCheckOverlap(s, r, 0, r - 1)) && ((d.top = o ? c.top + c.height + a : c.top - d.height - a), (d.bottom = d.top + d.height)), c; );
             n && (n.itemsHeight = o ? (n.itemsHeight ? Math.max(n.itemsHeight, d.bottom - t) : d.height + a) : n.itemsHeight ? Math.max(n.itemsHeight, t - d.top) : d.height + a);
         }
         return s;
@@ -14622,19 +14618,19 @@ function q(e) {
         this.options.cluster &&
             ((e = this.clusterGenerator.getClusters(this.conversion.factor, this.options.clusterMaxItems)), this.clusters != e) &&
             ((t = this.renderQueue),
-                this.clusters &&
+            this.clusters &&
                 this.clusters.forEach(function (e) {
                     t.hide.push(e),
                         e.items.forEach(function (e) {
                             e.cluster = void 0;
                         });
                 }),
-                e.forEach(function (t) {
-                    t.items.forEach(function (e) {
-                        e.cluster = t;
-                    });
-                }),
-                (this.clusters = e));
+            e.forEach(function (t) {
+                t.items.forEach(function (e) {
+                    e.cluster = t;
+                });
+            }),
+            (this.clusters = e));
     }),
     (links.Timeline.prototype.filterItems = function () {
         function e(e) {
@@ -14670,12 +14666,12 @@ function q(e) {
             t = this.items || [],
             i = {};
         for (e in ((this.groups = i),
-            t.forEach(function (e) {
-                var t = e.group ? e.group.content : "",
-                    n = i[t];
-                n || (i[t] = n = []), n.push(e), e.start && (e.center = e.end ? (e.start.valueOf() + e.end.valueOf()) / 2 : e.start.valueOf());
-            }),
-            i))
+        t.forEach(function (e) {
+            var t = e.group ? e.group.content : "",
+                n = i[t];
+            n || (i[t] = n = []), n.push(e), e.start && (e.center = e.end ? (e.start.valueOf() + e.end.valueOf()) / 2 : e.start.valueOf());
+        }),
+        i))
             i.hasOwnProperty(e) &&
                 i[e].sort(function (e, t) {
                     return e.center - t.center;
@@ -14687,18 +14683,18 @@ function q(e) {
             i = 0,
             o =
                 (0 < e && ((n = Math.round(Math.log(100 / e) / Math.log(2))), (i = Math.pow(2, n))),
-                    this.dataChanged && ((e = n != this.cacheLevel), (this.applyOnChangedLevel && !e) || (this.clearCache(), this.filterData())),
-                    (this.cacheLevel = n),
-                    this.cache[n]);
+                this.dataChanged && ((e = n != this.cacheLevel), (this.applyOnChangedLevel && !e) || (this.clearCache(), this.filterData())),
+                (this.cacheLevel = n),
+                this.cache[n]);
         if (!o) {
             for (var a in ((o = []), this.groups))
                 if (this.groups.hasOwnProperty(a))
-                    for (var s = this.groups[a], r = s.length, l = 0; l < r;) {
-                        for (var c = s[l], d = 1, u = l - 1; 0 <= u && c.center - s[u].center < i / 2;) s[u].cluster || d++, u--;
-                        for (var p = l + 1; p < s.length && s[p].center - c.center < i / 2;) d++, p++;
-                        for (var h = o.length - 1; 0 <= h && c.center - o[h].center < i / 2;) c.group == o[h].group && d++, h--;
+                    for (var s = this.groups[a], r = s.length, l = 0; l < r; ) {
+                        for (var c = s[l], d = 1, u = l - 1; 0 <= u && c.center - s[u].center < i / 2; ) s[u].cluster || d++, u--;
+                        for (var p = l + 1; p < s.length && s[p].center - c.center < i / 2; ) d++, p++;
+                        for (var h = o.length - 1; 0 <= h && c.center - o[h].center < i / 2; ) c.group == o[h].group && d++, h--;
                         if (t < d) {
-                            for (var f = d - t + 1, m = [], g = void 0, v = void 0, b = void 0, y = !1, w = 0, S = l; m.length < f && S < s.length;) {
+                            for (var f = d - t + 1, m = [], g = void 0, v = void 0, b = void 0, y = !1, w = 0, S = l; m.length < f && S < s.length; ) {
                                 var k = s[S],
                                     T = k.start.valueOf(),
                                     x = (k.end || k.start).valueOf();
@@ -14908,35 +14904,35 @@ function q(e) {
         var t;
         null != e &&
             ((t = 31104e6),
-                e < 31104e9 && ((this.scale = links.Timeline.StepDate.SCALE.YEAR), (this.step = 1e3)),
-                e < 15552e9 && ((this.scale = links.Timeline.StepDate.SCALE.YEAR), (this.step = 500)),
-                e < 31104e8 && ((this.scale = links.Timeline.StepDate.SCALE.YEAR), (this.step = 100)),
-                e < 50 * t && ((this.scale = links.Timeline.StepDate.SCALE.YEAR), (this.step = 50)),
-                e < 10 * t && ((this.scale = links.Timeline.StepDate.SCALE.YEAR), (this.step = 10)),
-                e < 5 * t && ((this.scale = links.Timeline.StepDate.SCALE.YEAR), (this.step = 5)),
-                e < t && ((this.scale = links.Timeline.StepDate.SCALE.YEAR), (this.step = 1)),
-                e < 7776e6 && ((this.scale = links.Timeline.StepDate.SCALE.MONTH), (this.step = 3)),
-                e < 2592e6 && ((this.scale = links.Timeline.StepDate.SCALE.MONTH), (this.step = 1)),
-                e < 432e6 && ((this.scale = links.Timeline.StepDate.SCALE.DAY), (this.step = 5)),
-                e < 1728e5 && ((this.scale = links.Timeline.StepDate.SCALE.DAY), (this.step = 2)),
-                e < 864e5 && ((this.scale = links.Timeline.StepDate.SCALE.DAY), (this.step = 1)),
-                e < 432e5 && ((this.scale = links.Timeline.StepDate.SCALE.WEEKDAY), (this.step = 1)),
-                e < 144e5 && ((this.scale = links.Timeline.StepDate.SCALE.HOUR), (this.step = 4)),
-                e < 36e5 && ((this.scale = links.Timeline.StepDate.SCALE.HOUR), (this.step = 1)),
-                e < 9e5 && ((this.scale = links.Timeline.StepDate.SCALE.MINUTE), (this.step = 15)),
-                e < 6e5 && ((this.scale = links.Timeline.StepDate.SCALE.MINUTE), (this.step = 10)),
-                e < 3e5 && ((this.scale = links.Timeline.StepDate.SCALE.MINUTE), (this.step = 5)),
-                e < 6e4 && ((this.scale = links.Timeline.StepDate.SCALE.MINUTE), (this.step = 1)),
-                e < 15e3 && ((this.scale = links.Timeline.StepDate.SCALE.SECOND), (this.step = 15)),
-                e < 1e4 && ((this.scale = links.Timeline.StepDate.SCALE.SECOND), (this.step = 10)),
-                e < 5e3 && ((this.scale = links.Timeline.StepDate.SCALE.SECOND), (this.step = 5)),
-                e < 1e3 && ((this.scale = links.Timeline.StepDate.SCALE.SECOND), (this.step = 1)),
-                e < 200 && ((this.scale = links.Timeline.StepDate.SCALE.MILLISECOND), (this.step = 200)),
-                e < 100 && ((this.scale = links.Timeline.StepDate.SCALE.MILLISECOND), (this.step = 100)),
-                e < 50 && ((this.scale = links.Timeline.StepDate.SCALE.MILLISECOND), (this.step = 50)),
-                e < 10 && ((this.scale = links.Timeline.StepDate.SCALE.MILLISECOND), (this.step = 10)),
-                e < 5 && ((this.scale = links.Timeline.StepDate.SCALE.MILLISECOND), (this.step = 5)),
-                e < 1) &&
+            e < 31104e9 && ((this.scale = links.Timeline.StepDate.SCALE.YEAR), (this.step = 1e3)),
+            e < 15552e9 && ((this.scale = links.Timeline.StepDate.SCALE.YEAR), (this.step = 500)),
+            e < 31104e8 && ((this.scale = links.Timeline.StepDate.SCALE.YEAR), (this.step = 100)),
+            e < 50 * t && ((this.scale = links.Timeline.StepDate.SCALE.YEAR), (this.step = 50)),
+            e < 10 * t && ((this.scale = links.Timeline.StepDate.SCALE.YEAR), (this.step = 10)),
+            e < 5 * t && ((this.scale = links.Timeline.StepDate.SCALE.YEAR), (this.step = 5)),
+            e < t && ((this.scale = links.Timeline.StepDate.SCALE.YEAR), (this.step = 1)),
+            e < 7776e6 && ((this.scale = links.Timeline.StepDate.SCALE.MONTH), (this.step = 3)),
+            e < 2592e6 && ((this.scale = links.Timeline.StepDate.SCALE.MONTH), (this.step = 1)),
+            e < 432e6 && ((this.scale = links.Timeline.StepDate.SCALE.DAY), (this.step = 5)),
+            e < 1728e5 && ((this.scale = links.Timeline.StepDate.SCALE.DAY), (this.step = 2)),
+            e < 864e5 && ((this.scale = links.Timeline.StepDate.SCALE.DAY), (this.step = 1)),
+            e < 432e5 && ((this.scale = links.Timeline.StepDate.SCALE.WEEKDAY), (this.step = 1)),
+            e < 144e5 && ((this.scale = links.Timeline.StepDate.SCALE.HOUR), (this.step = 4)),
+            e < 36e5 && ((this.scale = links.Timeline.StepDate.SCALE.HOUR), (this.step = 1)),
+            e < 9e5 && ((this.scale = links.Timeline.StepDate.SCALE.MINUTE), (this.step = 15)),
+            e < 6e5 && ((this.scale = links.Timeline.StepDate.SCALE.MINUTE), (this.step = 10)),
+            e < 3e5 && ((this.scale = links.Timeline.StepDate.SCALE.MINUTE), (this.step = 5)),
+            e < 6e4 && ((this.scale = links.Timeline.StepDate.SCALE.MINUTE), (this.step = 1)),
+            e < 15e3 && ((this.scale = links.Timeline.StepDate.SCALE.SECOND), (this.step = 15)),
+            e < 1e4 && ((this.scale = links.Timeline.StepDate.SCALE.SECOND), (this.step = 10)),
+            e < 5e3 && ((this.scale = links.Timeline.StepDate.SCALE.SECOND), (this.step = 5)),
+            e < 1e3 && ((this.scale = links.Timeline.StepDate.SCALE.SECOND), (this.step = 1)),
+            e < 200 && ((this.scale = links.Timeline.StepDate.SCALE.MILLISECOND), (this.step = 200)),
+            e < 100 && ((this.scale = links.Timeline.StepDate.SCALE.MILLISECOND), (this.step = 100)),
+            e < 50 && ((this.scale = links.Timeline.StepDate.SCALE.MILLISECOND), (this.step = 50)),
+            e < 10 && ((this.scale = links.Timeline.StepDate.SCALE.MILLISECOND), (this.step = 10)),
+            e < 5 && ((this.scale = links.Timeline.StepDate.SCALE.MILLISECOND), (this.step = 5)),
+            e < 1) &&
             ((this.scale = links.Timeline.StepDate.SCALE.MILLISECOND), (this.step = 1));
     }),
     (links.Timeline.StepDate.prototype.snap = function (e) {
@@ -15042,7 +15038,7 @@ function q(e) {
         }
     }),
     (links.Timeline.StepDate.prototype.addZeros = function (e, t) {
-        for (var n = "" + e; n.length < t;) n = "0" + n;
+        for (var n = "" + e; n.length < t; ) n = "0" + n;
         return n;
     }),
     (links.imageloader = (function () {
@@ -15059,15 +15055,15 @@ function q(e) {
                 a(t)
                     ? n && e(t)
                     : (o(t) && !n) ||
-                    ((i = l[t]) ||
-                        (((n = new Image()).src = t),
-                            (i = []),
-                            (l[t] = i),
-                            (n.onload = function () {
-                                (r[t] = !0), delete l[t];
-                                for (var e = 0; e < i.length; e++) i[e](t);
-                            })),
-                        -1 == i.indexOf(e) && i.push(e));
+                      ((i = l[t]) ||
+                          (((n = new Image()).src = t),
+                          (i = []),
+                          (l[t] = i),
+                          (n.onload = function () {
+                              (r[t] = !0), delete l[t];
+                              for (var e = 0; e < i.length; e++) i[e](t);
+                          })),
+                      -1 == i.indexOf(e) && i.push(e));
         }
         var r = {},
             l = {};
@@ -15083,19 +15079,19 @@ function q(e) {
                 }),
                     o.length
                         ? ((i = o.length),
-                            o.forEach(function (e) {
-                                s(
-                                    e,
-                                    function () {
-                                        0 == --i && t();
-                                    },
-                                    n
-                                );
-                            }))
+                          o.forEach(function (e) {
+                              s(
+                                  e,
+                                  function () {
+                                      0 == --i && t();
+                                  },
+                                  n
+                              );
+                          }))
                         : n && t();
             },
             filterImageUrls: function e(t, n) {
-                for (var i, o = t.firstChild; o;) "IMG" == o.tagName && ((i = o.src), -1 == n.indexOf(i)) && n.push(i), e(o, n), (o = o.nextSibling);
+                for (var i, o = t.firstChild; o; ) "IMG" == o.tagName && ((i = o.src), -1 == n.indexOf(i)) && n.push(i), e(o, n), (o = o.nextSibling);
             },
         };
     })()),
@@ -15116,11 +15112,11 @@ function q(e) {
         (e = e || window.event).preventDefault ? e.preventDefault() : (e.returnValue = !1);
     }),
     (links.Timeline.getAbsoluteLeft = function (e) {
-        for (var t = document.documentElement, n = document.body, i = e.offsetLeft, o = e.offsetParent; null != o && o != n && o != t;) (i = (i += o.offsetLeft) - o.scrollLeft), (o = o.offsetParent);
+        for (var t = document.documentElement, n = document.body, i = e.offsetLeft, o = e.offsetParent; null != o && o != n && o != t; ) (i = (i += o.offsetLeft) - o.scrollLeft), (o = o.offsetParent);
         return i;
     }),
     (links.Timeline.getAbsoluteTop = function (e) {
-        for (var t = document.documentElement, n = document.body, i = e.offsetTop, o = e.offsetParent; null != o && o != n && o != t;) (i = (i += o.offsetTop) - o.scrollTop), (o = o.offsetParent);
+        for (var t = document.documentElement, n = document.body, i = e.offsetTop, o = e.offsetParent; null != o && o != n && o != t; ) (i = (i += o.offsetTop) - o.scrollTop), (o = o.offsetParent);
         return i;
     }),
     (links.Timeline.getPageY = function (e) {
@@ -15337,10 +15333,10 @@ function q(e) {
                     var o, a, s, r, l, c, d, u, p, h, f, m = 0.133 * _, g = D.getMoonPosition(i, t, n).altitude - m, v = 1;
                     v <= 24 &&
                     ((f = D.getMoonPosition(T(i, v), t, n).altitude - m),
-                        (c = ((r = (g + (o = D.getMoonPosition(T(i, v + 1), t, n).altitude - m)) / 2 - f) * (l = -(d = (o - g) / 2) / (2 * r)) + d) * l + f),
-                        (u = 0) <= (d = d * d - 4 * r * f) && ((p = l - (f = Math.sqrt(d) / (2 * Math.abs(r)))), (h = l + f), Math.abs(p) <= 1 && u++, Math.abs(h) <= 1 && u++, p < -1) && (p = h),
-                        1 === u ? (g < 0 ? (a = v + p) : (s = v + p)) : 2 === u && ((a = v + (c < 0 ? h : p)), (s = v + (c < 0 ? p : h))),
-                        !a || !s);
+                    (c = ((r = (g + (o = D.getMoonPosition(T(i, v + 1), t, n).altitude - m)) / 2 - f) * (l = -(d = (o - g) / 2) / (2 * r)) + d) * l + f),
+                    (u = 0) <= (d = d * d - 4 * r * f) && ((p = l - (f = Math.sqrt(d) / (2 * Math.abs(r)))), (h = l + f), Math.abs(p) <= 1 && u++, Math.abs(h) <= 1 && u++, p < -1) && (p = h),
+                    1 === u ? (g < 0 ? (a = v + p) : (s = v + p)) : 2 === u && ((a = v + (c < 0 ? h : p)), (s = v + (c < 0 ? p : h))),
+                    !a || !s);
                     v += 2
                 )
                     g = o;
@@ -15476,8 +15472,8 @@ function q(e) {
         }
         "function" == typeof define && define.amd
             ? define(function () {
-                return t;
-            })
+                  return t;
+              })
             : (e.md5 = t);
     })(this),
     (Array.prototype.remove = function (e, t) {
@@ -15552,8 +15548,8 @@ function x(e, t) {
                 f < 16
                     ? o[f]
                     : ((n = o[(f + 1) & 15]),
-                        (i = o[(f + 14) & 15]),
-                        (o[15 & f] = (((n >>> 7) ^ (n >>> 18) ^ (n >>> 3) ^ (n << 25) ^ (n << 14)) + ((i >>> 17) ^ (i >>> 19) ^ (i >>> 10) ^ (i << 15) ^ (i << 13)) + o[15 & f] + o[(f + 9) & 15]) | 0))) +
+                      (i = o[(f + 14) & 15]),
+                      (o[15 & f] = (((n >>> 7) ^ (n >>> 18) ^ (n >>> 3) ^ (n << 25) ^ (n << 14)) + ((i >>> 17) ^ (i >>> 19) ^ (i >>> 10) ^ (i << 15) ^ (i << 13)) + o[15 & f] + o[(f + 9) & 15]) | 0))) +
             h +
             ((d >>> 6) ^ (d >>> 11) ^ (d >>> 25) ^ (d << 26) ^ (d << 21) ^ (d << 7)) +
             (p ^ (d & (u ^ p))) +
@@ -15591,9 +15587,9 @@ function D(e, t) {
 }
 "undefined" != typeof module && module.exports && (module.exports = sjcl),
     "function" == typeof define &&
-    define([], function () {
-        return sjcl;
-    }),
+        define([], function () {
+            return sjcl;
+        }),
     (sjcl.cipher.aes = function (e) {
         this.l[0][0][0] || this.G();
         var t,
@@ -15606,8 +15602,8 @@ function D(e, t) {
         for (4 !== s && 6 !== s && 8 !== s && q(new sjcl.exception.invalid("invalid aes key size")), this.b = [(n = e.slice(0)), (i = [])], e = s; e < 4 * s + 28; e++)
             (t = n[e - 1]),
                 (0 == e % s || (8 === s && 4 == e % s)) &&
-                ((t = (o[t >>> 24] << 24) ^ (o[(t >> 16) & 255] << 16) ^ (o[(t >> 8) & 255] << 8) ^ o[255 & t]), 0 == e % s) &&
-                ((t = (t << 8) ^ (t >>> 24) ^ (r << 24)), (r = (r << 1) ^ (283 * (r >> 7)))),
+                    ((t = (o[t >>> 24] << 24) ^ (o[(t >> 16) & 255] << 16) ^ (o[(t >> 8) & 255] << 8) ^ o[255 & t]), 0 == e % s) &&
+                    ((t = (t << 8) ^ (t >>> 24) ^ (r << 24)), (r = (r << 1) ^ (283 * (r >> 7)))),
                 (n[e] = n[e - s] ^ t);
         for (s = 0; e; s++, e--) (t = n[3 & s ? e : e - 4]), (i[s] = e <= 4 || s < 4 ? t : a[0][o[t >>> 24]] ^ a[1][o[(t >> 16) & 255]] ^ a[2][o[(t >> 8) & 255]] ^ a[3][o[255 & t]]);
     }),
@@ -15627,8 +15623,8 @@ function D(e, t) {
             for (e = t = 0; !l[e]; e ^= n || 1, t = u[t] || 1)
                 for (
                     a = (16843009 * (i = d[(p = d[(n = d[(c[(l[e] = o = ((o = t ^ (t << 1) ^ (t << 2) ^ (t << 3) ^ (t << 4)) >> 8) ^ (255 & o) ^ 99)] = e)])])])) ^ (65537 * p) ^ (257 * n) ^ (16843008 * e),
-                    i = (257 * d[o]) ^ (16843008 * o),
-                    p = 0;
+                        i = (257 * d[o]) ^ (16843008 * o),
+                        p = 0;
                     p < 4;
                     p++
                 )
@@ -15720,8 +15716,8 @@ function D(e, t) {
                 r = sjcl.codec.base32.p,
                 l = 0,
                 c = sjcl.bitArray.bitLength(e);
-            for (n && (r = sjcl.codec.base32.O), n = 0; a.length * i < c;) (a += r.charAt((l ^ (e[n] >>> s)) >>> o)), s < i ? ((l = e[n] << (i - s)), (s += o), n++) : ((l <<= i), (s -= i));
-            for (; 7 & a.length && !t;) a += "=";
+            for (n && (r = sjcl.codec.base32.O), n = 0; a.length * i < c; ) (a += r.charAt((l ^ (e[n] >>> s)) >>> o)), s < i ? ((l = e[n] << (i - s)), (s += o), n++) : ((l <<= i), (s -= i));
+            for (; 7 & a.length && !t; ) a += "=";
             return a;
         },
         toBits: function (e, t) {
@@ -15741,7 +15737,7 @@ function D(e, t) {
                     if (!t)
                         try {
                             return sjcl.codec.base32hex.toBits(e);
-                        } catch (e) { }
+                        } catch (e) {}
                     q(new sjcl.exception.invalid("this isn't " + u + "!"));
                 }
                 s < l ? (r.push(d ^ (i >>> (l -= s))), (d = i << (o - l))) : (d ^= i << (o - (l += a)));
@@ -15765,8 +15761,8 @@ function D(e, t) {
                 a = sjcl.codec.base64.p,
                 s = 0,
                 r = sjcl.bitArray.bitLength(e);
-            for (n && (a = a.substr(0, 62) + "-_"), n = 0; 6 * i.length < r;) (i += a.charAt((s ^ (e[n] >>> o)) >>> 26)), o < 6 ? ((s = e[n] << (6 - o)), (o += 26), n++) : ((s <<= 6), (o -= 6));
-            for (; 3 & i.length && !t;) i += "=";
+            for (n && (a = a.substr(0, 62) + "-_"), n = 0; 6 * i.length < r; ) (i += a.charAt((s ^ (e[n] >>> o)) >>> 26)), o < 6 ? ((s = e[n] << (6 - o)), (o += 26), n++) : ((s <<= 6), (o -= 6));
+            for (; 3 & i.length && !t; ) i += "=";
             return i;
         },
         toBits: function (e, t) {
@@ -15810,7 +15806,7 @@ function D(e, t) {
         },
         finalize: function () {
             for (var e = this.o, t = this.s, n = (e = sjcl.bitArray.concat(e, [sjcl.bitArray.partial(1, 1)])).length + 2; 15 & n; n++) e.push(0);
-            for (e.push(Math.floor(this.i / 4294967296)), e.push(0 | this.i); e.length;) x(this, e.splice(0, 16));
+            for (e.push(Math.floor(this.i / 4294967296)), e.push(0 | this.i); e.length; ) x(this, e.splice(0, 16));
             return this.reset(), t;
         },
         P: [],
@@ -15880,9 +15876,9 @@ function D(e, t) {
                 r = s.g;
             for (
                 ((o /= 8) % 2 || o < 4 || 16 < o) && q(new sjcl.exception.invalid("ccm: invalid tag length")),
-                (4294967295 < i.length || 4294967295 < t.length) && q(new sjcl.exception.bug("ccm: can't deal with 4GiB or more data")),
-                n = sjcl.mode.ccm.ea(e, i, n, o, s.bitLength(t) / 8, a),
-                i = 0;
+                    (4294967295 < i.length || 4294967295 < t.length) && q(new sjcl.exception.bug("ccm: can't deal with 4GiB or more data")),
+                    n = sjcl.mode.ccm.ea(e, i, n, o, s.bitLength(t) / 8, a),
+                    i = 0;
                 i < t.length;
                 i += 4
             )
@@ -15901,8 +15897,8 @@ function D(e, t) {
                     .concat([s.partial(8, a - 1)], n)
                     .concat([0, 0, 0])
                     .slice(0, 4)),
-                    (i = s.bitSlice(r(i, e.encrypt(n)), 0, o)),
-                    !l)
+                (i = s.bitSlice(r(i, e.encrypt(n)), 0, o)),
+                !l)
             )
                 return { tag: i, data: [] };
             for (r = 0; r < l; r += 4) d < r && (sjcl.mode.ccm.X(r / l), (d += u)), n[3]++, (o = e.encrypt(n)), (t[r] ^= o[0]), (t[r + 1] ^= o[1]), (t[r + 2] ^= o[2]), (t[r + 3] ^= o[3]);
@@ -16006,11 +16002,11 @@ function D(e, t) {
                 f = t.encrypt([0, 0, 0, 0]);
             for (
                 o = 96 === h ? ((o = o.slice(0)), c.concat(o, [1])) : ((o = sjcl.mode.gcm.h(f, [0, 0, 0, 0], o)), sjcl.mode.gcm.h(f, o, [0, 0, Math.floor(h / 4294967296), 4294967295 & h])),
-                h = sjcl.mode.gcm.h(f, [0, 0, 0, 0], i),
-                l = o.slice(0),
-                i = h.slice(0),
-                e || (i = sjcl.mode.gcm.h(f, h, n)),
-                r = 0;
+                    h = sjcl.mode.gcm.h(f, [0, 0, 0, 0], i),
+                    l = o.slice(0),
+                    i = h.slice(0),
+                    e || (i = sjcl.mode.gcm.h(f, h, n)),
+                    r = 0;
                 r < d;
                 r += 4
             )
@@ -16097,12 +16093,12 @@ function D(e, t) {
                 for (i = 0; i < this.c.length && ((a = a.concat(this.c[i].finalize())), (s += this.j[i]), (this.j[i] = 0), o || !(this.H & (1 << i))); i++);
                 for (
                     this.H >= 1 << this.c.length && (this.c.push(new sjcl.hash.sha256()), this.j.push(0)),
-                    this.d -= s,
-                    s > this.k && (this.k = s),
-                    this.H++,
-                    this.b = sjcl.hash.sha256.hash(this.b.concat(a)),
-                    this.C = new sjcl.cipher.aes(this.b),
-                    o = 0;
+                        this.d -= s,
+                        s > this.k && (this.k = s),
+                        this.H++,
+                        this.b = sjcl.hash.sha256.hash(this.b.concat(a)),
+                        this.C = new sjcl.cipher.aes(this.b),
+                        o = 0;
                     o < 4 && ((this.f[o] = (this.f[o] + 1) | 0), !this.f[o]);
                     o++
                 );
@@ -16131,7 +16127,7 @@ function D(e, t) {
                         e = i;
                     } else for ("[object Array]" !== n && (l = 1), n = 0; n < e.length && !l; n++) "number" != typeof e[n] && (l = 1);
                     if (!l) {
-                        if (t === s) for (n = t = 0; n < e.length; n++) for (i = e[n]; 0 < i;) t++, (i >>>= 1);
+                        if (t === s) for (n = t = 0; n < e.length; n++) for (i = e[n]; 0 < i; ) t++, (i >>>= 1);
                         this.c[a].update([c, this.F++, 2, t, o, e.length].concat(e));
                     }
                     break;
@@ -16155,27 +16151,27 @@ function D(e, t) {
         startCollectors: function () {
             this.r ||
                 ((this.a = { loadTimeCollector: D(this, this.da), mouseCollector: D(this, this.fa), keyboardCollector: D(this, this.ca), accelerometerCollector: D(this, this.W), touchCollector: D(this, this.ha) }),
-                    window.addEventListener
-                        ? (window.addEventListener("load", this.a.loadTimeCollector, u),
-                            window.addEventListener("mousemove", this.a.mouseCollector, u),
-                            window.addEventListener("keypress", this.a.keyboardCollector, u),
-                            window.addEventListener("devicemotion", this.a.accelerometerCollector, u),
-                            window.addEventListener("touchmove", this.a.touchCollector, u))
-                        : document.attachEvent
-                            ? (document.attachEvent("onload", this.a.loadTimeCollector), document.attachEvent("onmousemove", this.a.mouseCollector), document.attachEvent("keypress", this.a.keyboardCollector))
-                            : q(new sjcl.exception.bug("can't attach event")),
-                    (this.r = !0));
+                window.addEventListener
+                    ? (window.addEventListener("load", this.a.loadTimeCollector, u),
+                      window.addEventListener("mousemove", this.a.mouseCollector, u),
+                      window.addEventListener("keypress", this.a.keyboardCollector, u),
+                      window.addEventListener("devicemotion", this.a.accelerometerCollector, u),
+                      window.addEventListener("touchmove", this.a.touchCollector, u))
+                    : document.attachEvent
+                    ? (document.attachEvent("onload", this.a.loadTimeCollector), document.attachEvent("onmousemove", this.a.mouseCollector), document.attachEvent("keypress", this.a.keyboardCollector))
+                    : q(new sjcl.exception.bug("can't attach event")),
+                (this.r = !0));
         },
         stopCollectors: function () {
             this.r &&
                 (window.removeEventListener
                     ? (window.removeEventListener("load", this.a.loadTimeCollector, u),
-                        window.removeEventListener("mousemove", this.a.mouseCollector, u),
-                        window.removeEventListener("keypress", this.a.keyboardCollector, u),
-                        window.removeEventListener("devicemotion", this.a.accelerometerCollector, u),
-                        window.removeEventListener("touchmove", this.a.touchCollector, u))
+                      window.removeEventListener("mousemove", this.a.mouseCollector, u),
+                      window.removeEventListener("keypress", this.a.keyboardCollector, u),
+                      window.removeEventListener("devicemotion", this.a.accelerometerCollector, u),
+                      window.removeEventListener("touchmove", this.a.touchCollector, u))
                     : document.detachEvent && (document.detachEvent("onload", this.a.loadTimeCollector), document.detachEvent("onmousemove", this.a.mouseCollector), document.detachEvent("keypress", this.a.keyboardCollector)),
-                    (this.r = u));
+                (this.r = u));
         },
         addEventListener: function (e, t) {
             this.B[e][this.Y++] = t;
@@ -16252,7 +16248,7 @@ e: try {
             "string" == typeof s.salt && (s.salt = sjcl.codec.base64.toBits(s.salt)),
             "string" == typeof s.iv && (s.iv = sjcl.codec.base64.toBits(s.iv)),
             (!sjcl.mode[s.mode] || !sjcl.cipher[s.cipher] || ("string" == typeof e && s.iter <= 100) || (64 !== s.ts && 96 !== s.ts && 128 !== s.ts) || (128 !== s.ks && 192 !== s.ks && 256 !== s.ks) || s.iv.length < 2 || 4 < s.iv.length) &&
-            q(new sjcl.exception.invalid("json encrypt: invalid parameters")),
+                q(new sjcl.exception.invalid("json encrypt: invalid parameters")),
             "string" == typeof e
                 ? ((e = (o = sjcl.misc.cachedPbkdf2(e, s)).key.slice(0, s.ks / 32)), (s.salt = o.salt))
                 : sjcl.ecc && e instanceof sjcl.ecc.elGamal.publicKey && ((o = e.kem()), (s.kemtag = o.tag), (e = o.key.slice(0, s.ks / 32))),
@@ -16286,7 +16282,7 @@ e: try {
                 !t.iv ||
                 t.iv.length < 2 ||
                 4 < t.iv.length) &&
-            q(new sjcl.exception.invalid("json decrypt: invalid parameters")),
+                q(new sjcl.exception.invalid("json decrypt: invalid parameters")),
             "string" == typeof e
                 ? ((e = (o = sjcl.misc.cachedPbkdf2(e, t)).key.slice(0, t.ks / 32)), (t.salt = o.salt))
                 : sjcl.ecc && e instanceof sjcl.ecc.elGamal.secretKey && (e = e.unkem(sjcl.codec.base64.toBits(t.kemtag)).slice(0, t.ks / 32)),
