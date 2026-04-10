@@ -3782,7 +3782,6 @@ var DEFAULT_WEATHER_SERVER_URL = "https://weather.opensprinkler.com",
     MASTER_GID_VALUE = 254,
     notifications = [],
     timers = {},
-    curr183,
     currToken,
     currIp,
     currPrefix,
@@ -3910,28 +3909,32 @@ function initApp() {
         }, 200);
 }
 function flipSwitched() {
-    var $switch, switchId, isChecked, request;
-    switching ||
-        (($switch = $(this)),
-            (switchId = $switch.attr("id")),
-            (isChecked = $switch.is(":checked")),
-            (request = "mmm" === switchId ? "mm" : switchId),
-            (request = sendToOS(isChecked ? "/cv?pw=&" + request + "=1" : "/cv?pw=&" + request + "=0")),
-            $.when(request).then(
-                function () {
-                    refreshStatus(), "mmm" === switchId && $("#mm_list .green").removeClass("green"), checkStatus();
-                },
-                function () {
-                    (switching = !0),
-                        setTimeout(function () {
-                            switching = !1;
-                        }, 200),
-                        $switch.prop("checked", !isChecked).flipswitch("refresh");
-                }
-            ));
+    if (switching) return;
+    var $switch = $(this),
+        switchId = $switch.attr("id"),
+        isChecked = $switch.is(":checked"),
+        command = "mmm" === switchId ? "mm" : switchId,
+        request = sendToOS(isChecked ? "/cv?pw=&" + command + "=1" : "/cv?pw=&" + command + "=0");
+    $.when(request).then(
+        function () {
+            refreshStatus();
+            if ("mmm" === switchId) {
+                $("#mm_list .green").removeClass("green");
+            }
+            checkStatus();
+        },
+        function () {
+            switching = true;
+            setTimeout(function () {
+                switching = false;
+            }, 200);
+            $switch.prop("checked", !isChecked).flipswitch("refresh");
+        }
+    );
 }
 function sendToOS(path, dataType) {
-    (path = path.replace("pw=", "pw=" + encodeURIComponent(currPass))), (dataType = dataType || "text");
+    path = path.replace("pw=", "pw=" + encodeURIComponent(currPass));
+    dataType = dataType || "text";
     var changeMatch = /\/(?:cv|cs|cr|cp|uwa|dp|co|cl|cu|up|cm)/.exec(path),
         queueName = changeMatch ? "change" : "default",
         usePost = changeMatch && checkOSVersion(300),
@@ -3942,41 +3945,51 @@ function sendToOS(path, dataType) {
             data: usePost ? getUrlVars(path) : null,
             dataType: dataType,
             shouldRetry: function (xhr, retryAttempt) {
-                return !((0 === xhr.status && "abort" === xhr.statusText) || retryCount < retryAttempt) || ($.ajaxq.abort(queueName), !1);
+                return !((0 === xhr.status && "abort" === xhr.statusText) || retryCount < retryAttempt) || ($.ajaxq.abort(queueName), false);
             },
         };
-    return (
-        currAuth &&
+    if (currAuth) {
         $.extend(ajaxOptions, {
             beforeSend: function (xhr) {
                 xhr.setRequestHeader("Authorization", "Basic " + btoa(currAuthUser + ":" + currAuthPass));
             },
-        }),
-        curr183 && $.extend(ajaxOptions, { cache: "true" }),
-        $.ajaxq(queueName, ajaxOptions).then(
-            function (response) {
-                if ("string" == typeof response)
-                    try {
-                        response = $.parseJSON(response);
-                    } catch (e) {
-                        return response;
-                    }
-                return "object" != typeof response || "number" != typeof response.result || 1 === response.result
-                    ? response
-                    : 2 === response.result
-                        ? (/\/(?:cv|cs|cr|cp|uwa|dp|co|cl|cu|up|cm)/.exec(path) && showerror(_("Check device password and try again.")), $.Deferred().reject({ status: 401 }))
-                        : 32 === response.result
-                            ? $.Deferred().reject({ status: 404 })
-                            : /\/(?:cv|cs|cr|cp|uwa|dp|co|cl|cu|up|cm)/.exec(path)
-                                ? (48 === response.result ? showerror(_("The selected station is already running or is scheduled to run.")) : showerror(_("Please check input and try again.")), $.Deferred().reject(response))
-                                : void 0;
-            },
-            function (error) {
-                ("timeout" !== error.statusText && 0 !== error.status) || !/\/(?:cv|cs|cr|cp|uwa|dp|co|cl|cu|cm)/.exec(path)
-                    ? 401 === error.status && showerror(_("Check device password and try again."))
-                    : showerror(_("Connection timed-out. Please try again."));
+        });
+    }
+    return $.ajaxq(queueName, ajaxOptions).then(
+        function (response) {
+            if (typeof response === "string") {
+                try {
+                    response = $.parseJSON(response);
+                } catch (e) {
+                    return response;
+                }
             }
-        )
+            if (typeof response !== "object" || typeof response.result !== "number" || response.result === 1) {
+                return response;
+            }
+            if (response.result === 2) {
+                if (/\/(?:cv|cs|cr|cp|uwa|dp|co|cl|cu|up|cm)/.exec(path)) {
+                    showerror(_("Check device password and try again."));
+                }
+                return $.Deferred().reject({ status: 401 });
+            }
+            if (response.result === 32) {
+                return $.Deferred().reject({ status: 404 });
+            }
+            if (/\/(?:cv|cs|cr|cp|uwa|dp|co|cl|cu|up|cm)/.exec(path)) {
+                showerror(response.result === 48
+                    ? _("The selected station is already running or is scheduled to run.")
+                    : _("Please check input and try again."));
+                return $.Deferred().reject(response);
+            }
+        },
+        function (error) {
+            if (("timeout" === error.statusText || error.status === 0) && /\/(?:cv|cs|cr|cp|uwa|dp|co|cl|cu|cm)/.exec(path)) {
+                showerror(_("Connection timed-out. Please try again."));
+            } else if (error.status === 401) {
+                showerror(_("Check device password and try again."));
+            }
+        }
     );
 }
 function networkFail() {
@@ -3985,359 +3998,394 @@ function networkFail() {
     });
 }
 function newLoad() {
-    var i = $("#site-selector").val(),
-        e = "<div class='logo'></div><h1 style='padding-top:5px'>" + _("Connecting to") + " " + i + "</h1><p class='cancel tight center inline-icon'><span class='btn-no-border ui-btn ui-icon-delete ui-btn-icon-notext'></span>Cancel</p>";
-    $.mobile.loading("show", { html: currLocal ? "<h1>" + _("Loading") + "</h1>" : e, textVisible: !0, theme: "b" }),
-        $(".ui-loader")
-            .css({ "box-shadow": "none", "margin-top": "-4em" })
-            .find(".cancel")
-            .one("click", function () {
-                $.ajaxq.abort("default"), changePage("#site-control", { transition: "none" });
-            }),
-        (controller = {}),
-        clearNotifications(),
-        (timers = {}),
-        $.ajaxq.abort("default"),
-        updateController(
-            function () {
-                var e = $(".weatherAdjust"),
-                    t = $(".changePassword");
-                $.mobile.loading("hide"),
-                    checkURLandUpdateWeather(),
-                    checkOSVersion(210) ? e.css("display", "") : e.hide(),
-                    isOSPi() || checkOSVersion(208) ? t.css("display", "") : t.hide(),
-                    currLocal ? $("#info-list").find("li[data-role='list-divider']").text(_("Information")) : ($("#info-list").find("li[data-role='list-divider']").text(i), (document.title = "OpenSprinkler - " + i)),
-                    checkFirmwareUpdate(),
-                    detectUnusedExpansionBoards(),
-                    checkOSVersion(213) && 255 !== controller.options.hwv && fixPasswordHash(i),
-                    currLocal || "number" != typeof controller.settings.eip || checkPublicAccess(controller.settings.eip),
-                    updateLoginButtons(),
-                    isOSPi() && showUnifiedFirmwareNotification(),
-                    controller.options.firstRun ? showGuidedSetup() : goHome(!0);
-            },
-            function (e) {
-                $.ajaxq.abort("default"), (controller = {}), $.mobile.loading("hide");
-                function t() {
-                    currLocal
-                        ? storage.remove(["sites"], function () {
-                            window.location.reload();
-                        })
-                        : "site-control" === $(".ui-page-active").attr("id")
-                            ? n()
-                            : ($.mobile.document.one("pageshow", n), changePage("#site-control", { transition: "none" }));
-                }
-                var n = function () {
-                    showerror(_("Unable to connect to") + " " + i, 3500);
-                };
-                "object" == typeof e && 401 === e.status ? ($(".ui-popup-active").find("[data-role='popup']").popup("close"), changePassword({ fixIncorrect: !0, name: i, callback: newLoad, cancel: t })) : t();
+    var siteName = $("#site-selector").val(),
+        loadingHtml = "<div class='logo'></div><h1 style='padding-top:5px'>" + _("Connecting to") + " " + siteName + "</h1><p class='cancel tight center inline-icon'><span class='btn-no-border ui-btn ui-icon-delete ui-btn-icon-notext'></span>Cancel</p>";
+    $.mobile.loading("show", { html: currLocal ? "<h1>" + _("Loading") + "</h1>" : loadingHtml, textVisible: true, theme: "b" });
+    $(".ui-loader")
+        .css({ "box-shadow": "none", "margin-top": "-4em" })
+        .find(".cancel")
+        .one("click", function () {
+            $.ajaxq.abort("default");
+            changePage("#site-control", { transition: "none" });
+        });
+    controller = {};
+    clearNotifications();
+    timers = {};
+    $.ajaxq.abort("default");
+    updateController(
+        function () {
+            var $weatherAdjust = $(".weatherAdjust"),
+                $changePassword = $(".changePassword");
+            $.mobile.loading("hide");
+            checkURLandUpdateWeather();
+            checkOSVersion(210) ? $weatherAdjust.css("display", "") : $weatherAdjust.hide();
+            isOSPi() || checkOSVersion(208) ? $changePassword.css("display", "") : $changePassword.hide();
+            if (currLocal) {
+                $("#info-list").find("li[data-role='list-divider']").text(_("Information"));
+            } else {
+                $("#info-list").find("li[data-role='list-divider']").text(siteName);
+                document.title = "OpenSprinkler - " + siteName;
             }
-        );
+            checkFirmwareUpdate();
+            detectUnusedExpansionBoards();
+            if (checkOSVersion(213) && controller.options.hwv !== 255) {
+                fixPasswordHash(siteName);
+            }
+            if (!currLocal && typeof controller.settings.eip === "number") {
+                checkPublicAccess(controller.settings.eip);
+            }
+            updateLoginButtons();
+            if (isOSPi()) {
+                showUnifiedFirmwareNotification();
+            }
+            controller.options.firstRun ? showGuidedSetup() : goHome(true);
+        },
+        function (error) {
+            $.ajaxq.abort("default");
+            controller = {};
+            $.mobile.loading("hide");
+            var showError = function () {
+                showerror(_("Unable to connect to") + " " + siteName, 3500);
+            };
+            function handleError() {
+                if (currLocal) {
+                    storage.remove(["sites"], function () {
+                        window.location.reload();
+                    });
+                } else if ("site-control" === $(".ui-page-active").attr("id")) {
+                    showError();
+                } else {
+                    $.mobile.document.one("pageshow", showError);
+                    changePage("#site-control", { transition: "none" });
+                }
+            }
+            if (typeof error === "object" && error.status === 401) {
+                $(".ui-popup-active").find("[data-role='popup']").popup("close");
+                changePassword({ fixIncorrect: true, name: siteName, callback: newLoad, cancel: handleError });
+            } else {
+                handleError();
+            }
+        }
+    );
 }
 
 
 
 function updateController(onSuccess, onError) {
-    (onSuccess = onSuccess || function () { }), (onError = onError || function () { });
+    onSuccess = onSuccess || function () {};
+    onError = onError || function () {};
     function onComplete() {
-        $("html").trigger("datarefresh"), checkStatus(), onSuccess();
+        $("html").trigger("datarefresh");
+        checkStatus();
+        onSuccess();
     }
-    isControllerConnected() && checkOSVersion(216)
-        ? sendToOS("/ja?pw=", "json").then(function (data) {
-            var savedSpecial;
-            (void 0 === data || $.isEmptyObject(data) ? onError : ((savedSpecial = controller.special), ((controller = data).special = savedSpecial),
-                (controller.ospitemp = controller.status.ospitemp),
-                (controller.fuse = controller.status.fuse),
-                (controller.status = controller.status.sn),
-                onComplete))();
-        }, onError)
-        : $.when(updateControllerPrograms(), updateControllerStations(), updateControllerOptions(), updateControllerStatus(), updateControllerSettings()).then(onComplete, onError);
+    if (isControllerConnected() && checkOSVersion(216)) {
+        sendToOS("/ja?pw=", "json").then(function (data) {
+            if (data === undefined || $.isEmptyObject(data)) {
+                onError();
+            } else {
+                var savedSpecial = controller.special;
+                controller = data;
+                controller.special = savedSpecial;
+                controller.ospitemp = controller.status.ospitemp;
+                controller.fuse = controller.status.fuse;
+                controller.status = controller.status.sn;
+                onComplete();
+            }
+        }, onError);
+    } else {
+        $.when(updateControllerPrograms(), updateControllerStations(), updateControllerOptions(), updateControllerStatus(), updateControllerSettings()).then(onComplete, onError);
+    }
 }
 function updateControllerPrograms(callback) {
-    return (
-        (callback = callback || function () { }),
-/*        !0 === curr183
-            ? sendToOS("/gp?d=0").done(function (e) {
-                  for (var t, n, i = e.match(/(nprogs|nboards|mnp)=[\w|\d|.\"]+/g), o = /pd=\[\];(.*);/.exec(e), a = {}, s = 0; s < i.length; s++) "" !== i[s] && (a[(t = i[s].split("="))[0]] = parseInt(t[1]));
-                  if (((a.pd = []), null !== o)) for (o = o[1].split(";"), s = 0; s < o.length; s++) (n = (n = (n = o[s].split("="))[1].replace("[", "")).replace("]", "")), (a.pd[s] = parseIntArray(n.split(",")));
-                  (controller.programs = a), callback();
-              })
-            : */sendToOS("/jp?pw=", "json").done(function (data) {
-            (controller.programs = data), callback();
-        })
-    );
+    callback = callback || function () {};
+    return sendToOS("/jp?pw=", "json").done(function (data) {
+        controller.programs = data;
+        callback();
+    });
 }
 function updateControllerStations(callback) {
-    return (
-        (callback = callback || function () { }),
- /*       !0 === curr183
-            ? sendToOS("/vs").done(function (e) {
-                  var t = /snames=\[(.*?)\];/.exec(e),
-                      e = e.match(/(?:masop|mo)\s?[=|:]\s?\[(.*?)\]/);
-                  (t = t[1].split(",")).pop();
-                  for (var n = 0; n < t.length; n++) t[n] = t[n].replace(/'/g, "");
-                  (e = parseIntArray(e[1].split(","))), (controller.stations = { snames: t, masop: e, maxlen: t.length }), callback();
-              })
-            : */ sendToOS("/jn?pw=", "json").done(function (data) {
-            (controller.stations = data), callback();
-        })
-    );
+    callback = callback || function () {};
+    return sendToOS("/jn?pw=", "json").done(function (data) {
+        controller.stations = data;
+        callback();
+    });
 }
 function updateControllerOptions(callback) {
-    return (
-        (callback = callback || function () { }),
-        !0 === curr183
-            ? sendToOS("/vo").done(function (rawText) {
-                var keyName,
-                    keyNum,
-                    options = {};
-                if (rawText.match(/var sd\s*=/)) {
-                    for (var regex = /(tz|htp|htp2|nbrd|seq|sdt|mas|mton|mtoff|urs|rst|wl|ipas)\s?[=|:]\s?([\w|\d|.\"]+)/gm; null !== (match = regex.exec(rawText));) options[match[1].replace("nbrd", "ext").replace("mtoff", "mtof")] = +match[2];
-                    options.ext--, (options.fwv = "1.8.3-ospi");
-                } else {
-                    var match,
-                        legacyKeys = [1, 2, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 25, 26];
-                    for (match = (match = /var opts=\[(.*)\];/.exec(rawText))[1].replace(/"/g, "").split(","), keyName = 0; keyName < match.length - 1; keyName += 4) (keyNum = +match[keyName + 3]), -1 !== $.inArray(keyNum, legacyKeys) && (options[keyIndex[keyNum]] = +match[keyName + 2]);
-                    options.fwv = 183;
-                }
-                (controller.options = options), callback();
-            })
-            : sendToOS("/jo?pw=", "json").done(function (data) {
-                (controller.options = data), callback();
-            })
-    );
+    callback = callback || function () {};
+    return sendToOS("/jo?pw=", "json").done(function (data) {
+        controller.options = data;
+        callback();
+    });
 }
 function updateControllerStatus(callback) {
-    return (
-        (callback = callback || function () { }),
- /*       !0 === curr183
-            ? sendToOS("/sn0").then(
-                  function (e) {
-                      e = parseIntArray((e = e.toString().match(/\d+/))[0].split(""));
-                      (controller.status = e), callback();
-                  },
-                  function () {
-                      controller.status = [];
-                  }
-              )
-            : */sendToOS("/js?pw=", "json").then(
-            function (data) {
-                (controller.status = data.sn),
-                    (controller.ospitemp = data.ospitemp),
-                    (controller.fuse = data.fuse)
-                callback();
-            },
-            function () {
-                controller.status = [];
-            }
-        )
+    callback = callback || function () {};
+    return sendToOS("/js?pw=", "json").then(
+        function (data) {
+            controller.status = data.sn;
+            controller.ospitemp = data.ospitemp;
+            controller.fuse = data.fuse;
+            callback();
+        },
+        function () {
+            controller.status = [];
+        }
     );
 }
 function updateControllerSettings(callback) {
-    return (
-        (callback = callback || function () { }),
-        !0 === curr183
-            ? sendToOS("").then(
-                function (rawText) {
-                    for (
-                        var match,
-                        pattern = /(ver|devt|nbrd|tz|en|rd|rs|mm|rdst|urs)\s?[=|:]\s?([\w|\d|.\"]+)/gm,
-                        locMatch = rawText.match(/loc\s?[=|:]\s?[\"|'](.*)[\"|']/),
-                        lrunMatch = rawText.match(/lrun=\[(.*)\]/),
-                        psMatch = rawText.match(/ps=\[(.*)\];/),
-                        settings = {},
-                        idx = (psMatch = psMatch[1].split("],[")).length - 1;
-                        0 <= idx;
-                        idx--
-                    )
-                        psMatch[idx] = parseIntArray(psMatch[idx].replace(/\[|\]/g, "").split(","));
-                    for (; null !== (match = pattern.exec(rawText));) settings[match[1]] = +match[2];
-                    (settings.loc = locMatch[1]), (settings.ps = psMatch), (settings.lrun = parseIntArray(lrunMatch[1].split(","))), (controller.settings = settings);
-                },
-                function () {
-                    if (controller.settings && controller.stations) {
-                        for (var emptyPs = [], idx = 0; idx < controller.stations.maxlen; idx++) emptyPs.push([0, 0]);
-                        controller.settings.ps = emptyPs;
+    callback = callback || function () {};
+    return sendToOS("/jc?pw=").then(
+        function (data) {
+            if (typeof data !== "object") {
+                try {
+                    data = JSON.parse(data);
+                } catch (e) {
+                    var wtoPattern = /,"wto":\{.*?\}/,
+                        wtoMatch = data.match(wtoPattern);
+                    data = data.replace(wtoPattern, "");
+                    try {
+                        data = JSON.parse(data);
+                        handleCorruptedWeatherOptions(wtoMatch);
+                    } catch (e) {
+                        return false;
                     }
                 }
-            )
-            : sendToOS("/jc?pw=").then(
-                function (data) {
-                    if ("object" != typeof data)
-                        try {
-                            data = JSON.parse(data);
-                        } catch (e) {
-                            var wtoPattern = /,"wto":\{.*?\}/,
-                                wtoMatch = data.match(wtoPattern);
-                            data = data.replace(wtoPattern, "");
-                            try {
-                                (data = JSON.parse(data)), handleCorruptedWeatherOptions(wtoMatch);
-                            } catch (e) {
-                                return !1;
-                            }
-                        }
-                    void 0 === data.lrun && (data.lrun = [0, 0, 0, 0]), data.loc.match(regex.gps) && ((wtoMatch = data.loc.split(",")), (currentCoordinates = [parseFloat(wtoMatch[0]), parseFloat(wtoMatch[1])])), (controller.settings = data), callback();
-                },
-                function () {
-                    if (controller.settings && controller.stations) {
-                        for (var emptyPs = [], idx = 0; idx < controller.stations.maxlen; idx++) emptyPs.push([0, 0]);
-                        controller.settings.ps = emptyPs;
-                    }
+            }
+            if (data.lrun === undefined) {
+                data.lrun = [0, 0, 0, 0];
+            }
+            if (data.loc.match(regex.gps)) {
+                var coords = data.loc.split(",");
+                currentCoordinates = [parseFloat(coords[0]), parseFloat(coords[1])];
+            }
+            controller.settings = data;
+            callback();
+        },
+        function () {
+            if (controller.settings && controller.stations) {
+                var emptyPs = [];
+                for (var idx = 0; idx < controller.stations.maxlen; idx++) {
+                    emptyPs.push([0, 0]);
                 }
-            )
+                controller.settings.ps = emptyPs;
+            }
+        }
     );
 }
 function updateControllerStationSpecial(callback) {
-    return (
-        (callback = callback || function () { }),
-        sendToOS("/je?pw=", "json").then(
-            function (data) {
-                (controller.special = data), callback();
-            },
-            function () {
-                controller.special = {};
-            }
-        )
+    callback = callback || function () {};
+    return sendToOS("/je?pw=", "json").then(
+        function (data) {
+            controller.special = data;
+            callback();
+        },
+        function () {
+            controller.special = {};
+        }
     );
 }
 function checkConfigured(isFirstLoad) {
     storage.get(["sites", "current_site", "cloudToken"], function (stored) {
-        var rawSites = stored.sites,
-            currentSite = stored.current_site,
-            sites = parseSites(rawSites),
+        var currentSite = stored.current_site,
+            sites = parseSites(stored.sites),
             siteNames = Object.keys(sites);
-        siteNames.length
-            ? null !== currentSite && currentSite in sites
-                ? (updateSiteList(siteNames, currentSite),
-                    (currToken = sites[currentSite].os_token),
-                    (currIp = sites[currentSite].os_ip),
-                    (currPass = sites[currentSite].os_pw),
-                    (currPrefix = void 0 !== sites[currentSite].ssl && "1" === sites[currentSite].ssl ? "https://" : "http://"),
-                    void 0 !== sites[currentSite].auth_user && void 0 !== sites[currentSite].auth_pw ? ((currAuth = !0), (currAuthUser = sites[currentSite].auth_user), (currAuthPass = sites[currentSite].auth_pw)) : (currAuth = !1),
-                    (curr183 = !!sites[currentSite].is183),
-                    newLoad())
-                : ($.mobile.loading("hide"), changePage("#site-control", { transition: isFirstLoad ? "none" : void 0 }))
-            : isFirstLoad && (void 0 === stored.cloudToken || null === stored.cloudToken ? changePage("#start", { transition: "none" }) : changePage("#site-control", { transition: "none" }));
+        if (!siteNames.length) {
+            if (isFirstLoad) {
+                changePage(stored.cloudToken === undefined || stored.cloudToken === null ? "#start" : "#site-control", { transition: "none" });
+            }
+            return;
+        }
+        if (currentSite === null || !(currentSite in sites)) {
+            $.mobile.loading("hide");
+            changePage("#site-control", { transition: isFirstLoad ? "none" : undefined });
+            return;
+        }
+        updateSiteList(siteNames, currentSite);
+        currToken = sites[currentSite].os_token;
+        currIp = sites[currentSite].os_ip;
+        currPass = sites[currentSite].os_pw;
+        currPrefix = (sites[currentSite].ssl !== undefined && sites[currentSite].ssl === "1") ? "https://" : "http://";
+        if (sites[currentSite].auth_user !== undefined && sites[currentSite].auth_pw !== undefined) {
+            currAuth = true;
+            currAuthUser = sites[currentSite].auth_user;
+            currAuthPass = sites[currentSite].auth_pw;
+        } else {
+            currAuth = false;
+        }
+        newLoad();
     });
 }
 function fixPasswordHash(siteName) {
     storage.get(["sites"], function (stored) {
         var hashedPass,
             sites = parseSites(stored.sites);
-        isMD5(currPass) ||
-            ((hashedPass = md5(currPass)),
-                sendToOS("/sp?pw=&npw=" + encodeURIComponent(hashedPass) + "&cpw=" + encodeURIComponent(hashedPass), "json").done(function (response) {
-                    response = response.result;
-                    if (!response || 1 < response) return !1;
-                    (sites[siteName].os_pw = currPass = hashedPass), storage.set({ sites: JSON.stringify(sites) }, cloudSaveSites);
-                }));
+        if (!isMD5(currPass)) {
+            hashedPass = md5(currPass);
+            sendToOS("/sp?pw=&npw=" + encodeURIComponent(hashedPass) + "&cpw=" + encodeURIComponent(hashedPass), "json").done(function (response) {
+                response = response.result;
+                if (!response || response > 1) return false;
+                sites[siteName].os_pw = currPass = hashedPass;
+                storage.set({ sites: JSON.stringify(sites) }, cloudSaveSites);
+            });
+        }
     });
 }
 function submitNewUser(useSSL, useAuth) {
-    document.activeElement.blur(), $.mobile.loading("show");
+    document.activeElement.blur();
+    $.mobile.loading("show");
     function onConnected(deviceInfo, sites) {
-        var isLegacy, siteName, password, savePassword;
-        $.mobile.loading("hide"),
-            (("string" == typeof deviceInfo && deviceInfo.match(/var (en|sd)\s*=/)) || ("number" == typeof deviceInfo.fwv && 203 === deviceInfo.fwv)) && (isLegacy = !0),
-            void 0 !== deviceInfo.fwv || !0 === isLegacy
-                ? ((siteName = $("#os_name").val()),
-                    (password = $("#os_pw").val()),
-                    (savePassword = $("#save_pw").is(":checked")),
-                    "" === siteName && (siteName = "Site " + (Object.keys(sites).length + 1)),
-                    (sites[siteName] = {}),
-                    (sites[siteName].os_token = currToken = cloudToken),
-                    (sites[siteName].os_ip = currIp = ipAddress),
-                    "number" == typeof deviceInfo.fwv && 213 <= deviceInfo.fwv && "number" == typeof deviceInfo.wl && (password = md5(password)),
-                    (sites[siteName].os_pw = savePassword ? password : ""),
-                    (currPass = password),
-                    (currPrefix = useSSL ? ((sites[siteName].ssl = "1"), "https://") : "http://"),
-                    useAuth ? ((sites[siteName].auth_user = $("#os_auth_user").val()), (sites[siteName].auth_pw = $("#os_auth_pw").val()), (currAuth = !0), (currAuthUser = sites[siteName].auth_user), (currAuthPass = sites[siteName].auth_pw)) : (currAuth = !1),
-                    !0 === isLegacy && ((sites[siteName].is183 = "1"), (curr183 = !0)),
-                    $("#os_name,#os_ip,#os_pw,#os_auth_user,#os_auth_pw,#os_token").val(""),
-                    storage.set({ sites: JSON.stringify(sites), current_site: siteName }, function () {
-                        cloudSaveSites(), updateSiteList(Object.keys(sites), siteName), newLoad();
-                    }))
-                : showerror(_("Check IP/Port and try again."));
+        var isLegacy = (typeof deviceInfo === "string" && deviceInfo.match(/var (en|sd)\s*=/)) ||
+                       (typeof deviceInfo.fwv === "number" && deviceInfo.fwv === 203);
+        $.mobile.loading("hide");
+        if (deviceInfo.fwv === undefined && !isLegacy) {
+            showerror(_("Check IP/Port and try again."));
+            return;
+        }
+        var siteName = $("#os_name").val(),
+            password = $("#os_pw").val(),
+            savePassword = $("#save_pw").is(":checked");
+        if (siteName === "") {
+            siteName = "Site " + (Object.keys(sites).length + 1);
+        }
+        sites[siteName] = {};
+        sites[siteName].os_token = currToken = cloudToken;
+        sites[siteName].os_ip = currIp = ipAddress;
+        if (typeof deviceInfo.fwv === "number" && deviceInfo.fwv >= 213 && typeof deviceInfo.wl === "number") {
+            password = md5(password);
+        }
+        sites[siteName].os_pw = savePassword ? password : "";
+        currPass = password;
+        if (useSSL) {
+            sites[siteName].ssl = "1";
+            currPrefix = "https://";
+        } else {
+            currPrefix = "http://";
+        }
+        if (useAuth) {
+            sites[siteName].auth_user = $("#os_auth_user").val();
+            sites[siteName].auth_pw = $("#os_auth_pw").val();
+            currAuth = true;
+            currAuthUser = sites[siteName].auth_user;
+            currAuthPass = sites[siteName].auth_pw;
+        } else {
+            currAuth = false;
+        }
+        $("#os_name,#os_ip,#os_pw,#os_auth_user,#os_auth_pw,#os_token").val("");
+        storage.set({ sites: JSON.stringify(sites), current_site: siteName }, function () {
+            cloudSaveSites();
+            updateSiteList(Object.keys(sites), siteName);
+            newLoad();
+        });
     }
     function onConnectionError(error) {
-        useAuth || 401 !== error.status ? (useSSL ? ($.mobile.loading("hide"), showerror(_("Check IP/Port and try again."))) : submitNewUser(!0)) : showAuthForm();
+        if (!useAuth && error.status === 401) {
+            showAuthForm();
+        } else if (useSSL) {
+            $.mobile.loading("hide");
+            showerror(_("Check IP/Port and try again."));
+        } else {
+            submitNewUser(true);
+        }
     }
     function showAuthForm() {
-        var e;
-        $("#addnew-auth").length
-            ? submitNewUser(s, !0)
-            : ($.mobile.loading("hide"),
-                (e = $(
-                    "<div class='ui-content' id='addnew-auth'><form method='post' novalidate><p class='center smaller'>" +
-                    _("Authorization Required") +
-                    "</p><label for='os_auth_user'>" +
-                    _("Username:") +
-                    "</label><input autocomplete='off' autocorrect='off' autocapitalize='off' spellcheck='false' type='text' name='os_auth_user' id='os_auth_user'><label for='os_auth_pw'>" +
-                    _("Password:") +
-                    "</label><input type='password' name='os_auth_pw' id='os_auth_pw'><input type='submit' value='" +
-                    _("Submit") +
-                    "'></form></div>"
-                ).enhanceWithin()).on("submit", "form", function () {
-                    return submitNewUser(s, !0), !1;
-                }),
-                $("#addnew-content").hide(),
-                $("#addnew").append(e).popup("reposition", { positionTo: "window" }));
+        if ($("#addnew-auth").length) {
+            submitNewUser(s, true);
+            return;
+        }
+        $.mobile.loading("hide");
+        var $authForm = $(
+            "<div class='ui-content' id='addnew-auth'><form method='post' novalidate><p class='center smaller'>" +
+            _("Authorization Required") +
+            "</p><label for='os_auth_user'>" +
+            _("Username:") +
+            "</label><input autocomplete='off' autocorrect='off' autocapitalize='off' spellcheck='false' type='text' name='os_auth_user' id='os_auth_user'><label for='os_auth_pw'>" +
+            _("Password:") +
+            "</label><input type='password' name='os_auth_pw' id='os_auth_pw'><input type='submit' value='" +
+            _("Submit") +
+            "'></form></div>"
+        ).enhanceWithin();
+        $authForm.on("submit", "form", function () {
+            submitNewUser(s, true);
+            return false;
+        });
+        $("#addnew-content").hide();
+        $("#addnew").append($authForm).popup("reposition", { positionTo: "window" });
     }
     function getAuthHeader() {
         return btoa($("#os_auth_user").val() + ":" + $("#os_auth_pw").val());
     }
-    var protocol,
-        connectionType = $(".connection-type input[type='radio']:checked").val(),
+    var connectionType = $(".connection-type input[type='radio']:checked").val(),
         ipAddress = $.mobile.path.parseUrl($("#os_ip").val()).hrefNoHash.replace(/https?:\/\//, ""),
         cloudToken = "token" === connectionType ? $("#os_token").val() : null;
-    ipAddress || cloudToken
-        ? cloudToken && 32 !== cloudToken.length
-            ? showerror(_("OpenThings Token must be 32 characters long."))
-            : !0 !== useAuth && $("#os_useauth").is(":checked")
-                ? showAuthForm()
-                : (!0 === $("#os_usessl").is(":checked") && (useSSL = !0),
-                    (protocol = useSSL ? "https://" : "http://"),
-                    useAuth && ($("#addnew-auth").hide(), $("#addnew-content").show(), $("#addnew").popup("reposition", { positionTo: "window" })),
-                    (connectionType = "/jo?pw=" + md5($("#os_pw").val())),
-                    (connectionType = cloudToken ? "https://cloud.openthings.io/forward/v1/" + cloudToken + connectionType : protocol + ipAddress + connectionType),
-                    $.ajax({
-                        url: connectionType,
-                        type: "GET",
-                        dataType: "json",
-                        timeout: 1e4,
-                        global: !1,
-                        beforeSend: function (xhr) {
-                            !cloudToken && useAuth && xhr.setRequestHeader("Authorization", "Basic " + getAuthHeader());
-                        },
-                        error: function (error) {
-                            useAuth || 401 !== error.status
-                                ? $.ajax({
-                                    url: cloudToken ? "https://cloud.openthings.io/forward/v1/" + cloudToken : protocol + ipAddress,
-                                    type: "GET",
-                                    dataType: "text",
-                                    timeout: 1e4,
-                                    global: !1,
-                                    cache: !0,
-                                    beforeSend: function (xhr) {
-                                        !cloudToken && useAuth && xhr.setRequestHeader("Authorization", "Basic " + getAuthHeader());
-                                    },
-                                    success: function (legacyText) {
-                                        storage.get("sites", function (stored) {
-                                            stored = parseSites(stored.sites);
-                                            onConnected(legacyText, stored);
-                                        });
-                                    },
-                                    error: onConnectionError,
-                                })
-                                : showAuthForm();
-                        },
-                        success: function (deviceInfo) {
-                            storage.get("sites", function (stored) {
-                                stored = parseSites(stored.sites);
-                                onConnected(deviceInfo, stored);
-                            });
-                        },
-                    }))
-        : showerror(_("An IP address or token is required to continue."));
+    if (!ipAddress && !cloudToken) {
+        showerror(_("An IP address or token is required to continue."));
+        return;
+    }
+    if (cloudToken && cloudToken.length !== 32) {
+        showerror(_("OpenThings Token must be 32 characters long."));
+        return;
+    }
+    if (useAuth !== true && $("#os_useauth").is(":checked")) {
+        showAuthForm();
+        return;
+    }
+    if ($("#os_usessl").is(":checked") === true) {
+        useSSL = true;
+    }
+    var protocol = useSSL ? "https://" : "http://";
+    if (useAuth) {
+        $("#addnew-auth").hide();
+        $("#addnew-content").show();
+        $("#addnew").popup("reposition", { positionTo: "window" });
+    }
+    var optionsPath = "/jo?pw=" + md5($("#os_pw").val()),
+        optionsUrl = cloudToken
+            ? "https://cloud.openthings.io/forward/v1/" + cloudToken + optionsPath
+            : protocol + ipAddress + optionsPath;
+    $.ajax({
+        url: optionsUrl,
+        type: "GET",
+        dataType: "json",
+        timeout: 1e4,
+        global: false,
+        beforeSend: function (xhr) {
+            if (!cloudToken && useAuth) {
+                xhr.setRequestHeader("Authorization", "Basic " + getAuthHeader());
+            }
+        },
+        error: function (error) {
+            if (!useAuth && error.status === 401) {
+                showAuthForm();
+                return;
+            }
+            $.ajax({
+                url: cloudToken ? "https://cloud.openthings.io/forward/v1/" + cloudToken : protocol + ipAddress,
+                type: "GET",
+                dataType: "text",
+                timeout: 1e4,
+                global: false,
+                cache: true,
+                beforeSend: function (xhr) {
+                    if (!cloudToken && useAuth) {
+                        xhr.setRequestHeader("Authorization", "Basic " + getAuthHeader());
+                    }
+                },
+                success: function (legacyText) {
+                    storage.get("sites", function (stored) {
+                        stored = parseSites(stored.sites);
+                        onConnected(legacyText, stored);
+                    });
+                },
+                error: onConnectionError,
+            });
+        },
+        success: function (deviceInfo) {
+            storage.get("sites", function (stored) {
+                stored = parseSites(stored.sites);
+                onConnected(deviceInfo, stored);
+            });
+        },
+    });
 }
 function parseSites(rawJson) {
     return null == rawJson ? {} : JSON.parse(rawJson);
@@ -4349,14 +4397,16 @@ function showSiteSelect(listHtml) {
         _("Select Site") +
         "</h1></div><div class='ui-content'><ul data-role='none' class='ui-listview ui-corner-all ui-shadow'></ul></div></div>"
     );
-    listHtml && $popup.find("ul").html(listHtml),
-        $popup
-            .one("popupafterclose", function () {
-                $(this).popup("destroy").remove();
-            })
-            .popup({ history: !1, positionTo: "window" })
-            .enhanceWithin()
-            .popup("open");
+    if (listHtml) {
+        $popup.find("ul").html(listHtml);
+    }
+    $popup
+        .one("popupafterclose", function () {
+            $(this).popup("destroy").remove();
+        })
+        .popup({ history: false, positionTo: "window" })
+        .enhanceWithin()
+        .popup("open");
 }
 function showAddNew(prefillIp, closeFirst) {
     $("#addnew").popup("destroy").remove();
@@ -4406,152 +4456,172 @@ function showAddNew(prefillIp, closeFirst) {
             _("Submit") +
             "'></form></div></div>"
         );
-    return (
-        $popup.find("form").on("submit", function () {
-            return submitNewUser(), !1;
-        }),
-        $popup
+    $popup.find("form").on("submit", function () {
+        submitNewUser();
+        return false;
+    });
+    $popup
+        .one("popupafterclose", function () {
+            $(this).popup("destroy").remove();
+        })
+        .popup({ history: false, positionTo: "window" })
+        .enhanceWithin();
+    if (closeFirst) {
+        $(".ui-popup-active")
+            .children()
+            .first()
             .one("popupafterclose", function () {
-                $(this).popup("destroy").remove();
+                $popup.popup("open");
             })
-            .popup({ history: !1, positionTo: "window" })
-            .enhanceWithin(),
-        closeFirst
-            ? $(".ui-popup-active")
-                .children()
-                .first()
-                .one("popupafterclose", function () {
-                    $popup.popup("open");
-                })
-                .popup("close")
-            : $popup.popup("open"),
-        fixInputClick($popup),
-        $popup.find(".ui-collapsible-heading-toggle").on("click", function () {
-            var isCollapsed = $(this).parents(".ui-collapsible").hasClass("ui-collapsible-collapsed"),
-                $activePage = $(".ui-page-active"),
-                minHeight = parseInt($activePage.css("min-height"));
-            isCollapsed ? $activePage.css("min-height", minHeight + 65 + "px") : $activePage.css("min-height", minHeight - 65 + "px"), $popup.popup("reposition", { positionTo: "window" });
-        }),
-        $popup.find(".connection-type input[type='radio']").on("change", function () {
-            var hiddenField = "token" === this.value ? "ip" : "token";
-            $popup.find("." + hiddenField + "-field").hide(),
-                $popup
-                    .find("." + this.value + "-field")
-                    .removeClass("hidden")
-                    .show(),
-                $popup.find(".advanced-options").toggle("ip" === this.value);
-        }),
-        !1
-    );
+            .popup("close");
+    } else {
+        $popup.popup("open");
+    }
+    fixInputClick($popup);
+    $popup.find(".ui-collapsible-heading-toggle").on("click", function () {
+        var isCollapsed = $(this).parents(".ui-collapsible").hasClass("ui-collapsible-collapsed"),
+            $activePage = $(".ui-page-active"),
+            minHeight = parseInt($activePage.css("min-height"));
+        $activePage.css("min-height", (isCollapsed ? minHeight + 65 : minHeight - 65) + "px");
+        $popup.popup("reposition", { positionTo: "window" });
+    });
+    $popup.find(".connection-type input[type='radio']").on("change", function () {
+        var hiddenField = "token" === this.value ? "ip" : "token";
+        $popup.find("." + hiddenField + "-field").hide();
+        $popup.find("." + this.value + "-field").removeClass("hidden").show();
+        $popup.find(".advanced-options").toggle("ip" === this.value);
+    });
+    return false;
 }
-"serviceWorker" in navigator &&
+if ("serviceWorker" in navigator) {
     window.addEventListener("load", function () {
         navigator.serviceWorker.register("/sw.js");
-    }),
-    isOSXApp && document.documentElement.classList.add("macos"),
-    $(document)
-        .one("deviceready", function () {
-            window.cordova && window.cordova.InAppBrowser && (window.open = window.cordova.InAppBrowser.open);
+    });
+}
+if (isOSXApp) {
+    document.documentElement.classList.add("macos");
+}
+$(document)
+    .one("deviceready", function () {
+        if (window.cordova && window.cordova.InAppBrowser) {
+            window.open = window.cordova.InAppBrowser.open;
+        }
+        try {
+            StatusBar.overlaysWebView(false);
+            StatusBar.styleLightContent();
+            StatusBar.backgroundColorByHexString(statusBarPrimary);
+            $.mobile.window.on("statusTap", function () {
+                $("body, html").animate({ scrollTop: 0 }, 700);
+            });
+        } catch (e) {}
+        setTimeout(function () {
             try {
-                StatusBar.overlaysWebView(!1),
-                    StatusBar.styleLightContent(),
-                    StatusBar.backgroundColorByHexString(statusBarPrimary),
-                    $.mobile.window.on("statusTap", function () {
-                        $("body, html").animate({ scrollTop: 0 }, 700);
-                    });
-            } catch (e) { }
-            setTimeout(function () {
-                try {
-                    navigator.splashscreen.hide();
-                } catch (e) { }
-            }, 500),
-                $.mobile.document.on("backbutton", function () {
-                    return checkChangesBeforeBack(), !1;
-                }),
-                updateDeviceIP(),
-                isiOS &&
-                ThreeDeeTouch.isAvailable(function (e) {
-                    e &&
-                        (ThreeDeeTouch.enableLinkPreview(),
-                            ThreeDeeTouch.configureQuickActions([
-                                { type: "sites", title: _("Manage Sites"), iconType: "Location" },
-                                { type: "addprogram", title: _("Add Program"), iconType: "Add" },
-                                { type: "stopall", title: _("Stop All Stations"), iconType: "Pause" },
-                            ]),
-                            (ThreeDeeTouch.onHomeIconPressed = function (e) {
-                                "sites" === e.type ? changePage("#site-control") : "addprogram" === e.type ? changePage("#addprogram") : "stopall" === e.type && stopAllStations();
-                            }));
-                });
+                navigator.splashscreen.hide();
+            } catch (e) {}
+        }, 500);
+        $.mobile.document.on("backbutton", function () {
+            checkChangesBeforeBack();
+            return false;
+        });
+        updateDeviceIP();
+        if (isiOS) {
+            ThreeDeeTouch.isAvailable(function (available) {
+                if (!available) return;
+                ThreeDeeTouch.enableLinkPreview();
+                ThreeDeeTouch.configureQuickActions([
+                    { type: "sites", title: _("Manage Sites"), iconType: "Location" },
+                    { type: "addprogram", title: _("Add Program"), iconType: "Add" },
+                    { type: "stopall", title: _("Stop All Stations"), iconType: "Pause" },
+                ]);
+                ThreeDeeTouch.onHomeIconPressed = function (action) {
+                    if ("sites" === action.type) {
+                        changePage("#site-control");
+                    } else if ("addprogram" === action.type) {
+                        changePage("#addprogram");
+                    } else if ("stopall" === action.type) {
+                        stopAllStations();
+                    }
+                };
+            });
+        }
         })
         .one("mobileinit", function () {
-            ($.support.cors = !0), ($.mobile.allowCrossDomainPages = !0), loadLocalSettings();
+            $.support.cors = true;
+            $.mobile.allowCrossDomainPages = true;
+            loadLocalSettings();
         })
         .on("pagebeforechange", function (event, changeData) {
-            var toPage = changeData.toPage,
+            if (typeof changeData.toPage !== "string") return;
+            var toPage = $.mobile.path.parseUrl(changeData.toPage).hash,
                 $activePage = $(".ui-page-active");
-            "string" != typeof changeData.toPage ||
-                ((toPage = $.mobile.path.parseUrl(toPage).hash), 0 < $activePage.length && toPage === "#" + $activePage.attr("id")) ||
-                ("popup" === changeData.options.role || $(".ui-popup-active").length || $.mobile.silentScroll(0),
-                    "#programs" === toPage
-                        ? getPrograms(changeData.options.programToExpand)
-                        : "#addprogram" === toPage
-                            ? addProgram(changeData.options.copyID)
-                            : "#manual" === toPage
-                                ? getManual()
-                                : "#about" === toPage
-                                    ? showAbout()
-                                    : "#runonce" === toPage
-                                        ? getRunonce()
-                                        : "#os-options" === toPage
-                                            ? showOptions(changeData.options.expandItem)
-                                            : "#preview" === toPage
-                                                ? getPreview()
-                                                : "#logs" === toPage
-                                                    ? getLogs()
-                                                    : "#forecast" === toPage
-                                                        ? showForecast()
-                                                        : "#loadingPage" === toPage
-                                                            ? checkConfigured(!0)
-                                                            : "#start" === toPage
-                                                                ? showStart()
-                                                                : "#site-control" === toPage
-                                                                    ? showSites()
-                                                                    : "#sprinklers" === toPage &&
-                                                                    (0 === $(toPage).length
-                                                                        ? showHome(changeData.options.firstLoad)
-                                                                        : $(toPage).one("pageshow", function () {
-                                                                            refreshStatus();
-                                                                        })));
+            if ($activePage.length > 0 && toPage === "#" + $activePage.attr("id")) return;
+            if ("popup" !== changeData.options.role && !$(".ui-popup-active").length) {
+                $.mobile.silentScroll(0);
+            }
+            if ("#programs" === toPage)           { getPrograms(changeData.options.programToExpand); }
+            else if ("#addprogram" === toPage)    { addProgram(changeData.options.copyID); }
+            else if ("#manual" === toPage)        { getManual(); }
+            else if ("#about" === toPage)         { showAbout(); }
+            else if ("#runonce" === toPage)        { getRunonce(); }
+            else if ("#os-options" === toPage)    { showOptions(changeData.options.expandItem); }
+            else if ("#preview" === toPage)       { getPreview(); }
+            else if ("#logs" === toPage)          { getLogs(); }
+            else if ("#forecast" === toPage)      { showForecast(); }
+            else if ("#loadingPage" === toPage)   { checkConfigured(true); }
+            else if ("#start" === toPage)         { showStart(); }
+            else if ("#site-control" === toPage)  { showSites(); }
+            else if ("#sprinklers" === toPage) {
+                if ($(toPage).length === 0) {
+                    showHome(changeData.options.firstLoad);
+                } else {
+                    $(toPage).one("pageshow", function () { refreshStatus(); });
+                }
+            }
         })
         .on("resume", function () {
-            void 0 !== currIp && (cloudSync(), showLoading("#weather,#footer-running"), updateController(updateWeather, networkFail));
+            if (currIp !== undefined) {
+                cloudSync();
+                showLoading("#weather,#footer-running");
+                updateController(updateWeather, networkFail);
+            }
         })
-        .on("pause", function () { })
+        .on("pause", function () {})
         .on("pagebeforeshow", function (event) {
             var pageHash = "#" + event.target.id;
-            "#start" == pageHash || "#loadingPage" == pageHash ? $("#header,#footer,#footer-menu").hide() : $("#header,#footer,#footer-menu").show(),
-                storage.get("showDisabled", function (stored) {
-                    stored.showDisabled && "true" === stored.showDisabled ? $(pageHash).addClass("show-hidden").find(".station-hidden").show() : $(pageHash).removeClass("show-hidden").find(".station-hidden").hide();
-                });
+            if (pageHash === "#start" || pageHash === "#loadingPage") {
+                $("#header,#footer,#footer-menu").hide();
+            } else {
+                $("#header,#footer,#footer-menu").show();
+            }
+            storage.get("showDisabled", function (stored) {
+                if (stored.showDisabled && stored.showDisabled === "true") {
+                    $(pageHash).addClass("show-hidden").find(".station-hidden").show();
+                } else {
+                    $(pageHash).removeClass("show-hidden").find(".station-hidden").hide();
+                }
+            });
         })
         .on("pageshow", function (event) {
             var statusInterval,
                 dataInterval,
                 pageHash = "#" + event.target.id,
                 $page = $(pageHash);
-            goingBack ? (goingBack = !1) : pageHistoryCount++,
-                fixInputClick($page),
-                isControllerConnected() &&
-                "#site-control" != pageHash &&
-                "#start" != pageHash &&
-                "#loadingPage" != pageHash &&
-                ((statusInterval = setInterval(function () {
-                    refreshStatus();
-                }, 5e3)),
-                    checkOSVersion(216) || (dataInterval = setInterval(refreshData, 2e4)),
-                    $page.one("pagehide", function () {
-                        clearInterval(statusInterval), clearInterval(dataInterval);
-                    }));
+            if (goingBack) {
+                goingBack = false;
+            } else {
+                pageHistoryCount++;
+            }
+            fixInputClick($page);
+            if (isControllerConnected() && pageHash !== "#site-control" && pageHash !== "#start" && pageHash !== "#loadingPage") {
+                statusInterval = setInterval(function () { refreshStatus(); }, 5e3);
+                if (!checkOSVersion(216)) {
+                    dataInterval = setInterval(refreshData, 2e4);
+                }
+                $page.one("pagehide", function () {
+                    clearInterval(statusInterval);
+                    clearInterval(dataInterval);
+                });
+            }
         })
         .on("popupafteropen", function () {
             if ($(".ui-overlay-b:not(.ui-screen-hidden)").length)
@@ -4573,17 +4643,22 @@ function showAddNew(prefillIp, closeFirst) {
 var showSites = (function () {
     function t() {
         function t() {
-            e.eq(0).hide(), $("#header").show(), $("#footer, #footer-menu").hide();
+            e.eq(0).hide();
+            $("#header").show();
+            $("#footer, #footer-menu").hide();
         }
-        o.hasClass("ui-page-active")
-            ? t()
-            : o.one("pagebeforeshow", function (e) {
-                e.stopImmediatePropagation(), t();
-            }),
-            o.on("swiperight swipeleft", function (e) {
+        if (o.hasClass("ui-page-active")) {
+            t();
+        } else {
+            o.one("pagebeforeshow", function (e) {
                 e.stopImmediatePropagation();
-            }),
-            (document.title = "OpenSprinkler");
+                t();
+            });
+        }
+        o.on("swiperight swipeleft", function (e) {
+            e.stopImmediatePropagation();
+        });
+        document.title = "OpenSprinkler";
     }
     var m,
         e,
@@ -4598,20 +4673,27 @@ var showSites = (function () {
         );
     function g() {
         storage.get(["sites", "current_site", "cloudToken"], function (p) {
-            if (((m = parseSites(p.sites)), $.isEmptyObject(m))) {
-                if ("string" != typeof p.cloudToken) return void changePage("#start");
-                t(), o.find(".ui-content").html("<p class='center'>" + _("Please add a site by tapping the 'Add' button in the top right corner.") + "</p>");
+            m = parseSites(p.sites);
+            if ($.isEmptyObject(m)) {
+                if (typeof p.cloudToken !== "string") {
+                    changePage("#start");
+                    return;
+                }
+                t();
+                o.find(".ui-content").html("<p class='center'>" + _("Please add a site by tapping the 'Add' button in the top right corner.") + "</p>");
             } else {
                 var h = "<div data-role='collapsible-set'>",
                     f = [],
                     n = 0;
-                (i = Object.keys(m).length),
-                    (isControllerConnected() && i && p.current_site in m) || t(),
-                    (m = sortObj(m)),
+                i = Object.keys(m).length;
+                if (!isControllerConnected() || !i || !(p.current_site in m)) {
+                    t();
+                }
+                m = sortObj(m);
                     $.each(m, function (e, t) {
-                        f.push(e),
-                            (e = htmlEscape(e)),
-                            (h +=
+                        f.push(e);
+                        e = htmlEscape(e);
+                        h +=
                                 "<fieldset " +
                                 (1 === i ? "data-collapsed='false'" : "") +
                                 " id='site-" +
@@ -4703,27 +4785,27 @@ var showSites = (function () {
                                 _("Delete") +
                                 " " +
                                 e +
-                                "</a></form></fieldset>"),
+                                "</a></form></fieldset>";
                             testSite(t, n, function (e, t) {
                                 o.find("#site-" + e + " .connectnow")
                                     .removeClass("yellow")
                                     .addClass(t ? "green" : "red");
-                            }),
+                            });
                             n++;
-                    }),
-                    (h = $(h + "</div>")).find("form").one("change input", function () {
+                    });
+                    h = $(h + "</div>");
+                    h.find("form").one("change input", function () {
                         $(this).find(".submit").addClass("hasChanges");
-                    }),
+                    });
                     h.find(".connectnow").on("click", function () {
-                        return updateSite(f[$(this).data("site")]), !1;
-                    }),
-                    h.find(".help-icon").on("click", showHelpText),
+                        updateSite(f[$(this).data("site")]);
+                        return false;
+                    });
+                    h.find(".help-icon").on("click", showHelpText);
                     h.find(".useauth").on("change", function () {
-                        var e,
-                            t,
-                            n = $(this);
-                        n.is(":checked")
-                            ? ((e = $(
+                        var $checkbox = $(this);
+                        if ($checkbox.is(":checked")) {
+                            var $authPopup = $(
                                 "<div data-role='popup' data-theme='a'><form method='post' class='ui-content' novalidate><label for='auth_user'>" +
                                 _("Username:") +
                                 "</label><input autocomplete='off' autocorrect='off' autocapitalize='off' spellcheck='false' type='text' name='auth_user' id='auth_user'><label for='auth_pw'>" +
@@ -4731,17 +4813,24 @@ var showSites = (function () {
                                 "</label><input type='password' name='auth_pw' id='auth_pw'><input type='submit' class='submit' value='" +
                                 _("Submit") +
                                 "'></form></div>"
-                            ).enhanceWithin()),
-                                (t = !1),
-                                e.find(".submit").on("click", function () {
-                                    return n.data({ user: e.find("#auth_user").val(), pw: e.find("#auth_pw").val() }), (t = !0), e.popup("close"), !1;
-                                }),
-                                e.one("popupafterclose", function () {
-                                    t || n.attr("checked", !1).checkboxradio("refresh");
-                                }),
-                                openPopup(e))
-                            : n.data({ user: "", pw: "" });
-                    }),
+                            ).enhanceWithin();
+                            var submitted = false;
+                            $authPopup.find(".submit").on("click", function () {
+                                $checkbox.data({ user: $authPopup.find("#auth_user").val(), pw: $authPopup.find("#auth_pw").val() });
+                                submitted = true;
+                                $authPopup.popup("close");
+                                return false;
+                            });
+                            $authPopup.one("popupafterclose", function () {
+                                if (!submitted) {
+                                    $checkbox.attr("checked", false).checkboxradio("refresh");
+                                }
+                            });
+                            openPopup($authPopup);
+                        } else {
+                            $checkbox.data({ user: "", pw: "" });
+                        }
+                    });
                     h.find("form").on("submit", function () {
                         var e = $(this),
                             t = e.data("site"),
@@ -4750,93 +4839,120 @@ var showSites = (function () {
                             o = h.find("#cpw-" + t).val(),
                             a = h.find("#cnm-" + t).val(),
                             s = h.find("#useauth-" + t).is(":checked"),
-                            r = h.find("#usessl-" + t).is(":checked") ? "1" : void 0,
+                            r = h.find("#usessl-" + t).is(":checked") ? "1" : undefined,
                             l = h.find("#useauth-" + t).data("user"),
                             t = h.find("#useauth-" + t).data("pw"),
                             c = ("" !== i && i !== m[n].os_ip) || r !== m[n].ssl || l !== m[n].auth_user || t !== m[n].auth_pw,
                             d = n === p.current_site,
                             u = "" !== a && a !== n;
-                        return (
-                            e.find(".submit").removeClass("hasChanges"),
-                            s ? ((m[n].auth_user = l), (m[n].auth_pw = t)) : (delete m[n].auth_user, delete m[n].auth_pw),
-                            "1" === r ? (m[n].ssl = r) : delete m[n].ssl,
-                            "" !== i && i !== m[n].os_ip && (m[n].os_ip = i),
-                            "" !== o && o !== m[n].os_pw && (isMD5(m[n].os_pw) && (o = md5(o)), (m[n].os_pw = o)),
-                            u && ((m[a] = m[n]), delete m[n], (n = a), d && (storage.set({ current_site: n }), (p.current_site = n)), updateSiteList(Object.keys(m), p.current_site)),
-                            storage.set({ sites: JSON.stringify(m) }, cloudSaveSites),
-                            showerror(_("Site updated successfully")),
-                            n === p.current_site && ("" !== o && (currPass = o), c) && checkConfigured(),
-                            u && !e.find(".submit").hasClass("preventUpdate") && g(),
-                            !1
-                        );
-                    }),
+                        e.find(".submit").removeClass("hasChanges");
+                        if (s) {
+                            m[n].auth_user = l;
+                            m[n].auth_pw = t;
+                        } else {
+                            delete m[n].auth_user;
+                            delete m[n].auth_pw;
+                        }
+                        if ("1" === r) { m[n].ssl = r; } else { delete m[n].ssl; }
+                        if ("" !== i && i !== m[n].os_ip) { m[n].os_ip = i; }
+                        if ("" !== o && o !== m[n].os_pw) {
+                            if (isMD5(m[n].os_pw)) { o = md5(o); }
+                            m[n].os_pw = o;
+                        }
+                        if (u) {
+                            m[a] = m[n];
+                            delete m[n];
+                            n = a;
+                            if (d) {
+                                storage.set({ current_site: n });
+                                p.current_site = n;
+                            }
+                            updateSiteList(Object.keys(m), p.current_site);
+                        }
+                        storage.set({ sites: JSON.stringify(m) }, cloudSaveSites);
+                        showerror(_("Site updated successfully"));
+                        if (n === p.current_site && ("" !== o && (currPass = o), c)) {
+                            checkConfigured();
+                        }
+                        if (u && !e.find(".submit").hasClass("preventUpdate")) {
+                            g();
+                        }
+                        return false;
+                    });
                     h.find(".deletesite").on("click", function () {
                         var e = f[$(this).data("site")];
-                        return (
-                            areYouSure(_("Are you sure you want to delete ") + e + "?", "", function () {
-                                $("#site-selector").val() === e && t(),
-                                    delete m[e],
-                                    storage.set({ sites: JSON.stringify(m) }, function () {
-                                        return (
-                                            cloudSaveSites(),
-                                            updateSiteList(Object.keys(m), p.current_site),
-                                            $.isEmptyObject(m)
-                                                ? storage.get("cloudToken", function () {
-                                                    (null !== p.cloudToken && void 0 !== p.cloudToken) || ((currPass = currIp = ""), changePage("#start"));
-                                                })
-                                                : (g(), showerror(_("Site deleted successfully"))),
-                                            !1
-                                        );
+                        areYouSure(_("Are you sure you want to delete ") + e + "?", "", function () {
+                            if ($("#site-selector").val() === e) { t(); }
+                            delete m[e];
+                            storage.set({ sites: JSON.stringify(m) }, function () {
+                                cloudSaveSites();
+                                updateSiteList(Object.keys(m), p.current_site);
+                                if ($.isEmptyObject(m)) {
+                                    storage.get("cloudToken", function () {
+                                        if (p.cloudToken === null || p.cloudToken === undefined) {
+                                            currPass = currIp = "";
+                                            changePage("#start");
+                                        }
                                     });
-                            }),
-                            !1
-                        );
-                    }),
+                                } else {
+                                    g();
+                                    showerror(_("Site deleted successfully"));
+                                }
+                                return false;
+                            });
+                            return false;
+                        });
+                    });
                     o.find(".ui-content").html(h.enhanceWithin());
             }
-            "string" == typeof p.cloudToken && o.find(".ui-content").prepend(addSyncStatus(p.cloudToken));
+            if (typeof p.cloudToken === "string") {
+                o.find(".ui-content").prepend(addSyncStatus(p.cloudToken));
+            }
         });
     }
-    return (
-        n.find("#site-add-scan").on("click", function () {
-            return n.popup("close"), startScan(), !1;
-        }),
-        n.find("#site-add-manual").on("click", function () {
-            return showAddNew(!1, !0), !1;
-        }),
-        o.on("pagehide", function () {
-            n.popup("destroy").detach(), o.detach();
-        }),
-        $("html").on("siterefresh", function () {
-            o.hasClass("ui-page-active") && g();
-        }),
-        function () {
-            (e = changeHeader({
-                title: _("Manage Sites"),
-                animate: !!isControllerConnected(),
-                leftBtn: {
-                    icon: "carat-l",
-                    text: _("Back"),
-                    class: "ui-toolbar-back-btn",
-                    on: function () {
-                        o.find(".hasChanges").addClass("preventUpdate"), checkChangesBeforeBack();
-                    },
+    n.find("#site-add-scan").on("click", function () {
+        n.popup("close");
+        startScan();
+        return false;
+    });
+    n.find("#site-add-manual").on("click", function () {
+        showAddNew(false, true);
+        return false;
+    });
+    o.on("pagehide", function () {
+        n.popup("destroy").detach();
+        o.detach();
+    });
+    $("html").on("siterefresh", function () {
+        if (o.hasClass("ui-page-active")) { g(); }
+    });
+    return function () {
+        e = changeHeader({
+            title: _("Manage Sites"),
+            animate: !!isControllerConnected(),
+            leftBtn: {
+                icon: "carat-l",
+                text: _("Back"),
+                class: "ui-toolbar-back-btn",
+                on: function () {
+                    o.find(".hasChanges").addClass("preventUpdate");
+                    checkChangesBeforeBack();
                 },
-                rightBtn: {
-                    icon: "plus",
-                    text: _("Add"),
-                    on: function () {
-                        void 0 === deviceip ? showAddNew() : n.popup("open").popup("reposition", { positionTo: e.eq(2) });
-                    },
+            },
+            rightBtn: {
+                icon: "plus",
+                text: _("Add"),
+                on: function () {
+                    if (deviceip === undefined) { showAddNew(); } else { n.popup("open").popup("reposition", { positionTo: e.eq(2) }); }
                 },
-            })),
-                g(),
-                $.mobile.pageContainer.append(n),
-                n.popup({ history: !1, positionTo: e.eq(2) }).enhanceWithin(),
-                $("#site-control").remove(),
-                $.mobile.pageContainer.append(o);
-        }
-    );
+            },
+        });
+        g();
+        $.mobile.pageContainer.append(n);
+        n.popup({ history: false, positionTo: e.eq(2) }).enhanceWithin();
+        $("#site-control").remove();
+        $.mobile.pageContainer.append(o);
+    };
 })();
 function addSyncStatus(cloudToken) {
     var $bar = $(
@@ -4846,35 +4962,33 @@ function addSyncStatus(cloudToken) {
         getTokenUser(cloudToken) +
         ")</div><div class='inline ui-btn ui-icon-delete btn-no-border ui-btn-icon-notext ui-mini logout'></div></div>"
     );
-    return (
-        $bar.find(".logout").on("click", logout),
-        $bar.find(".ui-icon-recycle").on("click", function () {
-            var $icon = $(this);
-            $icon.addClass("spin"),
-                cloudSync(function () {
-                    $icon.removeClass("spin");
-                });
-        }),
-        $bar
-    );
+    $bar.find(".logout").on("click", logout);
+    $bar.find(".ui-icon-recycle").on("click", function () {
+        var $icon = $(this);
+        $icon.addClass("spin");
+        cloudSync(function () {
+            $icon.removeClass("spin");
+        });
+    });
+    return $bar;
 }
 function testSite(siteConfig, siteIndex, callback) {
-    var testUrl = "/jo?pw=" + encodeURIComponent(siteConfig.os_pw),
-        testUrl = siteConfig.os_token ? "https://cloud.openthings.io/forward/v1/" + siteConfig.os_token + testUrl : ("1" === siteConfig.ssl ? "https://" : "http://") + siteConfig.os_ip + testUrl;
+    var optionsPath = "/jo?pw=" + encodeURIComponent(siteConfig.os_pw),
+        testUrl = siteConfig.os_token
+            ? "https://cloud.openthings.io/forward/v1/" + siteConfig.os_token + optionsPath
+            : ("1" === siteConfig.ssl ? "https://" : "http://") + siteConfig.os_ip + optionsPath;
     $.ajax({
         url: testUrl,
         type: "GET",
         dataType: "json",
         beforeSend: function (xhr) {
-            void 0 !== siteConfig.auth_user && void 0 !== siteConfig.auth_pw && xhr.setRequestHeader("Authorization", "Basic " + btoa(siteConfig.auth_user + ":" + siteConfig.auth_pw));
+            if (siteConfig.auth_user !== undefined && siteConfig.auth_pw !== undefined) {
+                xhr.setRequestHeader("Authorization", "Basic " + btoa(siteConfig.auth_user + ":" + siteConfig.auth_pw));
+            }
         },
     }).then(
-        function () {
-            callback(siteIndex, !0);
-        },
-        function () {
-            callback(siteIndex, !1);
-        }
+        function () { callback(siteIndex, true); },
+        function () { callback(siteIndex, false); }
     );
 }
 function updateSiteList(siteNames, currentSite) {
@@ -4882,36 +4996,45 @@ function updateSiteList(siteNames, currentSite) {
         $selector = $("#site-selector");
     $.each(siteNames, function () {
         optionsHtml += "<option " + (this.toString() === currentSite ? "selected " : "") + "value='" + htmlEscape(this) + "'>" + this + "</option>";
-    }),
-        $("#info-list").find("li[data-role='list-divider']").text(currentSite),
-        $selector.html(optionsHtml),
-        $selector.parent().parent().hasClass("ui-select") && $selector.selectmenu("refresh");
+    });
+    $("#info-list").find("li[data-role='list-divider']").text(currentSite);
+    $selector.html(optionsHtml);
+    if ($selector.parent().parent().hasClass("ui-select")) {
+        $selector.selectmenu("refresh");
+    }
 }
 function updateSite(siteName) {
     storage.get("sites", function (stored) {
         stored = parseSites(stored.sites);
-        siteName in stored &&
+        if (siteName in stored) {
             closePanel(function () {
                 storage.set({ current_site: siteName }, checkConfigured);
             });
+        }
     });
 }
 function findLocalSiteName(sites, callback) {
-    for (var name in sites) if (sites.hasOwnProperty(name) && -1 !== currIp.indexOf(sites[name].os_ip)) return void callback(name);
-    callback(!1);
+    for (var name in sites) {
+        if (sites.hasOwnProperty(name) && currIp.indexOf(sites[name].os_ip) !== -1) {
+            callback(name);
+            return;
+        }
+    }
+    callback(false);
 }
 function updateDeviceIP(callback) {
     function setDeviceIP(ip) {
-        (deviceip = ip), "function" == typeof callback && callback(ip);
+        deviceip = ip;
+        if (typeof callback === "function") { callback(ip); }
     }
     var detectedIp;
     try {
         networkinterface.getWiFiIPAddress(function (result) {
-            (detectedIp = result.ip), setDeviceIP(detectedIp);
+            setDeviceIP(result.ip);
         });
     } catch (e) {
         findRouter(function (success, routerIp) {
-            setDeviceIP(success ? routerIp : void 0);
+            setDeviceIP(success ? routerIp : undefined);
         });
     }
 }
@@ -4920,89 +5043,109 @@ function isLocalIP(ipString) {
     return 10 === ipString[0] || 127 === ipString[0] || (172 === ipString[0] && 17 < ipString[1] && ipString[1] < 32) || (192 === ipString[0] && 168 === ipString[1]);
 }
 function startScan(port, scanPass) {
-    var hostOctet,
-        onError,
-        onSuccess,
-        subnetBase,
-        checkDone,
-        pollInterval,
-        endpoint,
-        scanLabel,
-        ipOctets = deviceip.split("."),
+    scanPass = scanPass || 0;
+    port = typeof port === "number" ? port : 80;
+
+    var ipOctets = deviceip.split("."),
         pendingCount = 1,
         foundCount = 0,
         foundHtml = "",
-        dataType = "",
         knownIps = [],
-        cancelled = !1;
-    for (
-        scanPass = scanPass || 0,
-        port = "number" == typeof port ? port : 80,
-        storage.get("sites", function (stored) {
-            var key,
-                sites = parseSites(stored.sites);
-            for (key in sites) sites.hasOwnProperty(key) && knownIps.push(sites[key].os_ip);
-        }),
-        onError = function () {
-            pendingCount++;
-        },
-        onSuccess = function (response) {
-            pendingCount++;
-            var fwVersion,
-                host = $.mobile.path.parseUrl(this.url).authority;
-            if (-1 === $.inArray(host, knownIps)) {
-                if ("text" === this.dataType) {
-                    if (!(fwVersion = response.match(/var\s*ver=(\d+)/))) return;
-                    fwVersion = fwVersion[1];
-                } else {
-                    if (!response.hasOwnProperty("fwv")) return;
-                    fwVersion = response.fwv;
-                }
-                foundCount++, (foundHtml += "<li><a class='ui-btn ui-btn-icon-right ui-icon-carat-r' href='#' data-ip='" + host + "'>" + host + "<p>" + _("Firmware") + ": " + getOSVersion(fwVersion) + "</p></a></li>");
-            }
-        },
-        checkDone = function () {
-            if (!0 === cancelled) return $.mobile.loading("hide"), clearInterval(pollInterval), !1;
-            245 === pendingCount &&
-                ($.mobile.loading("hide"),
-                    clearInterval(pollInterval),
-                    foundCount
-                        ? ((foundHtml = $(foundHtml)).find("a").on("click", function () {
-                            return addFound($(this).data("ip")), !1;
-                        }),
-                            showSiteSelect(foundHtml))
-                        : 0 === scanPass
-                            ? startScan(8080, 1)
-                            : 1 === scanPass
-                                ? startScan(80, 2)
-                                : 2 === scanPass
-                                    ? startScan(8080, 3)
-                                    : showerror(_("No new devices were detected on your network")));
-        },
-        ipOctets.pop(),
-        subnetBase = ipOctets.join("."),
-        0 === scanPass ? (scanLabel = _("Scanning for OpenSprinkler")) : 1 === scanPass ? (scanLabel = _("Scanning for OpenSprinkler Pi")) : 2 === scanPass ? (scanLabel = _("Scanning for OpenSprinkler (1.8.3)")) : 3 === scanPass && (scanLabel = _("Scanning for OpenSprinkler Pi (1.8.3)")),
-        $.mobile.loading("show", { html: "<h1>" + scanLabel + "</h1><p class='cancel tight center inline-icon'><span class='btn-no-border ui-btn ui-icon-delete ui-btn-icon-notext'></span>" + _("Cancel") + "</p>", textVisible: !0, theme: "b" }),
-        $(".ui-loader")
-            .find(".cancel")
-            .one("click", function () {
-                cancelled = !0;
-            }),
-        hostOctet = 1;
-        hostOctet <= 244;
-        hostOctet++
-    )
-        (ipOctets = subnetBase + "." + hostOctet), (endpoint = scanPass < 2 ? ((dataType = "/jo"), "json") : "text"), $.ajax({ url: "http://" + ipOctets + (port && 80 !== port ? ":" + port : "") + dataType, type: "GET", dataType: endpoint, timeout: 6e3, global: !1, error: onError, success: onSuccess });
+        cancelled = false,
+        pollInterval;
+
+    storage.get("sites", function (stored) {
+        var sites = parseSites(stored.sites);
+        for (var key in sites) {
+            if (sites.hasOwnProperty(key)) { knownIps.push(sites[key].os_ip); }
+        }
+    });
+
+    function onError() {
+        pendingCount++;
+    }
+    function onSuccess(response) {
+        pendingCount++;
+        var fwVersion,
+            host = $.mobile.path.parseUrl(this.url).authority;
+        if ($.inArray(host, knownIps) !== -1) return;
+        if ("text" === this.dataType) {
+            fwVersion = response.match(/var\s*ver=(\d+)/);
+            if (!fwVersion) return;
+            fwVersion = fwVersion[1];
+        } else {
+            if (!response.hasOwnProperty("fwv")) return;
+            fwVersion = response.fwv;
+        }
+        foundCount++;
+        foundHtml += "<li><a class='ui-btn ui-btn-icon-right ui-icon-carat-r' href='#' data-ip='" + host + "'>" + host + "<p>" + _("Firmware") + ": " + getOSVersion(fwVersion) + "</p></a></li>";
+    }
+    function checkDone() {
+        if (cancelled) {
+            $.mobile.loading("hide");
+            clearInterval(pollInterval);
+            return;
+        }
+        if (pendingCount !== 245) return;
+        $.mobile.loading("hide");
+        clearInterval(pollInterval);
+        if (foundCount) {
+            foundHtml = $(foundHtml);
+            foundHtml.find("a").on("click", function () {
+                addFound($(this).data("ip"));
+                return false;
+            });
+            showSiteSelect(foundHtml);
+        } else if (scanPass === 0) {
+            startScan(8080, 1);
+        } else if (scanPass === 1) {
+            startScan(80, 2);
+        } else if (scanPass === 2) {
+            startScan(8080, 3);
+        } else {
+            showerror(_("No new devices were detected on your network"));
+        }
+    }
+
+    ipOctets.pop();
+    var subnetBase = ipOctets.join(".");
+
+    var scanLabel;
+    if (scanPass === 0)      { scanLabel = _("Scanning for OpenSprinkler"); }
+    else if (scanPass === 1) { scanLabel = _("Scanning for OpenSprinkler Pi"); }
+    else if (scanPass === 2) { scanLabel = _("Scanning for OpenSprinkler (1.8.3)"); }
+    else if (scanPass === 3) { scanLabel = _("Scanning for OpenSprinkler Pi (1.8.3)"); }
+
+    $.mobile.loading("show", {
+        html: "<h1>" + scanLabel + "</h1><p class='cancel tight center inline-icon'><span class='btn-no-border ui-btn ui-icon-delete ui-btn-icon-notext'></span>" + _("Cancel") + "</p>",
+        textVisible: true,
+        theme: "b",
+    });
+    $(".ui-loader").find(".cancel").one("click", function () {
+        cancelled = true;
+    });
+
+    for (var hostOctet = 1; hostOctet <= 244; hostOctet++) {
+        var host = subnetBase + "." + hostOctet,
+            dataType = scanPass < 2 ? "/jo" : "",
+            responseType = scanPass < 2 ? "json" : "text";
+        $.ajax({
+            url: "http://" + host + (port && port !== 80 ? ":" + port : "") + dataType,
+            type: "GET",
+            dataType: responseType,
+            timeout: 6e3,
+            global: false,
+            error: onError,
+            success: onSuccess,
+        });
+    }
     pollInterval = setInterval(checkDone, 200);
 }
 function findRouter(callback) {
-    callback = callback || function () { };
-    function onPingResult(success, ip) {
-        completed++, !0 === success && (foundIp = ip);
-    }
-    for (
-        var pollInterval,
-        foundIp,
+    callback = callback || function () {};
+    var foundIp,
+        completed = 0,
+        pollInterval,
         candidates = [
             "192.168.1.1",
             "10.0.1.1",
@@ -5029,28 +5172,40 @@ function findRouter(callback) {
             "10.0.4.1",
             "10.0.5.1",
         ],
-        total = candidates.length,
-        completed = 0,
-        idx = 0;
-        idx < total;
-        idx++
-    )
-        "string" != typeof foundIp && ping(candidates[idx], onPingResult);
+        total = candidates.length;
+    function onPingResult(success, ip) {
+        completed++;
+        if (success === true) { foundIp = ip; }
+    }
+    for (var idx = 0; idx < total; idx++) {
+        if (typeof foundIp !== "string") {
+            ping(candidates[idx], onPingResult);
+        }
+    }
     pollInterval = setInterval(function () {
-        (completed !== total && "string" != typeof foundIp) || (clearInterval(pollInterval), "string" == typeof foundIp ? callback(!0, foundIp) : callback(!1));
+        if (completed !== total && typeof foundIp !== "string") return;
+        clearInterval(pollInterval);
+        if (typeof foundIp === "string") {
+            callback(true, foundIp);
+        } else {
+            callback(false);
+        }
     }, 50);
 }
 function ping(host, callback) {
-    (callback = callback || function () { }),
-        (host && "" !== host) || callback(!1),
-        $.ajax({ url: "http://" + host, type: "GET", timeout: 6e3, global: !1 }).then(
-            function () {
-                callback(!0, host);
-            },
-            function (error) {
-                "timeout" === error.statusText ? callback(!1) : callback(!0, host);
-            }
-        );
+    callback = callback || function () {};
+    if (!host || host === "") {
+        callback(false);
+        return;
+    }
+    $.ajax({ url: "http://" + host, type: "GET", timeout: 6e3, global: false }).then(
+        function () {
+            callback(true, host);
+        },
+        function (error) {
+            "timeout" === error.statusText ? callback(false) : callback(true, host);
+        }
+    );
 }
 function addFound(ip) {
     $("#site-select")
@@ -5064,13 +5219,17 @@ function showZimmermanAdjustmentOptions(inputElement, onSubmit) {
     function adjustInput(inputIndex, delta) {
         var $input = $popup.find(".inputs input").eq(inputIndex),
             currentVal = parseInt($input.val());
-        (-1 === delta && 0 === currentVal) || (1 === delta && 100 === currentVal) || $input.val(currentVal + delta);
+        if (!(delta === -1 && currentVal === 0) && !(delta === 1 && currentVal === 100)) {
+            $input.val(currentVal + delta);
+        }
     }
     var options = $.extend({}, { h: 100, t: 100, r: 100, bh: 30, bt: 70, br: 0 }, unescapeJSON(inputElement.value)),
-        hasBaselineSupport = checkOSVersion(2162),
-        $popup =
-            (isMetric && ((options.bt = Math.round(((5 * (options.bt - 32)) / 9) * 10) / 10), (options.br = Math.round(25.4 * options.br * 10) / 10)),
-                $(
+        hasBaselineSupport = checkOSVersion(2162);
+    if (isMetric) {
+        options.bt = Math.round(((5 * (options.bt - 32)) / 9) * 10) / 10;
+        options.br = Math.round(25.4 * options.br * 10) / 10;
+    }
+    var $popup = $(
                     "<div data-role='popup' data-theme='a' id='adjustmentOptions'><div data-role='header' data-theme='b'><h1>" +
                     _("Weather Adjustment Options") +
                     "</h1></div><div class='ui-content'><p class='rain-desc center smaller'>" +
@@ -5108,46 +5267,61 @@ function showZimmermanAdjustmentOptions(inputElement, onSubmit) {
                     "'></div></div><fieldset class='ui-grid-b decr'><div class='ui-block-a'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='minus' data-iconpos='bottom'></a></div><div class='ui-block-b'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='minus' data-iconpos='bottom'></a></div><div class='ui-block-c'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='minus' data-iconpos='bottom'></a></div></fieldset></span><button class='submit' data-theme='b'>" +
                     _("Submit") +
                     "</button></div></div>"
-                ));
+                );
     $popup.find(".submit").on("click", function () {
-        var values = { h: parseInt($popup.find(".h").val()), t: parseInt($popup.find(".t").val()), r: parseInt($popup.find(".r").val()) };
-        return (
-            hasBaselineSupport &&
-            ($.extend(values, { bh: parseInt($popup.find(".bh").val()), bt: parseFloat($popup.find(".bt").val()), br: parseFloat($popup.find(".br").val()) }), isMetric) &&
-            ((values.bt = Math.round(100 * ((9 * values.bt) / 5 + 32)) / 100), (values.br = Math.round((values.br / 25.4) * 1e3) / 1e3)),
-            inputElement && (inputElement.value = escapeJSON(values)),
-            onSubmit(),
-            $popup.popup("close"),
-            !1
-        );
-    }),
-        $popup
-            .on("focus", "input[type='number']", function () {
-                this.value = "";
-            })
-            .on("blur", "input[type='number']", function () {
-                var min = parseFloat(this.min),
-                    max = parseFloat(this.max);
-                "" === this.value && (this.value = "0"), (this.value < min || this.value > max) && (this.value = this.value < min ? min : max);
-            }),
-        holdButton($popup.find(".incr").children(), function (event) {
-            event = $(event.currentTarget).index();
-            return adjustInput(event, 1), !1;
-        }),
-        holdButton($popup.find(".decr").children(), function (event) {
-            event = $(event.currentTarget).index();
-            return adjustInput(event, -1), !1;
-        }),
-        $("#adjustmentOptions").remove(),
-        $popup.css("max-width", "380px"),
-        openPopup($popup, { positionTo: "window" });
+        var values = {
+            h: parseInt($popup.find(".h").val()),
+            t: parseInt($popup.find(".t").val()),
+            r: parseInt($popup.find(".r").val()),
+        };
+        if (hasBaselineSupport) {
+            $.extend(values, {
+                bh: parseInt($popup.find(".bh").val()),
+                bt: parseFloat($popup.find(".bt").val()),
+                br: parseFloat($popup.find(".br").val()),
+            });
+            if (isMetric) {
+                values.bt = Math.round(100 * ((9 * values.bt) / 5 + 32)) / 100;
+                values.br = Math.round((values.br / 25.4) * 1e3) / 1e3;
+            }
+        }
+        if (inputElement) { inputElement.value = escapeJSON(values); }
+        onSubmit();
+        $popup.popup("close");
+        return false;
+    });
+    $popup
+        .on("focus", "input[type='number']", function () {
+            this.value = "";
+        })
+        .on("blur", "input[type='number']", function () {
+            var min = parseFloat(this.min),
+                max = parseFloat(this.max);
+            if ("" === this.value) { this.value = "0"; }
+            if (this.value < min || this.value > max) {
+                this.value = this.value < min ? min : max;
+            }
+        });
+    holdButton($popup.find(".incr").children(), function (event) {
+        adjustInput($(event.currentTarget).index(), 1);
+        return false;
+    });
+    holdButton($popup.find(".decr").children(), function (event) {
+        adjustInput($(event.currentTarget).index(), -1);
+        return false;
+    });
+    $("#adjustmentOptions").remove();
+    $popup.css("max-width", "380px");
+    openPopup($popup, { positionTo: "window" });
 }
 function showAutoRainDelayAdjustmentOptions(inputElement, onSubmit) {
     $(".ui-popup-active").find("[data-role='popup']").popup("close");
     function adjustDelay(delta) {
         var $input = $popup.find("#delay_duration"),
             currentVal = parseInt($input.val());
-        (-1 === delta && 0 === currentVal) || (1 === delta && 8760 === currentVal) || $input.val(currentVal + delta);
+        if (!(delta === -1 && currentVal === 0) && !(delta === 1 && currentVal === 8760)) {
+            $input.val(currentVal + delta);
+        }
     }
     var options = $.extend({}, { d: 24 }, unescapeJSON(inputElement.value)),
         $popup = $(
@@ -5164,24 +5338,30 @@ function showAutoRainDelayAdjustmentOptions(inputElement, onSubmit) {
             "</button></div></div>"
         );
     $popup.find(".submit").on("click", function () {
-        return (options = { d: parseInt($popup.find("#delay_duration").val()) }), inputElement && (inputElement.value = escapeJSON(options)), onSubmit(), $popup.popup("close"), !1;
-    }),
-        $popup
-            .on("focus", "input[type='number']", function () {
-                this.value = "";
-            })
-            .on("blur", "input[type='number']", function () {
-                ("" === this.value || parseInt(this.value) < 0) && (this.value = "0");
-            }),
-        holdButton($popup.find(".incr"), function () {
-            return adjustDelay(1), !1;
-        }),
-        holdButton($popup.find(".decr"), function () {
-            return adjustDelay(-1), !1;
-        }),
-        $("#adjustmentOptions").remove(),
-        $popup.css("max-width", "380px"),
-        openPopup($popup, { positionTo: "window" });
+        options = { d: parseInt($popup.find("#delay_duration").val()) };
+        if (inputElement) { inputElement.value = escapeJSON(options); }
+        onSubmit();
+        $popup.popup("close");
+        return false;
+    });
+    $popup
+        .on("focus", "input[type='number']", function () {
+            this.value = "";
+        })
+        .on("blur", "input[type='number']", function () {
+            if ("" === this.value || parseInt(this.value) < 0) { this.value = "0"; }
+        });
+    holdButton($popup.find(".incr"), function () {
+        adjustDelay(1);
+        return false;
+    });
+    holdButton($popup.find(".decr"), function () {
+        adjustDelay(-1);
+        return false;
+    });
+    $("#adjustmentOptions").remove();
+    $popup.css("max-width", "380px");
+    openPopup($popup, { positionTo: "window" });
 }
 function showMonthlyAdjustmentOptions(inputElement, onSubmit) {
     $(".ui-popup-active").find("[data-role='popup']").popup("close");
@@ -5244,36 +5424,50 @@ function showMonthlyAdjustmentOptions(inputElement, onSubmit) {
             "</button></div></div>"
         );
     $popup.find(".submit").on("click", function () {
-        for (var scales = [], monthIdx = 0; monthIdx < 12; monthIdx++) (scales[monthIdx] = parseInt($popup.find(".sc" + monthIdx).val())), scales[monthIdx] < 0 && (scales[monthIdx] = 0), 250 < scales[monthIdx] && (scales[monthIdx] = 250);
-        return (options = { scales: scales }), inputElement && (inputElement.value = escapeJSON(options)), onSubmit(), $popup.popup("close"), !1;
-    }),
-        $popup
-            .on("focus", "input[type='number']", function () {
-                this.value = "";
-            })
-            .on("blur", "input[type='number']", function () {
-                ("" === this.value || parseInt(this.value) < 0) && (this.value = "0");
-            }),
-        $("#adjustmentOptions").remove(),
-        $popup.css("max-width", "380px"),
-        openPopup($popup, { positionTo: "window" });
+        var scales = [];
+        for (var monthIdx = 0; monthIdx < 12; monthIdx++) {
+            scales[monthIdx] = parseInt($popup.find(".sc" + monthIdx).val());
+            if (scales[monthIdx] < 0) { scales[monthIdx] = 0; }
+            if (scales[monthIdx] > 250) { scales[monthIdx] = 250; }
+        }
+        options = { scales: scales };
+        if (inputElement) { inputElement.value = escapeJSON(options); }
+        onSubmit();
+        $popup.popup("close");
+        return false;
+    });
+    $popup
+        .on("focus", "input[type='number']", function () {
+            this.value = "";
+        })
+        .on("blur", "input[type='number']", function () {
+            if ("" === this.value || parseInt(this.value) < 0) { this.value = "0"; }
+        });
+    $("#adjustmentOptions").remove();
+    $popup.css("max-width", "380px");
+    openPopup($popup, { positionTo: "window" });
 }
 function validateWULocation(stationId, callback) {
-    (controller.settings.wto && "string" == typeof controller.settings.wto.key && "" !== controller.settings.wto.key) || callback(!1),
-        $.ajax({ url: "https://api.weather.com/v2/pws/observations/hourly/7day?stationId=" + stationId + "&format=json&units=e&apiKey=" + controller.settings.wto.key, cache: !0 })
-            .done(function (response) {
-                !response || response.errors ? callback(!1) : callback(!0);
-            })
-            .fail(function () {
-                callback(!1);
-            });
+    if (!controller.settings.wto || typeof controller.settings.wto.key !== "string" || controller.settings.wto.key === "") {
+        callback(false);
+        return;
+    }
+    $.ajax({ url: "https://api.weather.com/v2/pws/observations/hourly/7day?stationId=" + stationId + "&format=json&units=e&apiKey=" + controller.settings.wto.key, cache: true })
+        .done(function (response) {
+            callback(!response || response.errors ? false : true);
+        })
+        .fail(function () {
+            callback(false);
+        });
 }
 function showEToAdjustmentOptions(inputElement, onSubmit) {
     $(".ui-popup-active").find("[data-role='popup']").popup("close");
-    var options = $.extend({}, { baseETo: 0, elevation: 600 }, unescapeJSON(inputElement.value)),
-        $popup =
-            (isMetric && ((options.baseETo = Math.round(25.4 * options.baseETo * 10) / 10), (options.elevation = Math.round(options.elevation / 3.28))),
-                $(
+    var options = $.extend({}, { baseETo: 0, elevation: 600 }, unescapeJSON(inputElement.value));
+    if (isMetric) {
+        options.baseETo = Math.round(25.4 * options.baseETo * 10) / 10;
+        options.elevation = Math.round(options.elevation / 3.28);
+    }
+    var $popup = $(
                     "<div data-role='popup' data-theme='a' id='adjustmentOptions'><div data-role='header' data-theme='b'><h1>" +
                     _("Weather Adjustment Options") +
                     "</h1></div><div class='ui-content'><p class='rain-desc center smaller'>" +
@@ -5298,111 +5492,133 @@ function showEToAdjustmentOptions(inputElement, onSubmit) {
                     "</button><button class='submit' data-theme='b'>" +
                     _("Submit") +
                     "</button></div></div>"
-                ));
+                );
     $popup.find(".submit").on("click", function () {
-        return (
-            (options = { baseETo: parseFloat($popup.find(".baseline-ETo").val()), elevation: parseInt($popup.find(".elevation").val()) }),
-            isMetric && ((options.baseETo = Math.round((options.baseETo / 25.4) * 100) / 100), (options.elevation = Math.round(3.28 * options.elevation))),
-            inputElement && (inputElement.value = escapeJSON(options)),
-            onSubmit(),
-            $popup.popup("close"),
-            !1
-        );
-    }),
-        $popup.find(".detect-baseline-eto").on("click", function () {
-            var originalLabel = $(".detect-baseline-eto").html();
-            return (
-                showLoading(".detect-baseline-eto"),
-                $.ajax({
-                    url: WEATHER_SERVER_URL + "/baselineETo?loc=" + encodeURIComponent(controller.settings.loc),
-                    contentType: "application/json; charset=utf-8",
-                    success: function (response) {
-                        response = response.eto;
-                        isMetric && (response = Math.round(25.4 * response * 100) / 100), $(".baseline-ETo").val(response), window.alert("Detected baseline ETo for configured location is " + response + (isMetric ? "mm" : "in") + "/day");
-                    },
-                    error: function (xhr, statusText) {
-                        xhr = "Unable to detect baseline ETo: " + (xhr.status ? xhr.responseText + "(" + xhr.status + ")" : statusText);
-                        window.alert(xhr), window.console.error(xhr);
-                    },
-                    complete: function () {
-                        $(".detect-baseline-eto").html(originalLabel);
-                    },
-                }),
-                !1
-            );
-        }),
-        $popup
-            .on("focus", "input[type='number']", function () {
-                this.value = "";
-            })
-            .on("blur", "input[type='number']", function () {
-                var min = parseFloat(this.min),
-                    max = parseFloat(this.max);
-                "" === this.value && (this.value = "0"), (this.value < min || this.value > max) && (this.value = this.value < min ? min : max);
-            }),
-        $("#adjustmentOptions").remove(),
-        $popup.css("max-width", "380px"),
-        openPopup($popup, { positionTo: "window" });
+        options = { baseETo: parseFloat($popup.find(".baseline-ETo").val()), elevation: parseInt($popup.find(".elevation").val()) };
+        if (isMetric) {
+            options.baseETo = Math.round((options.baseETo / 25.4) * 100) / 100;
+            options.elevation = Math.round(3.28 * options.elevation);
+        }
+        if (inputElement) { inputElement.value = escapeJSON(options); }
+        onSubmit();
+        $popup.popup("close");
+        return false;
+    });
+    $popup.find(".detect-baseline-eto").on("click", function () {
+        var originalLabel = $(".detect-baseline-eto").html();
+        showLoading(".detect-baseline-eto");
+        $.ajax({
+            url: WEATHER_SERVER_URL + "/baselineETo?loc=" + encodeURIComponent(controller.settings.loc),
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                var eto = response.eto;
+                if (isMetric) { eto = Math.round(25.4 * eto * 100) / 100; }
+                $(".baseline-ETo").val(eto);
+                window.alert("Detected baseline ETo for configured location is " + eto + (isMetric ? "mm" : "in") + "/day");
+            },
+            error: function (xhr, statusText) {
+                var msg = "Unable to detect baseline ETo: " + (xhr.status ? xhr.responseText + "(" + xhr.status + ")" : statusText);
+                window.alert(msg);
+                window.console.error(msg);
+            },
+            complete: function () {
+                $(".detect-baseline-eto").html(originalLabel);
+            },
+        });
+        return false;
+    });
+    $popup
+        .on("focus", "input[type='number']", function () {
+            this.value = "";
+        })
+        .on("blur", "input[type='number']", function () {
+            var min = parseFloat(this.min),
+                max = parseFloat(this.max);
+            if ("" === this.value) { this.value = "0"; }
+            if (this.value < min || this.value > max) {
+                this.value = this.value < min ? min : max;
+            }
+        });
+    $("#adjustmentOptions").remove();
+    $popup.css("max-width", "380px");
+    openPopup($popup, { positionTo: "window" });
 }
 function formatTemp(tempF) {
-    return (tempF = isMetric ? Math.round((5 / 9) * (tempF - 32) * 10) / 10 + " &#176;C" : Math.round(10 * tempF) / 10 + " &#176;F");
+    return isMetric ? Math.round((5 / 9) * (tempF - 32) * 10) / 10 + " &#176;C" : Math.round(10 * tempF) / 10 + " &#176;F";
 }
 function formatPrecip(inches) {
-    return (inches = isMetric ? Math.round(25.4 * inches * 10) / 10 + " mm" : Math.round(100 * inches) / 100 + " in");
+    return isMetric ? Math.round(25.4 * inches * 10) / 10 + " mm" : Math.round(100 * inches) / 100 + " in";
 }
 function formatHumidity(percent) {
     return Math.round(percent) + " %";
 }
 function formatSpeed(mph) {
-    return (mph = isMetric ? Math.round(1.6 * mph * 10) / 10 + " km/h" : Math.round(10 * mph) / 10 + " mph");
+    return isMetric ? Math.round(1.6 * mph * 10) / 10 + " km/h" : Math.round(10 * mph) / 10 + " mph";
 }
 function hideWeather() {
     $("#weather").empty().parents(".info-card").addClass("noweather");
 }
 function finishWeatherUpdate() {
-    updateWeatherBox(), $.mobile.document.trigger("weatherUpdateComplete");
+    updateWeatherBox();
+    $.mobile.document.trigger("weatherUpdateComplete");
 }
 function updateWeather() {
     var now = new Date().getTime();
-    if (weather && weather.providedLocation === controller.settings.loc && now - weather.lastUpdated < 36e4) finishWeatherUpdate();
-    else {
-        if (localStorage.weatherData)
-            try {
-                var cached = JSON.parse(localStorage.weatherData);
-                if (cached.providedLocation === controller.settings.loc && now - cached.lastUpdated < 36e4) return (weather = cached), void finishWeatherUpdate();
-            } catch (e) { }
-        (weather = void 0),
-            "" === controller.settings.loc
-                ? hideWeather()
-                : (showLoading("#weather"),
-                    $.ajax({
-                        url: WEATHER_SERVER_URL + "/weatherData?loc=" + encodeURIComponent(controller.settings.loc),
-                        contentType: "application/json; charset=utf-8",
-                        success: function (data) {
-                            ("object" != typeof data
-                                ? hideWeather
-                                : ((currentCoordinates = data.location), ((weather = data).lastUpdated = new Date().getTime()), (data.providedLocation = controller.settings.loc), (localStorage.weatherData = JSON.stringify(data)), finishWeatherUpdate))();
-                        },
-                    }));
+    if (weather && weather.providedLocation === controller.settings.loc && now - weather.lastUpdated < 36e4) {
+        finishWeatherUpdate();
+        return;
     }
+    if (localStorage.weatherData) {
+        try {
+            var cached = JSON.parse(localStorage.weatherData);
+            if (cached.providedLocation === controller.settings.loc && now - cached.lastUpdated < 36e4) {
+                weather = cached;
+                finishWeatherUpdate();
+                return;
+            }
+        } catch (e) {}
+    }
+    weather = undefined;
+    if ("" === controller.settings.loc) {
+        hideWeather();
+        return;
+    }
+    showLoading("#weather");
+    $.ajax({
+        url: WEATHER_SERVER_URL + "/weatherData?loc=" + encodeURIComponent(controller.settings.loc),
+        contentType: "application/json; charset=utf-8",
+        success: function (data) {
+            if (typeof data !== "object") {
+                hideWeather();
+                return;
+            }
+            currentCoordinates = data.location;
+            weather = data;
+            weather.lastUpdated = new Date().getTime();
+            data.providedLocation = controller.settings.loc;
+            localStorage.weatherData = JSON.stringify(data);
+            finishWeatherUpdate();
+        },
+    });
 }
 function checkURLandUpdateWeather() {
     function applyWeatherServer(serverHost) {
-        (WEATHER_SERVER_URL = serverHost ? currPrefix + serverHost : DEFAULT_WEATHER_SERVER_URL), updateWeather();
+        WEATHER_SERVER_URL = serverHost ? currPrefix + serverHost : DEFAULT_WEATHER_SERVER_URL;
+        updateWeather();
     }
-    return controller.settings.wsp
-        ? "weather.opensprinkler.com" === controller.settings.wsp
-            ? void applyWeatherServer()
-            : void applyWeatherServer(controller.settings.wsp)
-        : $.get(currPrefix + currIp + "/su").then(function (responseText) {
-            responseText = responseText.match(/value="([\w|:|/|.]+)" name=wsp/);
-            applyWeatherServer(responseText ? responseText[1] : void 0);
-        });
+    if (controller.settings.wsp) {
+        applyWeatherServer("weather.opensprinkler.com" === controller.settings.wsp ? undefined : controller.settings.wsp);
+        return;
+    }
+    return $.get(currPrefix + currIp + "/su").then(function (responseText) {
+        responseText = responseText.match(/value="([\w|:|/|.]+)" name=wsp/);
+        applyWeatherServer(responseText ? responseText[1] : undefined);
+    });
 }
 function updateWeatherBox() {
     $("#weather")
         .html(
-            (controller.settings.rd ? "<div class='rain-delay red'><span class='icon ui-icon-alert'></span>Rain Delay<span class='time'>" + dateToString(new Date(1e3 * controller.settings.rdst), void 0, !0) + "</span></div>" : "") +
+            (controller.settings.rd ? "<div class='rain-delay red'><span class='icon ui-icon-alert'></span>Rain Delay<span class='time'>" + dateToString(new Date(1e3 * controller.settings.rdst), undefined, true) + "</span></div>" : "") +
             "<div title='" +
             weather.description +
             "' class='wicon'><img src='https://openweathermap.org/img/w/" +
@@ -5412,55 +5628,73 @@ function updateWeatherBox() {
             "</div><br><div class='inline location tight'>" +
             _("Current Weather") +
             "</div>" +
-            ("object" == typeof weather.alert ? "<div><button class='tight help-icon btn-no-border ui-btn ui-icon-alert ui-btn-icon-notext ui-corner-all'></button>" + weather.alert.type + "</div>" : "")
+            (typeof weather.alert === "object" ? "<div><button class='tight help-icon btn-no-border ui-btn ui-icon-alert ui-btn-icon-notext ui-corner-all'></button>" + weather.alert.type + "</div>" : "")
         )
         .off("click")
         .on("click", function (event) {
-            event = $(event.target);
-            return (
-                event.hasClass("rain-delay") || event.parents(".rain-delay").length
-                    ? areYouSure(_("Do you want to turn off rain delay?"), "", function () {
-                        showLoading("#weather"),
-                            sendToOS("/cv?pw=&rd=0").done(function () {
-                                updateController(updateWeather);
-                            });
-                    })
-                    : changePage("#forecast"),
-                !1
-            );
+            var $target = $(event.target);
+            if ($target.hasClass("rain-delay") || $target.parents(".rain-delay").length) {
+                areYouSure(_("Do you want to turn off rain delay?"), "", function () {
+                    showLoading("#weather");
+                    sendToOS("/cv?pw=&rd=0").done(function () {
+                        updateController(updateWeather);
+                    });
+                });
+            } else {
+                changePage("#forecast");
+            }
+            return false;
         })
         .parents(".info-card")
         .removeClass("noweather");
 }
 function coordsToLocation(lat, lng, callback, fallbackLabel) {
-    (fallbackLabel = fallbackLabel || lat + "," + lng),
-        $.getJSON("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + lat + "," + lng + "&key=AIzaSyDaT_HTZwFojXmvYIhwWudK00vFXzMmOKc&result_type=locality|sublocality|administrative_area_level_1|country", function (geoResponse) {
-            if (0 === geoResponse.results.length) callback(fallbackLabel);
-            else {
-                (geoResponse = geoResponse.results), (fallbackLabel = geoResponse[0].formatted_address);
-                var idx,
-                    hasLocal = !1;
-                for (idx in geoResponse)
-                    if (geoResponse.hasOwnProperty(idx) && (-1 < $.inArray("locality", geoResponse[idx].types) || -1 < $.inArray("sublocality", geoResponse[idx].types) || -1 < $.inArray("postal_code", geoResponse[idx].types) || -1 < $.inArray("street_address", geoResponse[idx].types))) {
-                        hasLocal = !0;
-                        break;
-                    }
-                if (!1 === hasLocal) callback(fallbackLabel);
-                else {
-                    var cityPart = "",
-                        countryPart = "",
-                        hasRegion = !1;
-                    for (idx in (geoResponse = geoResponse[idx].address_components))
-                        geoResponse.hasOwnProperty(idx) &&
-                            !hasRegion &&
-                            ("" === (cityPart = "" === cityPart && -1 < $.inArray("locality", geoResponse[idx].types) ? geoResponse[idx].long_name + ", " + cityPart : cityPart) && -1 < $.inArray("sublocality", geoResponse[idx].types) && (cityPart = geoResponse[idx].long_name + ", " + cityPart),
-                                -1 < $.inArray("administrative_area_level_1", geoResponse[idx].types) && ((cityPart += geoResponse[idx].long_name), (hasRegion = !0)),
-                                -1 < $.inArray("country", geoResponse[idx].types)) &&
-                            (countryPart = geoResponse[idx].long_name);
-                    hasRegion || (cityPart += countryPart), callback(cityPart);
-                }
+    fallbackLabel = fallbackLabel || lat + "," + lng;
+    $.getJSON("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + lat + "," + lng + "&key=AIzaSyDaT_HTZwFojXmvYIhwWudK00vFXzMmOKc&result_type=locality|sublocality|administrative_area_level_1|country", function (geoResponse) {
+        if (geoResponse.results.length === 0) {
+            callback(fallbackLabel);
+            return;
+        }
+        geoResponse = geoResponse.results;
+        fallbackLabel = geoResponse[0].formatted_address;
+        var idx,
+            hasLocal = false;
+        for (idx in geoResponse) {
+            if (geoResponse.hasOwnProperty(idx) && (
+                $.inArray("locality", geoResponse[idx].types) > -1 ||
+                $.inArray("sublocality", geoResponse[idx].types) > -1 ||
+                $.inArray("postal_code", geoResponse[idx].types) > -1 ||
+                $.inArray("street_address", geoResponse[idx].types) > -1
+            )) {
+                hasLocal = true;
+                break;
             }
-        });
+        }
+        if (!hasLocal) {
+            callback(fallbackLabel);
+            return;
+        }
+        var cityPart = "",
+            countryPart = "",
+            hasRegion = false;
+        for (idx in (geoResponse = geoResponse[idx].address_components)) {
+            if (!geoResponse.hasOwnProperty(idx) || hasRegion) continue;
+            if ("" === cityPart && $.inArray("locality", geoResponse[idx].types) > -1) {
+                cityPart = geoResponse[idx].long_name + ", " + cityPart;
+            } else if ("" === cityPart && $.inArray("sublocality", geoResponse[idx].types) > -1) {
+                cityPart = geoResponse[idx].long_name + ", " + cityPart;
+            }
+            if ($.inArray("administrative_area_level_1", geoResponse[idx].types) > -1) {
+                cityPart += geoResponse[idx].long_name;
+                hasRegion = true;
+            }
+            if ($.inArray("country", geoResponse[idx].types) > -1) {
+                countryPart = geoResponse[idx].long_name;
+            }
+        }
+        if (!hasRegion) { cityPart += countryPart; }
+        callback(cityPart);
+    });
 }
 function getSunTimes(date) {
     date = date || new Date(1e3 * controller.settings.devt);
@@ -5468,7 +5702,9 @@ function getSunTimes(date) {
         sunrise = times.sunrise,
         sunset = times.sunset,
         tzOffset = getTimezoneOffset();
-    return sunrise.setUTCMinutes(sunrise.getUTCMinutes() + tzOffset), sunset.setUTCMinutes(sunset.getUTCMinutes() + tzOffset), [(sunrise = 60 * sunrise.getUTCHours() + sunrise.getUTCMinutes()), (sunset = 60 * sunset.getUTCHours() + sunset.getUTCMinutes())];
+    sunrise.setUTCMinutes(sunrise.getUTCMinutes() + tzOffset);
+    sunset.setUTCMinutes(sunset.getUTCMinutes() + tzOffset);
+    return [60 * sunrise.getUTCHours() + sunrise.getUTCMinutes(), 60 * sunset.getUTCHours() + sunset.getUTCMinutes()];
 }
 function makeAttribution(provider) {
     if ("string" != typeof provider) return "";
@@ -5508,30 +5744,30 @@ function showForecast() {
             icon: "refresh",
             text: _("Refresh"),
             on: function () {
-                $.mobile.loading("show"),
-                    $.mobile.document.one("weatherUpdateComplete", function () {
-                        $.mobile.loading("hide");
-                    }),
-                    updateWeather();
+                $.mobile.loading("show");
+                $.mobile.document.one("weatherUpdateComplete", function () {
+                    $.mobile.loading("hide");
+                });
+                updateWeather();
             },
         },
-    }),
-        $page.one("pagehide", function () {
-            $page.remove();
-        }),
-        $page.find(".alert").on("click", function () {
-            openPopup(
-                $(
-                    "<div data-role='popup' data-theme='a'><div data-role='header' data-theme='b'><h1>" +
-                    weather.alert.name +
-                    "</h1></div><div class='ui-content'><span style='white-space: pre-wrap'>" +
-                    $.trim(weather.alert.message) +
-                    "</span></div></div>"
-                )
-            );
-        }),
-        $("#forecast").remove(),
-        $.mobile.pageContainer.append($page);
+    });
+    $page.one("pagehide", function () {
+        $page.remove();
+    });
+    $page.find(".alert").on("click", function () {
+        openPopup(
+            $(
+                "<div data-role='popup' data-theme='a'><div data-role='header' data-theme='b'><h1>" +
+                weather.alert.name +
+                "</h1></div><div class='ui-content'><span style='white-space: pre-wrap'>" +
+                $.trim(weather.alert.message) +
+                "</span></div></div>"
+            )
+        );
+    });
+    $("#forecast").remove();
+    $.mobile.pageContainer.append($page);
 }
 function makeForecast() {
     var dayIndex,
@@ -5567,10 +5803,12 @@ function makeForecast() {
         dayIndex = 1;
         dayIndex < weather.forecast.length;
         dayIndex++
-    )
-        (sunriseMinutes = (dayData = getSunTimes((dayHtml = new Date(1e3 * weather.forecast[dayIndex].date))))[0]),
-            (sunsetMinutes = dayData[1]),
-            (forecastHtml +=
+    ) {
+        dayHtml = new Date(1e3 * weather.forecast[dayIndex].date);
+        dayData = getSunTimes(dayHtml);
+        sunriseMinutes = dayData[0];
+        sunsetMinutes = dayData[1];
+        forecastHtml +=
                 "<li data-icon='false' class='center'><div>" +
                 dayHtml.toLocaleDateString() +
                 "</div><br><div title='" +
@@ -5599,48 +5837,60 @@ function makeForecast() {
                 pad(parseInt(sunsetMinutes / 60) % 24) +
                 ":" +
                 pad(sunsetMinutes % 60) +
-                "</span></li>");
+                "</span></li>";
+    }
     return forecastHtml;
 }
 function overlayMap(callback) {
-    $("#location-list").popup("destroy").remove(), $.mobile.loading("show"), (callback = callback || function () { });
+    $("#location-list").popup("destroy").remove();
+    $.mobile.loading("show");
+    callback = callback || function () {};
     function getGeolocation(geoCallback) {
         function onGeoResult(position) {
-            clearTimeout(geoTimeout), $.mobile.loading("hide"), position || showerror(_("Unable to retrieve your current location")), geoCallback(position);
+            clearTimeout(geoTimeout);
+            $.mobile.loading("hide");
+            if (!position) { showerror(_("Unable to retrieve your current location")); }
+            geoCallback(position);
         }
         var geoTimeout;
         geoCallback =
             geoCallback ||
             function (position) {
-                position && $iframe.get(0).contentWindow.postMessage({ type: "currentLocation", payload: { lat: position.coords.latitude, lon: position.coords.longitude } }, "*");
+                if (position) {
+                    $iframe.get(0).contentWindow.postMessage({ type: "currentLocation", payload: { lat: position.coords.latitude, lon: position.coords.longitude } }, "*");
+                }
             };
         try {
-            (geoTimeout = setTimeout(function () {
-                $.mobile.loading("show", { html: "<div class='logo'></div><h1 style='padding-top:5px'>" + _("Attempting to retrieve your current location") + "</h1></p>", textVisible: !0, theme: "b" });
-            }, 100)),
-                navigator.geolocation.getCurrentPosition(
+            geoTimeout = setTimeout(function () {
+                $.mobile.loading("show", { html: "<div class='logo'></div><h1 style='padding-top:5px'>" + _("Attempting to retrieve your current location") + "</h1></p>", textVisible: true, theme: "b" });
+            }, 100);
+            navigator.geolocation.getCurrentPosition(
                     function (position) {
-                        clearTimeout(geoTimeout), onGeoResult(position);
+                        clearTimeout(geoTimeout);
+                        onGeoResult(position);
                     },
                     function () {
-                        onGeoResult(!1);
+                        onGeoResult(false);
                     },
                     { timeout: 1e4 }
                 );
         } catch (err) {
-            onGeoResult(!1);
+            onGeoResult(false);
         }
     }
     function fetchNearbyPWS(lat, lon) {
         var apiKey = $("#wtkey").val();
-        "" !== apiKey &&
-            $.ajax({ url: "https://api.weather.com/v3/location/near?format=json&product=pws&apiKey=" + apiKey + "&geocode=" + encodeURIComponent(lat) + "," + encodeURIComponent(lon), cache: !0 }).done(function (data) {
-                var stations = [];
-                data.location.stationId.forEach(function (stationId, idx) {
-                    stations.push({ id: stationId, lat: data.location.latitude[idx], lon: data.location.longitude[idx], message: data.location.stationId[idx] });
-                }),
-                    0 < stations.length && ((stations = encodeURIComponent(JSON.stringify(stations))), $iframe.get(0).contentWindow.postMessage({ type: "pwsData", payload: stations }, "*"));
+        if ("" === apiKey) return;
+        $.ajax({ url: "https://api.weather.com/v3/location/near?format=json&product=pws&apiKey=" + apiKey + "&geocode=" + encodeURIComponent(lat) + "," + encodeURIComponent(lon), cache: true }).done(function (data) {
+            var stations = [];
+            data.location.stationId.forEach(function (stationId, idx) {
+                stations.push({ id: stationId, lat: data.location.latitude[idx], lon: data.location.longitude[idx], message: data.location.stationId[idx] });
             });
+            if (stations.length > 0) {
+                stations = encodeURIComponent(JSON.stringify(stations));
+                $iframe.get(0).contentWindow.postMessage({ type: "pwsData", payload: stations }, "*");
+            }
+        });
     }
     var $popup = $(
         "<div data-role='popup' id='location-list' data-theme='a' style='background-color:rgb(229, 227, 223);'><a href='#' data-rel='back' class='ui-btn ui-corner-all ui-shadow ui-btn-b ui-icon-delete ui-btn-icon-notext ui-btn-right'>" +
@@ -5652,34 +5902,40 @@ function overlayMap(callback) {
         $iframe = $popup.find("iframe"),
         locVal = $("#loc").val(),
         startCoords = { lat: (locVal.match(regex.gps) ? locVal.split(",") : currentCoordinates)[0], lon: (locVal.match(regex.gps) ? locVal.split(",") : currentCoordinates)[1] },
-        mapUsed = !1;
+        mapUsed = false;
     $.mobile.window.off("message onmessage").on("message onmessage", function (event) {
         var parts,
             msgData = event.originalEvent.data;
-        void 0 !== msgData.WS
-            ? ((parts = msgData.WS.split(",")), callback(1 < parts.length ? parts : msgData.WS, msgData.station), (mapUsed = !0), $popup.popup("destroy").remove())
-            : !0 === msgData.loaded
-                ? $.mobile.loading("hide")
-                : "object" == typeof msgData.location
-                    ? fetchNearbyPWS(msgData.location[0], msgData.location[1])
-                    : !0 === msgData.dismissKeyboard
-                        ? document.activeElement.blur()
-                        : !0 === msgData.getLocation && getGeolocation();
-    }),
-        $iframe.one("load", function () {
-            0 === startCoords.lat && 0 === startCoords.lon && getGeolocation(), this.contentWindow.postMessage({ type: "startLocation", payload: { start: startCoords } }, "*");
-        }),
-        $popup.one("popupafterclose", function () {
-            !1 === mapUsed && callback(!1);
-        }),
-        openPopup($popup, {
-            beforeposition: function () {
-                $popup.css({ width: window.innerWidth - 36, height: window.innerHeight - 28 });
-            },
-            x: 0,
-            y: 0,
-        }),
-        fetchNearbyPWS(startCoords.lat, startCoords.lon);
+        if (msgData.WS !== undefined) {
+            parts = msgData.WS.split(",");
+            callback(parts.length > 1 ? parts : msgData.WS, msgData.station);
+            mapUsed = true;
+            $popup.popup("destroy").remove();
+        } else if (msgData.loaded === true) {
+            $.mobile.loading("hide");
+        } else if (typeof msgData.location === "object") {
+            fetchNearbyPWS(msgData.location[0], msgData.location[1]);
+        } else if (msgData.dismissKeyboard === true) {
+            document.activeElement.blur();
+        } else if (msgData.getLocation === true) {
+            getGeolocation();
+        }
+    });
+    $iframe.one("load", function () {
+        if (startCoords.lat === 0 && startCoords.lon === 0) { getGeolocation(); }
+        this.contentWindow.postMessage({ type: "startLocation", payload: { start: startCoords } }, "*");
+    });
+    $popup.one("popupafterclose", function () {
+        if (!mapUsed) { callback(false); }
+    });
+    openPopup($popup, {
+        beforeposition: function () {
+            $popup.css({ width: window.innerWidth - 36, height: window.innerHeight - 28 });
+        },
+        x: 0,
+        y: 0,
+    });
+    fetchNearbyPWS(startCoords.lat, startCoords.lon);
 }
 var rebootReasons = {
     0: _("None"),
@@ -5738,45 +5994,43 @@ function getWiFiRating(rssi) {
 }
 function debugWU() {
     var e = "<div data-role='popup' id='debugWU' class='ui-content ui-page-theme-a'>";
-    return (
-        (e +=
-            "<div class='debugWUHeading'>System Status</div><table class='debugWUTable'>" +
-            ("number" == typeof controller.settings.lupt ? "<tr><td>" + _("Last Reboot") + "</td><td>" + (controller.settings.lupt < 1e3 ? "--" : dateToString(new Date(1e3 * controller.settings.lupt), null, 2)) + "</td></tr>" : "") +
-            ("number" == typeof controller.settings.lrbtc ? "<tr><td>" + _("Reboot Reason") + "</td><td>" + getRebootReason(controller.settings.lrbtc) + "</td></tr>" : "") +
-            ("number" == typeof controller.settings.RSSI ? "<tr><td>" + _("WiFi Strength") + "</td><td>" + getWiFiRating(controller.settings.RSSI) + "</td></tr>" : "") +
-            ("number" == typeof controller.settings.wterr ? "<tr><td>" + _("Weather Service") + "</td><td>" + getWeatherStatus(controller.settings.wterr) + "</td></tr>" : "") +
-            "</table><div class='debugWUHeading'>Watering Level</div><table class='debugWUTable'>" +
-            (void 0 !== controller.options.uwt ? "<tr><td>" + _("Method") + "</td><td>" + getAdjustmentMethod(controller.options.uwt).name + "</td></tr>" : "") +
-            (void 0 !== controller.options.wl ? "<tr><td>" + _("Watering Level") + "</td><td>" + controller.options.wl + " %</td></tr>" : "") +
-            ("number" == typeof controller.settings.lswc
-                ? "<tr><td>" + _("Last Updated") + "</td><td>" + (0 === controller.settings.lswc ? _("Never") : humaniseDuration(1e3 * controller.settings.devt, 1e3 * controller.settings.lswc)) + "</td></tr>"
-                : "") +
-            "</table><div class='debugWUHeading'>Weather Service Details</div><div class='debugWUScrollable'><table class='debugWUTable'>"),
-        "object" == typeof controller.settings.wtdata &&
-        0 < Object.keys(controller.settings.wtdata).length &&
-        (e +=
-            (void 0 !== controller.settings.wtdata.h ? "<tr><td>" + _("Mean Humidity") + "</td><td>" + formatHumidity(controller.settings.wtdata.h) + "</td></tr>" : "") +
-            (void 0 !== controller.settings.wtdata.t ? "<tr><td>" + _("Mean Temp") + "</td><td>" + formatTemp(controller.settings.wtdata.t) + "</td></tr>" : "") +
-            (void 0 !== controller.settings.wtdata.p ? "<tr><td>" + _("Total Rain") + "</td><td>" + formatPrecip(controller.settings.wtdata.p) + "</td></tr>" : "") +
-            (void 0 !== controller.settings.wtdata.eto ? "<tr><td>" + _("ETo") + "</td><td>" + formatPrecip(controller.settings.wtdata.eto) + "</td></tr>" : "") +
-            (void 0 !== controller.settings.wtdata.radiation ? "<tr><td>" + _("Mean Radiation") + "</td><td>" + controller.settings.wtdata.radiation + " kWh/m2</td></tr>" : "") +
-            (void 0 !== controller.settings.wtdata.minT ? "<tr><td>" + _("Min Temp") + "</td><td>" + formatTemp(controller.settings.wtdata.minT) + "</td></tr>" : "") +
-            (void 0 !== controller.settings.wtdata.maxT ? "<tr><td>" + _("Max Temp") + "</td><td>" + formatTemp(controller.settings.wtdata.maxT) + "</td></tr>" : "") +
-            (void 0 !== controller.settings.wtdata.minH ? "<tr><td>" + _("Min Humidity") + "</td><td>" + formatHumidity(controller.settings.wtdata.minH) + "</td></tr>" : "") +
-            (void 0 !== controller.settings.wtdata.maxH ? "<tr><td>" + _("Max Humidity") + "</td><td>" + formatHumidity(controller.settings.wtdata.maxH) + "</td></tr>" : "") +
-            (void 0 !== controller.settings.wtdata.wind ? "<tr><td>" + _("Mean Wind") + "</td><td>" + formatSpeed(controller.settings.wtdata.wind) + "</td></tr>" : "")),
-        (e =
-            (e += "number" == typeof controller.settings.lwc ? "<tr><td>" + _("Last Request") + "</td><td>" + dateToString(new Date(1e3 * controller.settings.lwc), null, 2) + "</td></tr>" : "") +
-            ("number" == typeof controller.settings.wterr ? "<tr><td>" + _("Last Response") + "</td><td>" + getWeatherError(controller.settings.wterr) + "</td></tr>" : "") +
-            "</table></div>"),
-        "number" == typeof controller.settings.otcs && (e += "<div class='debugWUHeading'>Integrations</div><table class='debugWUTable'><tr><td>OpenThings Cloud</td><td>" + resolveOTCStatus(controller.settings.otcs) + "</td></tr></table>"),
-        !controller.settings.wtdata ||
-        ("string" != typeof controller.settings.wtdata.wp && "string" != typeof controller.settings.wtdata.weatherProvider) ||
-        (e = (e += "<hr>") + makeAttribution(controller.settings.wtdata.wp || controller.settings.wtdata.weatherProvider)),
-        (e += "</div>"),
-        openPopup($(e)),
-        !1
-    );
+    e += "<div class='debugWUHeading'>System Status</div><table class='debugWUTable'>" +
+        (typeof controller.settings.lupt === "number" ? "<tr><td>" + _("Last Reboot") + "</td><td>" + (controller.settings.lupt < 1e3 ? "--" : dateToString(new Date(1e3 * controller.settings.lupt), null, 2)) + "</td></tr>" : "") +
+        (typeof controller.settings.lrbtc === "number" ? "<tr><td>" + _("Reboot Reason") + "</td><td>" + getRebootReason(controller.settings.lrbtc) + "</td></tr>" : "") +
+        (typeof controller.settings.RSSI === "number" ? "<tr><td>" + _("WiFi Strength") + "</td><td>" + getWiFiRating(controller.settings.RSSI) + "</td></tr>" : "") +
+        (typeof controller.settings.wterr === "number" ? "<tr><td>" + _("Weather Service") + "</td><td>" + getWeatherStatus(controller.settings.wterr) + "</td></tr>" : "") +
+        "</table><div class='debugWUHeading'>Watering Level</div><table class='debugWUTable'>" +
+        (controller.options.uwt !== undefined ? "<tr><td>" + _("Method") + "</td><td>" + getAdjustmentMethod(controller.options.uwt).name + "</td></tr>" : "") +
+        (controller.options.wl !== undefined ? "<tr><td>" + _("Watering Level") + "</td><td>" + controller.options.wl + " %</td></tr>" : "") +
+        (typeof controller.settings.lswc === "number"
+            ? "<tr><td>" + _("Last Updated") + "</td><td>" + (controller.settings.lswc === 0 ? _("Never") : humaniseDuration(1e3 * controller.settings.devt, 1e3 * controller.settings.lswc)) + "</td></tr>"
+            : "") +
+        "</table><div class='debugWUHeading'>Weather Service Details</div><div class='debugWUScrollable'><table class='debugWUTable'>";
+    if (typeof controller.settings.wtdata === "object" && Object.keys(controller.settings.wtdata).length > 0) {
+        e +=
+            (controller.settings.wtdata.h !== undefined ? "<tr><td>" + _("Mean Humidity") + "</td><td>" + formatHumidity(controller.settings.wtdata.h) + "</td></tr>" : "") +
+            (controller.settings.wtdata.t !== undefined ? "<tr><td>" + _("Mean Temp") + "</td><td>" + formatTemp(controller.settings.wtdata.t) + "</td></tr>" : "") +
+            (controller.settings.wtdata.p !== undefined ? "<tr><td>" + _("Total Rain") + "</td><td>" + formatPrecip(controller.settings.wtdata.p) + "</td></tr>" : "") +
+            (controller.settings.wtdata.eto !== undefined ? "<tr><td>" + _("ETo") + "</td><td>" + formatPrecip(controller.settings.wtdata.eto) + "</td></tr>" : "") +
+            (controller.settings.wtdata.radiation !== undefined ? "<tr><td>" + _("Mean Radiation") + "</td><td>" + controller.settings.wtdata.radiation + " kWh/m2</td></tr>" : "") +
+            (controller.settings.wtdata.minT !== undefined ? "<tr><td>" + _("Min Temp") + "</td><td>" + formatTemp(controller.settings.wtdata.minT) + "</td></tr>" : "") +
+            (controller.settings.wtdata.maxT !== undefined ? "<tr><td>" + _("Max Temp") + "</td><td>" + formatTemp(controller.settings.wtdata.maxT) + "</td></tr>" : "") +
+            (controller.settings.wtdata.minH !== undefined ? "<tr><td>" + _("Min Humidity") + "</td><td>" + formatHumidity(controller.settings.wtdata.minH) + "</td></tr>" : "") +
+            (controller.settings.wtdata.maxH !== undefined ? "<tr><td>" + _("Max Humidity") + "</td><td>" + formatHumidity(controller.settings.wtdata.maxH) + "</td></tr>" : "") +
+            (controller.settings.wtdata.wind !== undefined ? "<tr><td>" + _("Mean Wind") + "</td><td>" + formatSpeed(controller.settings.wtdata.wind) + "</td></tr>" : "");
+    }
+    e += (typeof controller.settings.lwc === "number" ? "<tr><td>" + _("Last Request") + "</td><td>" + dateToString(new Date(1e3 * controller.settings.lwc), null, 2) + "</td></tr>" : "") +
+        (typeof controller.settings.wterr === "number" ? "<tr><td>" + _("Last Response") + "</td><td>" + getWeatherError(controller.settings.wterr) + "</td></tr>" : "") +
+        "</table></div>";
+    if (typeof controller.settings.otcs === "number") {
+        e += "<div class='debugWUHeading'>Integrations</div><table class='debugWUTable'><tr><td>OpenThings Cloud</td><td>" + resolveOTCStatus(controller.settings.otcs) + "</td></tr></table>";
+    }
+    if (controller.settings.wtdata && (typeof controller.settings.wtdata.wp === "string" || typeof controller.settings.wtdata.weatherProvider === "string")) {
+        e += "<hr>" + makeAttribution(controller.settings.wtdata.wp || controller.settings.wtdata.weatherProvider);
+    }
+    e += "</div>";
+    openPopup($(e));
+    return false;
 }
 function resolveOTCStatus(statusCode) {
     switch (statusCode) {
@@ -5791,32 +6045,34 @@ function resolveOTCStatus(statusCode) {
     }
 }
 function showRainDelay() {
-    $(".ui-popup-active").find("[data-role='popup']").popup("close"),
-        showDurationBox({
-            title: _("Change Rain Delay"),
-            callback: raindelay,
-            label: _("Duration"),
-            maximum: 31536e3,
-            granularity: 2,
-            preventCompression: !0,
-            incrementalUpdate: !1,
-            updateOnChange: !1,
-            helptext: _("Enable manual rain delay by entering a value into the input below. To turn off a currently enabled rain delay use a value of 0."),
-        });
+    $(".ui-popup-active").find("[data-role='popup']").popup("close");
+    showDurationBox({
+        title: _("Change Rain Delay"),
+        callback: raindelay,
+        label: _("Duration"),
+        maximum: 31536e3,
+        granularity: 2,
+        preventCompression: true,
+        incrementalUpdate: false,
+        updateOnChange: false,
+        helptext: _("Enable manual rain delay by entering a value into the input below. To turn off a currently enabled rain delay use a value of 0."),
+    });
 }
 function showPause() {
-    StationQueue.isPaused()
-        ? areYouSure(_("Do you want to resume program operation?"), "", function () {
+    if (StationQueue.isPaused()) {
+        areYouSure(_("Do you want to resume program operation?"), "", function () {
             sendToOS("/pq?pw=&dur=0");
-        })
-        : showDurationBox({
+        });
+    } else {
+        showDurationBox({
             title: "Pause Station Runs",
-            incrementalUpdate: !1,
+            incrementalUpdate: false,
             maximum: 65535,
             callback: function (e) {
                 sendToOS("/pq?pw=&dur=" + e);
             },
         });
+    }
 }
 function getAdjustmentMethod(methodId) {
     var methods = [
@@ -5838,15 +6094,17 @@ function getRestriction(restrictionIndex) {
     ][restrictionIndex];
 }
 function setRestriction(restrictionType, currentUwt) {
-    return (currentUwt = currentUwt || -129 & controller.options.uwt), 1 === restrictionType && (currentUwt |= 128), currentUwt;
+    currentUwt = currentUwt || (-129 & controller.options.uwt);
+    if (restrictionType === 1) { currentUwt |= 128; }
+    return currentUwt;
 }
 function testAPIKey(apiKey, callback) {
-    $.ajax({ url: "https://api.weather.com/v2/pws/observations/current?stationId=KMAHANOV10&format=json&units=m&apiKey=" + apiKey, cache: !0 })
+    $.ajax({ url: "https://api.weather.com/v2/pws/observations/current?stationId=KMAHANOV10&format=json&units=m&apiKey=" + apiKey, cache: true })
         .done(function (response) {
-            response.errors ? callback(!1) : callback(!0);
+            callback(response.errors ? false : true);
         })
         .fail(function () {
-            callback(!1);
+            callback(false);
         });
 }
 function bindPanel() {
@@ -5856,93 +6114,91 @@ function bindPanel() {
     var t,
         i,
         e = $("#sprinklers-settings");
-    e.enhanceWithin().panel().removeClass("hidden").panel("option", "classes.modal", "needsclick ui-panel-dismiss"),
-        e.find("a[href='#site-control']").on("click", function () {
-            return changePage("#site-control"), !1;
-        }),
-        e.find("a[href='#about']").on("click", function () {
-            return changePage("#about"), !1;
-        }),
-        e.find(".cloud-login").on("click", function () {
-            return requestCloudAuth(), !1;
-        }),
-        e.find("a[href='#debugWU']").on("click", debugWU),
-        e.find("a[href='#localization']").on("click", languageSelect),
-        e.find(".export_config").on("click", function () {
-            return (
-                "object" != typeof controller.stations.stn_spe ||
-                    "object" == typeof controller.special ||
-                    controller.stations.stn_spe.every(function (e) {
-                        return 0 === e;
-                    })
-                    ? getExportMethod()
-                    : updateControllerStationSpecial(getExportMethod),
-                !1
-            );
-        }),
-        e.find(".import_config").on("click", function () {
-            return (
-                storage.get("backup", function (e) {
-                    getImportMethod(e.backup);
-                }),
-                !1
-            );
-        }),
-        e
-            .find(".toggleOperation")
-            .on("click", function () {
-                var e = $(this),
-                    t = 1 - controller.settings.en;
-                return (
-                    areYouSure(_("Are you sure you want to") + " " + n().toLowerCase() + " " + _("operation?"), "", function () {
-                        sendToOS("/cv?pw=&en=" + t).done(function () {
-                            $.when(updateControllerSettings(), updateControllerStatus()).done(function () {
-                                checkStatus(), e.find("span:first").html(n()).attr("data-translate", n());
-                            });
-                        });
-                    }),
-                    !1
-                );
-            })
-            .find("span:first")
-            .html(n())
-            .attr("data-translate", n()),
-        e.find(".reboot-os").on("click", function () {
-            return (
-                areYouSure(_("Are you sure you want to reboot OpenSprinkler?"), "", function () {
-                    $.mobile.loading("show"),
-                        sendToOS("/cv?pw=&rbt=1").done(function () {
-                            $.mobile.loading("hide"), showerror(_("OpenSprinkler is rebooting now"));
-                        });
-                }),
-                !1
-            );
-        }),
-        e.find(".changePassword > a").on("click", changePassword),
-        e.find("#downgradeui").on("click", function () {
-            return (
-                areYouSure(_("Are you sure you want to downgrade the UI?"), "", function () {
-                    var e = "http://rayshobby.net/scripts/java/svc" + getOSVersion();
-                    sendToOS("/cu?jsp=" + encodeURIComponent(e) + "&pw=").done(function () {
-                        storage.remove(["sites", "current_site", "lang", "provider", "wapikey", "runonce"]), location.reload();
-                    });
-                }),
-                !1
-            );
-        }),
-        e.find("#logout").on("click", function () {
-            return logout(), !1;
-        }),
-        (t = $("#sprinklers-settings")),
-        (i = function () {
-            var e = controller && controller.settings && controller.settings.en && 1 === controller.settings.en ? _("Disable") : _("Enable");
-            t.find(".toggleOperation span:first").html(e).attr("data-translate", e);
-        }),
-        $("html").on("datarefresh", i),
-        (openPanel = function () {
-            var e = $(".ui-page-active").attr("id");
-            "start" !== e && "loadingPage" !== e && isControllerConnected() && 1 === $(".ui-page-active").length && (i(), t.panel("open"));
+    e.enhanceWithin().panel().removeClass("hidden").panel("option", "classes.modal", "needsclick ui-panel-dismiss");
+    e.find("a[href='#site-control']").on("click", function () {
+        changePage("#site-control");
+        return false;
+    });
+    e.find("a[href='#about']").on("click", function () {
+        changePage("#about");
+        return false;
+    });
+    e.find(".cloud-login").on("click", function () {
+        requestCloudAuth();
+        return false;
+    });
+    e.find("a[href='#debugWU']").on("click", debugWU);
+    e.find("a[href='#localization']").on("click", languageSelect);
+    e.find(".export_config").on("click", function () {
+        if (typeof controller.stations.stn_spe !== "object" ||
+            typeof controller.special === "object" ||
+            controller.stations.stn_spe.every(function (e) { return e === 0; })) {
+            getExportMethod();
+        } else {
+            updateControllerStationSpecial(getExportMethod);
+        }
+        return false;
+    });
+    e.find(".import_config").on("click", function () {
+        storage.get("backup", function (e) {
+            getImportMethod(e.backup);
         });
+        return false;
+    });
+    e
+        .find(".toggleOperation")
+        .on("click", function () {
+            var e = $(this),
+                t = 1 - controller.settings.en;
+            areYouSure(_("Are you sure you want to") + " " + n().toLowerCase() + " " + _("operation?"), "", function () {
+                sendToOS("/cv?pw=&en=" + t).done(function () {
+                    $.when(updateControllerSettings(), updateControllerStatus()).done(function () {
+                        checkStatus();
+                        e.find("span:first").html(n()).attr("data-translate", n());
+                    });
+                });
+            });
+            return false;
+        });
+    e.find(".toggleOperation").find("span:first").html(n()).attr("data-translate", n());
+    e.find(".reboot-os").on("click", function () {
+        areYouSure(_("Are you sure you want to reboot OpenSprinkler?"), "", function () {
+            $.mobile.loading("show");
+            sendToOS("/cv?pw=&rbt=1").done(function () {
+                $.mobile.loading("hide");
+                showerror(_("OpenSprinkler is rebooting now"));
+            });
+        });
+        return false;
+    });
+    e.find(".changePassword > a").on("click", changePassword);
+    e.find("#downgradeui").on("click", function () {
+        areYouSure(_("Are you sure you want to downgrade the UI?"), "", function () {
+            var e = "http://rayshobby.net/scripts/java/svc" + getOSVersion();
+            sendToOS("/cu?jsp=" + encodeURIComponent(e) + "&pw=").done(function () {
+                storage.remove(["sites", "current_site", "lang", "provider", "wapikey", "runonce"]);
+                location.reload();
+            });
+        });
+        return false;
+    });
+    e.find("#logout").on("click", function () {
+        logout();
+        return false;
+    });
+    t = $("#sprinklers-settings");
+    i = function () {
+        var label = controller && controller.settings && controller.settings.en && controller.settings.en === 1 ? _("Disable") : _("Enable");
+        t.find(".toggleOperation span:first").html(label).attr("data-translate", label);
+    };
+    $("html").on("datarefresh", i);
+    openPanel = function () {
+        var pageId = $(".ui-page-active").attr("id");
+        if (pageId !== "start" && pageId !== "loadingPage" && isControllerConnected() && $(".ui-page-active").length === 1) {
+            i();
+            t.panel("open");
+        }
+    };
 }
 function showOptions(section) {
     function t(e, t, n) {
@@ -5981,117 +6237,156 @@ function showOptions(section) {
         );
     }
     function n() {
-        var a,
-            s = {},
-            r = !1,
-            l = isOSPi(),
-            e = d.eq(2);
-        e.prop("disabled", !0),
-            c.find(".submit").removeClass("hasChanges"),
-            c
-                .find("#os-options-list")
-                .find(":input,button")
-                .filter(":not(.noselect)")
-                .each(function () {
-                    var e,
-                        t = $(this),
-                        n = t.attr("id"),
-                        i = t.val();
-                    if (!n || (!i && "" !== i)) return !0;
-                    switch (n) {
-                        case "o1":
-                            var o = i.split(":");
-                            (o[0] = parseInt(o[0], 10)), (o[1] = parseInt(o[1], 10)), (o[1] = ((o[1] / 15) >> 0) / 4), (o[0] = o[0] + (0 <= o[0] ? o[1] : -o[1])), (i = (4 * (o[0] + 12)) >> 0);
-                            break;
-                        case "datetime":
-                            o = new Date(1e3 * i);
-                            return (s.tyy = o.getUTCFullYear()), (s.tmm = o.getUTCMonth()), (s.tdd = o.getUTCDate()), (s.thh = o.getUTCHours()), (s.tmi = o.getUTCMinutes()), (s.ttt = Math.round(o.getTime() / 1e3)), !0;
-                        case "ip_addr":
-                            return "0.0.0.0" === (e = i.split(".")) ? (showerror(_("A valid IP address is required when DHCP is not used")), !(r = !0)) : ((s.o4 = e[0]), (s.o5 = e[1]), (s.o6 = e[2]), (s.o7 = e[3]), !0);
-                        case "subnet":
-                            return "0.0.0.0" === (e = i.split(".")) ? (showerror(_("A valid subnet address is required when DHCP is not used")), !(r = !0)) : ((s.o58 = e[0]), (s.o59 = e[1]), (s.o60 = e[2]), (s.o61 = e[3]), !0);
-                        case "gateway":
-                            return "0.0.0.0" === (e = i.split(".")) ? (showerror(_("A valid gateway address is required when DHCP is not used")), !(r = !0)) : ((s.o8 = e[0]), (s.o9 = e[1]), (s.o10 = e[2]), (s.o11 = e[3]), !0);
-                        case "dns":
-                            return "0.0.0.0" === (e = i.split(".")) ? (showerror(_("A valid DNS address is required when DHCP is not used")), !(r = !0)) : ((s.o44 = e[0]), (s.o45 = e[1]), (s.o46 = e[2]), (s.o47 = e[3]), !0);
-                        case "ntp_addr":
-                            return (e = i.split(".")), (s.o32 = e[0]), (s.o33 = e[1]), (s.o34 = e[2]), (s.o35 = e[3]), !0;
-                        case "wtkey":
-                            return !0;
-                        case "wto":
-                            if (((i = escapeJSON($.extend({}, unescapeJSON(i), { key: c.find("#wtkey").val() }))), escapeJSON(controller.settings.wto) === i)) return !0;
-                            break;
-                        case "mqtt":
-                            if (escapeJSON(controller.settings.mqtt) === i) return !0;
-                            break;
-                        case "otc":
-                            if (escapeJSON(controller.settings.otc) === i) return !0;
-                            break;
-                        case "isMetric":
-                            return (isMetric = t.is(":checked")), storage.set({ isMetric: isMetric }), !0;
-                        case "groupView":
-                            return (groupView = t.is(":checked")), storage.set({ groupView: groupView }), !0;
-                        case "o12":
-                            return l || ((s.o12 = 255 & i), (s.o13 = (i >> 8) & 255)), !0;
-                        case "o31":
-                            if (3 === parseInt(i) && !unescapeJSON($("#wto")[0].value).baseETo) return showerror(_("You must specify a baseline ETo adjustment method option to use the ET adjustment method.")), !(r = !0);
-                            o = c.find("#weatherRestriction");
-                            o.length && (i = setRestriction(parseInt(o.val()), i));
-                            break;
-                        case "o18":
-                        case "o37":
-                            parseInt(i) > 8 * (parseInt(c.find("#o15").val()) + 1) && (i = 0);
-                            break;
-                        case "o41":
-                            return "gallon" === c.find("#o41-units").val() && (i *= 3.78541), (s.o41 = (100 * i) & 255), (s.o42 = ((100 * i) >> 8) & 255), !0;
-                        case "o2":
-                        case "o3":
-                        case "o14":
-                        case "o16":
-                        case "o21":
-                        case "o22":
-                        case "o25":
-                        case "o36":
-                        case "o48":
-                        case "o50":
-                        case "o51":
-                        case "o52":
-                        case "o53":
-                        case "o62":
-                            if (((i = t.is(":checked") ? 1 : 0), checkOSVersion(219) || i)) break;
-                            return !0;
+        var a;
+        var s = {};
+        var r = false;
+        var l = isOSPi();
+        var e = d.eq(2);
+        e.prop("disabled", true);
+        c.find(".submit").removeClass("hasChanges");
+        c.find("#os-options-list").find(":input,button").filter(":not(.noselect)").each(function () {
+            var e;
+            var t = $(this);
+            var n = t.attr("id");
+            var i = t.val();
+            if (!n || (!i && i !== "")) { return true; }
+            switch (n) {
+                case "o1":
+                    var o = i.split(":");
+                    o[0] = parseInt(o[0], 10);
+                    o[1] = parseInt(o[1], 10);
+                    o[1] = ((o[1] / 15) >> 0) / 4;
+                    o[0] = o[0] + (o[0] >= 0 ? o[1] : -o[1]);
+                    i = (4 * (o[0] + 12)) >> 0;
+                    break;
+                case "datetime":
+                    o = new Date(1e3 * i);
+                    s.tyy = o.getUTCFullYear();
+                    s.tmm = o.getUTCMonth();
+                    s.tdd = o.getUTCDate();
+                    s.thh = o.getUTCHours();
+                    s.tmi = o.getUTCMinutes();
+                    s.ttt = Math.round(o.getTime() / 1e3);
+                    return true;
+                case "ip_addr":
+                    e = i.split(".");
+                    if (e.join(".") === "0.0.0.0") { showerror(_("A valid IP address is required when DHCP is not used")); r = true; return false; }
+                    s.o4 = e[0]; s.o5 = e[1]; s.o6 = e[2]; s.o7 = e[3];
+                    return true;
+                case "subnet":
+                    e = i.split(".");
+                    if (e.join(".") === "0.0.0.0") { showerror(_("A valid subnet address is required when DHCP is not used")); r = true; return false; }
+                    s.o58 = e[0]; s.o59 = e[1]; s.o60 = e[2]; s.o61 = e[3];
+                    return true;
+                case "gateway":
+                    e = i.split(".");
+                    if (e.join(".") === "0.0.0.0") { showerror(_("A valid gateway address is required when DHCP is not used")); r = true; return false; }
+                    s.o8 = e[0]; s.o9 = e[1]; s.o10 = e[2]; s.o11 = e[3];
+                    return true;
+                case "dns":
+                    e = i.split(".");
+                    if (e.join(".") === "0.0.0.0") { showerror(_("A valid DNS address is required when DHCP is not used")); r = true; return false; }
+                    s.o44 = e[0]; s.o45 = e[1]; s.o46 = e[2]; s.o47 = e[3];
+                    return true;
+                case "ntp_addr":
+                    e = i.split(".");
+                    s.o32 = e[0]; s.o33 = e[1]; s.o34 = e[2]; s.o35 = e[3];
+                    return true;
+                case "wtkey":
+                    return true;
+                case "wto":
+                    i = escapeJSON($.extend({}, unescapeJSON(i), { key: c.find("#wtkey").val() }));
+                    if (escapeJSON(controller.settings.wto) === i) { return true; }
+                    break;
+                case "mqtt":
+                    if (escapeJSON(controller.settings.mqtt) === i) { return true; }
+                    break;
+                case "otc":
+                    if (escapeJSON(controller.settings.otc) === i) { return true; }
+                    break;
+                case "isMetric":
+                    isMetric = t.is(":checked");
+                    storage.set({ isMetric: isMetric });
+                    return true;
+                case "groupView":
+                    groupView = t.is(":checked");
+                    storage.set({ groupView: groupView });
+                    return true;
+                case "o12":
+                    if (!l) { s.o12 = 255 & i; s.o13 = (i >> 8) & 255; }
+                    return true;
+                case "o31":
+                    if (parseInt(i) === 3 && !unescapeJSON($("#wto")[0].value).baseETo) {
+                        showerror(_("You must specify a baseline ETo adjustment method option to use the ET adjustment method."));
+                        r = true;
+                        return false;
                     }
-                    l &&
-                        (n =
-                            "loc" === n || "lg" === n
-                                ? "o" + n
-                                : ((a = /\d+/.exec(n)),
-                                    "o" +
-                                    Object.keys(keyIndex).find(function (e) {
-                                        return keyIndex[e] === a;
-                                    }))),
-                        !0 === checkOSVersion(208) && "loc" === n && (i = i.replace(/\s/g, "_")),
-                        (s[n] = i);
-                }),
-            r
-                ? (e.prop("disabled", !1), c.find(".submit").addClass("hasChanges"))
-                : (void 0 !== controller.options.fpr0 &&
-                    (void 0 !== controller.options.urs
-                        ? (s.o21 = c.find("input[name='o21'][type='radio']:checked").val())
-                        : (void 0 !== controller.options.sn1t && (s.o50 = c.find("input[name='o50'][type='radio']:checked").val()), void 0 !== controller.options.sn2t && (s.o52 = c.find("input[name='o52'][type='radio']:checked").val()))),
-                    (s = transformKeys(s)),
-                    $.mobile.loading("show"),
-                    sendToOS("/co?pw=&" + $.param(s))
-                        .done(function () {
-                            $.mobile.document.one("pageshow", function () {
-                                showerror(_("Settings have been saved"));
-                            }),
-                                goBack(),
-                                updateController(updateWeather);
-                        })
-                        .fail(function () {
-                            e.prop("disabled", !1), c.find(".submit").addClass("hasChanges");
-                        }));
+                    o = c.find("#weatherRestriction");
+                    if (o.length) { i = setRestriction(parseInt(o.val()), i); }
+                    break;
+                case "o18":
+                case "o37":
+                    if (parseInt(i) > 8 * (parseInt(c.find("#o15").val()) + 1)) { i = 0; }
+                    break;
+                case "o41":
+                    if (c.find("#o41-units").val() === "gallon") { i *= 3.78541; }
+                    s.o41 = (100 * i) & 255;
+                    s.o42 = ((100 * i) >> 8) & 255;
+                    return true;
+                case "o2":
+                case "o3":
+                case "o14":
+                case "o16":
+                case "o21":
+                case "o22":
+                case "o25":
+                case "o36":
+                case "o48":
+                case "o50":
+                case "o51":
+                case "o52":
+                case "o53":
+                case "o62":
+                    i = t.is(":checked") ? 1 : 0;
+                    if (checkOSVersion(219) || i) { break; }
+                    return true;
+            }
+            if (l) {
+                if (n === "loc" || n === "lg") {
+                    n = "o" + n;
+                } else {
+                    a = /\d+/.exec(n);
+                    n = "o" + Object.keys(keyIndex).find(function (e) { return keyIndex[e] === a; });
+                }
+            }
+            if (checkOSVersion(208) === true && n === "loc") { i = i.replace(/\s/g, "_"); }
+            s[n] = i;
+        });
+        if (r) {
+            e.prop("disabled", false);
+            c.find(".submit").addClass("hasChanges");
+        } else {
+            if (controller.options.fpr0 !== undefined) {
+                if (controller.options.urs !== undefined) {
+                    s.o21 = c.find("input[name='o21'][type='radio']:checked").val();
+                } else {
+                    if (controller.options.sn1t !== undefined) { s.o50 = c.find("input[name='o50'][type='radio']:checked").val(); }
+                    if (controller.options.sn2t !== undefined) { s.o52 = c.find("input[name='o52'][type='radio']:checked").val(); }
+                }
+            }
+            s = transformKeys(s);
+            $.mobile.loading("show");
+            sendToOS("/co?pw=&" + $.param(s))
+                .done(function () {
+                    $.mobile.document.one("pageshow", function () { showerror(_("Settings have been saved")); });
+                    goBack();
+                    updateController(updateWeather);
+                })
+                .fail(function () {
+                    e.prop("disabled", false);
+                    c.find(".submit").addClass("hasChanges");
+                });
+        }
     }
     var i,
         o,
@@ -6101,109 +6396,107 @@ function showOptions(section) {
         l = "",
         c = $("<div data-role='page' id='os-options'><div class='ui-content' role='main'><div data-role='collapsibleset' id='os-options-list'></div><a class='submit preventBack' style='display:none'></a></div></div>"),
         d = changeHeader({ title: _("Edit Options"), leftBtn: { icon: "carat-l", text: _("Back"), class: "ui-toolbar-back-btn", on: checkChangesBeforeBack }, rightBtn: { icon: "check", text: _("Submit"), class: "submit", on: n } });
-    if (
-        (c.find(".submit").on("click", n),
-            (l = "<fieldset data-role='collapsible'" + ("string" != typeof section || "system" === section ? " data-collapsed='false'" : "") + "><legend>" + _("System") + "</legend>"),
-            void 0 !== controller.options.ntp &&
-            (l +=
-                "<div class='ui-field-contain datetime-input'><label for='datetime'>" +
-                _("Device Time") +
-                "</label><button " +
-                (controller.options.ntp ? "disabled " : "") +
-                "data-mini='true' id='datetime' value='" +
-                (controller.settings.devt + 60 * new Date(1e3 * controller.settings.devt).getTimezoneOffset()) +
-                "'>" +
-                dateToString(new Date(1e3 * controller.settings.devt)).slice(0, -3) +
-                "</button></div>"),
-            !isOSPi() && void 0 !== controller.options.tz)
-    ) {
-        for (
-            i = [
-                "-12:00",
-                "-11:30",
-                "-11:00",
-                "-10:00",
-                "-09:30",
-                "-09:00",
-                "-08:30",
-                "-08:00",
-                "-07:00",
-                "-06:00",
-                "-05:00",
-                "-04:30",
-                "-04:00",
-                "-03:30",
-                "-03:00",
-                "-02:30",
-                "-02:00",
-                "+00:00",
-                "+01:00",
-                "+02:00",
-                "+03:00",
-                "+03:30",
-                "+04:00",
-                "+04:30",
-                "+05:00",
-                "+05:30",
-                "+05:45",
-                "+06:00",
-                "+06:30",
-                "+07:00",
-                "+08:00",
-                "+08:45",
-                "+09:00",
-                "+09:30",
-                "+10:00",
-                "+10:30",
-                "+11:00",
-                "+11:30",
-                "+12:00",
-                "+12:45",
-                "+13:00",
-                "+13:45",
-                "+14:00",
-            ],
-            o = (0 <= (o = controller.options.tz - 48) ? "+" : "-") + pad((Math.abs(o) / 4) >> 0) + ":" + ((((Math.abs(o) % 4) * 15) / 10) >> 0) + (((Math.abs(o) % 4) * 15) % 10),
-            l += "<div class='ui-field-contain'><label for='o1' class='select'>" + _("Timezone") + "</label><select " + (checkOSVersion(210) && "object" == typeof weather ? "disabled='disabled' " : "") + "data-mini='true' id='o1'>",
-            a = 0;
-            a < i.length;
-            a++
-        )
+    c.find(".submit").on("click", n);
+    l = "<fieldset data-role='collapsible'" + (typeof section !== "string" || section === "system" ? " data-collapsed='false'" : "") + "><legend>" + _("System") + "</legend>";
+    if (controller.options.ntp !== undefined) {
+        l +=
+            "<div class='ui-field-contain datetime-input'><label for='datetime'>" +
+            _("Device Time") +
+            "</label><button " +
+            (controller.options.ntp ? "disabled " : "") +
+            "data-mini='true' id='datetime' value='" +
+            (controller.settings.devt + 60 * new Date(1e3 * controller.settings.devt).getTimezoneOffset()) +
+            "'>" +
+            dateToString(new Date(1e3 * controller.settings.devt)).slice(0, -3) +
+            "</button></div>";
+    }
+    if (!isOSPi() && controller.options.tz !== undefined) {
+        i = [
+            "-12:00",
+            "-11:30",
+            "-11:00",
+            "-10:00",
+            "-09:30",
+            "-09:00",
+            "-08:30",
+            "-08:00",
+            "-07:00",
+            "-06:00",
+            "-05:00",
+            "-04:30",
+            "-04:00",
+            "-03:30",
+            "-03:00",
+            "-02:30",
+            "-02:00",
+            "+00:00",
+            "+01:00",
+            "+02:00",
+            "+03:00",
+            "+03:30",
+            "+04:00",
+            "+04:30",
+            "+05:00",
+            "+05:30",
+            "+05:45",
+            "+06:00",
+            "+06:30",
+            "+07:00",
+            "+08:00",
+            "+08:45",
+            "+09:00",
+            "+09:30",
+            "+10:00",
+            "+10:30",
+            "+11:00",
+            "+11:30",
+            "+12:00",
+            "+12:45",
+            "+13:00",
+            "+13:45",
+            "+14:00",
+        ];
+        o = (0 <= (o = controller.options.tz - 48) ? "+" : "-") + pad((Math.abs(o) / 4) >> 0) + ":" + ((((Math.abs(o) % 4) * 15) / 10) >> 0) + (((Math.abs(o) % 4) * 15) % 10);
+        l += "<div class='ui-field-contain'><label for='o1' class='select'>" + _("Timezone") + "</label><select " + (checkOSVersion(210) && typeof weather === "object" ? "disabled='disabled' " : "") + "data-mini='true' id='o1'>";
+        for (a = 0; a < i.length; a++) {
             l += "<option " + (i[a] === o ? "selected" : "") + " value='" + i[a] + "'>" + i[a] + "</option>";
+        }
         l += "</select></div>";
     }
-    if (
-        ((l +=
-            "<div class='ui-field-contain'><label for='loc'>" +
-            _("Location") +
-            "</label><button data-mini='true' id='loc' value='" +
-            ("''" === controller.settings.loc.trim() ? _("Not specified") : controller.settings.loc) +
-            "'><span>" +
-            controller.settings.loc +
-            "</span><a class='ui-btn btn-no-border ui-btn-icon-notext ui-icon-delete ui-btn-corner-all clear-loc'></a></button></div>"),
-            void 0 !== controller.options.lg && (l += "<label for='o36'><input data-mini='true' id='o36' type='checkbox' " + (1 === controller.options.lg ? "checked='checked'" : "") + ">" + _("Enable Logging") + "</label>"),
-            (l += "<label for='isMetric'><input data-mini='true' id='isMetric' type='checkbox' " + (isMetric ? "checked='checked'" : "") + ">" + _("Use Metric") + "</label>"),
-            Supported.groups() && (l += "<label for='groupView'><input data-mini='true' id='groupView' type='checkbox' " + (groupView ? "checked='checked'" : "") + ">" + _("Order Stations by Groups") + "</label>"),
-            void 0 !== controller.options.vm && (l += "<label for='o62'><input data-mini='true' id='o62' type='checkbox' " + (1 === controller.options.vm ? "checked='checked'" : "") + ">" + _("Virtual Mode (disable zone outputs)") + "</label>"),
-            (l += "</fieldset><fieldset data-role='collapsible'" + ("string" == typeof section && "master" === section ? " data-collapsed='false'" : "") + "><legend>" + _("Configure Master") + "</legend>"),
-            void 0 !== controller.options.mas)
-    ) {
-        for (
-            l +=
+    l +=
+        "<div class='ui-field-contain'><label for='loc'>" +
+        _("Location") +
+        "</label><button data-mini='true' id='loc' value='" +
+        ("''" === controller.settings.loc.trim() ? _("Not specified") : controller.settings.loc) +
+        "'><span>" +
+        controller.settings.loc +
+        "</span><a class='ui-btn btn-no-border ui-btn-icon-notext ui-icon-delete ui-btn-corner-all clear-loc'></a></button></div>";
+    if (controller.options.lg !== undefined) {
+        l += "<label for='o36'><input data-mini='true' id='o36' type='checkbox' " + (1 === controller.options.lg ? "checked='checked'" : "") + ">" + _("Enable Logging") + "</label>";
+    }
+    l += "<label for='isMetric'><input data-mini='true' id='isMetric' type='checkbox' " + (isMetric ? "checked='checked'" : "") + ">" + _("Use Metric") + "</label>";
+    if (Supported.groups()) {
+        l += "<label for='groupView'><input data-mini='true' id='groupView' type='checkbox' " + (groupView ? "checked='checked'" : "") + ">" + _("Order Stations by Groups") + "</label>";
+    }
+    if (controller.options.vm !== undefined) {
+        l += "<label for='o62'><input data-mini='true' id='o62' type='checkbox' " + (1 === controller.options.vm ? "checked='checked'" : "") + ">" + _("Virtual Mode (disable zone outputs)") + "</label>";
+    }
+    l += "</fieldset><fieldset data-role='collapsible'" + (typeof section === "string" && section === "master" ? " data-collapsed='false'" : "") + "><legend>" + _("Configure Master") + "</legend>";
+    if (controller.options.mas !== undefined) {
+        l +=
             "<div class='ui-field-contain ui-field-no-border'><label for='o18' class='select'>" +
             _("Master Station") +
             " " +
-            (void 0 !== controller.options.mas2 ? "1" : "") +
+            (controller.options.mas2 !== undefined ? "1" : "") +
             "</label><select data-mini='true' id='o18'><option value='0'>" +
             _("None") +
-            "</option>",
-            a = 0;
-            a < controller.stations.snames.length && ((l += "<option " + (1 === Station.isMaster(a) ? "selected" : "") + " value='" + (a + 1) + "'>" + controller.stations.snames[a] + "</option>"), checkOSVersion(214) || 7 !== a);
-            a++
-        );
-        (l += "</select></div>"),
-            void 0 !== controller.options.mton &&
-            (l +=
+            "</option>";
+        for (a = 0; a < controller.stations.snames.length && (checkOSVersion(214) || 7 !== a); a++) {
+            l += "<option " + (1 === Station.isMaster(a) ? "selected" : "") + " value='" + (a + 1) + "'>" + controller.stations.snames[a] + "</option>";
+        }
+        l += "</select></div>";
+        if (controller.options.mton !== undefined) {
+            l +=
                 "<div " +
                 (0 === controller.options.mas ? "style='display:none' " : "") +
                 "class='ui-field-no-border ui-field-contain duration-field'><label for='o19'>" +
@@ -6212,9 +6505,10 @@ function showOptions(section) {
                 controller.options.mton +
                 "'>" +
                 controller.options.mton +
-                "s</button></div>"),
-            void 0 !== controller.options.mtof &&
-            (l +=
+                "s</button></div>";
+        }
+        if (controller.options.mtof !== undefined) {
+            l +=
                 "<div " +
                 (0 === controller.options.mas ? "style='display:none' " : "") +
                 "class='ui-field-no-border ui-field-contain duration-field'><label for='o20'>" +
@@ -6223,20 +6517,18 @@ function showOptions(section) {
                 controller.options.mtof +
                 "'>" +
                 controller.options.mtof +
-                "s</button></div>");
+                "s</button></div>";
+        }
     }
-    if (void 0 !== controller.options.mas2) {
-        for (
-            l =
-            (l += "<hr style='width:95%' class='content-divider'>") +
-            ("<div class='ui-field-contain ui-field-no-border'><label for='o37' class='select'>" + _("Master Station") + " 2</label><select data-mini='true' id='o37'><option value='0'>" + _("None") + "</option>"),
-            a = 0;
-            a < controller.stations.snames.length && ((l += "<option " + (2 === Station.isMaster(a) ? "selected" : "") + " value='" + (a + 1) + "'>" + controller.stations.snames[a] + "</option>"), checkOSVersion(214) || 7 !== a);
-            a++
-        );
-        (l += "</select></div>"),
-            void 0 !== controller.options.mton2 &&
-            (l +=
+    if (controller.options.mas2 !== undefined) {
+        l += "<hr style='width:95%' class='content-divider'>";
+        l += "<div class='ui-field-contain ui-field-no-border'><label for='o37' class='select'>" + _("Master Station") + " 2</label><select data-mini='true' id='o37'><option value='0'>" + _("None") + "</option>";
+        for (a = 0; a < controller.stations.snames.length && (checkOSVersion(214) || 7 !== a); a++) {
+            l += "<option " + (2 === Station.isMaster(a) ? "selected" : "") + " value='" + (a + 1) + "'>" + controller.stations.snames[a] + "</option>";
+        }
+        l += "</select></div>";
+        if (controller.options.mton2 !== undefined) {
+            l +=
                 "<div " +
                 (0 === controller.options.mas2 ? "style='display:none' " : "") +
                 "class='ui-field-no-border ui-field-contain duration-field'><label for='o38'>" +
@@ -6245,9 +6537,10 @@ function showOptions(section) {
                 controller.options.mton2 +
                 "'>" +
                 controller.options.mton2 +
-                "s</button></div>"),
-            void 0 !== controller.options.mtof2 &&
-            (l +=
+                "s</button></div>";
+        }
+        if (controller.options.mtof2 !== undefined) {
+            l +=
                 "<div " +
                 (0 === controller.options.mas2 ? "style='display:none' " : "") +
                 "class='ui-field-no-border ui-field-contain duration-field'><label for='o39'>" +
@@ -6256,92 +6549,85 @@ function showOptions(section) {
                 controller.options.mtof2 +
                 "'>" +
                 controller.options.mtof2 +
-                "s</button></div>");
+                "s</button></div>";
+        }
     }
-    if (((l += "</fieldset><fieldset data-role='collapsible'" + ("string" == typeof section && "station" === section ? " data-collapsed='false'" : "") + "><legend>" + _("Station Handling") + "</legend>"), void 0 !== controller.options.ext)) {
-        for (
-            l +=
+    l += "</fieldset><fieldset data-role='collapsible'" + (typeof section === "string" && section === "station" ? " data-collapsed='false'" : "") + "><legend>" + _("Station Handling") + "</legend>";
+    if (controller.options.ext !== undefined) {
+        l +=
             "<div class='ui-field-contain'><label for='o15' class='select'>" +
             _("Number of Stations") +
-            ("number" == typeof controller.options.dexp && controller.options.dexp < 255 && 0 <= controller.options.dexp ? " <span class='nobr'>(" + (8 * controller.options.dexp + 8) + " " + _("available") + ")</span>" : "") +
-            "</label><select data-mini='true' id='o15'>",
-            a = 0;
-            a <= (controller.options.mexp || 5);
-            a++
-        )
+            (typeof controller.options.dexp === "number" && controller.options.dexp < 255 && 0 <= controller.options.dexp ? " <span class='nobr'>(" + (8 * controller.options.dexp + 8) + " " + _("available") + ")</span>" : "") +
+            "</label><select data-mini='true' id='o15'>";
+        for (a = 0; a <= (controller.options.mexp || 5); a++) {
             l += "<option " + (controller.options.ext === a ? "selected" : "") + " value='" + a + "'>" + (8 * a + 8) + " " + _("stations") + "</option>";
+        }
         l += "</select></div>";
     }
-    if (
-        (void 0 !== controller.options.sdt &&
-            (l +=
-                "<div class='ui-field-contain duration-field'><label for='o17'>" +
-                _("Station Delay") +
-                "</label><button data-mini='true' id='o17' value='" +
-                controller.options.sdt +
-                "'>" +
-                dhms2str(sec2dhms(controller.options.sdt)) +
-                "</button></div>"),
-            (l +=
-                "<label for='showDisabled'><input data-mini='true' class='noselect' id='showDisabled' type='checkbox' " +
-                ("true" === localStorage.showDisabled ? "checked='checked'" : "") +
-                ">" +
-                _("Show Disabled") +
-                " " +
-                _("(Changes Auto-Saved)") +
-                "</label>"),
-            void 0 !== controller.options.seq && (l += "<label for='o16'><input data-mini='true' id='o16' type='checkbox' " + (1 === controller.options.seq ? "checked='checked'" : "") + ">" + _("Sequential") + "</label>"),
-            (l += "</fieldset><fieldset data-role='collapsible'" + ("string" == typeof section && "weather" === section ? " data-collapsed='false'" : "") + "><legend>" + _("Weather and Sensors") + "</legend>"),
-            void 0 !== controller.options.uwt)
-    ) {
-        for (
-            l +=
+    if (controller.options.sdt !== undefined) {
+        l +=
+            "<div class='ui-field-contain duration-field'><label for='o17'>" +
+            _("Station Delay") +
+            "</label><button data-mini='true' id='o17' value='" +
+            controller.options.sdt +
+            "'>" +
+            dhms2str(sec2dhms(controller.options.sdt)) +
+            "</button></div>";
+    }
+    l +=
+        "<label for='showDisabled'><input data-mini='true' class='noselect' id='showDisabled' type='checkbox' " +
+        ("true" === localStorage.showDisabled ? "checked='checked'" : "") +
+        ">" +
+        _("Show Disabled") +
+        " " +
+        _("(Changes Auto-Saved)") +
+        "</label>";
+    if (controller.options.seq !== undefined) {
+        l += "<label for='o16'><input data-mini='true' id='o16' type='checkbox' " + (1 === controller.options.seq ? "checked='checked'" : "") + ">" + _("Sequential") + "</label>";
+    }
+    l += "</fieldset><fieldset data-role='collapsible'" + (typeof section === "string" && section === "weather" ? " data-collapsed='false'" : "") + "><legend>" + _("Weather and Sensors") + "</legend>";
+    if (controller.options.uwt !== undefined) {
+        l +=
             "<div class='ui-field-contain'><label for='o31' class='select'>" +
             _("Weather Adjustment Method") +
             "<button data-helptext='" +
             _("Weather adjustment uses DarkSky data in conjunction with the selected method to adjust the watering percentage.") +
-            "' class='help-icon btn-no-border ui-btn ui-icon-info ui-btn-icon-notext'></button></label><select data-mini='true' id='o31'>",
-            a = 0;
-            a < getAdjustmentMethod().length;
-            a++
-        ) {
+            "' class='help-icon btn-no-border ui-btn ui-icon-info ui-btn-icon-notext'></button></label><select data-mini='true' id='o31'>";
+        for (a = 0; a < getAdjustmentMethod().length; a++) {
             var u = getAdjustmentMethod()[a];
-            (u.minVersion && !checkOSVersion(u.minVersion)) || (l += "<option " + (u.id === getCurrentAdjustmentMethodId() ? "selected" : "") + " value='" + a + "'>" + u.name + "</option>");
+            if (!u.minVersion || checkOSVersion(u.minVersion)) {
+                l += "<option " + (u.id === getCurrentAdjustmentMethodId() ? "selected" : "") + " value='" + a + "'>" + u.name + "</option>";
+            }
         }
-        if (
-            ((l += "</select></div>"),
-                "object" == typeof controller.settings.wto &&
-                (l +=
-                    "<div class='ui-field-contain" +
-                    (0 === getCurrentAdjustmentMethodId() ? " hidden" : "") +
-                    "'><label for='wto'>" +
-                    _("Adjustment Method Options") +
-                    "</label><button data-mini='true' id='wto' value='" +
-                    escapeJSON(controller.settings.wto) +
-                    "'>" +
-                    _("Tap to Configure") +
-                    "</button></div>"),
-                checkOSVersion(214))
-        ) {
-            for (
-                l +=
+        l += "</select></div>";
+        if (typeof controller.settings.wto === "object") {
+            l +=
+                "<div class='ui-field-contain" +
+                (0 === getCurrentAdjustmentMethodId() ? " hidden" : "") +
+                "'><label for='wto'>" +
+                _("Adjustment Method Options") +
+                "</label><button data-mini='true' id='wto' value='" +
+                escapeJSON(controller.settings.wto) +
+                "'>" +
+                _("Tap to Configure") +
+                "</button></div>";
+        }
+        if (checkOSVersion(214)) {
+            l +=
                 "<div class='ui-field-contain'><label for='weatherRestriction' class='select'>" +
                 _("Weather-Based Restrictions") +
                 "<button data-helptext='" +
                 _("Prevents watering when the selected restriction is met.") +
-                "' class='help-icon btn-no-border ui-btn ui-icon-info ui-btn-icon-notext'></button></label><select data-mini='true' class='noselect' id='weatherRestriction'>",
-                a = 0;
-                a < 2;
-                a++
-            ) {
+                "' class='help-icon btn-no-border ui-btn ui-icon-info ui-btn-icon-notext'></button></label><select data-mini='true' class='noselect' id='weatherRestriction'>";
+            for (a = 0; a < 2; a++) {
                 var p = getRestriction(a);
-                l += "<option " + (!0 === p.isCurrent ? "selected" : "") + " value='" + a + "'>" + p.name + "</option>";
+                l += "<option " + (p.isCurrent === true ? "selected" : "") + " value='" + a + "'>" + p.name + "</option>";
             }
             l += "</select></div>";
         }
     }
-    void 0 !== controller.options.wl &&
-        (l +=
+    if (controller.options.wl !== undefined) {
+        l +=
             "<div class='ui-field-contain duration-field'><label for='o23'>" +
             _("% Watering") +
             "<button data-helptext='" +
@@ -6352,40 +6638,47 @@ function showOptions(section) {
             controller.options.wl +
             "'>" +
             controller.options.wl +
-            "%</button></div>"),
-        (void 0 === controller.options.urs && void 0 === controller.options.sn1t) ||
-        (void 0 !== controller.options.fpr0
-            ? (l += void 0 !== controller.options.urs ? t(keyIndex.urs, controller.options.urs) : void 0 !== controller.options.sn1t ? t(keyIndex.sn1t, controller.options.sn1t, 1) : "")
-            : (l += "<label for='o21'><input data-mini='true' id='o21' type='checkbox' " + (1 === controller.options.urs ? "checked='checked'" : "") + ">" + _("Use Rain Sensor") + "</label>")),
-        void 0 !== controller.options.rso &&
-        (l +=
+            "%</button></div>";
+    }
+    if (controller.options.urs !== undefined || controller.options.sn1t !== undefined) {
+        if (controller.options.fpr0 !== undefined) {
+            l += controller.options.urs !== undefined ? t(keyIndex.urs, controller.options.urs) : controller.options.sn1t !== undefined ? t(keyIndex.sn1t, controller.options.sn1t, 1) : "";
+        } else {
+            l += "<label for='o21'><input data-mini='true' id='o21' type='checkbox' " + (1 === controller.options.urs ? "checked='checked'" : "") + ">" + _("Use Rain Sensor") + "</label>";
+        }
+    }
+    if (controller.options.rso !== undefined) {
+        l +=
             "<label for='o22'><input " +
             (1 === controller.options.urs || 240 === controller.options.urs ? "" : "data-wrapper-class='hidden' ") +
             "data-mini='true' id='o22' type='checkbox' " +
             (1 === controller.options.rso ? "checked='checked'" : "") +
             ">" +
             _("Normally Open") +
-            "</label>"),
-        void 0 !== controller.options.sn1o &&
-        (l +=
+            "</label>";
+    }
+    if (controller.options.sn1o !== undefined) {
+        l +=
             "<label for='o51'><input " +
             (1 === controller.options.sn1t || 3 === controller.options.sn1t || 240 === controller.options.sn1t ? "" : "data-wrapper-class='hidden' ") +
             "data-mini='true' id='o51' type='checkbox' " +
             (1 === controller.options.sn1o ? "checked='checked'" : "") +
             ">" +
             _("Normally Open") +
-            "</label>"),
-        void 0 !== controller.options.fpr0 &&
-        (l +=
+            "</label>";
+    }
+    if (controller.options.fpr0 !== undefined) {
+        l +=
             "<div class='ui-field-contain" +
             (2 === controller.options.urs || 2 === controller.options.sn1t ? "" : " hidden") +
             "'><label for='o41'>" +
             _("Flow Pulse Rate") +
             "</label><table><tr style='width:100%;vertical-align: top;'><td style='width:100%'><div class='ui-input-text controlgroup-textinput ui-btn ui-body-inherit ui-corner-all ui-mini ui-shadow-inset ui-input-has-clear'><input data-role='none' data-mini='true' type='number' pattern='^[-+]?[0-9]*.?[0-9]*$' id='o41' value='" +
             (256 * controller.options.fpr1 + controller.options.fpr0) / 100 +
-            "'></div></td><td class='tight-select'><select id='o41-units' class='noselect' data-mini='true'><option selected='selected' value='liter'>L/pulse</option><option value='gallon'>Gal/pulse</option></select></td></tr></table></div>"),
-        void 0 !== controller.options.sn1on &&
-        (l +=
+            "'></div></td><td class='tight-select'><select id='o41-units' class='noselect' data-mini='true'><option selected='selected' value='liter'>L/pulse</option><option value='gallon'>Gal/pulse</option></select></td></tr></table></div>";
+    }
+    if (controller.options.sn1on !== undefined) {
+        l +=
             "<div class='" +
             (1 === controller.options.sn1t || 3 === controller.options.sn1t ? "" : "hidden ") +
             "ui-field-no-border ui-field-contain duration-field'><label for='o54'>" +
@@ -6394,9 +6687,10 @@ function showOptions(section) {
             controller.options.sn1on +
             "'>" +
             controller.options.sn1on +
-            "m</button></div>"),
-        void 0 !== controller.options.sn1of &&
-        (l +=
+            "m</button></div>";
+    }
+    if (controller.options.sn1of !== undefined) {
+        l +=
             "<div class='" +
             (1 === controller.options.sn1t || 3 === controller.options.sn1t ? "" : "hidden ") +
             "ui-field-no-border ui-field-contain duration-field'><label for='o55'>" +
@@ -6405,26 +6699,31 @@ function showOptions(section) {
             controller.options.sn1of +
             "'>" +
             controller.options.sn1of +
-            "m</button></div>"),
-        checkOSVersion(217) &&
-        (l +=
+            "m</button></div>";
+    }
+    if (checkOSVersion(217)) {
+        l +=
             "<label id='prgswitch' class='center smaller" +
             (240 === controller.options.urs || 240 === controller.options.sn1t || 240 === controller.options.sn2t ? "" : " hidden") +
             "'>" +
             _("When using program switch, a switch is connected to the sensor port to trigger Program 1 every time the switch is pressed for at least 1 second.") +
-            "</label>"),
-        void 0 !== controller.options.sn2t && checkOSVersion(219) && (l += t(keyIndex.sn2t, controller.options.sn2t, 2)),
-        void 0 !== controller.options.sn2o &&
-        (l +=
+            "</label>";
+    }
+    if (controller.options.sn2t !== undefined && checkOSVersion(219)) {
+        l += t(keyIndex.sn2t, controller.options.sn2t, 2);
+    }
+    if (controller.options.sn2o !== undefined) {
+        l +=
             "<label for='o53'><input " +
             (1 === controller.options.sn2t || 3 === controller.options.sn2t || 240 === controller.options.sn2t ? "" : "data-wrapper-class='hidden' ") +
             "data-mini='true' id='o53' type='checkbox' " +
             (1 === controller.options.sn2o ? "checked='checked'" : "") +
             ">" +
             _("Normally Open") +
-            "</label>"),
-        void 0 !== controller.options.sn2on &&
-        (l +=
+            "</label>";
+    }
+    if (controller.options.sn2on !== undefined) {
+        l +=
             "<div class='" +
             (1 === controller.options.sn2t || 3 === controller.options.sn2t ? "" : "hidden ") +
             "ui-field-no-border ui-field-contain duration-field'><label for='o56'>" +
@@ -6433,9 +6732,10 @@ function showOptions(section) {
             controller.options.sn2on +
             "'>" +
             controller.options.sn2on +
-            "m</button></div>"),
-        void 0 !== controller.options.sn2of &&
-        (l +=
+            "m</button></div>";
+    }
+    if (controller.options.sn2of !== undefined) {
+        l +=
             "<div class='" +
             (1 === controller.options.sn2t || 3 === controller.options.sn2t ? "" : "hidden ") +
             "ui-field-no-border ui-field-contain duration-field'><label for='o57'>" +
@@ -6444,18 +6744,20 @@ function showOptions(section) {
             controller.options.sn2of +
             "'>" +
             controller.options.sn2of +
-            "m</button></div>"),
-        void 0 !== controller.options.sn2t &&
-        (l +=
+            "m</button></div>";
+    }
+    if (controller.options.sn2t !== undefined) {
+        l +=
             "<label id='prgswitch-2' class='center smaller" +
             (240 === controller.options.urs || 240 === controller.options.sn1t || 240 === controller.options.sn2t ? "" : " hidden") +
             "'>" +
             _("When using program switch, a switch is connected to the sensor port to trigger Program 2 every time the switch is pressed for at least 1 second.") +
-            "</label>"),
-        (void 0 === controller.settings.ifkey && void 0 === controller.settings.mqtt && void 0 === controller.settings.otc) ||
-        ((l += "</fieldset><fieldset data-role='collapsible'" + ("string" == typeof section && "integrations" === section ? " data-collapsed='false'" : "") + "><legend>" + _("Integrations") + "</legend>"),
-            void 0 !== controller.settings.otc &&
-            (l +=
+            "</label>";
+    }
+    if (controller.settings.ifkey !== undefined || controller.settings.mqtt !== undefined || controller.settings.otc !== undefined) {
+        l += "</fieldset><fieldset data-role='collapsible'" + (typeof section === "string" && section === "integrations" ? " data-collapsed='false'" : "") + "><legend>" + _("Integrations") + "</legend>";
+        if (controller.settings.otc !== undefined) {
+            l +=
                 "<div class='ui-field-contain'><label for='otc'>" +
                 _("OTC") +
                 "<button style='display:inline-block;' data-helptext='" +
@@ -6464,9 +6766,10 @@ function showOptions(section) {
                 escapeJSON(controller.settings.otc) +
                 "'>" +
                 _("Tap to Configure") +
-                "</button></div>"),
-            void 0 !== controller.settings.mqtt &&
-            (l +=
+                "</button></div>";
+        }
+        if (controller.settings.mqtt !== undefined) {
+            l +=
                 "<div class='ui-field-contain'><label for='mqtt'>" +
                 _("MQTT") +
                 "<button style='display:inline-block;' data-helptext='" +
@@ -6475,17 +6778,18 @@ function showOptions(section) {
                 escapeJSON(controller.settings.mqtt) +
                 "'>" +
                 _("Tap to Configure") +
-                "</button></div>"),
-            void 0 !== controller.settings.ifkey &&
-            (l =
-                (l +=
-                    "<div class='ui-field-contain'><label for='ifkey'>" +
-                    _("IFTTT Key") +
-                    "<button data-helptext='" +
-                    _("To enable IFTTT, a Webhooks key is required which can be obtained from https://ifttt.com") +
-                    "' class='help-icon btn-no-border ui-btn ui-icon-info ui-btn-icon-notext'></button></label><input autocomplete='off' autocorrect='off' autocapitalize='off' spellcheck='false' data-mini='true' type='text' id='ifkey' value='" +
-                    controller.settings.ifkey +
-                    "'></div>") +
+                "</button></div>";
+        }
+        if (controller.settings.ifkey !== undefined) {
+            l +=
+                "<div class='ui-field-contain'><label for='ifkey'>" +
+                _("IFTTT Key") +
+                "<button data-helptext='" +
+                _("To enable IFTTT, a Webhooks key is required which can be obtained from https://ifttt.com") +
+                "' class='help-icon btn-no-border ui-btn ui-icon-info ui-btn-icon-notext'></button></label><input autocomplete='off' autocorrect='off' autocapitalize='off' spellcheck='false' data-mini='true' type='text' id='ifkey' value='" +
+                controller.settings.ifkey +
+                "'></div>";
+            l +=
                 "<div class='ui-field-contain'><label for='o49'>" +
                 _("IFTTT Events") +
                 "<button data-helptext='" +
@@ -6494,28 +6798,32 @@ function showOptions(section) {
                 controller.options.ife +
                 "'>" +
                 _("Configure Events") +
-                "</button></div>"),
-            void 0 !== controller.settings.dname &&
-            (l +=
+                "</button></div>";
+        }
+        if (controller.settings.dname !== undefined) {
+            l +=
                 "<div class='ui-field-contain'><label for='dname'>" +
                 _("Device Name") +
                 "<button data-helptext='" +
                 _("Device name is attached to all IFTTT notifications to help distinguish multiple devices") +
                 "' class='help-icon btn-no-border ui-btn ui-icon-info ui-btn-icon-notext'></button></label><input autocomplete='off' autocorrect='off' autocapitalize='off' spellcheck='false' data-mini='true' type='text' id='dname' value=\"" +
                 controller.settings.dname +
-                '"></div>')),
-        (l += "</fieldset><fieldset class='full-width-slider' data-role='collapsible'" + ("string" == typeof section && "lcd" === section ? " data-collapsed='false'" : "") + "><legend>" + _("LCD Screen") + "</legend>"),
-        void 0 !== controller.options.con &&
-        (l += "<div class='ui-field-contain'><label for='o27'>" + _("Contrast") + "</label><input type='range' id='o27' min='0' max='255' step='10' data-highlight='true' value='" + controller.options.con + "'></div>"),
-        void 0 !== controller.options.lit &&
-        (l += "<div class='ui-field-contain'><label for='o28'>" + _("Brightness") + "</label><input type='range' id='o28' min='0' max='255' step='10' data-highlight='true' value='" + controller.options.lit + "'></div>"),
-        void 0 !== controller.options.dim &&
-        (l += "<div class='ui-field-contain'><label for='o29'>" + _("Idle Brightness") + "</label><input type='range' id='o29' min='0' max='255' step='10' data-highlight='true' value='" + controller.options.dim + "'></div>"),
-        (l += "</fieldset><fieldset data-role='collapsible' data-theme='b'" + ("string" == typeof section && "advanced" === section ? " data-collapsed='false'" : "") + "><legend>" + _("Advanced") + "</legend>"),
-        checkOSVersion(219) &&
-        void 0 !== controller.options.uwt &&
-        "object" == typeof controller.settings.wto &&
-        (l +=
+                '"></div>';
+        }
+    }
+    l += "</fieldset><fieldset class='full-width-slider' data-role='collapsible'" + (typeof section === "string" && section === "lcd" ? " data-collapsed='false'" : "") + "><legend>" + _("LCD Screen") + "</legend>";
+    if (controller.options.con !== undefined) {
+        l += "<div class='ui-field-contain'><label for='o27'>" + _("Contrast") + "</label><input type='range' id='o27' min='0' max='255' step='10' data-highlight='true' value='" + controller.options.con + "'></div>";
+    }
+    if (controller.options.lit !== undefined) {
+        l += "<div class='ui-field-contain'><label for='o28'>" + _("Brightness") + "</label><input type='range' id='o28' min='0' max='255' step='10' data-highlight='true' value='" + controller.options.lit + "'></div>";
+    }
+    if (controller.options.dim !== undefined) {
+        l += "<div class='ui-field-contain'><label for='o29'>" + _("Idle Brightness") + "</label><input type='range' id='o29' min='0' max='255' step='10' data-highlight='true' value='" + controller.options.dim + "'></div>";
+    }
+    l += "</fieldset><fieldset data-role='collapsible' data-theme='b'" + (typeof section === "string" && section === "advanced" ? " data-collapsed='false'" : "") + "><legend>" + _("Advanced") + "</legend>";
+    if (checkOSVersion(219) && controller.options.uwt !== undefined && typeof controller.settings.wto === "object") {
+        l +=
             "<div class='ui-field-contain'><label for='wtkey'>" +
             _("Wunderground Key").replace("Wunderground", "Wunder&shy;ground") +
             "<button data-helptext='" +
@@ -6528,561 +6836,593 @@ function showOptions(section) {
             _("An invalid API key has been detected.") +
             "' class='hidden help-icon ui-input-clear ui-btn ui-icon-alert ui-btn-icon-notext ui-corner-all'></a></div></td><td><button class='noselect' data-mini='true' id='verify-api'>" +
             _("Verify") +
-            "</button></td></tr></table></div>"),
-        void 0 !== controller.options.hp0 &&
-        (l +=
+            "</button></td></tr></table></div>";
+    }
+    if (controller.options.hp0 !== undefined) {
+        l +=
             "<div class='ui-field-contain'><label for='o12'>" +
             _("HTTP Port (restart required)") +
             "</label><input data-mini='true' type='number' pattern='[0-9]*' id='o12' value='" +
             (256 * controller.options.hp1 + controller.options.hp0) +
-            "'></div>"),
-        void 0 !== controller.options.devid &&
-        (l +=
+            "'></div>";
+    }
+    if (controller.options.devid !== undefined) {
+        l +=
             "<div class='ui-field-contain'><label for='o26'>" +
             _("Device ID (restart required)") +
             "<button data-helptext='" +
             _("Device ID modifies the last byte of the MAC address.") +
             "' class='help-icon btn-no-border ui-btn ui-icon-info ui-btn-icon-notext'></button></label><input data-mini='true' type='number' pattern='[0-9]*' max='255' id='o26' value='" +
             controller.options.devid +
-            "'></div>"),
-        void 0 !== controller.options.rlp
-            ? (l +=
-                "<div class='ui-field-contain duration-field'><label for='o30'>" +
-                _("Relay Pulse") +
-                "<button data-helptext='" +
-                _("Relay pulsing is used for special situations where rapid pulsing is needed in the output with a range from 1 to 2000 milliseconds. A zero value disables the pulsing option.") +
-                "' class='help-icon btn-no-border ui-btn ui-icon-info ui-btn-icon-notext'></button></label><button data-mini='true' id='o30' value='" +
-                controller.options.rlp +
-                "'>" +
-                controller.options.rlp +
-                "ms</button></div>")
-            : !0 !== checkOSVersion(215) &&
-            void 0 !== controller.options.bst &&
-            (l +=
-                "<div class='ui-field-contain duration-field'><label for='o30'>" +
-                _("Boost Time") +
-                "<button data-helptext='" +
-                _("Boost time changes how long the boost converter is activated with a range from 0 to 1000 milliseconds.") +
-                "' class='help-icon btn-no-border ui-btn ui-icon-info ui-btn-icon-notext'></button></label><button data-mini='true' id='o30' value='" +
-                controller.options.bst +
-                "'>" +
-                controller.options.bst +
-                "ms</button></div>"),
-        void 0 !== controller.options.ntp &&
-        checkOSVersion(210) &&
-        ((s = [controller.options.ntp1, controller.options.ntp2, controller.options.ntp3, controller.options.ntp4].join(".")),
-            (l +=
-                "<div class='" +
-                (1 === controller.options.ntp ? "" : "hidden ") +
-                "ui-field-contain duration-field'><label for='ntp_addr'>" +
-                _("NTP IP Address") +
-                "</label><button data-mini='true' id='ntp_addr' value='" +
-                s +
-                "'>" +
-                s +
-                "</button></div>")),
-        void 0 !== controller.options.dhcp &&
-        checkOSVersion(210) &&
-        ((s = [controller.options.ip1, controller.options.ip2, controller.options.ip3, controller.options.ip4].join(".")),
-            (r = [controller.options.gw1, controller.options.gw2, controller.options.gw3, controller.options.gw4].join(".")),
-            (l =
-                (l +=
-                    "<div class='" +
-                    (1 === controller.options.dhcp ? "hidden " : "") +
-                    "ui-field-contain duration-field'><label for='ip_addr'>" +
-                    _("IP Address") +
-                    "</label><button data-mini='true' id='ip_addr' value='" +
-                    s +
-                    "'>" +
-                    s +
-                    "</button></div>") +
+            "'></div>";
+    }
+    if (controller.options.rlp !== undefined) {
+        l +=
+            "<div class='ui-field-contain duration-field'><label for='o30'>" +
+            _("Relay Pulse") +
+            "<button data-helptext='" +
+            _("Relay pulsing is used for special situations where rapid pulsing is needed in the output with a range from 1 to 2000 milliseconds. A zero value disables the pulsing option.") +
+            "' class='help-icon btn-no-border ui-btn ui-icon-info ui-btn-icon-notext'></button></label><button data-mini='true' id='o30' value='" +
+            controller.options.rlp +
+            "'>" +
+            controller.options.rlp +
+            "ms</button></div>";
+    } else if (checkOSVersion(215) !== true && controller.options.bst !== undefined) {
+        l +=
+            "<div class='ui-field-contain duration-field'><label for='o30'>" +
+            _("Boost Time") +
+            "<button data-helptext='" +
+            _("Boost time changes how long the boost converter is activated with a range from 0 to 1000 milliseconds.") +
+            "' class='help-icon btn-no-border ui-btn ui-icon-info ui-btn-icon-notext'></button></label><button data-mini='true' id='o30' value='" +
+            controller.options.bst +
+            "'>" +
+            controller.options.bst +
+            "ms</button></div>";
+    }
+    if (controller.options.ntp !== undefined && checkOSVersion(210)) {
+        s = [controller.options.ntp1, controller.options.ntp2, controller.options.ntp3, controller.options.ntp4].join(".");
+        l +=
+            "<div class='" +
+            (1 === controller.options.ntp ? "" : "hidden ") +
+            "ui-field-contain duration-field'><label for='ntp_addr'>" +
+            _("NTP IP Address") +
+            "</label><button data-mini='true' id='ntp_addr' value='" +
+            s +
+            "'>" +
+            s +
+            "</button></div>";
+    }
+    if (controller.options.dhcp !== undefined && checkOSVersion(210)) {
+        s = [controller.options.ip1, controller.options.ip2, controller.options.ip3, controller.options.ip4].join(".");
+        r = [controller.options.gw1, controller.options.gw2, controller.options.gw3, controller.options.gw4].join(".");
+        l +=
+            "<div class='" +
+            (1 === controller.options.dhcp ? "hidden " : "") +
+            "ui-field-contain duration-field'><label for='ip_addr'>" +
+            _("IP Address") +
+            "</label><button data-mini='true' id='ip_addr' value='" +
+            s +
+            "'>" +
+            s +
+            "</button></div>";
+        l +=
+            "<div class='" +
+            (1 === controller.options.dhcp ? "hidden " : "") +
+            "ui-field-contain duration-field'><label for='gateway'>" +
+            _("Gateway Address") +
+            "</label><button data-mini='true' id='gateway' value='" +
+            r +
+            "'>" +
+            r +
+            "</button></div>";
+        if (controller.options.subn1 !== undefined) {
+            s = [controller.options.subn1, controller.options.subn2, controller.options.subn3, controller.options.subn4].join(".");
+            l +=
                 "<div class='" +
                 (1 === controller.options.dhcp ? "hidden " : "") +
-                "ui-field-contain duration-field'><label for='gateway'>" +
-                _("Gateway Address") +
-                "</label><button data-mini='true' id='gateway' value='" +
+                "ui-field-contain duration-field'><label for='subnet'>" +
+                _("Subnet Mask") +
+                "</label><button data-mini='true' id='subnet' value='" +
+                s +
+                "'>" +
+                s +
+                "</button></div>";
+        }
+        if (controller.options.dns1 !== undefined) {
+            r = [controller.options.dns1, controller.options.dns2, controller.options.dns3, controller.options.dns4].join(".");
+            l +=
+                "<div class='" +
+                (1 === controller.options.dhcp ? "hidden " : "") +
+                "ui-field-contain duration-field'><label for='dns'>" +
+                _("DNS Address") +
+                "</label><button data-mini='true' id='dns' value='" +
                 r +
                 "'>" +
                 r +
-                "</button></div>"),
-            void 0 !== controller.options.subn1 &&
-            ((s = [controller.options.subn1, controller.options.subn2, controller.options.subn3, controller.options.subn4].join(".")),
-                (l +=
-                    "<div class='" +
-                    (1 === controller.options.dhcp ? "hidden " : "") +
-                    "ui-field-contain duration-field'><label for='subnet'>" +
-                    _("Subnet Mask") +
-                    "</label><button data-mini='true' id='subnet' value='" +
-                    s +
-                    "'>" +
-                    s +
-                    "</button></div>")),
-            void 0 !== controller.options.dns1 &&
-            ((r = [controller.options.dns1, controller.options.dns2, controller.options.dns3, controller.options.dns4].join(".")),
-                (l +=
-                    "<div class='" +
-                    (1 === controller.options.dhcp ? "hidden " : "") +
-                    "ui-field-contain duration-field'><label for='dns'>" +
-                    _("DNS Address") +
-                    "</label><button data-mini='true' id='dns' value='" +
-                    r +
-                    "'>" +
-                    r +
-                    "</button></div>")),
-            (l += "<label for='o3'><input data-mini='true' id='o3' type='checkbox' " + (1 === controller.options.dhcp ? "checked='checked'" : "") + ">" + _("Use DHCP (restart required)") + "</label>")),
-        void 0 !== controller.options.ntp && (l += "<label for='o2'><input data-mini='true' id='o2' type='checkbox' " + (1 === controller.options.ntp ? "checked='checked'" : "") + ">" + _("NTP Sync") + "</label>"),
-        void 0 !== controller.options.ar && (l += "<label for='o14'><input data-mini='true' id='o14' type='checkbox' " + (1 === controller.options.ar ? "checked='checked'" : "") + ">" + _("Auto Reconnect") + "</label>"),
-        void 0 !== controller.options.ipas && (l += "<label for='o25'><input data-mini='true' id='o25' type='checkbox' " + (1 === controller.options.ipas ? "checked='checked'" : "") + ">" + _("Ignore Password") + "</label>"),
-        void 0 !== controller.options.sar && (l += "<label for='o48'><input data-mini='true' id='o48' type='checkbox' " + (1 === controller.options.sar ? "checked='checked'" : "") + ">" + _("Special Station Auto-Refresh") + "</label>"),
-        (l =
-            (l =
-                (l =
-                    (l =
-                        (l += "</fieldset><fieldset data-role='collapsible' data-theme='b'" + ("string" == typeof section && "reset" === section ? " data-collapsed='false'" : "") + "><legend>" + _("Reset") + "</legend>") +
-                        "<button data-mini='true' class='center-div reset-log'>" +
-                        _("Clear Log Data") +
-                        "</button>") +
-                    "<button data-mini='true' class='center-div reset-options'>" +
-                    _("Reset All Options") +
-                    "</button>") +
-                "<button data-mini='true' class='center-div reset-programs'>" +
-                _("Delete All Programs") +
-                "</button>") +
-            "<button data-mini='true' class='center-div reset-stations'>" +
-            _("Reset Station Attributes") +
-            "</button>"),
-        30 <= controller.options.hwv && controller.options.hwv < 40 && (l += "<hr class='divider'><button data-mini='true' class='center-div reset-wireless'>" + _("Reset Wireless Settings") + "</button>"),
-        (l += "</fieldset>"),
-        c
-            .find("#os-options-list")
-            .html(l)
-            .one("change input", ":not(.noselect)", function () {
-                d.eq(2).prop("disabled", !1), c.find(".submit").addClass("hasChanges");
-            })
-            .find("fieldset")
-            .each(function () {
-                var e = $(this);
-                1 === e.children().length && e.remove();
-            }),
-        c.find(".clear-loc").on("click", function (e) {
-            e.stopImmediatePropagation(),
-                areYouSure(_("Are you sure you want to clear the current location?"), "", function () {
-                    c.find("#loc").val("''").removeClass("green").find("span").text(_("Not specified")), c.find("#o1").selectmenu("enable"), d.eq(2).prop("disabled", !1), c.find(".submit").addClass("hasChanges");
-                });
-        }),
-        c.find("#showDisabled").on("change", function () {
-            return storage.set({ showDisabled: this.checked }), !1;
-        }),
-        c.find("#loc").on("click", function () {
-            var i = $(this);
-            i.prop("disabled", !0),
-                overlayMap(function (e, t) {
-                    var n;
-                    !1 === e
-                        ? "" === i.val() && (i.removeClass("green"), c.find("#o1").selectmenu("enable"))
-                        : (checkOSVersion(210) && c.find("#o1").selectmenu("disable"),
-                            "string" == typeof e
-                                ? i.val(e).find("span").text(e)
-                                : ((e[0] = parseFloat(e[0]).toFixed(5)),
-                                    (e[1] = parseFloat(e[1]).toFixed(5)),
-                                    "string" == typeof t &&
-                                    validateWULocation(t, function (e) {
-                                        e ? i.addClass("green") : i.removeClass("green");
-                                    }),
-                                    (n = c.find("#wto")) && void 0 !== n.val() && n.val(escapeJSON($.extend({}, unescapeJSON(n.val()), { pws: t || "" }))),
-                                    i.val(e),
-                                    coordsToLocation(e[0], e[1], function (e) {
-                                        i.find("span").text(e);
-                                    })),
-                            d.eq(2).prop("disabled", !1),
-                            c.find(".submit").addClass("hasChanges")),
-                        i.prop("disabled", !1);
-                });
-        }),
-        c.find("#wto").on("click", function () {
-            function e() {
-                (t.value = escapeJSON($.extend({}, unescapeJSON(t.value), i))), d.eq(2).prop("disabled", !1), c.find(".submit").addClass("hasChanges");
-            }
-            var t = this,
-                n = unescapeJSON(this.value),
-                i = { pws: n.pws, key: n.key },
-                n = parseInt(c.find("#o31").val());
-            1 === n ? showZimmermanAdjustmentOptions(this, e) : 2 === n ? showAutoRainDelayAdjustmentOptions(this, e) : 3 === n ? showEToAdjustmentOptions(this, e) : 4 === n && showMonthlyAdjustmentOptions(this, e);
-        }),
-        c.find(".reset-log").on("click", clearLogs),
-        c.find(".reset-programs").on("click", clearPrograms),
-        c.find(".reset-options").on("click", function () {
-            resetAllOptions(function () {
-                $.mobile.document.one("pageshow", function () {
-                    showerror(_("Settings have been saved"));
-                }),
-                    goBack();
-            });
-        }),
-        c.find(".reset-stations").on("click", function () {
-            var e,
-                t = "";
-            if (Supported.groups()) for (e = 0; e < controller.stations.snames.length; e++) t += "g" + e + "=0&";
-            if (void 0 !== controller.options.mas) for (e = 0; e < controller.settings.nbrd; e++) t += "m" + e + "=255&";
-            if (void 0 !== controller.options.mas2) for (e = 0; e < controller.settings.nbrd; e++) t += "n" + e + "=0&";
-            if ("object" == typeof controller.stations.ignore_rain) for (e = 0; e < controller.settings.nbrd; e++) t += "i" + e + "=0&";
-            if ("object" == typeof controller.stations.ignore_sn1) for (e = 0; e < controller.settings.nbrd; e++) t += "j" + e + "=0&";
-            if ("object" == typeof controller.stations.ignore_sn2) for (e = 0; e < controller.settings.nbrd; e++) t += "k" + e + "=0&";
-            if ("object" == typeof controller.stations.act_relay) for (e = 0; e < controller.settings.nbrd; e++) t += "a" + e + "=0&";
-            if ("object" == typeof controller.stations.stn_dis) for (e = 0; e < controller.settings.nbrd; e++) t += "d" + e + "=0&";
-            if ("object" == typeof controller.stations.stn_seq) for (e = 0; e < controller.settings.nbrd; e++) t += "q" + e + "=255&";
-            if ("object" == typeof controller.stations.stn_spe) for (e = 0; e < controller.settings.nbrd; e++) t += "p" + e + "=0&";
-            areYouSure(_("Are you sure you want to reset station attributes?"), _("This will reset all station attributes"), function () {
-                $.mobile.loading("show"),
-                    storage.get(["sites", "current_site"], function (e) {
-                        var t = parseSites(e.sites);
-                        (t[e.current_site].notes = {}), (t[e.current_site].images = {}), (t[e.current_site].lastRunTime = {}), storage.set({ sites: JSON.stringify(t) }, cloudSaveSites);
-                    }),
-                    sendToOS("/cs?pw=&" + t).done(function () {
-                        showerror(_("Stations have been updated")), updateController();
+                "</button></div>";
+        }
+        l += "<label for='o3'><input data-mini='true' id='o3' type='checkbox' " + (1 === controller.options.dhcp ? "checked='checked'" : "") + ">" + _("Use DHCP (restart required)") + "</label>";
+    }
+    if (controller.options.ntp !== undefined) {
+        l += "<label for='o2'><input data-mini='true' id='o2' type='checkbox' " + (1 === controller.options.ntp ? "checked='checked'" : "") + ">" + _("NTP Sync") + "</label>";
+    }
+    if (controller.options.ar !== undefined) {
+        l += "<label for='o14'><input data-mini='true' id='o14' type='checkbox' " + (1 === controller.options.ar ? "checked='checked'" : "") + ">" + _("Auto Reconnect") + "</label>";
+    }
+    if (controller.options.ipas !== undefined) {
+        l += "<label for='o25'><input data-mini='true' id='o25' type='checkbox' " + (1 === controller.options.ipas ? "checked='checked'" : "") + ">" + _("Ignore Password") + "</label>";
+    }
+    if (controller.options.sar !== undefined) {
+        l += "<label for='o48'><input data-mini='true' id='o48' type='checkbox' " + (1 === controller.options.sar ? "checked='checked'" : "") + ">" + _("Special Station Auto-Refresh") + "</label>";
+    }
+    l += "</fieldset><fieldset data-role='collapsible' data-theme='b'" + (typeof section === "string" && section === "reset" ? " data-collapsed='false'" : "") + "><legend>" + _("Reset") + "</legend>";
+    l += "<button data-mini='true' class='center-div reset-log'>" + _("Clear Log Data") + "</button>";
+    l += "<button data-mini='true' class='center-div reset-options'>" + _("Reset All Options") + "</button>";
+    l += "<button data-mini='true' class='center-div reset-programs'>" + _("Delete All Programs") + "</button>";
+    l += "<button data-mini='true' class='center-div reset-stations'>" + _("Reset Station Attributes") + "</button>";
+    if (30 <= controller.options.hwv && controller.options.hwv < 40) {
+        l += "<hr class='divider'><button data-mini='true' class='center-div reset-wireless'>" + _("Reset Wireless Settings") + "</button>";
+    }
+    l += "</fieldset>";
+    c.find("#os-options-list")
+        .html(l)
+        .one("change input", ":not(.noselect)", function () {
+            d.eq(2).prop("disabled", false);
+            c.find(".submit").addClass("hasChanges");
+        })
+        .find("fieldset")
+        .each(function () {
+            var e = $(this);
+            if (e.children().length === 1) { e.remove(); }
+        });
+    c.find(".clear-loc").on("click", function (e) {
+        e.stopImmediatePropagation();
+        areYouSure(_("Are you sure you want to clear the current location?"), "", function () {
+            c.find("#loc").val("''").removeClass("green").find("span").text(_("Not specified"));
+            c.find("#o1").selectmenu("enable");
+            d.eq(2).prop("disabled", false);
+            c.find(".submit").addClass("hasChanges");
+        });
+    });
+    c.find("#showDisabled").on("change", function () {
+        storage.set({ showDisabled: this.checked });
+        return false;
+    });
+    c.find("#loc").on("click", function () {
+        var i = $(this);
+        i.prop("disabled", true);
+        overlayMap(function (e, t) {
+            var n;
+            if (e === false) {
+                if ("" === i.val()) {
+                    i.removeClass("green");
+                    c.find("#o1").selectmenu("enable");
+                }
+            } else {
+                if (checkOSVersion(210)) { c.find("#o1").selectmenu("disable"); }
+                if (typeof e === "string") {
+                    i.val(e).find("span").text(e);
+                } else {
+                    e[0] = parseFloat(e[0]).toFixed(5);
+                    e[1] = parseFloat(e[1]).toFixed(5);
+                    if (typeof t === "string") {
+                        validateWULocation(t, function (e) {
+                            e ? i.addClass("green") : i.removeClass("green");
+                        });
+                    }
+                    n = c.find("#wto");
+                    if (n && n.val() !== undefined) {
+                        n.val(escapeJSON($.extend({}, unescapeJSON(n.val()), { pws: t || "" })));
+                    }
+                    i.val(e);
+                    coordsToLocation(e[0], e[1], function (e) {
+                        i.find("span").text(e);
                     });
+                }
+                d.eq(2).prop("disabled", false);
+                c.find(".submit").addClass("hasChanges");
+            }
+            i.prop("disabled", false);
+        });
+    });
+    c.find("#wto").on("click", function () {
+        function e() {
+            t.value = escapeJSON($.extend({}, unescapeJSON(t.value), i));
+            d.eq(2).prop("disabled", false);
+            c.find(".submit").addClass("hasChanges");
+        }
+        var t = this,
+            n = unescapeJSON(this.value),
+            i = { pws: n.pws, key: n.key },
+            n = parseInt(c.find("#o31").val());
+        if (n === 1) { showZimmermanAdjustmentOptions(this, e); }
+        else if (n === 2) { showAutoRainDelayAdjustmentOptions(this, e); }
+        else if (n === 3) { showEToAdjustmentOptions(this, e); }
+        else if (n === 4) { showMonthlyAdjustmentOptions(this, e); }
+    });
+    c.find(".reset-log").on("click", clearLogs);
+    c.find(".reset-programs").on("click", clearPrograms);
+    c.find(".reset-options").on("click", function () {
+        resetAllOptions(function () {
+            $.mobile.document.one("pageshow", function () {
+                showerror(_("Settings have been saved"));
             });
-        }),
-        c.find(".reset-wireless").on("click", function () {
-            areYouSure(_("Are you sure you want to reset the wireless settings?"), _("This will delete the stored SSID/password for your wireless network and return the device to access point mode"), function () {
-                sendToOS("/cv?pw=&ap=1").done(function () {
-                    $.mobile.document.one("pageshow", function () {
-                        showerror(_("Wireless settings have been reset. Please follow the OpenSprinkler user manual on restoring connectivity."));
-                    }),
-                        goBack();
-                });
+            goBack();
+        });
+    });
+    c.find(".reset-stations").on("click", function () {
+        var e,
+            t = "";
+        if (Supported.groups()) { for (e = 0; e < controller.stations.snames.length; e++) { t += "g" + e + "=0&"; } }
+        if (controller.options.mas !== undefined) { for (e = 0; e < controller.settings.nbrd; e++) { t += "m" + e + "=255&"; } }
+        if (controller.options.mas2 !== undefined) { for (e = 0; e < controller.settings.nbrd; e++) { t += "n" + e + "=0&"; } }
+        if (typeof controller.stations.ignore_rain === "object") { for (e = 0; e < controller.settings.nbrd; e++) { t += "i" + e + "=0&"; } }
+        if (typeof controller.stations.ignore_sn1 === "object") { for (e = 0; e < controller.settings.nbrd; e++) { t += "j" + e + "=0&"; } }
+        if (typeof controller.stations.ignore_sn2 === "object") { for (e = 0; e < controller.settings.nbrd; e++) { t += "k" + e + "=0&"; } }
+        if (typeof controller.stations.act_relay === "object") { for (e = 0; e < controller.settings.nbrd; e++) { t += "a" + e + "=0&"; } }
+        if (typeof controller.stations.stn_dis === "object") { for (e = 0; e < controller.settings.nbrd; e++) { t += "d" + e + "=0&"; } }
+        if (typeof controller.stations.stn_seq === "object") { for (e = 0; e < controller.settings.nbrd; e++) { t += "q" + e + "=255&"; } }
+        if (typeof controller.stations.stn_spe === "object") { for (e = 0; e < controller.settings.nbrd; e++) { t += "p" + e + "=0&"; } }
+        areYouSure(_("Are you sure you want to reset station attributes?"), _("This will reset all station attributes"), function () {
+            $.mobile.loading("show");
+            storage.get(["sites", "current_site"], function (e) {
+                var t = parseSites(e.sites);
+                t[e.current_site].notes = {};
+                t[e.current_site].images = {};
+                t[e.current_site].lastRunTime = {};
+                storage.set({ sites: JSON.stringify(t) }, cloudSaveSites);
             });
-        }),
-        c.find("#o3").on("change", function () {
-            var e = $(this).is(":checked"),
-                t = c.find("#ip_addr,#gateway,#dns,#subnet").parents(".ui-field-contain");
-            e ? t.addClass("hidden") : t.removeClass("hidden");
-        }),
-        c.find(".sensor-options input[type='radio']").on("change", function () {
-            var e = this.value,
-                t = parseInt(this.id.match(/o(\d+)/)[1], 10);
-            "2" === e ? c.find("#o41").parents(".ui-field-contain").removeClass("hidden") : (21 !== t && 50 !== t) || c.find("#o41").parents(".ui-field-contain").addClass("hidden"),
-                "1" === e || "3" === e || "240" === e
-                    ? c
-                        .find("#o" + (t + 1))
-                        .parent()
-                        .removeClass("hidden")
-                    : c
-                        .find("#o" + (t + 1))
-                        .parent()
-                        .addClass("hidden"),
-                "240" === $("input[name='o21'][type='radio']:checked").val() || "240" === $("input[name='o50'][type='radio']:checked").val() ? c.find("#prgswitch").removeClass("hidden") : c.find("#prgswitch").addClass("hidden"),
-                "240" === $("input[name='o52'][type='radio']:checked").val() ? c.find("#prgswitch-2").removeClass("hidden") : c.find("#prgswitch-2").addClass("hidden"),
-                "1" === e || "3" === e
-                    ? c
-                        .find("#o" + (t + 4) + ",#o" + (t + 5))
-                        .parent()
-                        .removeClass("hidden")
-                    : c
-                        .find("#o" + (t + 4) + ",#o" + (t + 5))
-                        .parent()
-                        .addClass("hidden");
-        }),
-        c.find("#o21").on("change", function () {
-            c.find("#o22").parent().toggleClass("hidden", $(this).is(":checked"));
-        }),
-        c.find("#verify-api").on("click", function () {
-            var t = c.find("#wtkey"),
-                n = $(this);
-            n.prop("disabled", !0),
-                testAPIKey(t.val(), function (e) {
-                    !0 === e ? (t.parent().find(".ui-icon-alert").hide(), t.parent().removeClass("red").addClass("green")) : (t.parent().find(".ui-icon-alert").removeClass("hidden").show(), t.parent().removeClass("green").addClass("red")),
-                        n.prop("disabled", !1);
+            sendToOS("/cs?pw=&" + t).done(function () {
+                showerror(_("Stations have been updated"));
+                updateController();
+            });
+        });
+    });
+    c.find(".reset-wireless").on("click", function () {
+        areYouSure(_("Are you sure you want to reset the wireless settings?"), _("This will delete the stored SSID/password for your wireless network and return the device to access point mode"), function () {
+            sendToOS("/cv?pw=&ap=1").done(function () {
+                $.mobile.document.one("pageshow", function () {
+                    showerror(_("Wireless settings have been reset. Please follow the OpenSprinkler user manual on restoring connectivity."));
                 });
-        }),
-        c.find(".help-icon").on("click", showHelpText),
-        c.find(".duration-field button:not(.help-icon)").on("click", function () {
-            var e,
-                t = $(this),
-                n = t.attr("id"),
-                i = c.find("label[for='" + n + "']").text(),
-                o = t.parent().find(".help-icon").data("helptext"),
-                a = 240;
-            return (
-                d.eq(2).prop("disabled", !1),
-                c.find(".submit").addClass("hasChanges"),
-                "ip_addr" === n || "gateway" === n || "dns" === n || "ntp_addr" === n || "subnet" === n
-                    ? showIPRequest({
-                        title: i,
-                        ip: t.val().split("."),
-                        callback: function (e) {
-                            t.val(e.join(".")).text(e.join("."));
-                        },
-                    })
-                    : "o19" === n || "o38" === n
-                        ? showSingleDurationInput({
-                            data: t.val(),
-                            title: i,
-                            callback: function (e) {
-                                t.val(e).text(e + "s");
-                            },
-                            label: _("Seconds"),
-                            maximum: checkOSVersion(220) ? 600 : 60,
-                            minimum: checkOSVersion(220) ? -600 : 0,
-                            helptext: o,
-                        })
-                        : "o30" === n
-                            ? showSingleDurationInput({
-                                data: t.val(),
-                                title: i,
-                                callback: function (e) {
-                                    t.val(e).text(e + "ms");
-                                },
-                                label: _("Milliseconds"),
-                                maximum: 2e3,
-                                helptext: o,
-                            })
-                            : "o20" === n || "o39" === n
-                                ? showSingleDurationInput({
-                                    data: t.val(),
-                                    title: i,
-                                    callback: function (e) {
-                                        t.val(e).text(e + "s");
-                                    },
-                                    label: _("Seconds"),
-                                    maximum: checkOSVersion(220) ? 600 : 0,
-                                    minimum: checkOSVersion(220) ? -600 : -60,
-                                    helptext: o,
-                                })
-                                : "o23" === n
-                                    ? showSingleDurationInput({
-                                        data: t.val(),
-                                        title: i,
-                                        callback: function (e) {
-                                            t.val(e).text(e + "%");
-                                        },
-                                        label: _("% Watering"),
-                                        maximum: 250,
-                                        helptext: o,
-                                    })
-                                    : "o17" === n
-                                        ? ((e = 0),
-                                            checkOSVersion(210) && (a = checkOSVersion(214) ? 57600 : 64800),
-                                            checkOSVersion(211) && ((e = -3540), (a = 3540)),
-                                            checkOSVersion(217) && ((e = -600), (a = 600)),
-                                            showSingleDurationInput({
-                                                data: t.val(),
-                                                title: i,
-                                                label: _("Seconds"),
-                                                callback: function (e) {
-                                                    t.val(e), t.text(dhms2str(sec2dhms(e)));
-                                                },
-                                                maximum: a,
-                                                minimum: e,
-                                            }))
-                                        : ("o54" !== n && "o55" !== n && "o56" !== n && "o57" !== n) ||
-                                        showSingleDurationInput({
-                                            data: t.val(),
-                                            title: i,
-                                            callback: function (e) {
-                                                t.val(e).text(e + "m");
-                                            },
-                                            label: _("Minutes"),
-                                            maximum: 240,
-                                            minimum: 0,
-                                            helptext: o,
-                                        }),
-                !1
-            );
-        }),
-        c.find("#o2").on("change", function () {
-            var e = $(this).is(":checked");
-            c.find(".datetime-input button").prop("disabled", e), c.find("#ntp_addr").parents(".ui-field-contain").toggleClass("hidden", !e);
-        }),
-        c.find("#o18,#o37").on("change", function () {
-            c
-                .find("#o19,#o20")
-                .parents(".ui-field-contain")
-                .toggle(0 !== parseInt(c.find("#o18").val())),
-                void 0 !== controller.options.mas2 &&
-                c
-                    .find("#o38,#o39")
-                    .parents(".ui-field-contain")
-                    .toggle(0 !== parseInt(c.find("#o37").val()));
-        }),
-        c.find("#o31").on("change", function () {
-            c.find("#o23").prop("disabled", 0 !== parseInt(this.value)),
-                c
-                    .find("#wto")
-                    .click()
-                    .parents(".ui-field-contain")
-                    .toggleClass("hidden", 0 === parseInt(this.value));
-        }),
-        c.find("#wtkey").on("change input", function () {
-            c.find("#wtkey").siblings(".help-icon").hide(), c.find("#wtkey").parent().removeClass("red green");
-        }),
-        c.find("#o49").on("click", function () {
-            var e = {
-                program: _("Program Start"),
-                sensor1: _("Sensor 1 Update"),
-                flow: _("Flow Sensor Update"),
-                weather: _("Weather Adjustment Update"),
-                reboot: _("Controller Reboot"),
-                run: _("Station Run"),
-                sensor2: _("Sensor 2 Update"),
-                rain: _("Rain Delay Update"),
-            },
-                t = this,
-                n = parseInt(t.value),
-                i = "",
-                o = 0,
-                a = 0,
-                s =
-                    ($.each(e, function (e, t) {
-                        (i += "<label for='ifttt-" + e + "'><input class='needsclick' data-iconpos='right' id='ifttt-" + e + "' type='checkbox' " + (getBitFromByte(n, o) ? "checked='checked'" : "") + ">" + t + "</label>"), o++;
-                    }),
-                        $(
-                            "<div data-role='popup' data-theme='a'><div data-role='controlgroup' data-mini='true' class='tight'><div class='ui-bar ui-bar-a'>" +
-                            _("Select IFTTT Events") +
-                            "</div>" +
-                            i +
-                            "<input data-wrapper-class='attrib-submit' class='submit' data-theme='b' type='submit' value='" +
-                            _("Submit") +
-                            "' /></div></div>"
-                        ));
-            s.find(".submit").on("click", function () {
-                (o = 0),
-                    $.each(e, function (e) {
-                        (a |= s.find("#ifttt-" + e).is(":checked") << o), o++;
-                    }),
-                    s.popup("close"),
-                    n !== a && ((t.value = a), d.eq(2).prop("disabled", !1), c.find(".submit").addClass("hasChanges"));
-            }),
-                openPopup(s);
-        }),
-        c.find("#mqtt").on("click", function () {
-            var t = this,
-                n = t.value,
-                e = $.extend({}, { en: 0, host: "server", port: 1883, user: "", pass: "" }, unescapeJSON(n)),
-                i =
-                    ($(".ui-popup-active").find("[data-role='popup']").popup("close"),
-                        $(
-                            "<div data-role='popup' data-theme='a' id='mqttSettings'><div data-role='header' data-theme='b'><h1>" +
-                            _("MQTT Settings") +
-                            "</h1></div><div class='ui-content'><label for='enable'>" +
-                            _("Enable") +
-                            "</label><input class='needsclick mqtt_enable' data-mini='true' data-iconpos='right' id='enable' type='checkbox' " +
-                            (e.en ? "checked='checked'" : "") +
-                            "><div class='ui-body'><div class='ui-grid-a' style='display:table;'><div class='ui-block-a' style='width:40%'><label for='server' style='padding-top:10px'>" +
-                            _("Broker/Server") +
-                            "</label></div><div class='ui-block-b' style='width:60%'><input class='mqtt-input' type='text' id='server' data-mini='true' maxlength='50' autocomplete='off' autocorrect='off' autocapitalize='off' spellcheck='false'" +
-                            (e.en ? "" : "disabled='disabled'") +
-                            " placeholder='" +
-                            _("broker/server") +
-                            "' value='" +
-                            e.host +
-                            "' required /></div><div class='ui-block-a' style='width:40%'><label for='port' style='padding-top:10px'>" +
-                            _("Port") +
-                            "</label></div><div class='ui-block-b' style='width:60%'><input class='mqtt-input' type='number' id='port' data-mini='true' pattern='[0-9]*' min='0' max='65535'" +
-                            (e.en ? "" : "disabled='disabled'") +
-                            " placeholder='1883' value='" +
-                            e.port +
-                            "' required /></div><div class='ui-block-a' style='width:40%'><label for='username' style='padding-top:10px'>" +
-                            _("Username") +
-                            "</label></div><div class='ui-block-b' style='width:60%'><input class='mqtt-input' type='text' id='username' data-mini='true' maxlength='32' autocomplete='off' autocorrect='off' autocapitalize='off' spellcheck='false'" +
-                            (e.en ? "" : "disabled='disabled'") +
-                            " placeholder='" +
-                            _("username (optional)") +
-                            "' value='" +
-                            e.user +
-                            "' required /></div><div class='ui-block-a' style='width:40%'><label for='password' style='padding-top:10px'>" +
-                            _("Password") +
-                            "</label></div><div class='ui-block-b' style='width:60%'><input class='mqtt-input' type='password' id='password' data-mini='true' maxlength='32' autocomplete='off' autocorrect='off' autocapitalize='off' spellcheck='false'" +
-                            (e.en ? "" : "disabled='disabled'") +
-                            " placeholder='" +
-                            _("password (optional)") +
-                            "' value='" +
-                            e.pass +
-                            "' required /></div></div></div><button class='submit' data-theme='b'>" +
-                            _("Submit") +
-                            "</button></div></div>"
-                        ));
-            i.find("#enable").on("change", function () {
-                this.checked ? i.find(".mqtt-input").textinput("enable") : i.find(".mqtt-input").textinput("disable");
-            }),
-                i.find(".submit").on("click", function () {
-                    var e = { en: i.find("#enable").prop("checked") ? 1 : 0, host: i.find("#server").val(), port: parseInt(i.find("#port").val()), user: i.find("#username").val(), pass: i.find("#password").val() };
-                    i.popup("close"), n !== escapeJSON(e) && ((t.value = escapeJSON(e)), d.eq(2).prop("disabled", !1), c.find(".submit").addClass("hasChanges"));
-                }),
-                i.css("max-width", "380px"),
-                openPopup(i, { positionTo: "window" });
-        }),
-        c.find("#otc").on("click", function () {
-            var t = this,
-                n = t.value,
-                e = $.extend({}, { en: 0, token: "", server: "ws.cloud.openthings.io", port: 80 }, unescapeJSON(n)),
-                i =
-                    ($(".ui-popup-active").find("[data-role='popup']").popup("close"),
-                        $(
-                            "<div data-role='popup' data-theme='a' id='otcSettings'><div data-role='header' data-theme='b'><h1>" +
-                            _("OpenThings Cloud (OTC) Settings") +
-                            "</h1></div><div class='ui-content'><label for='enable'>" +
-                            _("Enable") +
-                            "</label><input class='needsclick otc_enable' data-mini='true' data-iconpos='right' id='enable' type='checkbox' " +
-                            (e.en ? "checked='checked'" : "") +
-                            "><div class='ui-body'><div class='ui-grid-a' style='display:table;'><div class='ui-block-a' style='width:25%'><label for='token' style='padding-top:10px'>" +
-                            _("Token") +
-                            "</label></div><div class='ui-block-b' style='width:75%'><input class='otc-input' type='text' id='token' data-mini='true' maxlength='36' autocomplete='off' autocorrect='off' autocapitalize='off' spellcheck='false'" +
-                            (e.en ? "" : "disabled='disabled'") +
-                            " placeholder='" +
-                            _("token") +
-                            "' value='" +
-                            e.token +
-                            "' required /></div><div class='ui-block-a' style='width:25%'><label for='server' style='padding-top:10px'>" +
-                            _("Server") +
-                            "</label></div><div class='ui-block-b' style='width:75%'><input class='otc-input' type='text' id='server' data-mini='true' maxlength='50' autocomplete='off' autocorrect='off' autocapitalize='off' spellcheck='false'" +
-                            (e.en ? "" : "disabled='disabled'") +
-                            " placeholder='" +
-                            _("server") +
-                            "' value='" +
-                            e.server +
-                            "' required /></div><div class='ui-block-a' style='width:25%'><label for='port' style='padding-top:10px'>" +
-                            _("Port") +
-                            "</label></div><div class='ui-block-b' style='width:75%'><input class='otc-input' type='number' id='port' data-mini='true' pattern='[0-9]*' min='0' max='65535'" +
-                            (e.en ? "" : "disabled='disabled'") +
-                            " placeholder='80' value='" +
-                            e.port +
-                            "' required /></div></div></div><button class='submit' data-theme='b'>" +
-                            _("Submit") +
-                            "</button></div></div>"
-                        ));
-            i.find("#enable").on("change", function () {
-                this.checked ? i.find(".otc-input").textinput("enable") : i.find(".otc-input").textinput("disable");
-            }),
-                i.find(".submit").on("click", function () {
-                    var e;
-                    i.find("#enable").prop("checked") && 32 !== i.find("#token").val().length
-                        ? showerror(_("OpenThings Token must be 32 characters long."))
-                        : ((e = { en: i.find("#enable").prop("checked") ? 1 : 0, token: i.find("#token").val(), server: i.find("#server").val(), port: parseInt(i.find("#port").val()) }),
-                            i.popup("close"),
-                            n !== escapeJSON(e) && ((t.value = escapeJSON(e)), d.eq(2).prop("disabled", !1), c.find(".submit").addClass("hasChanges")));
-                }),
-                i.css("max-width", "380px"),
-                openPopup(i, { positionTo: "window" });
-        }),
-        c.find(".datetime-input").on("click", function () {
-            var t = $(this).find("button");
-            if (!t.prop("disabled"))
-                return (
-                    d.eq(2).prop("disabled", !1),
-                    c.find(".submit").addClass("hasChanges"),
-                    showDateTimeInput(t.val(), function (e) {
-                        t.text(dateToString(e).slice(0, -3)).val(Math.round(e.getTime() / 1e3));
-                    }),
-                    !1
-                );
-        }),
-        c.one("pagehide", function () {
-            c.remove();
-        }),
-        d.eq(2).prop("disabled", !0),
-        $("#os-options").remove(),
-        $.mobile.pageContainer.append(c);
+                goBack();
+            });
+        });
+    });
+    c.find("#o3").on("change", function () {
+        var e = $(this).is(":checked"),
+            t = c.find("#ip_addr,#gateway,#dns,#subnet").parents(".ui-field-contain");
+        e ? t.addClass("hidden") : t.removeClass("hidden");
+    });
+    c.find(".sensor-options input[type='radio']").on("change", function () {
+        var e = this.value,
+            t = parseInt(this.id.match(/o(\d+)/)[1], 10);
+        if ("2" === e) {
+            c.find("#o41").parents(".ui-field-contain").removeClass("hidden");
+        } else if (21 === t || 50 === t) {
+            c.find("#o41").parents(".ui-field-contain").addClass("hidden");
+        }
+        if ("1" === e || "3" === e || "240" === e) {
+            c.find("#o" + (t + 1)).parent().removeClass("hidden");
+        } else {
+            c.find("#o" + (t + 1)).parent().addClass("hidden");
+        }
+        if ("240" === $("input[name='o21'][type='radio']:checked").val() || "240" === $("input[name='o50'][type='radio']:checked").val()) {
+            c.find("#prgswitch").removeClass("hidden");
+        } else {
+            c.find("#prgswitch").addClass("hidden");
+        }
+        if ("240" === $("input[name='o52'][type='radio']:checked").val()) {
+            c.find("#prgswitch-2").removeClass("hidden");
+        } else {
+            c.find("#prgswitch-2").addClass("hidden");
+        }
+        if ("1" === e || "3" === e) {
+            c.find("#o" + (t + 4) + ",#o" + (t + 5)).parent().removeClass("hidden");
+        } else {
+            c.find("#o" + (t + 4) + ",#o" + (t + 5)).parent().addClass("hidden");
+        }
+    });
+    c.find("#o21").on("change", function () {
+        c.find("#o22").parent().toggleClass("hidden", $(this).is(":checked"));
+    });
+    c.find("#verify-api").on("click", function () {
+        var t = c.find("#wtkey"),
+            n = $(this);
+        n.prop("disabled", true);
+        testAPIKey(t.val(), function (e) {
+            if (e === true) {
+                t.parent().find(".ui-icon-alert").hide();
+                t.parent().removeClass("red").addClass("green");
+            } else {
+                t.parent().find(".ui-icon-alert").removeClass("hidden").show();
+                t.parent().removeClass("green").addClass("red");
+            }
+            n.prop("disabled", false);
+        });
+    });
+    c.find(".help-icon").on("click", showHelpText);
+    c.find(".duration-field button:not(.help-icon)").on("click", function () {
+        var e,
+            t = $(this),
+            n = t.attr("id"),
+            i = c.find("label[for='" + n + "']").text(),
+            o = t.parent().find(".help-icon").data("helptext"),
+            a = 240;
+        d.eq(2).prop("disabled", false);
+        c.find(".submit").addClass("hasChanges");
+        if ("ip_addr" === n || "gateway" === n || "dns" === n || "ntp_addr" === n || "subnet" === n) {
+            showIPRequest({
+                title: i,
+                ip: t.val().split("."),
+                callback: function (e) {
+                    t.val(e.join(".")).text(e.join("."));
+                },
+            });
+        } else if ("o19" === n || "o38" === n) {
+            showSingleDurationInput({
+                data: t.val(),
+                title: i,
+                callback: function (e) { t.val(e).text(e + "s"); },
+                label: _("Seconds"),
+                maximum: checkOSVersion(220) ? 600 : 60,
+                minimum: checkOSVersion(220) ? -600 : 0,
+                helptext: o,
+            });
+        } else if ("o30" === n) {
+            showSingleDurationInput({
+                data: t.val(),
+                title: i,
+                callback: function (e) { t.val(e).text(e + "ms"); },
+                label: _("Milliseconds"),
+                maximum: 2e3,
+                helptext: o,
+            });
+        } else if ("o20" === n || "o39" === n) {
+            showSingleDurationInput({
+                data: t.val(),
+                title: i,
+                callback: function (e) { t.val(e).text(e + "s"); },
+                label: _("Seconds"),
+                maximum: checkOSVersion(220) ? 600 : 0,
+                minimum: checkOSVersion(220) ? -600 : -60,
+                helptext: o,
+            });
+        } else if ("o23" === n) {
+            showSingleDurationInput({
+                data: t.val(),
+                title: i,
+                callback: function (e) { t.val(e).text(e + "%"); },
+                label: _("% Watering"),
+                maximum: 250,
+                helptext: o,
+            });
+        } else if ("o17" === n) {
+            e = 0;
+            if (checkOSVersion(210)) { a = checkOSVersion(214) ? 57600 : 64800; }
+            if (checkOSVersion(211)) { e = -3540; a = 3540; }
+            if (checkOSVersion(217)) { e = -600; a = 600; }
+            showSingleDurationInput({
+                data: t.val(),
+                title: i,
+                label: _("Seconds"),
+                callback: function (e) {
+                    t.val(e);
+                    t.text(dhms2str(sec2dhms(e)));
+                },
+                maximum: a,
+                minimum: e,
+            });
+        } else if ("o54" === n || "o55" === n || "o56" === n || "o57" === n) {
+            showSingleDurationInput({
+                data: t.val(),
+                title: i,
+                callback: function (e) { t.val(e).text(e + "m"); },
+                label: _("Minutes"),
+                maximum: 240,
+                minimum: 0,
+                helptext: o,
+            });
+        }
+        return false;
+    });
+    c.find("#o2").on("change", function () {
+        var e = $(this).is(":checked");
+        c.find(".datetime-input button").prop("disabled", e);
+        c.find("#ntp_addr").parents(".ui-field-contain").toggleClass("hidden", !e);
+    });
+    c.find("#o18,#o37").on("change", function () {
+        c.find("#o19,#o20").parents(".ui-field-contain").toggle(0 !== parseInt(c.find("#o18").val()));
+        if (controller.options.mas2 !== undefined) {
+            c.find("#o38,#o39").parents(".ui-field-contain").toggle(0 !== parseInt(c.find("#o37").val()));
+        }
+    });
+    c.find("#o31").on("change", function () {
+        c.find("#o23").prop("disabled", 0 !== parseInt(this.value));
+        c.find("#wto").click().parents(".ui-field-contain").toggleClass("hidden", 0 === parseInt(this.value));
+    });
+    c.find("#wtkey").on("change input", function () {
+        c.find("#wtkey").siblings(".help-icon").hide();
+        c.find("#wtkey").parent().removeClass("red green");
+    });
+    c.find("#o49").on("click", function () {
+        var e = {
+            program: _("Program Start"),
+            sensor1: _("Sensor 1 Update"),
+            flow: _("Flow Sensor Update"),
+            weather: _("Weather Adjustment Update"),
+            reboot: _("Controller Reboot"),
+            run: _("Station Run"),
+            sensor2: _("Sensor 2 Update"),
+            rain: _("Rain Delay Update"),
+        };
+        var t = this;
+        var n = parseInt(t.value);
+        var i = "";
+        var o = 0;
+        var a = 0;
+        $.each(e, function (e, t) {
+            i += "<label for='ifttt-" + e + "'><input class='needsclick' data-iconpos='right' id='ifttt-" + e + "' type='checkbox' " + (getBitFromByte(n, o) ? "checked='checked'" : "") + ">" + t + "</label>";
+            o++;
+        });
+        var s = $(
+            "<div data-role='popup' data-theme='a'><div data-role='controlgroup' data-mini='true' class='tight'><div class='ui-bar ui-bar-a'>" +
+            _("Select IFTTT Events") +
+            "</div>" +
+            i +
+            "<input data-wrapper-class='attrib-submit' class='submit' data-theme='b' type='submit' value='" +
+            _("Submit") +
+            "' /></div></div>"
+        );
+        s.find(".submit").on("click", function () {
+            o = 0;
+            $.each(e, function (e) {
+                a |= s.find("#ifttt-" + e).is(":checked") << o;
+                o++;
+            });
+            s.popup("close");
+            if (n !== a) {
+                t.value = a;
+                d.eq(2).prop("disabled", false);
+                c.find(".submit").addClass("hasChanges");
+            }
+        });
+        openPopup(s);
+    });
+    c.find("#mqtt").on("click", function () {
+        var t = this;
+        var n = t.value;
+        var e = $.extend({}, { en: 0, host: "server", port: 1883, user: "", pass: "" }, unescapeJSON(n));
+        $(".ui-popup-active").find("[data-role='popup']").popup("close");
+        var i = $(
+            "<div data-role='popup' data-theme='a' id='mqttSettings'><div data-role='header' data-theme='b'><h1>" +
+            _("MQTT Settings") +
+            "</h1></div><div class='ui-content'><label for='enable'>" +
+            _("Enable") +
+            "</label><input class='needsclick mqtt_enable' data-mini='true' data-iconpos='right' id='enable' type='checkbox' " +
+            (e.en ? "checked='checked'" : "") +
+            "><div class='ui-body'><div class='ui-grid-a' style='display:table;'><div class='ui-block-a' style='width:40%'><label for='server' style='padding-top:10px'>" +
+            _("Broker/Server") +
+            "</label></div><div class='ui-block-b' style='width:60%'><input class='mqtt-input' type='text' id='server' data-mini='true' maxlength='50' autocomplete='off' autocorrect='off' autocapitalize='off' spellcheck='false'" +
+            (e.en ? "" : "disabled='disabled'") +
+            " placeholder='" +
+            _("broker/server") +
+            "' value='" +
+            e.host +
+            "' required /></div><div class='ui-block-a' style='width:40%'><label for='port' style='padding-top:10px'>" +
+            _("Port") +
+            "</label></div><div class='ui-block-b' style='width:60%'><input class='mqtt-input' type='number' id='port' data-mini='true' pattern='[0-9]*' min='0' max='65535'" +
+            (e.en ? "" : "disabled='disabled'") +
+            " placeholder='1883' value='" +
+            e.port +
+            "' required /></div><div class='ui-block-a' style='width:40%'><label for='username' style='padding-top:10px'>" +
+            _("Username") +
+            "</label></div><div class='ui-block-b' style='width:60%'><input class='mqtt-input' type='text' id='username' data-mini='true' maxlength='32' autocomplete='off' autocorrect='off' autocapitalize='off' spellcheck='false'" +
+            (e.en ? "" : "disabled='disabled'") +
+            " placeholder='" +
+            _("username (optional)") +
+            "' value='" +
+            e.user +
+            "' required /></div><div class='ui-block-a' style='width:40%'><label for='password' style='padding-top:10px'>" +
+            _("Password") +
+            "</label></div><div class='ui-block-b' style='width:60%'><input class='mqtt-input' type='password' id='password' data-mini='true' maxlength='32' autocomplete='off' autocorrect='off' autocapitalize='off' spellcheck='false'" +
+            (e.en ? "" : "disabled='disabled'") +
+            " placeholder='" +
+            _("password (optional)") +
+            "' value='" +
+            e.pass +
+            "' required /></div></div></div><button class='submit' data-theme='b'>" +
+            _("Submit") +
+            "</button></div></div>"
+        );
+        i.find("#enable").on("change", function () {
+            this.checked ? i.find(".mqtt-input").textinput("enable") : i.find(".mqtt-input").textinput("disable");
+        });
+        i.find(".submit").on("click", function () {
+            var e = { en: i.find("#enable").prop("checked") ? 1 : 0, host: i.find("#server").val(), port: parseInt(i.find("#port").val()), user: i.find("#username").val(), pass: i.find("#password").val() };
+            i.popup("close");
+            if (n !== escapeJSON(e)) {
+                t.value = escapeJSON(e);
+                d.eq(2).prop("disabled", false);
+                c.find(".submit").addClass("hasChanges");
+            }
+        });
+        i.css("max-width", "380px");
+        openPopup(i, { positionTo: "window" });
+    });
+    c.find("#otc").on("click", function () {
+        var t = this;
+        var n = t.value;
+        var e = $.extend({}, { en: 0, token: "", server: "ws.cloud.openthings.io", port: 80 }, unescapeJSON(n));
+        $(".ui-popup-active").find("[data-role='popup']").popup("close");
+        var i = $(
+            "<div data-role='popup' data-theme='a' id='otcSettings'><div data-role='header' data-theme='b'><h1>" +
+            _("OpenThings Cloud (OTC) Settings") +
+            "</h1></div><div class='ui-content'><label for='enable'>" +
+            _("Enable") +
+            "</label><input class='needsclick otc_enable' data-mini='true' data-iconpos='right' id='enable' type='checkbox' " +
+            (e.en ? "checked='checked'" : "") +
+            "><div class='ui-body'><div class='ui-grid-a' style='display:table;'><div class='ui-block-a' style='width:25%'><label for='token' style='padding-top:10px'>" +
+            _("Token") +
+            "</label></div><div class='ui-block-b' style='width:75%'><input class='otc-input' type='text' id='token' data-mini='true' maxlength='36' autocomplete='off' autocorrect='off' autocapitalize='off' spellcheck='false'" +
+            (e.en ? "" : "disabled='disabled'") +
+            " placeholder='" +
+            _("token") +
+            "' value='" +
+            e.token +
+            "' required /></div><div class='ui-block-a' style='width:25%'><label for='server' style='padding-top:10px'>" +
+            _("Server") +
+            "</label></div><div class='ui-block-b' style='width:75%'><input class='otc-input' type='text' id='server' data-mini='true' maxlength='50' autocomplete='off' autocorrect='off' autocapitalize='off' spellcheck='false'" +
+            (e.en ? "" : "disabled='disabled'") +
+            " placeholder='" +
+            _("server") +
+            "' value='" +
+            e.server +
+            "' required /></div><div class='ui-block-a' style='width:25%'><label for='port' style='padding-top:10px'>" +
+            _("Port") +
+            "</label></div><div class='ui-block-b' style='width:75%'><input class='otc-input' type='number' id='port' data-mini='true' pattern='[0-9]*' min='0' max='65535'" +
+            (e.en ? "" : "disabled='disabled'") +
+            " placeholder='80' value='" +
+            e.port +
+            "' required /></div></div></div><button class='submit' data-theme='b'>" +
+            _("Submit") +
+            "</button></div></div>"
+        );
+        i.find("#enable").on("change", function () {
+            this.checked ? i.find(".otc-input").textinput("enable") : i.find(".otc-input").textinput("disable");
+        });
+        i.find(".submit").on("click", function () {
+            if (i.find("#enable").prop("checked") && i.find("#token").val().length !== 32) {
+                showerror(_("OpenThings Token must be 32 characters long."));
+            } else {
+                var e = { en: i.find("#enable").prop("checked") ? 1 : 0, token: i.find("#token").val(), server: i.find("#server").val(), port: parseInt(i.find("#port").val()) };
+                i.popup("close");
+                if (n !== escapeJSON(e)) {
+                    t.value = escapeJSON(e);
+                    d.eq(2).prop("disabled", false);
+                    c.find(".submit").addClass("hasChanges");
+                }
+            }
+        });
+        i.css("max-width", "380px");
+        openPopup(i, { positionTo: "window" });
+    });
+    c.find(".datetime-input").on("click", function () {
+        var t = $(this).find("button");
+        if (!t.prop("disabled")) {
+            d.eq(2).prop("disabled", false);
+            c.find(".submit").addClass("hasChanges");
+            showDateTimeInput(t.val(), function (e) {
+                t.text(dateToString(e).slice(0, -3)).val(Math.round(e.getTime() / 1e3));
+            });
+            return false;
+        }
+    });
+    c.one("pagehide", function () {
+        c.remove();
+    });
+    d.eq(2).prop("disabled", true);
+    $("#os-options").remove();
+    $.mobile.pageContainer.append(c);
 }
 var showHomeMenu = (function () {
     var t, n, i, o;
@@ -7915,132 +8255,156 @@ function changeStatus(e, color, n, i) {
 
     var o = $("#footer-running"),
         a = "";
-    (i = i || function () { }),
-        1 < e &&
-        (timers.statusbar = {
+    i = i || function () {};
+    if (e > 1) {
+        timers.statusbar = {
             val: e,
             type: "statusbar",
             update: function () {
                 $("#countdown").text("(" + sec2hms(this.val) + " " + _("remaining") + ")");
             },
-        }),
-        isControllerConnected() && void 0 !== controller.settings.curr && (a += _("Current") + ": " + controller.settings.curr + " mA "),
-        !isControllerConnected() ||
-        (2 !== controller.options.urs && 2 !== controller.options.sn1t) ||
-        void 0 === controller.settings.flcrt ||
-        void 0 === controller.settings.flwrt ||
-        (flowcount = ((flowCountToVolume(controller.settings.flcrt) / (controller.settings.flwrt / 60)).toFixed(2)),
-            flowcount = isMetric ? flowcount : (flowcount * 0.264172).toFixed(2),
-            (a += "<span style='padding-left:5px'>" + _("Flow") + ": " + flowcount + (isMetric ? " L/min" : " G/min") + "</span>")
-        ),
-        (a = "" !== a ? n + "<p class='running-text smaller center'>" + a + "</p>" : n),
-        o.removeClass().addClass(color).html(a).off("click").on("click", i);
+        };
+    }
+    if (isControllerConnected() && controller.settings.curr !== undefined) {
+        a += _("Current") + ": " + controller.settings.curr + " mA ";
+    }
+    if (isControllerConnected() &&
+        (controller.options.urs === 2 || controller.options.sn1t === 2) &&
+        controller.settings.flcrt !== undefined &&
+        controller.settings.flwrt !== undefined) {
+        var flowcount = (flowCountToVolume(controller.settings.flcrt) / (controller.settings.flwrt / 60)).toFixed(2);
+        if (!isMetric) { flowcount = (flowcount * 0.264172).toFixed(2); }
+        a += "<span style='padding-left:5px'>" + _("Flow") + ": " + flowcount + (isMetric ? " L/min" : " G/min") + "</span>";
+    }
+    a = (a !== "") ? n + "<p class='running-text smaller center'>" + a + "</p>" : n;
+    o.removeClass().addClass(color).html(a).off("click").on("click", i);
 }
 function checkStatus() {
     var e, t, n, i, o, a, s;
-    if (isControllerConnected())
-/*        if (1 === controller.options.re)
-            changeStatus(0, "red", "<p class='running-text center pointer'>" + _("Configured as Extender") + "</p>", function () {
-                areYouSure(_("Do you wish to disable extender mode?"), "", function () {
-                    showLoading("#footer-running"),
-                        sendToOS("/cv?pw=&re=0").done(function () {
-                            updateController();
-                        });
+    if (!isControllerConnected()) {
+        changeStatus(0, "transparent", "<p class='running-text smaller'></p>");
+        return;
+    }
+    /* if (controller.options.re === 1) {
+        changeStatus(0, "red", "<p class='running-text center pointer'>" + _("Configured as Extender") + "</p>", function () {
+            areYouSure(_("Do you wish to disable extender mode?"), "", function () {
+                showLoading("#footer-running");
+                sendToOS("/cv?pw=&re=0").done(function () {
+                    updateController();
                 });
             });
-        else */if (controller.settings.en)
-            if (controller.settings.pq)
-                (n = "<p class='running-text center pointer'>" + _("Stations Currently Paused")),
-                    controller.settings.pt && (n += " <span id='countdown' class='nobr'>(" + sec2hms(controller.settings.pt) + " " + _("remaining") + ")</span>"),
-                    changeStatus(controller.settings.pt || 0, "yellow", (n += "</p>"), function () {
-                        areYouSure(_("Do you want to resume station operation?"), "", function () {
-                            showLoading("#footer-running"),
-                                sendToOS("/pq?pw=&dur=0").done(function () {
-                                    setTimeout(refreshStatus, 1e3);
-                                });
-                        });
-                    });
-            else {
-                for (e = {}, a = 0; a < controller.status.length; a++) controller.status[a] && !Station.isMaster(a) && (e[a] = controller.status[a]);
-                if (2 <= Object.keys(e).length) {
-                    for (a in ((t = 0), e)) e.hasOwnProperty(a) && t < (o = Station.getRemainingRuntime(a)) && (t = o);
-                    (s = Object.keys(e)[0]),
-                        (n = "<div><div class='running-icon'></div><div class='running-text pointer'>"),
-                        (n += pidname(Station.getPID(s)) + " " + _("is running on") + " " + Object.keys(e).length + " " + _("stations") + " "),
-                        0 < t && (n += "<span id='countdown' class='nobr'>(" + sec2hms(t) + " " + _("remaining") + ")</span>"),
-                        changeStatus(t, "green", (n += "</div></div>"), goHome);
-                } else {
-                    for (i = !1, a = 0; a < controller.stations.snames.length; a++)
-                        if (controller.settings.ps[a] && Station.getPID(a) && Station.getStatus(a) && !Station.isMaster(a)) {
-                            (i = !0),
-                                (n = "<div><div class='running-icon'></div><div class='running-text pointer'>"),
-                                (n + pidname(Station.getPID(a)) + " " + _("is running on station") + " <span class='nobr'>" + Station.getName(a) + "</span> "),
-                                0 < Station.getRemainingRuntime(a) && (n += "<span id='countdown' class='nobr'>(" + sec2hms(Station.getRemainingRuntime(a)) + " " + _("remaining") + ")</span>"),
-                                (n += "</div></div>");
-                            break;
-                        }
-                    i
-                        ? changeStatus(Station.getRemainingRuntime(a), "green", n, goHome)
-                        : controller.settings.rd
-                            ? changeStatus(0, "red", "<p class='running-text center pointer'>" + _("Rain delay until") + " " + dateToString(new Date(1e3 * controller.settings.rdst)) + "</p>", function () {
-                                areYouSure(_("Do you want to turn off rain delay?"), "", function () {
-                                    showLoading("#footer-running"),
-                                        sendToOS("/cv?pw=&rd=0").done(function () {
-                                            refreshStatus(updateWeather);
-                                        });
-                                });
-                            })
-                            : 1 === controller.options.urs && 1 === controller.settings.rs
-                                ? changeStatus(0, "red", "<p class='running-text center'>" + _("Rain detected") + "</p>")
-                                : 1 === controller.settings.sn1
-                                    ? changeStatus(0, "red", "<p class='running-text center'>Sensor 1 (" + (3 === controller.options.sn1t ? _("Soil") : _("Rain")) + _(") Activated") + "</p>")
-                                    : 1 === controller.settings.sn2
-                                        ? changeStatus(0, "red", "<p class='running-text center'>Sensor 2 (" + (3 === controller.options.sn2t ? _("Soil") : _("Rain")) + _(") Activated") + "</p>")
-                                        : 1 === controller.settings.mm
-                                            ? changeStatus(0, "red", "<p class='running-text center pointer'>" + _("Manual mode enabled") + "</p>", function () {
-                                                areYouSure(_("Do you want to turn off manual mode?"), "", function () {
-                                                    showLoading("#footer-running"),
-                                                        sendToOS("/cv?pw=&mm=0").done(function () {
-                                                            updateController();
-                                                        });
-                                                });
-                                            })
-                                            : changeStatus(
-                                                0,
-                                                "transparent",
-                                                0 !== (s = controller.settings.lrun[2])
-                                                    ? "<p class='running-text smaller center pointer'>" +
-                                                    pidname(controller.settings.lrun[1]) +
-                                                    " " +
-                                                    _("last ran station") +
-                                                    " " +
-                                                    controller.stations.snames[controller.settings.lrun[0]] +
-                                                    " " +
-                                                    _("for") +
-                                                    " " +
-                                                    ((s / 60) >> 0) +
-                                                    "m " +
-                                                    (s % 60) +
-                                                    "s " +
-                                                    _("on") +
-                                                    " " +
-                                                    dateToString(new Date(1e3 * (controller.settings.lrun[3] - s))) +
-                                                    "</p>"
-                                                    : "<p class='running-text smaller center pointer'>" + _("System Idle") + "</p>",
-                                                goHome
-                                            );
-                }
+        });
+        return;
+    } */
+    if (!controller.settings.en) {
+        changeStatus(0, "red", "<p class='running-text center pointer'>" + _(" System Disabled") + "</p>", function () {
+            areYouSure(_("Do you want to re-enable system operation?"), "", function () {
+                showLoading("#footer-running");
+                sendToOS("/cv?pw=&en=1").done(function () {
+                    updateController();
+                });
+            });
+        });
+        return;
+    }
+    if (controller.settings.pq) {
+        n = "<p class='running-text center pointer'>" + _("Stations Currently Paused");
+        if (controller.settings.pt) {
+            n += " <span id='countdown' class='nobr'>(" + sec2hms(controller.settings.pt) + " " + _("remaining") + ")</span>";
+        }
+        n += "</p>";
+        changeStatus(controller.settings.pt || 0, "yellow", n, function () {
+            areYouSure(_("Do you want to resume station operation?"), "", function () {
+                showLoading("#footer-running");
+                sendToOS("/pq?pw=&dur=0").done(function () {
+                    setTimeout(refreshStatus, 1e3);
+                });
+            });
+        });
+        return;
+    }
+    e = {};
+    for (a = 0; a < controller.status.length; a++) {
+        if (controller.status[a] && !Station.isMaster(a)) {
+            e[a] = controller.status[a];
+        }
+    }
+    if (Object.keys(e).length >= 2) {
+        t = 0;
+        for (a in e) {
+            if (e.hasOwnProperty(a)) {
+                o = Station.getRemainingRuntime(a);
+                if (t < o) { t = o; }
             }
-        else
-            changeStatus(0, "red", "<p class='running-text center pointer'>" + _(" System Disabled") + "</p>", function () {
-                areYouSure(_("Do you want to re-enable system operation?"), "", function () {
-                    showLoading("#footer-running"),
-                        sendToOS("/cv?pw=&en=1").done(function () {
-                            updateController();
-                        });
+        }
+        s = Object.keys(e)[0];
+        n = "<div><div class='running-icon'></div><div class='running-text pointer'>";
+        n += pidname(Station.getPID(s)) + " " + _("is running on") + " " + Object.keys(e).length + " " + _("stations") + " ";
+        if (t > 0) {
+            n += "<span id='countdown' class='nobr'>(" + sec2hms(t) + " " + _("remaining") + ")</span>";
+        }
+        n += "</div></div>";
+        changeStatus(t, "green", n, goHome);
+        return;
+    }
+    i = false;
+    for (a = 0; a < controller.stations.snames.length; a++) {
+        if (controller.settings.ps[a] && Station.getPID(a) && Station.getStatus(a) && !Station.isMaster(a)) {
+            i = true;
+            n = "<div><div class='running-icon'></div><div class='running-text pointer'>";
+            (n + pidname(Station.getPID(a)) + " " + _("is running on station") + " <span class='nobr'>" + Station.getName(a) + "</span> ");
+            if (Station.getRemainingRuntime(a) > 0) {
+                n += "<span id='countdown' class='nobr'>(" + sec2hms(Station.getRemainingRuntime(a)) + " " + _("remaining") + ")</span>";
+            }
+            n += "</div></div>";
+            break;
+        }
+    }
+    if (i) {
+        changeStatus(Station.getRemainingRuntime(a), "green", n, goHome);
+    } else if (controller.settings.rd) {
+        changeStatus(0, "red", "<p class='running-text center pointer'>" + _("Rain delay until") + " " + dateToString(new Date(1e3 * controller.settings.rdst)) + "</p>", function () {
+            areYouSure(_("Do you want to turn off rain delay?"), "", function () {
+                showLoading("#footer-running");
+                sendToOS("/cv?pw=&rd=0").done(function () {
+                    refreshStatus(updateWeather);
                 });
             });
-    else changeStatus(0, "transparent", "<p class='running-text smaller'></p>");
+        });
+    } else if (controller.options.urs === 1 && controller.settings.rs === 1) {
+        changeStatus(0, "red", "<p class='running-text center'>" + _("Rain detected") + "</p>");
+    } else if (controller.settings.sn1 === 1) {
+        changeStatus(0, "red", "<p class='running-text center'>Sensor 1 (" + (controller.options.sn1t === 3 ? _("Soil") : _("Rain")) + _(") Activated") + "</p>");
+    } else if (controller.settings.sn2 === 1) {
+        changeStatus(0, "red", "<p class='running-text center'>Sensor 2 (" + (controller.options.sn2t === 3 ? _("Soil") : _("Rain")) + _(") Activated") + "</p>");
+    } else if (controller.settings.mm === 1) {
+        changeStatus(0, "red", "<p class='running-text center pointer'>" + _("Manual mode enabled") + "</p>", function () {
+            areYouSure(_("Do you want to turn off manual mode?"), "", function () {
+                showLoading("#footer-running");
+                sendToOS("/cv?pw=&mm=0").done(function () {
+                    updateController();
+                });
+            });
+        });
+    } else {
+        s = controller.settings.lrun[2];
+        var lrunMsg;
+        if (s !== 0) {
+            lrunMsg = "<p class='running-text smaller center pointer'>" +
+                pidname(controller.settings.lrun[1]) + " " +
+                _("last ran station") + " " +
+                controller.stations.snames[controller.settings.lrun[0]] + " " +
+                _("for") + " " +
+                ((s / 60) >> 0) + "m " +
+                (s % 60) + "s " +
+                _("on") + " " +
+                dateToString(new Date(1e3 * (controller.settings.lrun[3] - s))) +
+                "</p>";
+        } else {
+            lrunMsg = "<p class='running-text smaller center pointer'>" + _("System Idle") + "</p>";
+        }
+        changeStatus(0, "transparent", lrunMsg, goHome);
+    }
 }
 function calculateTotalRunningTime(durations) {
     var stationDelay = controller.options.sdt;
@@ -8069,17 +8433,27 @@ function calculateTotalRunningTime(durations) {
 function updateTimers() {
     var i = new Date().getTime();
     setInterval(function () {
-        if (!isControllerConnected()) return !1;
+        if (!isControllerConnected()) { return false; }
         var e = new Date().getTime(),
             t = e - i;
-        if ((2e3 < t && (checkStatus(), refreshStatus()), (i = e), !$.isEmptyObject(timers)))
-            for (var n in timers)
-                timers.hasOwnProperty(n) &&
-                    (timers[n].val <= 0
-                        ? ("statusbar" === n && (showLoading("#footer-running"), refreshStatus()), "function" == typeof timers[n].done && timers[n].done(), delete timers[n])
-                        : "clock" === n
-                            ? (++timers[n].val, timers[n].update())
-                            : ("statusbar" !== n && "number" != typeof timers[n].station) || (--timers[n].val, timers[n].update()));
+        if (t > 2000) { checkStatus(); refreshStatus(); }
+        i = e;
+        if (!$.isEmptyObject(timers)) {
+            for (var n in timers) {
+                if (!timers.hasOwnProperty(n)) { continue; }
+                if (timers[n].val <= 0) {
+                    if (n === "statusbar") { showLoading("#footer-running"); refreshStatus(); }
+                    if (typeof timers[n].done === "function") { timers[n].done(); }
+                    delete timers[n];
+                } else if (n === "clock") {
+                    ++timers[n].val;
+                    timers[n].update();
+                } else if (n === "statusbar" || typeof timers[n].station === "number") {
+                    --timers[n].val;
+                    timers[n].update();
+                }
+            }
+        }
     }, 1e3);
 }
 function removeStationTimers() {
@@ -8089,27 +8463,28 @@ function removeStationTimers() {
 var getManual = (function () {
     function e() {
         var e, t, n, i;
-        return (
-            controller.settings.mm
-                ? ((n = (e = $(this)).closest("li")),
-                    (n = (t = a.index(n)) + 1),
-                    (i = r.val()),
-                    e.hasClass("yellow") ||
-                    ((o = controller.status[t]
-                        ? checkOSPiVersion("2.1")
-                            ? "/sn?sid=" + n + "&set_to=0&pw="
-                            : "/sn" + n + "=0"
-                        : checkOSPiVersion("2.1")
-                            ? "/sn?sid=" + n + "&set_to=1&set_time=" + i + "&pw="
-                            : "/sn" + n + "=1&t=" + i),
-                        e.removeClass("green").addClass("yellow"),
-                        e.html("<p class='ui-icon ui-icon-loading mini-load'></p>"),
-                        sendToOS(o).always(function () {
-                            setTimeout(s, 1e3, t);
-                        })))
-                : showerror(_("Manual mode is not enabled. Please enable manual mode then try again.")),
-            !1
-        );
+        if (controller.settings.mm) {
+            n = (e = $(this)).closest("li");
+            n = (t = a.index(n)) + 1;
+            i = r.val();
+            if (!e.hasClass("yellow")) {
+                o = controller.status[t]
+                    ? checkOSPiVersion("2.1")
+                        ? "/sn?sid=" + n + "&set_to=0&pw="
+                        : "/sn" + n + "=0"
+                    : checkOSPiVersion("2.1")
+                        ? "/sn?sid=" + n + "&set_to=1&set_time=" + i + "&pw="
+                        : "/sn" + n + "=1&t=" + i;
+                e.removeClass("green").addClass("yellow");
+                e.html("<p class='ui-icon ui-icon-loading mini-load'></p>");
+                sendToOS(o).always(function () {
+                    setTimeout(s, 1e3, t);
+                });
+            }
+        } else {
+            showerror(_("Manual mode is not enabled. Please enable manual mode then try again."));
+        }
+        return false;
     }
     var o,
         t,
@@ -8130,59 +8505,72 @@ var getManual = (function () {
         s = function (t) {
             updateControllerStatus().done(function () {
                 var e = a.eq(t).find("a");
-                controller.options.mas && (controller.status[controller.options.mas - 1] ? a.eq(controller.options.mas - 1).addClass("green") : a.eq(controller.options.mas - 1).removeClass("green")),
-                    e.text(controller.stations.snames[t]),
-                    controller.status[t] ? e.removeClass("yellow").addClass("green") : e.removeClass("green yellow");
+                if (controller.options.mas) {
+                    if (controller.status[controller.options.mas - 1]) {
+                        a.eq(controller.options.mas - 1).addClass("green");
+                    } else {
+                        a.eq(controller.options.mas - 1).removeClass("green");
+                    }
+                }
+                e.text(controller.stations.snames[t]);
+                if (controller.status[t]) {
+                    e.removeClass("yellow").addClass("green");
+                } else {
+                    e.removeClass("green yellow");
+                }
             });
         },
         r = i.find("#auto-off");
-    return (
-        i.on("pagehide", function () {
-            i.detach();
-        }),
-        storage.get("autoOff", function (e) {
-            e.autoOff && (r.val(e.autoOff), r.text(dhms2str(sec2dhms(e.autoOff))));
-        }),
-        r.on("click", function () {
-            var t = $(this),
-                e = i.find("label[for='" + t.attr("id") + "']").text();
-            return (
-                showDurationBox({
-                    seconds: t.val(),
-                    title: e,
-                    callback: function (e) {
-                        t.val(e), t.text(dhms2str(sec2dhms(e))), storage.set({ autoOff: e });
-                    },
-                    maximum: 32768,
-                }),
-                !1
-            );
-        }),
-        i.find("#mmm").on("change", flipSwitched),
-        function () {
-            var n = "<li data-role='list-divider' data-theme='a'>" + _("Sprinkler Stations") + "</li>";
-            i.find("#mmm").prop("checked", !!controller.settings.mm),
-                $.each(controller.stations.snames, function (e, t) {
-                    Station.isMaster(e)
-                        ? (n += "<li data-icon='false' class='center" + (controller.status[e] ? " green" : "") + (Station.isDisabled(e) ? " station-hidden' style='display:none" : "") + "'>" + t + " (" + _("Master") + ")</li>")
-                        : (n += "<li data-icon='false'><a class='mm_station center" + (controller.status[e] ? " green" : "") + (Station.isDisabled(e) ? " station-hidden' style='display:none" : "") + "'>" + t + "</a></li>");
-                }),
-                (t = $("<ul data-role='listview' data-inset='true' id='mm_list'>" + n + "</ul>")),
-                (a = t.children("li").slice(1)),
-                t.find(".mm_station").on("vclick", e),
-                i.find("#manual-station-list").html(t).enhanceWithin(),
-                changeHeader({ title: _("Manual Control"), leftBtn: { icon: "carat-l", text: _("Back"), class: "ui-toolbar-back-btn", on: goBack } }),
-                $("#manual").remove(),
-                $.mobile.pageContainer.append(i);
-        }
-    );
+    i.on("pagehide", function () {
+        i.detach();
+    });
+    storage.get("autoOff", function (e) {
+        if (e.autoOff) { r.val(e.autoOff); r.text(dhms2str(sec2dhms(e.autoOff))); }
+    });
+    r.on("click", function () {
+        var t = $(this),
+            e = i.find("label[for='" + t.attr("id") + "']").text();
+        showDurationBox({
+            seconds: t.val(),
+            title: e,
+            callback: function (e) {
+                t.val(e);
+                t.text(dhms2str(sec2dhms(e)));
+                storage.set({ autoOff: e });
+            },
+            maximum: 32768,
+        });
+        return false;
+    });
+    i.find("#mmm").on("change", flipSwitched);
+    return function () {
+        var n = "<li data-role='list-divider' data-theme='a'>" + _("Sprinkler Stations") + "</li>";
+        i.find("#mmm").prop("checked", !!controller.settings.mm);
+        $.each(controller.stations.snames, function (e, t) {
+            if (Station.isMaster(e)) {
+                n += "<li data-icon='false' class='center" + (controller.status[e] ? " green" : "") + (Station.isDisabled(e) ? " station-hidden' style='display:none" : "") + "'>" + t + " (" + _("Master") + ")</li>";
+            } else {
+                n += "<li data-icon='false'><a class='mm_station center" + (controller.status[e] ? " green" : "") + (Station.isDisabled(e) ? " station-hidden' style='display:none" : "") + "'>" + t + "</a></li>";
+            }
+        });
+        t = $("<ul data-role='listview' data-inset='true' id='mm_list'>" + n + "</ul>");
+        a = t.children("li").slice(1);
+        t.find(".mm_station").on("vclick", e);
+        i.find("#manual-station-list").html(t).enhanceWithin();
+        changeHeader({ title: _("Manual Control"), leftBtn: { icon: "carat-l", text: _("Back"), class: "ui-toolbar-back-btn", on: goBack } });
+        $("#manual").remove();
+        $.mobile.pageContainer.append(i);
+    };
 })(),
     getRunonce = (function () {
         function i(e) {
-            (c.l = e), $("<option value='l' selected='selected'>" + _("Last Used Program") + "</option>").insertAfter(h.find("#rprog").find("option[value='t']")), f(e);
+            c.l = e;
+            $("<option value='l' selected='selected'>" + _("Last Used Program") + "</option>").insertAfter(h.find("#rprog").find("option[value='t']"));
+            f(e);
         }
         function o() {
-            return h.find("[id^='zone-']").val(0).text("0s").removeClass("green"), !1;
+            h.find("[id^='zone-']").val(0).text("0s").removeClass("green");
+            return false;
         }
         var a,
             s,
@@ -8195,136 +8583,130 @@ var getManual = (function () {
             h = $("<div data-role='page' id='runonce'><div class='ui-content' role='main' id='runonce_list'></div></div>"),
             f = function (n) {
                 h.find("[id^='zone-']").each(function (e, t) {
-                    Station.isMaster(e) || ((t = $(t)).val(n[e]).text(getDurationText(n[e])), 0 < n[e] ? t.addClass("green") : t.removeClass("green"));
+                    if (!Station.isMaster(e)) {
+                        t = $(t);
+                        t.val(n[e]).text(getDurationText(n[e]));
+                        if (n[e] > 0) { t.addClass("green"); } else { t.removeClass("green"); }
+                    }
                 });
             };
-        return (
-            h.on("pagehide", function () {
-                h.detach();
-            }),
-            function () {
-                if (((s = "<p class='center'>" + _("Zero value excludes the station from the run-once program.") + "</p>"), (l = []), controller.programs.pd.length))
-                    for (d = 0; d < controller.programs.pd.length; d++) {
-                        u = readProgram(controller.programs.pd[d]);
-                        var e = [];
-                        if (checkOSVersion(210)) e = u.stations;
-                        else {
-                            var t = u.stations.split("");
-                            for (a = 0; a < controller.stations.snames.length; a++) e.push(parseInt(t[a]) ? u.duration : 0);
+        h.on("pagehide", function () {
+            h.detach();
+        });
+        return function () {
+            s = "<p class='center'>" + _("Zero value excludes the station from the run-once program.") + "</p>";
+            l = [];
+            if (controller.programs.pd.length) {
+                for (d = 0; d < controller.programs.pd.length; d++) {
+                    u = readProgram(controller.programs.pd[d]);
+                    var e = [];
+                    if (checkOSVersion(210)) {
+                        e = u.stations;
+                    } else {
+                        var t = u.stations.split("");
+                        for (a = 0; a < controller.stations.snames.length; a++) {
+                            e.push(parseInt(t[a]) ? u.duration : 0);
                         }
-                        l.push(e);
                     }
-                for (
-                    c = l, r = "<select data-mini='true' name='rprog' id='rprog'><option value='t'>" + _("Test All Stations") + "</option><option value='s' selected='selected'>" + _("Quick Programs") + "</option>", a = 0;
-                    a < l.length;
-                    a++
-                )
-                    (p = checkOSVersion(210) ? controller.programs.pd[a][5] : _("Program") + " " + (a + 1)), (r += "<option value='" + a + "'>" + p + "</option>");
-                if (
-                    ((s += (r += "</select>") + "<form>"),
-                        $.each(controller.stations.snames, function (e, t) {
-                            Station.isMaster(e)
-                                ? (s +=
-                                    "<div class='ui-field-contain duration-input" +
-                                    (Station.isDisabled(e) ? " station-hidden' style='display:none" : "") +
-                                    "'><label for='zone-" +
-                                    e +
-                                    "'>" +
-                                    t +
-                                    ":</label><button disabled='true' data-mini='true' name='zone-" +
-                                    e +
-                                    "' id='zone-" +
-                                    e +
-                                    "' value='0'>Master</button></div>")
-                                : (s +=
-                                    "<div class='ui-field-contain duration-input" +
-                                    (Station.isDisabled(e) ? " station-hidden' style='display:none" : "") +
-                                    "'><label for='zone-" +
-                                    e +
-                                    "'>" +
-                                    t +
-                                    ":</label><button data-mini='true' name='zone-" +
-                                    e +
-                                    "' id='zone-" +
-                                    e +
-                                    "' value='0'>0s</button></div>");
-                        }),
-                        (s += "</form><a class='ui-btn ui-corner-all ui-shadow rsubmit' href='#'>" + _("Submit") + "</a><a class='ui-btn ui-btn-b ui-corner-all ui-shadow rreset' href='#'>" + _("Reset") + "</a>"),
-                        h.find(".ui-content").html(s).enhanceWithin(),
-                        "object" == typeof controller.settings.rodur)
-                ) {
-                    var n = 0;
-                    for (a = 0; a < controller.settings.rodur.length; a++) n += controller.settings.rodur[a];
-                    0 !== n && i(controller.settings.rodur);
-                } else
-                    storage.get("runonce", function (e) {
-                        (e = e.runonce) && ((e = JSON.parse(e)), i(e));
-                    });
-                h.find("#rprog").on("change", function () {
-                    var e = $(this).val();
-                    "s" === e
-                        ? o()
-                        : "t" === e
-                            ? f(
-                                Array.apply(null, Array(controller.stations.snames.length)).map(function () {
-                                    return 60;
-                                })
-                            )
-                            : void 0 !== c[e] && f(c[e]);
-                }),
-                    h.on("click", ".rsubmit", submitRunonce).on("click", ".rreset", o),
-                    h.find("[id^='zone-']").on("click", function () {
-                        var t = $(this),
-                            e = h
-                                .find("label[for='" + t.attr("id") + "']")
-                                .text()
-                                .slice(0, -1);
-                        return (
-                            showDurationBox({
-                                seconds: t.val(),
-                                title: e,
-                                callback: function (e) {
-                                    t.val(e), t.text(getDurationText(e)), 0 < e ? t.addClass("green") : t.removeClass("green");
-                                },
-                                maximum: 65535,
-                                showSun: !!checkOSVersion(214),
-                            }),
-                            !1
-                        );
-                    }),
-                    changeHeader({ title: _("Run-Once"), leftBtn: { icon: "carat-l", text: _("Back"), class: "ui-toolbar-back-btn", on: goBack }, rightBtn: { icon: "check", text: _("Submit"), on: submitRunonce } }),
-                    $("#runonce").remove(),
-                    $.mobile.pageContainer.append(h);
+                    l.push(e);
+                }
             }
-        );
+            c = l;
+            r = "<select data-mini='true' name='rprog' id='rprog'><option value='t'>" + _("Test All Stations") + "</option><option value='s' selected='selected'>" + _("Quick Programs") + "</option>";
+            for (a = 0; a < l.length; a++) {
+                p = checkOSVersion(210) ? controller.programs.pd[a][5] : _("Program") + " " + (a + 1);
+                r += "<option value='" + a + "'>" + p + "</option>";
+            }
+            r += "</select>";
+            s += r + "<form>";
+            $.each(controller.stations.snames, function (e, t) {
+                if (Station.isMaster(e)) {
+                    s +=
+                        "<div class='ui-field-contain duration-input" +
+                        (Station.isDisabled(e) ? " station-hidden' style='display:none" : "") +
+                        "'><label for='zone-" + e + "'>" + t +
+                        ":</label><button disabled='true' data-mini='true' name='zone-" + e + "' id='zone-" + e + "' value='0'>Master</button></div>";
+                } else {
+                    s +=
+                        "<div class='ui-field-contain duration-input" +
+                        (Station.isDisabled(e) ? " station-hidden' style='display:none" : "") +
+                        "'><label for='zone-" + e + "'>" + t +
+                        ":</label><button data-mini='true' name='zone-" + e + "' id='zone-" + e + "' value='0'>0s</button></div>";
+                }
+            });
+            s += "</form><a class='ui-btn ui-corner-all ui-shadow rsubmit' href='#'>" + _("Submit") + "</a><a class='ui-btn ui-btn-b ui-corner-all ui-shadow rreset' href='#'>" + _("Reset") + "</a>";
+            h.find(".ui-content").html(s).enhanceWithin();
+            if (typeof controller.settings.rodur === "object") {
+                var n = 0;
+                for (a = 0; a < controller.settings.rodur.length; a++) { n += controller.settings.rodur[a]; }
+                if (n !== 0) { i(controller.settings.rodur); }
+            } else {
+                storage.get("runonce", function (e) {
+                    e = e.runonce;
+                    if (e) { e = JSON.parse(e); i(e); }
+                });
+            }
+            h.find("#rprog").on("change", function () {
+                var e = $(this).val();
+                if (e === "s") {
+                    o();
+                } else if (e === "t") {
+                    f(Array.apply(null, Array(controller.stations.snames.length)).map(function () { return 60; }));
+                } else if (c[e] !== undefined) {
+                    f(c[e]);
+                }
+            });
+            h.on("click", ".rsubmit", submitRunonce).on("click", ".rreset", o);
+            h.find("[id^='zone-']").on("click", function () {
+                var t = $(this),
+                    e = h.find("label[for='" + t.attr("id") + "']").text().slice(0, -1);
+                showDurationBox({
+                    seconds: t.val(),
+                    title: e,
+                    callback: function (e) {
+                        t.val(e);
+                        t.text(getDurationText(e));
+                        if (e > 0) { t.addClass("green"); } else { t.removeClass("green"); }
+                    },
+                    maximum: 65535,
+                    showSun: !!checkOSVersion(214),
+                });
+                return false;
+            });
+            changeHeader({ title: _("Run-Once"), leftBtn: { icon: "carat-l", text: _("Back"), class: "ui-toolbar-back-btn", on: goBack }, rightBtn: { icon: "check", text: _("Submit"), on: submitRunonce } });
+            $("#runonce").remove();
+            $.mobile.pageContainer.append(h);
+        };
     })();
 function submitRunonce(durations) {
-    durations instanceof Array ||
-        ((durations = []),
-            $("#runonce")
-                .find("[id^='zone-']")
-                .each(function () {
-                    durations.push(parseInt(this.value) || 0);
-                }),
-            durations.push(0));
+    if (!(durations instanceof Array)) {
+        durations = [];
+        $("#runonce").find("[id^='zone-']").each(function () {
+            durations.push(parseInt(this.value) || 0);
+        });
+        durations.push(0);
+    }
     function doSubmit() {
-        $.mobile.loading("show"),
-            storage.set({ runonce: JSON.stringify(durations) }),
-            sendToOS("/cr?pw=&t=" + JSON.stringify(durations)).done(function () {
-                $.mobile.loading("hide"),
-                    $.mobile.document.one("pageshow", function () {
-                        showerror(_("Run-once program has been scheduled"));
-                    }),
-                    refreshStatus(),
-                    goBack();
+        $.mobile.loading("show");
+        storage.set({ runonce: JSON.stringify(durations) });
+        sendToOS("/cr?pw=&t=" + JSON.stringify(durations)).done(function () {
+            $.mobile.loading("hide");
+            $.mobile.document.one("pageshow", function () {
+                showerror(_("Run-once program has been scheduled"));
             });
+            refreshStatus();
+            goBack();
+        });
     }
     var activeStation = StationQueue.isActive();
-    -1 !== activeStation
-        ? areYouSure(_("Do you want to stop the currently running program?"), pidname(Station.getPID(activeStation)), function () {
-            $.mobile.loading("show"), stopStations(doSubmit);
-        })
-        : doSubmit();
+    if (activeStation !== -1) {
+        areYouSure(_("Do you want to stop the currently running program?"), pidname(Station.getPID(activeStation)), function () {
+            $.mobile.loading("show");
+            stopStations(doSubmit);
+        });
+    } else {
+        doSubmit();
+    }
 }
 var getPreview = (function () {
     var R,
@@ -8360,15 +8742,17 @@ var getPreview = (function () {
         g = f.find("#timeline-navigation");
     return (
         f.find("#preview_date").on("change", function () {
-            (c = this.value.split("-")), (d = new Date(c[0], c[1] - 1, c[2])), i();
+            c = this.value.split("-");
+            d = new Date(c[0], c[1] - 1, c[2]);
+            i();
         }),
         f.one("pagebeforeshow", function () {
             holdButton(f.find(".preview-plus"), function () {
                 e(1);
-            }),
-                holdButton(f.find(".preview-minus"), function () {
-                    e(-1);
-                });
+            });
+            holdButton(f.find(".preview-minus"), function () {
+                e(-1);
+            });
         }),
         f.on({
             pagehide: function () {
@@ -8614,7 +8998,9 @@ var getPreview = (function () {
             var e = pad(d.getMonth() + 1),
                 t = pad(d.getDate()),
                 n = d.getFullYear();
-            (c = [n, e, t]), f.find("#preview_date").val(c.join("-")), i();
+            c = [n, e, t];
+            f.find("#preview_date").val(c.join("-"));
+            i();
         }),
         (i = function () {
             var n, t, e, i, o;
@@ -8707,13 +9093,18 @@ var getPreview = (function () {
                     : f.find("#timeline").html("<p align='center'>" + _("No stations set to run on this day.") + "</p>");
         }),
         function () {
-            (U = checkOSVersion(210)),
-                (V = checkOSVersion(211)),
-                (q = checkOSVersion(216)),
-                "" === f.find("#preview_date").val() && ((p = new Date(1e3 * controller.settings.devt)), (c = p.toISOString().slice(0, 10).split("-")), (d = new Date(c[0], c[1] - 1, c[2])), f.find("#preview_date").val(c.join("-"))),
-                changeHeader({ title: _("Program Preview"), leftBtn: { icon: "carat-l", text: _("Back"), class: "ui-toolbar-back-btn", on: goBack } }),
-                $("#preview").remove(),
-                $.mobile.pageContainer.append(f);
+            U = checkOSVersion(210);
+            V = checkOSVersion(211);
+            q = checkOSVersion(216);
+            if (f.find("#preview_date").val() === "") {
+                p = new Date(1e3 * controller.settings.devt);
+                c = p.toISOString().slice(0, 10).split("-");
+                d = new Date(c[0], c[1] - 1, c[2]);
+                f.find("#preview_date").val(c.join("-"));
+            }
+            changeHeader({ title: _("Program Preview"), leftBtn: { icon: "carat-l", text: _("Back"), class: "ui-toolbar-back-btn", on: goBack } });
+            $("#preview").remove();
+            $.mobile.pageContainer.append(f);
         }
     );
 })();
@@ -8722,79 +9113,83 @@ function getStationDuration(e, t) {
 }
 var getLogs = (function () {
     function a(e, t, n) {
-        if ("object" != typeof e || e.length < 1 || (e.result && 32 === e.result)) $.mobile.loading("hide"), k();
-        else {
+        if (typeof e !== "object" || e.length < 1 || (e.result && e.result === 32)) {
+            $.mobile.loading("hide");
+            k();
+        } else {
             try {
                 d = JSON.parse(d.replace(/,\s*inf/g, ""));
             } catch (e) {
                 d = [];
             }
-            (b = e), (c = $.isEmptyObject(t) ? [] : t), (d = $.isEmptyObject(n) ? [] : n), i(), exportObj(".export_logs", b), $.mobile.loading("hide");
+            b = e;
+            c = $.isEmptyObject(t) ? [] : t;
+            d = $.isEmptyObject(n) ? [] : n;
+            i();
+            exportObj(".export_logs", b);
+            $.mobile.loading("hide");
         }
     }
     function r() {
-        if (b.length < 1) k();
-        else {
-            g.show(), f.show();
-            var e,
-                t,
-                n,
-                i = h.find("input:radio[name='table-group']:checked").val(),
-                o = y("table", i),
-                a = o[0],
-                o = w(o[1]),
-                s = [],
-                r = o[0],
-                l = o[1],
-                o = o[2],
-                c = "<table><thead><tr><th data-priority='1'>" + _("Runtime") + "</th><th data-priority='2'>" + ("station" === i ? _("Date/Time") : _("Time") + "</th><th>" + _("Station")) + "</th></tr></thead><tbody>",
-                o = S(o) + "<div data-role='collapsible-set' data-inset='true' data-theme='b' data-collapsed-icon='arrow-d' data-expanded-icon='arrow-u'>",
-                d = 0;
-            for (e in a)
-                if (a.hasOwnProperty(e) && 0 !== (t = a[e].length)) {
-                    for (
-                        s[d] =
-                        "<div data-role='collapsible' data-collapsed='true'><h2>" +
-                        (checkOSVersion(210) && "day" === i ? "<a class='ui-btn red ui-btn-corner-all delete-day day-" + e + "'>" + _("delete") + "</a>" : "") +
+        if (b.length < 1) {
+            k();
+        } else {
+            g.show();
+            f.show();
+            var e, t, n;
+            var i = h.find("input:radio[name='table-group']:checked").val();
+            var o = y("table", i);
+            var a = o[0];
+            o = w(o[1]);
+            var s = [];
+            var r = o[0];
+            var l = o[1];
+            o = o[2];
+            var c = "<table><thead><tr><th data-priority='1'>" + _("Runtime") + "</th><th data-priority='2'>" + (i === "station" ? _("Date/Time") : _("Time") + "</th><th>" + _("Station")) + "</th></tr></thead><tbody>";
+            o = S(o) + "<div data-role='collapsible-set' data-inset='true' data-theme='b' data-collapsed-icon='arrow-d' data-expanded-icon='arrow-u'>";
+            var d = 0;
+            for (e in a) {
+                if (a.hasOwnProperty(e) && (t = a[e].length) !== 0) {
+                    s[d] = "<div data-role='collapsible' data-collapsed='true'><h2>" +
+                        (checkOSVersion(210) && i === "day" ? "<a class='ui-btn red ui-btn-corner-all delete-day day-" + e + "'>" + _("delete") + "</a>" : "") +
                         "<div class='ui-btn-up-c ui-btn-corner-all custom-count-pos'>" +
-                        t +
-                        " " +
-                        _(1 === t ? "run" : "runs") +
+                        t + " " + _(t === 1 ? "run" : "runs") +
                         "</div>" +
-                        ("station" === i ? m[e] : dateToString(new Date(1e3 * e * 60 * 60 * 24)).slice(0, -9)) +
-                        "</h2>",
-                        r[e] && (s[d] += "<span style='border:none' class='" + (100 !== r[e] ? (r[e] < 100 ? "green " : "red ") : "") + "ui-body ui-body-a'>" + _("Average") + " " + _("Water Level") + ": " + r[e] + "%</span>"),
-                        l[e] && (s[d] += "<span style='border:none' class='ui-body ui-body-a'>" + _("Total Water Used") + ": " + l[e] + " G</span>"),
-                        s[d] += c,
-                        n = 0;
-                        n < a[e].length;
-                        n++
-                    ) {
+                        (i === "station" ? m[e] : dateToString(new Date(1e3 * e * 60 * 60 * 24)).slice(0, -9)) +
+                        "</h2>";
+                    if (r[e]) { s[d] += "<span style='border:none' class='" + (r[e] !== 100 ? (r[e] < 100 ? "green " : "red ") : "") + "ui-body ui-body-a'>" + _("Average") + " " + _("Water Level") + ": " + r[e] + "%</span>"; }
+                    if (l[e]) { s[d] += "<span style='border:none' class='ui-body ui-body-a'>" + _("Total Water Used") + ": " + l[e] + " G</span>"; }
+                    s[d] += c;
+                    for (n = 0; n < a[e].length; n++) {
                         var u = new Date(a[e][n][0]);
-                        s[d] += "<tr><td>" + a[e][n][1] + "</td><td>" + ("station" === i ? dateToString(u, !1) : pad(u.getHours()) + ":" + pad(u.getMinutes()) + ":" + pad(u.getSeconds()) + "</td><td>" + m[a[e][n][2]]) + "</td></tr>";
+                        s[d] += "<tr><td>" + a[e][n][1] + "</td><td>" + (i === "station" ? dateToString(u, false) : pad(u.getHours()) + ":" + pad(u.getMinutes()) + ":" + pad(u.getSeconds()) + "</td><td>" + m[a[e][n][2]]) + "</td></tr>";
                     }
-                    (s[d] += "</tbody></table></div>"), d++;
+                    s[d] += "</tbody></table></div>";
+                    d++;
                 }
-            "day" === i && s.reverse(),
-                v.collapsible("collapse"),
-                f.html(o + s.join("") + "</div>").enhanceWithin(),
-                f.find(".delete-day").on("click", function () {
-                    var e, t;
-                    return (
-                        $.each(this.className.split(" "), function () {
-                            if (0 === this.indexOf("day-")) return (e = this.split("day-")[1]), !1;
-                        }),
-                        (t = dateToString(new Date(1e3 * e * 60 * 60 * 24)).slice(0, -9)),
-                        areYouSure(_("Are you sure you want to ") + _("delete") + " " + t + "?", "", function () {
-                            $.mobile.loading("show"),
-                                sendToOS("/dl?pw=&day=" + e).done(function () {
-                                    p(), showerror(t + " " + _("deleted"));
-                                });
-                        }),
-                        !1
-                    );
-                }),
-                fixInputClick(f);
+            }
+            if (i === "day") { s.reverse(); }
+            v.collapsible("collapse");
+            f.html(o + s.join("") + "</div>").enhanceWithin();
+            f.find(".delete-day").on("click", function () {
+                var e, t;
+                $.each(this.className.split(" "), function () {
+                    if (this.indexOf("day-") === 0) {
+                        e = this.split("day-")[1];
+                        return false;
+                    }
+                });
+                t = dateToString(new Date(1e3 * e * 60 * 60 * 24)).slice(0, -9);
+                areYouSure(_("Are you sure you want to ") + _("delete") + " " + t + "?", "", function () {
+                    $.mobile.loading("show");
+                    sendToOS("/dl?pw=&day=" + e).done(function () {
+                        p();
+                        showerror(t + " " + _("deleted"));
+                    });
+                });
+                return false;
+            });
+            fixInputClick(f);
         }
     }
     function s() {
@@ -8804,27 +9199,29 @@ var getLogs = (function () {
         return "start=" + u().start.getTime() / 1e3 + "&end=" + (u().end.getTime() / 1e3 + 86340);
     }
     function p() {
-        var e,
-            t,
-            n,
-            i = u().end.getTime() / 1e3,
-            o = u().start.getTime() / 1e3;
-        i < o
-            ? (k(), showerror(_("Start time cannot be greater than end time")))
-            : ((e = 0),
-                $.mobile.loading("show"),
-                3154e4 < i - o &&
-                (showerror(_("The requested time span exceeds the maximum of 1 year and has been adjusted"), 3500),
-                    (i = u().start).setFullYear(i.getFullYear() + 1),
-                    $("#log_end").val(i.getFullYear() + "-" + pad(i.getMonth() + 1) + "-" + pad(i.getDate())),
-                    (e = 500)),
-                (t = $.Deferred().resolve()),
-                (n = $.Deferred().resolve()),
-                checkOSVersion(211) && (t = sendToOS("/jl?pw=&type=wl&" + l(), "json")),
-                checkOSVersion(216) && (n = sendToOS("/jl?pw=&type=fl&" + l())),
-                setTimeout(function () {
-                    $.when(sendToOS("/jl?pw=&" + l(), "json"), t, n).then(a, s);
-                }, e));
+        var i = u().end.getTime() / 1e3;
+        var o = u().start.getTime() / 1e3;
+        if (i < o) {
+            k();
+            showerror(_("Start time cannot be greater than end time"));
+            return;
+        }
+        var e = 0;
+        $.mobile.loading("show");
+        if (i - o > 3154e4) {
+            showerror(_("The requested time span exceeds the maximum of 1 year and has been adjusted"), 3500);
+            i = u().start;
+            i.setFullYear(i.getFullYear() + 1);
+            $("#log_end").val(i.getFullYear() + "-" + pad(i.getMonth() + 1) + "-" + pad(i.getDate()));
+            e = 500;
+        }
+        var t = $.Deferred().resolve();
+        var n = $.Deferred().resolve();
+        if (checkOSVersion(211)) { t = sendToOS("/jl?pw=&type=wl&" + l(), "json"); }
+        if (checkOSVersion(216)) { n = sendToOS("/jl?pw=&type=fl&" + l()); }
+        setTimeout(function () {
+            $.when(sendToOS("/jl?pw=&" + l(), "json"), t, n).then(a, s);
+        }, e);
     }
     var m,
         e,
@@ -8861,173 +9258,172 @@ var getLogs = (function () {
         y = function (u, p) {
             var h = [],
                 f = { totalRuntime: 0, totalCount: 0 };
-            if ("table" === u && "station" === p) for (t = 0; t < m.length; t++) h[t] = [];
-            return (
-                $.each(b, function () {
-                    var e = this[1],
-                        t = parseInt(this[2]),
-                        n = (t < 0 && (t += 65536), new Date(parseInt(1e3 * this[3]) - 1e3 * t)),
-                        i = new Date(n.getUTCFullYear(), n.getUTCMonth(), n.getUTCDate(), n.getUTCHours(), n.getUTCMinutes(), n.getUTCSeconds());
-                    if ("string" == typeof e)
-                        if ("rd" === e) e = m.length - 1;
-                        else if ("s1" === e) e = m.length - 3;
-                        else {
-                            if ("s2" !== e && "rs" !== e) return;
-                            e = m.length - 2;
-                        }
-                    else if ("number" == typeof e) {
-                        if (e > m.length - 2 || Station.isMaster(e)) return;
-                        (f.totalRuntime += t), f.totalCount++;
+            if (u === "table" && p === "station") { for (t = 0; t < m.length; t++) { h[t] = []; } }
+            $.each(b, function () {
+                var e = this[1];
+                var t = parseInt(this[2]);
+                if (t < 0) { t += 65536; }
+                var n = new Date(parseInt(1e3 * this[3]) - 1e3 * t);
+                var i = new Date(n.getUTCFullYear(), n.getUTCMonth(), n.getUTCDate(), n.getUTCHours(), n.getUTCMinutes(), n.getUTCSeconds());
+                if (typeof e === "string") {
+                    if (e === "rd") { e = m.length - 1; }
+                    else if (e === "s1") { e = m.length - 3; }
+                    else {
+                        if (e !== "s2" && e !== "rs") { return; }
+                        e = m.length - 2;
                     }
-                    if ("table" === u)
-                        switch (p) {
-                            case "station":
-                                h[e].push([i, dhms2str(sec2dhms(t))]);
-                                break;
-                            case "day":
-                                var o = Math.floor(n.getTime() / 1e3 / 60 / 60 / 24),
-                                    a = [i, dhms2str(sec2dhms(t)), e];
-                                "object" != typeof h[o] ? (h[o] = [a]) : h[o].push(a);
-                        }
-                    else if ("timeline" === u) {
-                        var s,
-                            r,
-                            l,
-                            c,
-                            d = parseInt(this[0]);
-                        if ("rs" === this[1]) (s = "delayed"), (l = r = _("Rain Sensor")), (c = _("RS"));
-                        else if ("rd" === this[1]) (s = "delayed"), (l = r = _("Rain Delay")), (c = _("RD"));
-                        else if ("s1" === this[1]) (s = "delayed"), (l = r = 3 === controller.options.sn1t ? _("Soil Sensor") : _("Rain Sensor")), (c = _("SEN1"));
-                        else if ("s2" === this[1]) (s = "delayed"), (l = r = 3 === controller.options.sn2t ? _("Soil Sensor") : _("Rain Sensor")), (c = _("SEN2"));
-                        else {
-                            if (0 === d) return;
-                            (s = "program-" + ((d + 3) % 4)), (r = pidname(d)), (l = controller.stations.snames[e]), (c = "S" + (e + 1));
-                        }
-                        h.push({ start: i, end: new Date(i.getTime() + 1e3 * t), className: s, content: r, pid: d - 1, shortname: c, group: l, station: e });
+                } else if (typeof e === "number") {
+                    if (e > m.length - 2 || Station.isMaster(e)) { return; }
+                    f.totalRuntime += t;
+                    f.totalCount++;
+                }
+                if (u === "table") {
+                    switch (p) {
+                        case "station":
+                            h[e].push([i, dhms2str(sec2dhms(t))]);
+                            break;
+                        case "day":
+                            var o = Math.floor(n.getTime() / 1e3 / 60 / 60 / 24);
+                            var a = [i, dhms2str(sec2dhms(t)), e];
+                            if (typeof h[o] !== "object") { h[o] = [a]; } else { h[o].push(a); }
                     }
-                }),
-                "timeline" === u && h.sort(sortByStation),
-                [h, f]
-            );
+                } else if (u === "timeline") {
+                    var s, r, l, c;
+                    var d = parseInt(this[0]);
+                    if (this[1] === "rs") { s = "delayed"; l = r = _("Rain Sensor"); c = _("RS"); }
+                    else if (this[1] === "rd") { s = "delayed"; l = r = _("Rain Delay"); c = _("RD"); }
+                    else if (this[1] === "s1") { s = "delayed"; l = r = controller.options.sn1t === 3 ? _("Soil Sensor") : _("Rain Sensor"); c = _("SEN1"); }
+                    else if (this[1] === "s2") { s = "delayed"; l = r = controller.options.sn2t === 3 ? _("Soil Sensor") : _("Rain Sensor"); c = _("SEN2"); }
+                    else {
+                        if (d === 0) { return; }
+                        s = "program-" + ((d + 3) % 4);
+                        r = pidname(d);
+                        l = controller.stations.snames[e];
+                        c = "S" + (e + 1);
+                    }
+                    h.push({ start: i, end: new Date(i.getTime() + 1e3 * t), className: s, content: r, pid: d - 1, shortname: c, group: l, station: e });
+                }
+            });
+            if (u === "timeline") { h.sort(sortByStation); }
+            return [h, f];
         },
         w = function (n, i) {
-            var e = [],
-                o = [];
-            return (
-                c.length &&
-                ((n.avgWaterLevel = 0),
-                    $.each(c, function () {
-                        (e[Math.floor(this[3] / 60 / 60 / 24)] = this[2]), (n.avgWaterLevel += this[2]);
-                    }),
-                    (n.avgWaterLevel = parseFloat((n.avgWaterLevel / c.length).toFixed(2)))),
-                d.length &&
-                ((n.totalVolume = 0),
-                    $.each(d, function () {
-                        var e,
-                            //                           t = flowCountToVolume(this[0]);
-                            t = flowCountToVolume(this[4]);
-                        "timeline" === i
-                            ? ((e = new Date(parseInt(1e3 * this[3]))),
-                                (e = new Date(e.getUTCFullYear(), e.getUTCMonth(), e.getUTCDate(), e.getUTCHours(), e.getUTCMinutes(), e.getUTCSeconds())),
-                                o.push({ start: new Date(e.getTime() - parseInt(1e3 * this[2])), end: e, className: "", content: t + " G", shortname: _("FS"), group: _("Flow Sensor") }))
-                            : ((e = Math.floor(this[3] / 60 / 60 / 24)), (o[e] = o[e] ? o[e] + t : t)),
-                            (n.totalVolume += t);
-                    })),
-                [e, o, n]
-            );
+            var e = [], o = [];
+            if (c.length) {
+                n.avgWaterLevel = 0;
+                $.each(c, function () {
+                    e[Math.floor(this[3] / 60 / 60 / 24)] = this[2];
+                    n.avgWaterLevel += this[2];
+                });
+                n.avgWaterLevel = parseFloat((n.avgWaterLevel / c.length).toFixed(2));
+            }
+            if (d.length) {
+                n.totalVolume = 0;
+                $.each(d, function () {
+                    var e;
+                    //                           t = flowCountToVolume(this[0]);
+                    var t = flowCountToVolume(this[4]);
+                    if (i === "timeline") {
+                        e = new Date(parseInt(1e3 * this[3]));
+                        e = new Date(e.getUTCFullYear(), e.getUTCMonth(), e.getUTCDate(), e.getUTCHours(), e.getUTCMinutes(), e.getUTCSeconds());
+                        o.push({ start: new Date(e.getTime() - parseInt(1e3 * this[2])), end: e, className: "", content: t + " G", shortname: _("FS"), group: _("Flow Sensor") });
+                    } else {
+                        e = Math.floor(this[3] / 60 / 60 / 24);
+                        o[e] = o[e] ? o[e] + t : t;
+                    }
+                    n.totalVolume += t;
+                });
+            }
+            return [e, o, n];
         },
         i = function () {
-            var e, t, n, i, o, a, s;
-            h.find("#log_table").prop("checked")
-                ? r()
-                : h.find("#log_timeline").prop("checked") &&
-                (b.length < 1
-                    ? k()
-                    : (g.hide(),
-                        f.show(),
-                        v.collapsible("collapse"),
-                        (e = y("timeline")),
-                        (t = w(e[1], "timeline")),
-                        (e = e[0].concat(t[1])),
-                        (t = t[2]),
-                        (n = {
-                            width: "100%",
-                            editable: !1,
-                            axisOnTop: !0,
-                            eventMargin: 10,
-                            eventMarginAxis: 0,
-                            min: u().start,
-                            max: new Date(u().end.getTime() + 8634e4),
-                            selectable: !1,
-                            showMajorLabels: !1,
-                            groupsChangeable: !1,
-                            showNavigation: !1,
-                            groupsOrder: "none",
-                            groupMinHeight: 20,
-                            zoomMin: 6e4,
-                        }),
-                        (i = function () {
-                            s.redraw();
-                        }),
-                        (o = function () {
-                            $.mobile.window.off("resize", i);
-                        }),
-                        (a = []),
-                        f.on("swiperight swipeleft", function (e) {
-                            e.stopImmediatePropagation();
-                        }),
-                        $.each(e, function () {
-                            a[this.group] = this.shortname;
-                        }),
-                        (s = new links.Timeline(f.get(0), n)),
-                        $.mobile.window.on("resize", i),
-                        h.one("pagehide", o),
-                        h.find("input:radio[name='log_type']").one("change", o),
-                        s.draw(e),
-                        f.find(".timeline-groups-text").each(function () {
-                            this.setAttribute("data-shortname", a[this.textContent]);
-                        }),
-                        f.prepend(S(t))));
+            if (h.find("#log_table").prop("checked")) {
+                r();
+            } else if (h.find("#log_timeline").prop("checked")) {
+                if (b.length < 1) {
+                    k();
+                } else {
+                    g.hide();
+                    f.show();
+                    v.collapsible("collapse");
+                    var e = y("timeline");
+                    var t = w(e[1], "timeline");
+                    e = e[0].concat(t[1]);
+                    t = t[2];
+                    var n = {
+                        width: "100%",
+                        editable: false,
+                        axisOnTop: true,
+                        eventMargin: 10,
+                        eventMarginAxis: 0,
+                        min: u().start,
+                        max: new Date(u().end.getTime() + 8634e4),
+                        selectable: false,
+                        showMajorLabels: false,
+                        groupsChangeable: false,
+                        showNavigation: false,
+                        groupsOrder: "none",
+                        groupMinHeight: 20,
+                        zoomMin: 6e4,
+                    };
+                    var s;
+                    var i = function () { s.redraw(); };
+                    var o = function () { $.mobile.window.off("resize", i); };
+                    var a = [];
+                    f.on("swiperight swipeleft", function (e) { e.stopImmediatePropagation(); });
+                    $.each(e, function () { a[this.group] = this.shortname; });
+                    s = new links.Timeline(f.get(0), n);
+                    $.mobile.window.on("resize", i);
+                    h.one("pagehide", o);
+                    h.find("input:radio[name='log_type']").one("change", o);
+                    s.draw(e);
+                    f.find(".timeline-groups-text").each(function () {
+                        this.setAttribute("data-shortname", a[this.textContent]);
+                    });
+                    f.prepend(S(t));
+                }
+            }
         },
         S = function (e) {
-            var t;
-            return 0 === e.totalCount || 0 === e.totalRuntime
-                ? ""
-                : ((t = void 0 !== e.avgWaterLevel),
-                    "<div class='ui-body-a smaller' id='logs_summary'><div><span class='bold'>" +
-                    _("Total Station Events") +
+            if (e.totalCount === 0 || e.totalRuntime === 0) { return ""; }
+            var t = e.avgWaterLevel !== undefined;
+            return "<div class='ui-body-a smaller' id='logs_summary'><div><span class='bold'>" +
+                _("Total Station Events") +
+                "</span>: " +
+                e.totalCount +
+                "</div><div><span class='bold'>" +
+                _("Total Runtime") +
+                "</span>: " +
+                dhms2str(sec2dhms(e.totalRuntime)) +
+                "</div>" +
+                (t
+                    ? "<div><span class='bold'>" +
+                    _("Average") +
+                    " " +
+                    _("Water Level") +
+                    "</span>: <span class='" +
+                    (e.avgWaterLevel !== 100 ? (e.avgWaterLevel < 100 ? "green-text" : "red-text") : "") +
+                    "'>" +
+                    e.avgWaterLevel +
+                    "%</span></div>"
+                    : "") +
+                (e.totalVolume !== undefined && e.totalVolume > 0
+                    ? "<div><span class='bold'>" +
+                    _("Total Water Used") +
                     "</span>: " +
-                    e.totalCount +
-                    "</div><div><span class='bold'>" +
-                    _("Total Runtime") +
-                    "</span>: " +
-                    dhms2str(sec2dhms(e.totalRuntime)) +
-                    "</div>" +
-                    (t
-                        ? "<div><span class='bold'>" +
-                        _("Average") +
-                        " " +
-                        _("Water Level") +
-                        "</span>: <span class='" +
-                        (100 !== e.avgWaterLevel ? (e.avgWaterLevel < 100 ? "green-text" : "red-text") : "") +
-                        "'>" +
-                        e.avgWaterLevel +
-                        "%</span></div>"
-                        : "") +
-                    (void 0 !== e.totalVolume && 0 < e.totalVolume
-                        ? "<div><span class='bold'>" +
-                        _("Total Water Used") +
-                        "</span>: " +
-                        e.totalVolume +
-                        //                            " L" +
-                        " G" +
-                        (t && e.avgWaterLevel < 100 ? " (<span class='green-text'>" + (e.totalVolume - e.totalVolume * (e.avgWaterLevel / 100)).toFixed(0) + " G saved</span>)" : "") +
-                        "</div>"
-                        : "") +
-                    "</div>");
+                    e.totalVolume +
+                    //                            " L" +
+                    " G" +
+                    (t && e.avgWaterLevel < 100 ? " (<span class='green-text'>" + (e.totalVolume - e.totalVolume * (e.avgWaterLevel / 100)).toFixed(0) + " G saved</span>)" : "") +
+                    "</div>"
+                    : "") +
+                "</div>";
         },
         k = function () {
-            (b = []), v.collapsible("expand"), g.hide(), f.show().html(_("No entries found in the selected date range"));
+            b = [];
+            v.collapsible("expand");
+            g.hide();
+            f.show().html(_("No entries found in the selected date range"));
         },
         u = function () {
             var e = o.val().split("-"),
@@ -9037,67 +9433,77 @@ var getLogs = (function () {
         n = window.innerWidth < 640,
         o = h.find("#log_start"),
         T = h.find("#log_end");
-    return (
-        h.find(".clear_logs").on("click", function () {
-            return clearLogs(p), !1;
-        }),
-        isiOS
-            ? o.add(T).on("blur", function () {
-                h.hasClass("ui-page-active") && p();
-            })
-            : o.add(T).change(function () {
-                clearTimeout(e), (e = setTimeout(p, 1e3));
-            }),
-        g.find("input[name='table-group']").change(function () {
-            r();
-        }),
-        h.find("input:radio[name='log_type']").change(i),
-        h.on({
-            pagehide: function () {
-                h.detach();
-            },
-            pageshow: p,
-        }),
-        h.find("#log_timeline").prop("checked", !n),
-        h.find("#log_table").prop("checked", n),
-        function () {
-            var e = checkOSVersion(219) ? [3 === controller.options.sn1t ? _("Soil Sensor") : _("Rain Sensor"), 3 === controller.options.sn2t ? _("Soil Sensor") : _("Rain Sensor"), _("Rain Delay")] : [_("Rain Sensor"), _("Rain Delay")];
-            (m = $.merge($.merge([], controller.stations.snames), e)),
-                h.find(".clear_logs").toggleClass("hidden", !isOSPi() && !checkOSVersion(210)),
-                ("" !== o.val() && "" !== T.val()) || ((e = new Date(1e3 * controller.settings.devt)), o.val(new Date(e.getTime() - 6048e5).toISOString().slice(0, 10)), T.val(e.toISOString().slice(0, 10))),
-                changeHeader({ title: _("Logs"), leftBtn: { icon: "carat-l", text: _("Back"), class: "ui-toolbar-back-btn", on: goBack }, rightBtn: { icon: "refresh", text: _("Refresh"), on: p } }),
-                $("#logs").remove(),
-                $.mobile.pageContainer.append(h);
+    h.find(".clear_logs").on("click", function () {
+        clearLogs(p);
+        return false;
+    });
+    if (isiOS) {
+        o.add(T).on("blur", function () {
+            if (h.hasClass("ui-page-active")) { p(); }
+        });
+    } else {
+        o.add(T).change(function () {
+            clearTimeout(e);
+            e = setTimeout(p, 1e3);
+        });
+    }
+    g.find("input[name='table-group']").change(function () { r(); });
+    h.find("input:radio[name='log_type']").change(i);
+    h.on({ pagehide: function () { h.detach(); }, pageshow: p });
+    h.find("#log_timeline").prop("checked", !n);
+    h.find("#log_table").prop("checked", n);
+    return function () {
+        var e = checkOSVersion(219)
+            ? [controller.options.sn1t === 3 ? _("Soil Sensor") : _("Rain Sensor"), controller.options.sn2t === 3 ? _("Soil Sensor") : _("Rain Sensor"), _("Rain Delay")]
+            : [_("Rain Sensor"), _("Rain Delay")];
+        m = $.merge($.merge([], controller.stations.snames), e);
+        h.find(".clear_logs").toggleClass("hidden", !isOSPi() && !checkOSVersion(210));
+        if (o.val() === "" || T.val() === "") {
+            e = new Date(1e3 * controller.settings.devt);
+            o.val(new Date(e.getTime() - 6048e5).toISOString().slice(0, 10));
+            T.val(e.toISOString().slice(0, 10));
         }
-    );
+        changeHeader({ title: _("Logs"), leftBtn: { icon: "carat-l", text: _("Back"), class: "ui-toolbar-back-btn", on: goBack }, rightBtn: { icon: "refresh", text: _("Refresh"), on: p } });
+        $("#logs").remove();
+        $.mobile.pageContainer.append(h);
+    };
 })();
 function clearLogs(callback) {
     areYouSure(_("Are you sure you want to clear ALL your log data?"), "", function () {
         var endpoint = isOSPi() ? "/cl?pw=" : "/dl?pw=&day=all";
-        $.mobile.loading("show"),
-            sendToOS(endpoint).done(function () {
-                "function" == typeof callback && callback(), showerror(_("Logs have been cleared"));
-            });
+        $.mobile.loading("show");
+        sendToOS(endpoint).done(function () {
+            if (typeof callback === "function") { callback(); }
+            showerror(_("Logs have been cleared"));
+        });
     });
 }
 function clearPrograms(callback) {
     areYouSure(_("Are you sure you want to delete ALL programs?"), "", function () {
-        $.mobile.loading("show"),
-            sendToOS("/dp?pw=&pid=-1").done(function () {
-                "function" == typeof callback && callback(), showerror(_("Programs have been deleted"));
-            });
+        $.mobile.loading("show");
+        sendToOS("/dp?pw=&pid=-1").done(function () {
+            if (typeof callback === "function") { callback(); }
+            showerror(_("Programs have been deleted"));
+        });
     });
 }
 function resetAllOptions(callback) {
     areYouSure(_("Are you sure you want to delete all settings and return to the default settings?"), "", function () {
-        var params = isOSPi()
-            ? "otz=32&ontp=1&onbrd=0&osdt=0&omas=0&omton=0&omtoff=0&orst=1&owl=100&orlp=0&ouwt=0&olg=1&oloc=Boston,MA"
-            : ((params =
-                "o2=1&o3=1&o12=80&o13=0&o15=0&o17=0&o18=0&o19=0&o20=0&o22=1&o23=100&o26=0&o27=110&o28=100&o29=15&o30=320&o31=0&o36=1&o37=0&o38=0&o39=0&o41=100&o42=0&o43=0&o44=8&o45=8&o46=8&o47=8&o48=0&o49=0&o50=0&o51=1&o52=0&o53=1&o54=0&o55=0&o56=0&o57=0&"),
-                checkOSVersion(2199) ? (params += "o32=0&o33=0&o34=0&o35=0&") : (params += "o32=216&o33=239&o34=35&o35=12&"),
-                transformKeysinString((params += "loc=Boston,MA&wto=%22key%22%3A%22%22")));
+        var params;
+        if (isOSPi()) {
+            params = "otz=32&ontp=1&onbrd=0&osdt=0&omas=0&omton=0&omtoff=0&orst=1&owl=100&orlp=0&ouwt=0&olg=1&oloc=Boston,MA";
+        } else {
+            params = "o2=1&o3=1&o12=80&o13=0&o15=0&o17=0&o18=0&o19=0&o20=0&o22=1&o23=100&o26=0&o27=110&o28=100&o29=15&o30=320&o31=0&o36=1&o37=0&o38=0&o39=0&o41=100&o42=0&o43=0&o44=8&o45=8&o46=8&o47=8&o48=0&o49=0&o50=0&o51=1&o52=0&o53=1&o54=0&o55=0&o56=0&o57=0&";
+            if (checkOSVersion(2199)) {
+                params += "o32=0&o33=0&o34=0&o35=0&";
+            } else {
+                params += "o32=216&o33=239&o34=35&o35=12&";
+            }
+            params = transformKeysinString(params + "loc=Boston,MA&wto=%22key%22%3A%22%22");
+        }
         sendToOS("/co?pw=&" + params).done(function () {
-            "function" == typeof callback && callback(), updateController(updateWeather);
+            if (typeof callback === "function") { callback(); }
+            updateController(updateWeather);
         });
     });
 }
@@ -9113,75 +9519,77 @@ var getPrograms = (function () {
             collapsiblebeforecollapse: function (e) {
                 var t = $(this),
                     n = t.find(".hasChanges");
-                n.length &&
-                    (areYouSure(
+                if (n.length) {
+                    areYouSure(
                         _("Do you want to save your changes?"),
                         "",
                         function () {
-                            n.removeClass("hasChanges").click(), t.collapsible("collapse");
+                            n.removeClass("hasChanges").click();
+                            t.collapsible("collapse");
                         },
                         function () {
-                            n.removeClass("hasChanges"), t.collapsible("collapse");
+                            n.removeClass("hasChanges");
+                            t.collapsible("collapse");
                         }
-                    ),
-                        e.preventDefault());
+                    );
+                    e.preventDefault();
+                }
             },
             collapsibleexpand: function () {
                 expandProgram($(this));
             },
-        }),
-            checkOSVersion(210) &&
-            e
-                .find(".move-up")
-                .removeClass("hidden")
-                .on("click", function () {
-                    var e = $(this).parents("fieldset"),
-                        e = parseInt(e.attr("id").split("-")[1]);
-                    return (
-                        $.mobile.loading("show"),
-                        sendToOS("/up?pw=&pid=" + e).done(function () {
-                            updateControllerPrograms(function () {
-                                $.mobile.loading("hide"), n.trigger("programrefresh");
-                            });
-                        }),
-                        !1
-                    );
-                }),
-            e.find(".program-copy").on("click", function () {
-                return changePage("#addprogram", { copyID: parseInt($(this).parents("fieldset").attr("id").split("-")[1]) }), !1;
-            }),
-            n.find("#programs_list").html(e.enhanceWithin());
-    }
-    return (
-        n
-            .on("programrefresh", i)
-            .on("pagehide", function () {
-                n.detach();
-            })
-            .on("pagebeforeshow", function () {
-                updateProgramHeader(),
-                    "number" == typeof (t = "number" != typeof t && 1 === controller.programs.pd.length ? 0 : t) && (n.find("fieldset[data-collapsed='false']").collapsible("collapse"), $("#program-" + t).collapsible("expand"));
-            }),
-        function (e) {
-            (t = e),
-                changeHeader({
-                    title: _("Programs"),
-                    leftBtn: { icon: "carat-l", text: _("Back"), class: "ui-toolbar-back-btn", on: checkChangesBeforeBack },
-                    rightBtn: {
-                        icon: "plus",
-                        text: _("Add"),
-                        on: function () {
-                            checkChanges(function () {
-                                changePage("#addprogram");
-                            });
-                        },
-                    },
-                }),
-                i(),
-                $("#programs").remove(),
-                $.mobile.pageContainer.append(n);
+        });
+        if (checkOSVersion(210)) {
+            e.find(".move-up").removeClass("hidden").on("click", function () {
+                var e = $(this).parents("fieldset"),
+                    e = parseInt(e.attr("id").split("-")[1]);
+                $.mobile.loading("show");
+                sendToOS("/up?pw=&pid=" + e).done(function () {
+                    updateControllerPrograms(function () {
+                        $.mobile.loading("hide");
+                        n.trigger("programrefresh");
+                    });
+                });
+                return false;
+            });
         }
-    );
+        e.find(".program-copy").on("click", function () {
+            changePage("#addprogram", { copyID: parseInt($(this).parents("fieldset").attr("id").split("-")[1]) });
+            return false;
+        });
+        n.find("#programs_list").html(e.enhanceWithin());
+    }
+    n.on("programrefresh", i)
+        .on("pagehide", function () {
+            n.detach();
+        })
+        .on("pagebeforeshow", function () {
+            updateProgramHeader();
+            t = (typeof t !== "number" && controller.programs.pd.length === 1) ? 0 : t;
+            if (typeof t === "number") {
+                n.find("fieldset[data-collapsed='false']").collapsible("collapse");
+                $("#program-" + t).collapsible("expand");
+            }
+        });
+    return function (e) {
+        t = e;
+        changeHeader({
+            title: _("Programs"),
+            leftBtn: { icon: "carat-l", text: _("Back"), class: "ui-toolbar-back-btn", on: checkChangesBeforeBack },
+            rightBtn: {
+                icon: "plus",
+                text: _("Add"),
+                on: function () {
+                    checkChanges(function () {
+                        changePage("#addprogram");
+                    });
+                },
+            },
+        });
+        i();
+        $("#programs").remove();
+        $.mobile.pageContainer.append(n);
+    };
 })();
 function expandProgram($collapsible) {
     var o = parseInt($collapsible.attr("id").split("-")[1]);
@@ -9190,47 +9598,51 @@ function expandProgram($collapsible) {
         .html(makeProgram(o))
         .enhanceWithin()
         .on("change input click", function (e) {
-            ("click" === e.type && "BUTTON" !== e.target.tagName) || ($(this).off("change input click"), $collapsible.find("[id^='submit-']").addClass("hasChanges"));
-        }),
-        $collapsible.find("[id^='submit-']").on("click", function () {
-            return submitProgram(o), !1;
-        }),
-        $collapsible.find("[id^='delete-']").on("click", function () {
-            return deleteProgram(o), !1;
-        }),
-        $collapsible.find("[id^='run-']").on("click", function () {
-            return (
-                areYouSure(_("Are you sure you want to start " + (checkOSVersion(210) ? controller.programs.pd[o][5] : "Program " + o) + " now?"), "", function () {
-                    function t() {
-                        n.push(0), submitRunonce(n);
-                    }
-                    var n = [];
-                    if (checkOSVersion(210)) {
-                        if (((n = controller.programs.pd[o][4]), (controller.programs.pd[o][0] >> 1) & 1))
-                            return (
-                                areYouSure(
-                                    _("Do you wish to apply the current watering level?"),
-                                    "",
-                                    function () {
-                                        for (var e = n.length - 1; 0 <= e; e--) n[e] = parseInt(n[e] * (controller.options.wl / 100));
-                                        t();
-                                    },
-                                    t
-                                ),
-                                !1
-                            );
-                    } else {
-                        var e = parseInt($("#duration-" + o).val()),
-                            i = $("[id^='station_'][id$='-" + o + "']");
-                        $.each(i, function () {
-                            $(this).is(":checked") ? n.push(e) : n.push(0);
-                        });
-                    }
-                    t();
-                }),
-                !1
-            );
+            if (e.type !== "click" || e.target.tagName === "BUTTON") {
+                $(this).off("change input click");
+                $collapsible.find("[id^='submit-']").addClass("hasChanges");
+            }
         });
+    $collapsible.find("[id^='submit-']").on("click", function () {
+        submitProgram(o);
+        return false;
+    });
+    $collapsible.find("[id^='delete-']").on("click", function () {
+        deleteProgram(o);
+        return false;
+    });
+    $collapsible.find("[id^='run-']").on("click", function () {
+        areYouSure(_("Are you sure you want to start " + (checkOSVersion(210) ? controller.programs.pd[o][5] : "Program " + o) + " now?"), "", function () {
+            function t() {
+                n.push(0);
+                submitRunonce(n);
+            }
+            var n = [];
+            if (checkOSVersion(210)) {
+                n = controller.programs.pd[o][4];
+                if ((controller.programs.pd[o][0] >> 1) & 1) {
+                    areYouSure(
+                        _("Do you wish to apply the current watering level?"),
+                        "",
+                        function () {
+                            for (var e = n.length - 1; e >= 0; e--) { n[e] = parseInt(n[e] * (controller.options.wl / 100)); }
+                            t();
+                        },
+                        t
+                    );
+                    return false;
+                }
+            } else {
+                var e = parseInt($("#duration-" + o).val()),
+                    i = $("[id^='station_'][id$='-" + o + "']");
+                $.each(i, function () {
+                    $(this).is(":checked") ? n.push(e) : n.push(0);
+                });
+            }
+            t();
+        });
+        return false;
+    });
 }
 function readProgram(pd) {
     return (checkOSVersion(210) ? readProgram21 : readProgram183)(pd);
@@ -9246,12 +9658,24 @@ function readProgram183(pd) {
         prog = {};
     prog.en = pd[0];
     for (var c = 0; c < controller.programs.nboards; c++) for (var d = pd[7 + c], u = 0; u < 8; u++) stationBits += d & (1 << u) ? "1" : "0";
-    if (((prog.stations = stationBits), (prog.duration = pd[6]), (prog.start = pd[3]), (prog.end = pd[4]), (prog.interval = pd[5]), 128 & daysByte && 1 < intervalByte)) (days = [intervalByte, 127 & daysByte]), (is_interval = !0);
-    else {
-        for (var p = 0; p < 7; p++) days += daysByte & (1 << p) ? "1" : "0";
-        128 & daysByte && 0 === intervalByte && (is_even = !0), 128 & daysByte && 1 === intervalByte && (is_odd = !0);
+    prog.stations = stationBits;
+    prog.duration = pd[6];
+    prog.start = pd[3];
+    prog.end = pd[4];
+    prog.interval = pd[5];
+    if (128 & daysByte && 1 < intervalByte) {
+        days = [intervalByte, 127 & daysByte];
+        is_interval = true;
+    } else {
+        for (var p = 0; p < 7; p++) { days += daysByte & (1 << p) ? "1" : "0"; }
+        if (128 & daysByte && intervalByte === 0) { is_even = true; }
+        if (128 & daysByte && intervalByte === 1) { is_odd = true; }
     }
-    return (prog.days = days), (prog.is_even = is_even), (prog.is_odd = is_odd), (prog.is_interval = is_interval), prog;
+    prog.days = days;
+    prog.is_even = is_even;
+    prog.is_odd = is_odd;
+    prog.is_interval = is_interval;
+    return prog;
 }
 function readProgram21(pd) {
     var daysByte = pd[1],
@@ -9261,67 +9685,99 @@ function readProgram21(pd) {
         multiStart = (pd[0] >> 6) & 1,
         days = "",
         prog = { repeat: 0, interval: 0 };
-    if (
-        ((prog.en = (pd[0] >> 0) & 1),
-            (prog.weather = (pd[0] >> 1) & 1),
-            (prog.is_even = 2 == dayType),
-            (prog.is_odd = 1 == dayType),
-            (prog.is_interval = 3 == startType),
-            (prog.stations = pd[4]),
-            (prog.name = pd[5]),
-            0 == multiStart ? ((prog.start = pd[3][0]), (prog.repeat = pd[3][1]), (prog.interval = pd[3][2])) : 1 == multiStart && (prog.start = pd[3]),
-            3 == startType)
-    )
-        days = [intervalByte, daysByte];
-    else if (0 == startType) for (var l = 0; l < 7; l++) days += daysByte & (1 << l) ? "1" : "0";
-    return (prog.days = days), prog;
-}
-function getStartTime(e, t) {
-    var n = 2047 & e,
-        i = 0,
-        t = getSunTimes(t);
-    if (!(e < 0)) {
-        if ((e >> 13) & 1) i = 1;
-        else if (1 & !(e >> 14)) return e;
-        (e >> 12) & 1 && (n = -n), (e = t[i]), (e += n) < 0 ? (e = 0) : 1440 < e && (e = 1440);
+    prog.en = (pd[0] >> 0) & 1;
+    prog.weather = (pd[0] >> 1) & 1;
+    prog.is_even = dayType === 2;
+    prog.is_odd = dayType === 1;
+    prog.is_interval = startType === 3;
+    prog.stations = pd[4];
+    prog.name = pd[5];
+    if (multiStart === 0) {
+        prog.start = pd[3][0];
+        prog.repeat = pd[3][1];
+        prog.interval = pd[3][2];
+    } else if (multiStart === 1) {
+        prog.start = pd[3];
     }
-    return e;
+    if (startType === 3) {
+        days = [intervalByte, daysByte];
+    } else if (startType === 0) {
+        for (var l = 0; l < 7; l++) { days += daysByte & (1 << l) ? "1" : "0"; }
+    }
+    prog.days = days;
+    return prog;
+}
+function getStartTime(encoded, date) {
+    var offsetMinutes = 2047 & encoded;
+    var sunIndex = 0;  // 0 = sunrise, 1 = sunset
+    var sunTimes = getSunTimes(date);
+    if (encoded < 0) {
+        return encoded;
+    }
+    if ((encoded >> 13) & 1) {
+        sunIndex = 1;  // sunset
+    } else if (1 & !(encoded >> 14)) {
+        return encoded;  // bit 14 clear: absolute time, return as-is
+    }
+    if ((encoded >> 12) & 1) {
+        offsetMinutes = -offsetMinutes;  // bit 12: offset is before the sun event
+    }
+    var result = sunTimes[sunIndex] + offsetMinutes;
+    if (result < 0) { result = 0; } else if (result > 1440) { result = 1440; }
+    return result;
 }
 function readStartTime(encoded) {
     var offset = 2047 & encoded,
         label = _("Sunrise");
     if ((encoded >> 13) & 1) label = _("Sunset");
     else if (1 & !(encoded >> 14)) return minutesToTime(encoded);
-    return label + (0 !== (offset = (encoded >> 12) & 1 ? -offset : offset) ? (0 < offset ? "+" : "") + dhms2str(sec2dhms(60 * offset)) : "");
+    offset = (encoded >> 12) & 1 ? -offset : offset;
+    var suffix = offset !== 0 ? (offset > 0 ? "+" : "") + dhms2str(sec2dhms(60 * offset)) : "";
+    return label + suffix;
 }
 function pidname(pid) {
     var name = _("Program") + " " + pid;
-    return 255 === pid || 99 === pid ? (name = _("Manual program")) : 254 === pid || 98 === pid ? (name = _("Run-once program")) : checkOSVersion(210) && pid <= controller.programs.pd.length && (name = controller.programs.pd[pid - 1][5]), name;
+    if (pid === 255 || pid === 99) {
+        name = _("Manual program");
+    } else if (pid === 254 || pid === 98) {
+        name = _("Run-once program");
+    } else if (checkOSVersion(210) && pid <= controller.programs.pd.length) {
+        name = controller.programs.pd[pid - 1][5];
+    }
+    return name;
 }
 function updateProgramHeader() {
     $("#programs_list")
         .find("[id^=program-]")
         .each(function (e, t) {
             t = $(t).find(".ui-collapsible-heading-toggle");
-            (checkOSVersion(210) ? 1 & controller.programs.pd[e][0] : controller.programs.pd[e][0]) ? t.removeClass("red") : t.addClass("red");
+            var enabled = checkOSVersion(210) ? 1 & controller.programs.pd[e][0] : controller.programs.pd[e][0];
+            if (enabled) { t.removeClass("red"); } else { t.addClass("red"); }
         });
 }
 function makeAllPrograms() {
-    if (0 === controller.programs.pd.length) return "<p class='center'>" + _("You have no programs currently added. Tap the Add button on the top right corner to get started.") + "</p>";
-    for (var e, t = "<p class='center'>" + _("Click any program below to expand/edit. Be sure to save changes.") + "</p><div data-role='collapsible-set'>", n = 0; n < controller.programs.pd.length; n++)
-        (e = _("Program") + " " + (n + 1)),
-            checkOSVersion(210) && (e = controller.programs.pd[n][5]),
-            (t =
-                t +
-                ("<fieldset id='program-" +
-                    n +
-                    "' data-role='collapsible'><h3><a " +
-                    (0 < n ? "" : "style='visibility:hidden' ") +
-                    "class='hidden ui-btn ui-btn-icon-notext ui-icon-arrow-u ui-btn-corner-all move-up'></a><a class='ui-btn ui-btn-corner-all program-copy'>" +
-                    _("copy")) +
-                "</a><span class='program-name'>" +
-                e +
-                "</span></h3></fieldset>");
+    if (0 === controller.programs.pd.length) {
+        return "<p class='center'>"
+            + _("You have no programs currently added. Tap the Add button on the top right corner to get started.")
+            + "</p>";
+    }
+    var e, t;
+    t = "<p class='center'>"
+        + _("Click any program below to expand/edit. Be sure to save changes.")
+        + "</p><div data-role='collapsible-set'>";
+    for (var n = 0; n < controller.programs.pd.length; n++) {
+        e = _("Program") + " " + (n + 1);
+        if (checkOSVersion(210)) { e = controller.programs.pd[n][5]; }
+        t += "<fieldset id='program-" + n
+            + "' data-role='collapsible'><h3><a "
+            + (n > 0 ? "" : "style='visibility:hidden' ")
+            + "class='hidden ui-btn ui-btn-icon-notext "
+            + "ui-icon-arrow-u ui-btn-corner-all move-up'>"
+            + "</a><a class='ui-btn ui-btn-corner-all program-copy'>"
+            + _("copy")
+            + "</a><span class='program-name'>" + e
+            + "</span></h3></fieldset>";
+    }
     return t + "</div>";
 }
 function makeProgram(e, t) {
@@ -9337,771 +9793,503 @@ function makeProgram183(e, t) {
         l = "",
         c = t ? "new" : e,
         d = "new" === e ? { en: 0, weather: 0, is_interval: 0, is_even: 0, is_odd: 0, duration: 0, interval: 0, start: 0, end: 0, days: [0, 0] } : readProgram(controller.programs.pd[e]);
-    if ("string" == typeof d.days) for (i = (n = d.days.split("")).length; i--;) n[i] = 0 | n[i];
-    else n = [0, 0, 0, 0, 0, 0, 0];
-    if (void 0 !== d.stations) for (i = (a = d.stations.split("")).length - 1; 0 <= i; i--) a[i] = 0 | a[i];
-    for (
-        l =
-        (l =
-            (l =
-                (l =
-                    (l =
-                        (l =
-                            (l =
-                                (l =
-                                    (l =
-                                        l +
-                                        ("<label for='en-" + c + "'><input data-mini='true' type='checkbox' " + (d.en || "new" === e ? "checked='checked'" : "") + " name='en-" + c + "' id='en-" + c + "'>" + _("Enabled") + "</label>") +
-                                        "<fieldset data-role='controlgroup' data-type='horizontal' class='center'>") +
-                                    ("<input data-mini='true' type='radio' name='rad_days-" +
-                                        c +
-                                        "' id='days_week-" +
-                                        c +
-                                        "' value='days_week-" +
-                                        c +
-                                        "' " +
-                                        (d.is_interval ? "" : "checked='checked'") +
-                                        "><label for='days_week-" +
-                                        c +
-                                        "'>" +
-                                        _("Weekly") +
-                                        "</label>")) +
-                                ("<input data-mini='true' type='radio' name='rad_days-" +
-                                    c +
-                                    "' id='days_n-" +
-                                    c +
-                                    "' value='days_n-" +
-                                    c +
-                                    "' " +
-                                    (d.is_interval ? "checked='checked'" : "") +
-                                    "><label for='days_n-" +
-                                    c +
-                                    "'>" +
-                                    _("Interval") +
-                                    "</label>")) +
-                            ("</fieldset><div id='input_days_week-" + c + "' " + (d.is_interval ? "style='display:none'" : "") + ">")) +
-                        ("<div class='center'><p class='tight'>" + _("Restrictions") + "</p><select data-inline='true' data-iconpos='left' data-mini='true' id='days_rst-" + c + "'>")) +
-                    ("<option value='none' " + (d.is_even || d.is_odd ? "" : "selected='selected'") + ">" + _("None") + "</option>")) +
-                ("<option value='odd' " + (!d.is_even && d.is_odd ? "selected='selected'" : "") + ">" + _("Odd Days Only") + "</option>")) +
-            ("<option value='even' " + (!d.is_odd && d.is_even ? "selected='selected'" : "") + ">" + _("Even Days Only") + "</option>") +
-            "</select></div>") +
-        ("<div class='center'><p class='tight'>" +
-            _("Days of the Week") +
-            "</p><select " +
-            (560 < $.mobile.window.width() ? "data-inline='true' " : "") +
-            "data-iconpos='left' data-mini='true' multiple='multiple' data-native-menu='false' id='d-" +
-            c +
-            "'><option>" +
-            _("Choose day(s)") +
-            "</option>"),
-        o = 0;
-        o < r.length;
-        o++
-    )
+    if (typeof d.days === "string") {
+        n = d.days.split("");
+        for (i = n.length; i--;) { n[i] = 0 | n[i]; }
+    } else {
+        n = [0, 0, 0, 0, 0, 0, 0];
+    }
+    if (d.stations !== undefined) {
+        a = d.stations.split("");
+        for (i = a.length - 1; i >= 0; i--) { a[i] = 0 | a[i]; }
+    }
+    l += "<label for='en-" + c + "'><input data-mini='true' type='checkbox' " + (d.en || e === "new" ? "checked='checked'" : "") + " name='en-" + c + "' id='en-" + c + "'>" + _("Enabled") + "</label>";
+    l += "<fieldset data-role='controlgroup' data-type='horizontal' class='center'>";
+    l += "<input data-mini='true' type='radio' name='rad_days-" + c + "' id='days_week-" + c + "' value='days_week-" + c + "' " + (d.is_interval ? "" : "checked='checked'") + "><label for='days_week-" + c + "'>" + _("Weekly") + "</label>";
+    l += "<input data-mini='true' type='radio' name='rad_days-" + c + "' id='days_n-" + c + "' value='days_n-" + c + "' " + (d.is_interval ? "checked='checked'" : "") + "><label for='days_n-" + c + "'>" + _("Interval") + "</label>";
+    l += "</fieldset><div id='input_days_week-" + c + "' " + (d.is_interval ? "style='display:none'" : "") + ">";
+    l += "<div class='center'><p class='tight'>" + _("Restrictions") + "</p><select data-inline='true' data-iconpos='left' data-mini='true' id='days_rst-" + c + "'>";
+    l += "<option value='none' " + (d.is_even || d.is_odd ? "" : "selected='selected'") + ">" + _("None") + "</option>";
+    l += "<option value='odd' " + (!d.is_even && d.is_odd ? "selected='selected'" : "") + ">" + _("Odd Days Only") + "</option>";
+    l += "<option value='even' " + (!d.is_odd && d.is_even ? "selected='selected'" : "") + ">" + _("Even Days Only") + "</option>";
+    l += "</select></div>";
+    l += "<div class='center'><p class='tight'>" + _("Days of the Week") + "</p><select " + ($.mobile.window.width() > 560 ? "data-inline='true' " : "") + "data-iconpos='left' data-mini='true' multiple='multiple' data-native-menu='false' id='d-" + c + "'><option>" + _("Choose day(s)") + "</option>";
+    for (o = 0; o < r.length; o++) {
         l += "<option " + (!d.is_interval && n[o] ? "selected='selected'" : "") + " value='" + o + "'>" + r[o] + "</option>";
-    for (
-        l =
-        (l =
-            (l =
-                (l = l + "</select></div></div>" + ("<div " + (d.is_interval ? "" : "style='display:none'") + " id='input_days_n-" + c + "' class='ui-grid-a'>")) +
-                ("<div class='ui-block-a'><label class='center' for='every-" +
-                    c +
-                    "'>" +
-                    _("Interval (Days)") +
-                    "</label><input data-wrapper-class='pad_buttons' data-mini='true' type='number' name='every-" +
-                    c +
-                    "' pattern='[0-9]*' id='every-" +
-                    c +
-                    "' value='" +
-                    d.days[0] +
-                    "'></div>")) +
-            ("<div class='ui-block-b'><label class='center' for='starting-" +
-                c +
-                "'>" +
-                _("Starting In") +
-                "</label><input data-wrapper-class='pad_buttons' data-mini='true' type='number' name='starting-" +
-                c +
-                "' pattern='[0-9]*' id='starting-" +
-                c +
-                "' value='" +
-                d.days[1] +
-                "'></div>") +
-            "</div>") +
-        ("<fieldset data-role='controlgroup'><legend>" + _("Stations:") + "</legend>"),
-        o = 0;
-        o < controller.stations.snames.length;
-        o++
-    )
-        l +=
-            "<label for='station_" +
-            o +
-            "-" +
-            c +
-            "'><input " +
+    }
+    l += "</select></div></div>";
+    l += "<div " + (d.is_interval ? "" : "style='display:none'") + " id='input_days_n-" + c + "' class='ui-grid-a'>";
+    l += "<div class='ui-block-a'><label class='center' for='every-" + c + "'>" + _("Interval (Days)") + "</label><input data-wrapper-class='pad_buttons' data-mini='true' type='number' name='every-" + c + "' pattern='[0-9]*' id='every-" + c + "' value='" + d.days[0] + "'></div>";
+    l += "<div class='ui-block-b'><label class='center' for='starting-" + c + "'>" + _("Starting In") + "</label><input data-wrapper-class='pad_buttons' data-mini='true' type='number' name='starting-" + c + "' pattern='[0-9]*' id='starting-" + c + "' value='" + d.days[1] + "'></div>";
+    l += "</div>";
+    l += "<fieldset data-role='controlgroup'><legend>" + _("Stations:") + "</legend>";
+    for (o = 0; o < controller.stations.snames.length; o++) {
+        l += "<label for='station_" + o + "-" + c + "'><input " +
             (Station.isDisabled(o) ? "data-wrapper-class='station-hidden hidden' " : "") +
             "data-mini='true' type='checkbox' " +
-            (void 0 !== a && a[o] ? "checked='checked'" : "") +
-            " name='station_" +
-            o +
-            "-" +
-            c +
-            "' id='station_" +
-            o +
-            "-" +
-            c +
-            "'>" +
-            controller.stations.snames[o] +
-            "</label>";
-    return (
-        (l =
-            (l =
-                (l =
-                    (l =
-                        (l =
-                            (l =
-                                (l =
-                                    (l =
-                                        (l = l + "</fieldset>" + "<fieldset data-role='controlgroup' data-type='horizontal' class='center'>") +
-                                        ("<button class='ui-btn ui-mini' name='s_checkall-" + c + "' id='s_checkall-" + c + "'>" + _("Check All") + "</button>")) +
-                                    ("<button class='ui-btn ui-mini' name='s_uncheckall-" + c + "' id='s_uncheckall-" + c + "'>" + _("Uncheck All") + "</button>")) +
-                                "</fieldset>" +
-                                "<div class='ui-grid-a'>") +
-                            ("<div class='ui-block-a'><label class='center' for='start-" +
-                                c +
-                                "'>" +
-                                _("Start Time") +
-                                "</label><button class='timefield pad_buttons' data-mini='true' id='start-" +
-                                c +
-                                "' value='" +
-                                d.start +
-                                "'>" +
-                                minutesToTime(d.start) +
-                                "</button></div>")) +
-                        ("<div class='ui-block-b'><label class='center' for='end-" +
-                            c +
-                            "'>" +
-                            _("End Time") +
-                            "</label><button class='timefield pad_buttons' data-mini='true' id='end-" +
-                            c +
-                            "' value='" +
-                            d.end +
-                            "'>" +
-                            minutesToTime(d.end) +
-                            "</button></div>")) +
-                    "</div>" +
-                    "<div class='ui-grid-a'>") +
-                ("<div class='ui-block-a'><label class='pad_buttons center' for='duration-" +
-                    c +
-                    "'>" +
-                    _("Station Duration") +
-                    "</label><button class='pad_buttons' data-mini='true' name='duration-" +
-                    c +
-                    "' id='duration-" +
-                    c +
-                    "' value='" +
-                    d.duration +
-                    "'>" +
-                    dhms2str(sec2dhms(d.duration)) +
-                    "</button></div>")) +
-            ("<div class='ui-block-b'><label class='pad_buttons center' for='interval-" +
-                c +
-                "'>" +
-                _("Program Interval") +
-                "</label><button class='pad_buttons' data-mini='true' name='interval-" +
-                c +
-                "' id='interval-" +
-                c +
-                "' value='" +
-                60 * d.interval +
-                "'>" +
-                dhms2str(sec2dhms(60 * d.interval)) +
-                "</button></div>") +
-            "</div>"),
-        !0 === t || "new" === e
-            ? (l += "<input data-mini='true' data-icon='check' type='submit' data-theme='b' name='submit-" + c + "' id='submit-" + c + "' value='" + _("Save New Program") + "'>")
-            : (l =
-                (l =
-                    (l += "<button data-mini='true' data-icon='check' data-theme='b' name='submit-" + c + "' id='submit-" + c + "'>" + _("Save Changes to Program") + " " + (e + 1) + "</button>") +
-                    "<button data-mini='true' data-icon='arrow-r' name='run-" +
-                    c +
-                    "' id='run-" +
-                    c +
-                    "'>" +
-                    _("Run Program") +
-                    " " +
-                    (e + 1) +
-                    "</button>") +
-                "<button data-mini='true' data-icon='delete' class='red bold' data-theme='b' name='delete-" +
-                c +
-                "' id='delete-" +
-                c +
-                "'>" +
-                _("Delete Program") +
-                " " +
-                (e + 1) +
-                "</button>"),
-        (s = $(l)).find("input[name^='rad_days']").on("change", function () {
-            var e = $(this).val().split("-")[0],
-                t = "n" === (e = e.split("_")[1]) ? "week" : "n";
-            $("#input_days_" + e + "-" + c).show(), $("#input_days_" + t + "-" + c).hide();
-        }),
-        s.find("[id^='duration-'],[id^='interval-']").on("click", function () {
-            var t = $(this),
-                e = t.attr("id").match("interval") ? 1 : 0,
-                n = s.find("label[for='" + t.attr("id") + "']").text();
-            showDurationBox({
-                seconds: t.val(),
-                title: n,
-                callback: function (e) {
-                    t.val(e), t.text(dhms2str(sec2dhms(e)));
-                },
-                maximum: e ? 86340 : 65535,
-                granularity: e,
-            });
-        }),
-        s.find(".timefield").on("click", function () {
-            var t = $(this),
-                e = s.find("label[for='" + t.attr("id") + "']").text();
-            showTimeInput({
-                minutes: t.val(),
-                title: e,
-                callback: function (e) {
-                    t.val(e), t.text(minutesToTime(e));
-                },
-            });
-        }),
-        s.find("[id^='s_checkall-']").on("click", function () {
-            return (
-                s
-                    .find("[id^='station_'][id$='-" + c + "']")
-                    .prop("checked", !0)
-                    .checkboxradio("refresh"),
-                !1
-            );
-        }),
-        s.find("[id^='s_uncheckall-']").on("click", function () {
-            return (
-                s
-                    .find("[id^='station_'][id$='-" + c + "']")
-                    .prop("checked", !1)
-                    .checkboxradio("refresh"),
-                !1
-            );
-        }),
-        fixInputClick(s),
-        s
-    );
+            (a !== undefined && a[o] ? "checked='checked'" : "") +
+            " name='station_" + o + "-" + c + "' id='station_" + o + "-" + c + "'>" +
+            controller.stations.snames[o] + "</label>";
+    }
+    l += "</fieldset>";
+    l += "<fieldset data-role='controlgroup' data-type='horizontal' class='center'>";
+    l += "<button class='ui-btn ui-mini' name='s_checkall-" + c + "' id='s_checkall-" + c + "'>" + _("Check All") + "</button>";
+    l += "<button class='ui-btn ui-mini' name='s_uncheckall-" + c + "' id='s_uncheckall-" + c + "'>" + _("Uncheck All") + "</button>";
+    l += "</fieldset>";
+    l += "<div class='ui-grid-a'>";
+    l += "<div class='ui-block-a'><label class='center' for='start-" + c + "'>" + _("Start Time") + "</label><button class='timefield pad_buttons' data-mini='true' id='start-" + c + "' value='" + d.start + "'>" + minutesToTime(d.start) + "</button></div>";
+    l += "<div class='ui-block-b'><label class='center' for='end-" + c + "'>" + _("End Time") + "</label><button class='timefield pad_buttons' data-mini='true' id='end-" + c + "' value='" + d.end + "'>" + minutesToTime(d.end) + "</button></div>";
+    l += "</div>";
+    l += "<div class='ui-grid-a'>";
+    l += "<div class='ui-block-a'><label class='pad_buttons center' for='duration-" + c + "'>" + _("Station Duration") + "</label><button class='pad_buttons' data-mini='true' name='duration-" + c + "' id='duration-" + c + "' value='" + d.duration + "'>" + dhms2str(sec2dhms(d.duration)) + "</button></div>";
+    l += "<div class='ui-block-b'><label class='pad_buttons center' for='interval-" + c + "'>" + _("Program Interval") + "</label><button class='pad_buttons' data-mini='true' name='interval-" + c + "' id='interval-" + c + "' value='" + 60 * d.interval + "'>" + dhms2str(sec2dhms(60 * d.interval)) + "</button></div>";
+    l += "</div>";
+    if (t === true || e === "new") {
+        l += "<input data-mini='true' data-icon='check' type='submit' data-theme='b' name='submit-" + c + "' id='submit-" + c + "' value='" + _("Save New Program") + "'>";
+    } else {
+        l += "<button data-mini='true' data-icon='check' data-theme='b' name='submit-" + c + "' id='submit-" + c + "'>" + _("Save Changes to Program") + " " + (e + 1) + "</button>";
+        l += "<button data-mini='true' data-icon='arrow-r' name='run-" + c + "' id='run-" + c + "'>" + _("Run Program") + " " + (e + 1) + "</button>";
+        l += "<button data-mini='true' data-icon='delete' class='red bold' data-theme='b' name='delete-" + c + "' id='delete-" + c + "'>" + _("Delete Program") + " " + (e + 1) + "</button>";
+    }
+    s = $(l);
+    s.find("input[name^='rad_days']").on("change", function () {
+        var e = $(this).val().split("-")[0];
+        e = e.split("_")[1];
+        var t = e === "n" ? "week" : "n";
+        $("#input_days_" + e + "-" + c).show();
+        $("#input_days_" + t + "-" + c).hide();
+    });
+    s.find("[id^='duration-'],[id^='interval-']").on("click", function () {
+        var t = $(this);
+        var e = t.attr("id").match("interval") ? 1 : 0;
+        var n = s.find("label[for='" + t.attr("id") + "']").text();
+        showDurationBox({
+            seconds: t.val(),
+            title: n,
+            callback: function (e) { t.val(e); t.text(dhms2str(sec2dhms(e))); },
+            maximum: e ? 86340 : 65535,
+            granularity: e,
+        });
+    });
+    s.find(".timefield").on("click", function () {
+        var t = $(this);
+        var e = s.find("label[for='" + t.attr("id") + "']").text();
+        showTimeInput({
+            minutes: t.val(),
+            title: e,
+            callback: function (e) { t.val(e); t.text(minutesToTime(e)); },
+        });
+    });
+    s.find("[id^='s_checkall-']").on("click", function () {
+        s.find("[id^='station_'][id$='-" + c + "']").prop("checked", true).checkboxradio("refresh");
+        return false;
+    });
+    s.find("[id^='s_uncheckall-']").on("click", function () {
+        s.find("[id^='station_'][id$='-" + c + "']").prop("checked", false).checkboxradio("refresh");
+        return false;
+    });
+    fixInputClick(s);
+    return s;
 }
-function makeProgram21(e, t) {
-    var n,
-        i,
-        o,
-        a,
-        s,
-        r,
-        l,
-        c,
-        d = [_("Monday"), _("Tuesday"), _("Wednesday"), _("Thursday"), _("Friday"), _("Saturday"), _("Sunday")],
-        u = "",
-        p = t ? "new" : e,
-        h = "new" === e ? { name: "", en: 0, weather: 0, is_interval: 0, is_even: 0, is_odd: 0, interval: 0, start: 0, days: [0, 0], repeat: 0, stations: [] } : readProgram(controller.programs.pd[e]);
-    if ("string" == typeof h.days) for (i = (n = h.days.split("")).length; i--;) n[i] = 0 | n[i];
-    else n = [0, 0, 0, 0, 0, 0, 0];
-    for (
-        a = "object" == typeof h.start ? h.start : [h.start, -1, -1, -1],
-        u =
-        (u =
-            (u =
-                (u = (u += "<div style='margin-top:5px' class='ui-corner-all'>") + ("<div class='ui-bar ui-bar-a'><h3>" + _("Basic Settings") + "</h3></div>") + "<div class='ui-body ui-body-a center'>") +
-                ("<label for='name-" +
-                    p +
-                    "'>" +
-                    _("Program Name") +
-                    "</label><input data-mini='true' type='text' name='name-" +
-                    p +
-                    "' id='name-" +
-                    p +
-                    "' maxlength='" +
-                    controller.programs.pnsize +
-                    "' placeholder='" +
-                    _("Program") +
-                    " " +
-                    (controller.programs.pd.length + 1) +
-                    "' value=\"" +
-                    h.name +
-                    '">')) +
-            ("<label for='en-" + p + "'><input data-mini='true' type='checkbox' " + (h.en || "new" === e ? "checked='checked'" : "") + " name='en-" + p + "' id='en-" + p + "'>" + _("Enabled") + "</label>")) +
-        ("<label for='uwt-" + p + "'><input data-mini='true' type='checkbox' " + (h.weather ? "checked='checked'" : "") + " name='uwt-" + p + "' id='uwt-" + p + "'>" + _("Use Weather Adjustment") + "</label>"),
-        Supported.dateRange() &&
-        ((l = Program.getDateRangeStart(p)),
-            (c = Program.getDateRangeEnd(p)),
-            (u =
-                (u =
-                    (u +=
-                        "<label for='use-dr-" +
-                        p +
-                        "'><input data-mini='true' type='checkbox' " +
-                        (Program.isDateRangeEnabled(p) ? "checked='checked'" : "") +
-                        " name='use-dr-" +
-                        p +
-                        "' id='use-dr-" +
-                        p +
-                        "'>" +
-                        _("Enable Date Range") +
-                        "</label>") +
-                    "<div id='date-range-options-" +
-                    p +
-                    "'" +
-                    (Program.isDateRangeEnabled(p) ? "" : "style='display:none'") +
-                    ">") +
-                "<div class='ui-grid-a' style=''><div class='ui-block-a drfrom'><label class='center' for='from-dr-" +
-                p +
-                "'>" +
-                _("From (mm/dd)") +
-                "</label><div class='dr-input'><input type='text' placeholder='MM/DD' id='from-dr-" +
-                p +
-                "' value=" +
-                decodeDate(l) +
-                "></input></div></div><div class='ui-block-b drto'><label class='center' for='to-dr-" +
-                p +
-                "'>" +
-                _("To (mm/dd)") +
-                "</label><div class='dr-input'><input type='text' placeholder='MM/DD' id='to-dr-" +
-                p +
-                "' value=" +
-                decodeDate(c) +
-                "></input></div></div></div></div>")),
-        u =
-        (u =
-            (u =
-                (u =
-                    (u =
-                        (u =
-                            (u =
-                                (u +=
-                                    "<label class='center' for='start_1-" +
-                                    p +
-                                    "'>" +
-                                    _("Start Time") +
-                                    "</label><button class='timefield' data-mini='true' id='start_1-" +
-                                    p +
-                                    "' value='" +
-                                    a[0] +
-                                    "'>" +
-                                    readStartTime(a[0]) +
-                                    "</button>") +
-                                "</div></div></div></div>" +
-                                "<div style='margin-top:10px' class='ui-corner-all'>") +
-                            ("<div class='ui-bar ui-bar-a'><h3>" + _("Program Type") + "</h3></div>")) +
-                        "<div class='ui-body ui-body-a'>" +
-                        "<fieldset data-role='controlgroup' data-type='horizontal' class='center'>") +
-                    ("<input data-mini='true' type='radio' name='rad_days-" +
-                        p +
-                        "' id='days_week-" +
-                        p +
-                        "' value='days_week-" +
-                        p +
-                        "' " +
-                        (h.is_interval ? "" : "checked='checked'") +
-                        "><label for='days_week-" +
-                        p +
-                        "'>" +
-                        _("Weekly") +
-                        "</label>")) +
-                ("<input data-mini='true' type='radio' name='rad_days-" +
-                    p +
-                    "' id='days_n-" +
-                    p +
-                    "' value='days_n-" +
-                    p +
-                    "' " +
-                    (h.is_interval ? "checked='checked'" : "") +
-                    "><label for='days_n-" +
-                    p +
-                    "'>" +
-                    _("Interval") +
-                    "</label>")) +
-            "</fieldset>" +
-            ("<div id='input_days_week-" + p + "' " + (h.is_interval ? "style='display:none'" : "") + ">")) +
-        ("<div class='center'><p class='tight'>" +
-            _("Days of the Week") +
-            "</p><select " +
-            (560 < $.mobile.window.width() ? "data-inline='true' " : "") +
-            "data-iconpos='left' data-mini='true' multiple='multiple' data-native-menu='false' id='d-" +
-            p +
-            "'><option>" +
-            _("Choose day(s)") +
-            "</option>"),
-        m = 0;
-        m < d.length;
-        m++
-    )
-        u += "<option " + (!h.is_interval && n[m] ? "selected='selected'" : "") + " value='" + m + "'>" + d[m] + "</option>";
-    u =
-        (u =
-            (u =
-                (u =
-                    (u =
-                        (u =
-                            (u =
-                                (u = u + "</select></div></div><div " + (h.is_interval ? "" : "style='display:none'") + " id='input_days_n-" + p + "' class='ui-grid-a'>") +
-                                "<div class='ui-block-a'><label class='center' for='every-" +
-                                p +
-                                "'>" +
-                                _("Interval (Days)") +
-                                "</label><input data-wrapper-class='pad_buttons' data-mini='true' type='number' name='every-" +
-                                p +
-                                "' pattern='[0-9]*' id='every-" +
-                                p +
-                                "' value='" +
-                                h.days[0] +
-                                "'></div>") +
-                            "<div class='ui-block-b'><label class='center' for='starting-" +
-                            p +
-                            "'>" +
-                            _("Starting In") +
-                            "</label><input data-wrapper-class='pad_buttons' data-mini='true' type='number' name='starting-" +
-                            p +
-                            "' pattern='[0-9]*' id='starting-" +
-                            p +
-                            "' value='" +
-                            h.days[1] +
-                            "'></div></div>") +
-                        "<div class='center'><p class='tight'>" +
-                        _("Restrictions") +
-                        "</p><select data-inline='true' data-iconpos='left' data-mini='true' id='days_rst-" +
-                        p +
-                        "'>") +
-                    "<option value='none' " +
-                    (h.is_even || h.is_odd ? "" : "selected='selected'") +
-                    ">" +
-                    _("None") +
-                    "</option>") +
-                "<option value='odd' " +
-                (!h.is_even && h.is_odd ? "selected='selected'" : "") +
-                ">" +
-                _("Odd Days Only") +
-                "</option>") +
-            "<option value='even' " +
-            (!h.is_odd && h.is_even ? "selected='selected'" : "") +
-            ">" +
-            _("Even Days Only") +
-            "</option></select></div></div></div><div style='margin-top:10px' class='ui-corner-all'>") +
-        "<div class='ui-bar ui-bar-a'><h3>" +
-        _("Stations") +
-        "</h3></div><div class='ui-body ui-body-a'>";
-    for (var f = $("#programs").hasClass("show-hidden") ? "" : "' style='display:none", m = 0; m < controller.stations.snames.length; m++)
-        Station.isMaster(m)
-            ? (u +=
-                "<div class='ui-field-contain duration-input" +
-                (Station.isDisabled(m) ? " station-hidden" + f : "") +
-                "'><label for='station_" +
-                m +
-                "-" +
-                p +
-                "'>" +
-                controller.stations.snames[m] +
-                ":</label><button disabled='true' data-mini='true' name='station_" +
-                m +
-                "-" +
-                p +
-                "' id='station_" +
-                m +
-                "-" +
-                p +
-                "' value='0'>" +
-                _("Master") +
-                "</button></div>")
-            : ((s = h.stations[m] || 0),
-                (u +=
-                    "<div class='ui-field-contain duration-input" +
-                    (Station.isDisabled(m) ? " station-hidden" + f : "") +
-                    "'><label for='station_" +
-                    m +
-                    "-" +
-                    p +
-                    "'>" +
-                    controller.stations.snames[m] +
-                    ":</label><button " +
-                    (0 < s ? "class='green' " : "") +
-                    "data-mini='true' name='station_" +
-                    m +
-                    "-" +
-                    p +
-                    "' id='station_" +
-                    m +
-                    "-" +
-                    p +
-                    "' value='" +
-                    s +
-                    "'>" +
-                    getDurationText(s) +
-                    "</button></div>"));
-    for (
-        u =
-        (u =
-            (u =
-                (u =
-                    (u =
-                        (u =
-                            (u =
-                                (u = (u = u + "</div></div>" + "<div style='margin-top:10px' class='ui-corner-all'>") + ("<div class='ui-bar ui-bar-a'><h3>" + _("Additional Start Times") + "</h3></div>")) +
-                                "<div class='ui-body ui-body-a'>" +
-                                "<fieldset data-role='controlgroup' data-type='horizontal' class='center'>") +
-                            ("<input data-mini='true' type='radio' name='stype-" +
-                                p +
-                                "' id='stype_repeat-" +
-                                p +
-                                "' value='stype_repeat-" +
-                                p +
-                                "' " +
-                                ("object" == typeof h.start ? "" : "checked='checked'") +
-                                "><label for='stype_repeat-" +
-                                p +
-                                "'>" +
-                                _("Repeating") +
-                                "</label>")) +
-                        ("<input data-mini='true' type='radio' name='stype-" +
-                            p +
-                            "' id='stype_set-" +
-                            p +
-                            "' value='stype_set-" +
-                            p +
-                            "' " +
-                            ("object" == typeof h.start ? "checked='checked'" : "") +
-                            "><label for='stype_set-" +
-                            p +
-                            "'>" +
-                            _("Fixed") +
-                            "</label>") +
-                        "</fieldset>") +
-                    ("<div " + ("object" == typeof h.start ? "style='display:none'" : "") + " id='input_stype_repeat-" + p + "'>") +
-                    "<div class='ui-grid-a'>") +
-                ("<div class='ui-block-a'><label class='pad_buttons center' for='interval-" +
-                    p +
-                    "'>" +
-                    _("Repeat Every") +
-                    "</label><button class='pad_buttons' data-mini='true' name='interval-" +
-                    p +
-                    "' id='interval-" +
-                    p +
-                    "' value='" +
-                    60 * h.interval +
-                    "'>" +
-                    dhms2str(sec2dhms(60 * h.interval)) +
-                    "</button></div>")) +
-            ("<div class='ui-block-b'><label class='pad_buttons center' for='repeat-" +
-                p +
-                "'>" +
-                _("Repeat Count") +
-                "</label><button class='pad_buttons' data-mini='true' name='repeat-" +
-                p +
-                "' id='repeat-" +
-                p +
-                "' value='" +
-                h.repeat +
-                "'>" +
-                h.repeat +
-                "</button></div>") +
-            "</div></div>") +
-        ("<table style='width:100%;" + ("object" == typeof h.start ? "" : "display:none") + "' id='input_stype_set-" + p + "'><tr><th class='center'>" + _("Enable") + "</th><th>" + _("Start Time") + "</th></tr>"),
-        m = 1;
-        m < 4;
-        m++
-    )
-        u =
-            (u +=
-                "<tr><td data-role='controlgroup' data-type='horizontal' class='use_master center'><label for='ust_" +
-                (m + 1) +
-                "'><input id='ust_" +
-                (m + 1) +
-                "' type='checkbox' " +
-                ((r = -1 === a[m]) ? "" : "checked='checked'") +
-                "></label></td>") +
-            "<td><button class='timefield' data-mini='true' type='time' id='start_" +
-            (m + 1) +
-            "-" +
-            p +
-            "' value='" +
-            (r ? 0 : a[m]) +
-            "'>" +
-            readStartTime(r ? 0 : a[m]) +
-            "</button></td></tr>";
-    return (
-        (u = u + "</table>" + "</div></div>"),
-        !0 === t || "new" === e
-            ? (u += "<button data-mini='true' data-icon='check' data-theme='b' id='submit-" + p + "'>" + _("Save New Program") + "</button>")
-            : (u =
-                (u =
-                    (u += "<button data-mini='true' data-icon='check' data-theme='b' id='submit-" + p + "'>" + _("Save Changes to") + " <span class='program-name'>" + h.name + "</span></button>") +
-                    "<button data-mini='true' data-icon='arrow-r' id='run-" +
-                    p +
-                    "'>" +
-                    _("Run") +
-                    " <span class='program-name'>" +
-                    h.name +
-                    "</span></button>") +
-                "<button data-mini='true' data-icon='delete' class='bold red' data-theme='b' id='delete-" +
-                p +
-                "'>" +
-                _("Delete") +
-                " <span class='program-name'>" +
-                h.name +
-                "</span></button>"),
-        (o = $(u)).find("input[name^='rad_days'],input[name^='stype']").on("change", function () {
-            var e = $(this).val().split("-")[0].split("_");
-            $("[id^='input_" + e[0] + "_']").hide(), $("#input_" + e[0] + "_" + e[1] + "-" + p).show();
-        }),
-        Supported.dateRange() &&
-        o.find("#use-dr-" + p).on("click", function () {
-            o.find("#date-range-options-" + p).toggle();
-        }),
-        o.find("[id^='interval-']").on("click", function () {
-            var t = $(this),
-                e = o.find("label[for='" + t.attr("id") + "']").text();
-            showDurationBox({
-                seconds: t.val(),
-                title: e,
-                callback: function (e) {
-                    t.val(e), t.text(dhms2str(sec2dhms(e)));
-                },
-                maximum: 86340,
-                granularity: 1,
-                preventCompression: !0,
-            });
-        }),
-        o.find(".timefield").on("click", function () {
-            var t = $(this);
-            showTimeInput({
-                minutes: t.val(),
-                title: _("Start Time"),
-                showSun: !!checkOSVersion(213),
-                callback: function (e) {
-                    t.val(e), t.text(readStartTime(e));
-                },
-            });
-        }),
-        o.find("[id^='repeat-']").on("click", function () {
-            var t = $(this),
-                e = o.find("label[for='" + t.attr("id") + "']").text();
-            showSingleDurationInput({
-                data: t.val(),
-                title: e,
-                label: _("Repeat Count"),
-                callback: function (e) {
-                    t.val(e).text(e);
-                },
-                maximum: 1440,
-            });
-        }),
-        o.find("[id^=station_]").on("click", function () {
-            var t = $(this),
-                e = controller.stations.snames[t.attr("id").split("_")[1].split("-")[0]];
-            showDurationBox({
-                seconds: t.val(),
-                title: e,
-                callback: function (e) {
-                    t.val(e).addClass("green"), t.text(getDurationText(e)), 0 === e && t.removeClass("green");
-                },
-                maximum: 65535,
-                showSun: !!checkOSVersion(214),
-            });
-        }),
-        fixInputClick(o),
-        o
-    );
+function makeProgram21(programId, isNew) {
+    var weekDays,
+        dayIdx,
+        idx,
+        $html,
+        startTimes,
+        stationDur,
+        isDisabled,
+        dateRangeStart,
+        dateRangeEnd,
+        dayNames = [
+            _("Monday"), _("Tuesday"), _("Wednesday"), _("Thursday"),
+            _("Friday"), _("Saturday"), _("Sunday")
+        ],
+        html = "",
+        pid = isNew ? "new" : programId,
+        prog = programId === "new"
+            ? { name: "", en: 0, weather: 0, is_interval: 0, is_even: 0,
+                is_odd: 0, interval: 0, start: 0, days: [0, 0], repeat: 0, stations: [] }
+            : readProgram(controller.programs.pd[programId]);
+    if (typeof prog.days === "string") {
+        weekDays = prog.days.split("");
+        for (dayIdx = weekDays.length; dayIdx--;) { weekDays[dayIdx] = 0 | weekDays[dayIdx]; }
+    } else {
+        weekDays = [0, 0, 0, 0, 0, 0, 0];
+    }
+    startTimes = typeof prog.start === "object" ? prog.start : [prog.start, -1, -1, -1];
+
+    // --- Basic Settings ---
+    html += "<div style='margin-top:5px' class='ui-corner-all'>";
+    html += "<div class='ui-bar ui-bar-a'><h3>" + _("Basic Settings") + "</h3></div>";
+    html += "<div class='ui-body ui-body-a center'>";
+    html += "<label for='name-" + pid + "'>" + _("Program Name") + "</label>"
+        + "<input data-mini='true' type='text' name='name-" + pid + "'"
+        + " id='name-" + pid + "' maxlength='" + controller.programs.pnsize + "'"
+        + " placeholder='" + _("Program") + " " + (controller.programs.pd.length + 1) + "'"
+        + " value=\"" + prog.name + '">';
+    html += "<label for='en-" + pid + "'>"
+        + "<input data-mini='true' type='checkbox' "
+        + (prog.en || programId === "new" ? "checked='checked'" : "")
+        + " name='en-" + pid + "' id='en-" + pid + "'>"
+        + _("Enabled") + "</label>";
+    html += "<label for='uwt-" + pid + "'>"
+        + "<input data-mini='true' type='checkbox' "
+        + (prog.weather ? "checked='checked'" : "")
+        + " name='uwt-" + pid + "' id='uwt-" + pid + "'>"
+        + _("Use Weather Adjustment") + "</label>";
+    if (Supported.dateRange()) {
+        dateRangeStart = Program.getDateRangeStart(pid);
+        dateRangeEnd = Program.getDateRangeEnd(pid);
+        html += "<label for='use-dr-" + pid + "'>"
+            + "<input data-mini='true' type='checkbox' "
+            + (Program.isDateRangeEnabled(pid) ? "checked='checked'" : "")
+            + " name='use-dr-" + pid + "' id='use-dr-" + pid + "'>"
+            + _("Enable Date Range") + "</label>";
+        html += "<div id='date-range-options-" + pid + "'"
+            + (Program.isDateRangeEnabled(pid) ? "" : "style='display:none'") + ">";
+        html += "<div class='ui-grid-a' style=''>"
+            + "<div class='ui-block-a drfrom'>"
+            + "<label class='center' for='from-dr-" + pid + "'>" + _("From (mm/dd)") + "</label>"
+            + "<div class='dr-input'>"
+            + "<input type='text' placeholder='MM/DD' id='from-dr-" + pid + "'"
+            + " value=" + decodeDate(dateRangeStart) + "></input>"
+            + "</div></div>"
+            + "<div class='ui-block-b drto'>"
+            + "<label class='center' for='to-dr-" + pid + "'>" + _("To (mm/dd)") + "</label>"
+            + "<div class='dr-input'>"
+            + "<input type='text' placeholder='MM/DD' id='to-dr-" + pid + "'"
+            + " value=" + decodeDate(dateRangeEnd) + "></input>"
+            + "</div></div></div></div>";
+    }
+    html += "<label class='center' for='start_1-" + pid + "'>" + _("Start Time") + "</label>"
+        + "<button class='timefield' data-mini='true' id='start_1-" + pid + "'"
+        + " value='" + startTimes[0] + "'>" + readStartTime(startTimes[0]) + "</button>";
+    html += "</div></div></div></div>";
+
+    // --- Program Type ---
+    html += "<div style='margin-top:10px' class='ui-corner-all'>";
+    html += "<div class='ui-bar ui-bar-a'><h3>" + _("Program Type") + "</h3></div>";
+    html += "<div class='ui-body ui-body-a'>";
+    html += "<fieldset data-role='controlgroup' data-type='horizontal' class='center'>";
+    html += "<input data-mini='true' type='radio' name='rad_days-" + pid + "'"
+        + " id='days_week-" + pid + "' value='days_week-" + pid + "' "
+        + (prog.is_interval ? "" : "checked='checked'")
+        + "><label for='days_week-" + pid + "'>" + _("Weekly") + "</label>";
+    html += "<input data-mini='true' type='radio' name='rad_days-" + pid + "'"
+        + " id='days_n-" + pid + "' value='days_n-" + pid + "' "
+        + (prog.is_interval ? "checked='checked'" : "")
+        + "><label for='days_n-" + pid + "'>" + _("Interval") + "</label>";
+    html += "<label class='center' for='start_1-" + pid + "'>" + _("Start Time") + "</label>"
+        + "<button class='timefield' data-mini='true' id='start_1-" + pid + "'"
+        + " value='" + startTimes[0] + "'>" + readStartTime(startTimes[0]) + "</button>";
+    html += "</fieldset>";
+    html += "<div id='input_days_week-" + pid + "' "
+        + (prog.is_interval ? "style='display:none'" : "") + ">";
+    html += "<div class='center'><p class='tight'>" + _("Days of the Week") + "</p>"
+        + "<select "
+        + ($.mobile.window.width() > 560 ? "data-inline='true' " : "")
+        + "data-iconpos='left' data-mini='true' multiple='multiple'"
+        + " data-native-menu='false' id='d-" + pid + "'>"
+        + "<option>" + _("Choose day(s)") + "</option>";
+    for (idx = 0; idx < dayNames.length; idx++) {
+        html += "<option "
+            + (!prog.is_interval && weekDays[idx] ? "selected='selected'" : "")
+            + " value='" + idx + "'>" + dayNames[idx] + "</option>";
+    }
+    html += "</select></div></div>";
+    html += "<div " + (prog.is_interval ? "" : "style='display:none'")
+        + " id='input_days_n-" + pid + "' class='ui-grid-a'>";
+    html += "<div class='ui-block-a'>"
+        + "<label class='center' for='every-" + pid + "'>" + _("Interval (Days)") + "</label>"
+        + "<input data-wrapper-class='pad_buttons' data-mini='true' type='number'"
+        + " name='every-" + pid + "' pattern='[0-9]*' id='every-" + pid + "'"
+        + " value='" + prog.days[0] + "'></div>";
+    html += "<div class='ui-block-b'>"
+        + "<label class='center' for='starting-" + pid + "'>" + _("Starting In") + "</label>"
+        + "<input data-wrapper-class='pad_buttons' data-mini='true' type='number'"
+        + " name='starting-" + pid + "' pattern='[0-9]*' id='starting-" + pid + "'"
+        + " value='" + prog.days[1] + "'></div></div>";
+    html += "<div class='center'><p class='tight'>" + _("Restrictions") + "</p>"
+        + "<select data-inline='true' data-iconpos='left' data-mini='true'"
+        + " id='days_rst-" + pid + "'>";
+    html += "<option value='none' "
+        + (prog.is_even || prog.is_odd ? "" : "selected='selected'")
+        + ">" + _("None") + "</option>";
+    html += "<option value='odd' "
+        + (!prog.is_even && prog.is_odd ? "selected='selected'" : "")
+        + ">" + _("Odd Days Only") + "</option>";
+    html += "<option value='even' "
+        + (!prog.is_odd && prog.is_even ? "selected='selected'" : "")
+        + ">" + _("Even Days Only") + "</option></select></div></div></div>";
+
+    // --- Stations ---
+    html += "<div style='margin-top:10px' class='ui-corner-all'>";
+    html += "<div class='ui-bar ui-bar-a'><h3>" + _("Stations") + "</h3></div>"
+        + "<div class='ui-body ui-body-a'>";
+    var hiddenStyle = $("#programs").hasClass("show-hidden") ? "" : "' style='display:none";
+    for (idx = 0; idx < controller.stations.snames.length; idx++) {
+        if (Station.isMaster(idx)) {
+            html += "<div class='ui-field-contain duration-input"
+                + (Station.isDisabled(idx) ? " station-hidden" + hiddenStyle : "") + "'>"
+                + "<label for='station_" + idx + "-" + pid + "'>"
+                + controller.stations.snames[idx] + ":</label>"
+                + "<button disabled='true' data-mini='true'"
+                + " name='station_" + idx + "-" + pid + "'"
+                + " id='station_" + idx + "-" + pid + "' value='0'>"
+                + _("Master") + "</button></div>";
+        } else {
+            stationDur = prog.stations[idx] || 0;
+            html += "<div class='ui-field-contain duration-input"
+                + (Station.isDisabled(idx) ? " station-hidden" + hiddenStyle : "") + "'>"
+                + "<label for='station_" + idx + "-" + pid + "'>"
+                + controller.stations.snames[idx] + ":</label>"
+                + "<button " + (stationDur > 0 ? "class='green' " : "")
+                + "data-mini='true'"
+                + " name='station_" + idx + "-" + pid + "'"
+                + " id='station_" + idx + "-" + pid + "' value='" + stationDur + "'>"
+                + getDurationText(stationDur) + "</button></div>";
+        }
+    }
+    html += "</div></div>";
+
+    // --- Additional Start Times ---
+    html += "<div style='margin-top:10px' class='ui-corner-all'>";
+    html += "<div class='ui-bar ui-bar-a'><h3>" + _("Additional Start Times") + "</h3></div>";
+    html += "<div class='ui-body ui-body-a'>";
+    html += "<fieldset data-role='controlgroup' data-type='horizontal' class='center'>";
+    html += "<input data-mini='true' type='radio' name='stype-" + pid + "'"
+        + " id='stype_repeat-" + pid + "' value='stype_repeat-" + pid + "' "
+        + (typeof prog.start === "object" ? "" : "checked='checked'")
+        + "><label for='stype_repeat-" + pid + "'>" + _("Repeating") + "</label>";
+    html += "<input data-mini='true' type='radio' name='stype-" + pid + "'"
+        + " id='stype_set-" + pid + "' value='stype_set-" + pid + "' "
+        + (typeof prog.start === "object" ? "checked='checked'" : "")
+        + "><label for='stype_set-" + pid + "'>" + _("Fixed") + "</label>";
+    html += "</fieldset>";
+    html += "<div " + (typeof prog.start === "object" ? "style='display:none'" : "")
+        + " id='input_stype_repeat-" + pid + "'>";
+    html += "<div class='ui-grid-a'>";
+    html += "<div class='ui-block-a'>"
+        + "<label class='pad_buttons center' for='interval-" + pid + "'>"
+        + _("Repeat Every") + "</label>"
+        + "<button class='pad_buttons' data-mini='true'"
+        + " name='interval-" + pid + "' id='interval-" + pid + "'"
+        + " value='" + 60 * prog.interval + "'>"
+        + dhms2str(sec2dhms(60 * prog.interval)) + "</button></div>";
+    html += "<div class='ui-block-b'>"
+        + "<label class='pad_buttons center' for='repeat-" + pid + "'>"
+        + _("Repeat Count") + "</label>"
+        + "<button class='pad_buttons' data-mini='true'"
+        + " name='repeat-" + pid + "' id='repeat-" + pid + "'"
+        + " value='" + prog.repeat + "'>" + prog.repeat + "</button></div>";
+    html += "</div></div>";
+    html += "<table style='width:100%;"
+        + (typeof prog.start === "object" ? "" : "display:none")
+        + "' id='input_stype_set-" + pid + "'>"
+        + "<tr><th class='center'>" + _("Enable") + "</th>"
+        + "<th>" + _("Start Time") + "</th></tr>";
+    for (idx = 1; idx < 4; idx++) {
+        isDisabled = startTimes[idx] === -1;
+        html += "<tr><td data-role='controlgroup' data-type='horizontal'"
+            + " class='use_master center'>"
+            + "<label for='ust_" + (idx + 1) + "'>"
+            + "<input id='ust_" + (idx + 1) + "' type='checkbox' "
+            + (isDisabled ? "" : "checked='checked'")
+            + "></label></td>";
+        html += "<td><button class='timefield' data-mini='true' type='time'"
+            + " id='start_" + (idx + 1) + "-" + pid + "'"
+            + " value='" + (isDisabled ? 0 : startTimes[idx]) + "'>"
+            + readStartTime(isDisabled ? 0 : startTimes[idx])
+            + "</button></td></tr>";
+    }
+    html += "</table>";
+    html += "</div></div>";
+
+    // --- Action buttons ---
+    if (isNew === true || programId === "new") {
+        html += "<button data-mini='true' data-icon='check' data-theme='b'"
+            + " id='submit-" + pid + "'>"
+            + _("Save New Program") + "</button>";
+    } else {
+        html += "<button data-mini='true' data-icon='check' data-theme='b'"
+            + " id='submit-" + pid + "'>"
+            + _("Save Changes to")
+            + " <span class='program-name'>" + prog.name + "</span></button>";
+        html += "<button data-mini='true' data-icon='arrow-r'"
+            + " id='run-" + pid + "'>"
+            + _("Run")
+            + " <span class='program-name'>" + prog.name + "</span></button>";
+        html += "<button data-mini='true' data-icon='delete' class='bold red'"
+            + " data-theme='b' id='delete-" + pid + "'>"
+            + _("Delete")
+            + " <span class='program-name'>" + prog.name + "</span></button>";
+    }
+
+    // --- Event handlers ---
+    $html = $(html);
+    $html.find("input[name^='rad_days'],input[name^='stype']").on("change", function () {
+        var parts = $(this).val().split("-")[0].split("_");
+        $("[id^='input_" + parts[0] + "_']").hide();
+        $("#input_" + parts[0] + "_" + parts[1] + "-" + pid).show();
+    });
+    if (Supported.dateRange()) {
+        $html.find("#use-dr-" + pid).on("click", function () {
+            $html.find("#date-range-options-" + pid).toggle();
+        });
+    }
+    $html.find("[id^='interval-']").on("click", function () {
+        var $btn = $(this);
+        var label = $html.find("label[for='" + $btn.attr("id") + "']").text();
+        showDurationBox({
+            seconds: $btn.val(),
+            title: label,
+            callback: function (val) { $btn.val(val); $btn.text(dhms2str(sec2dhms(val))); },
+            maximum: 86340,
+            granularity: 1,
+            preventCompression: true,
+        });
+    });
+    $html.find(".timefield").on("click", function () {
+        var $btn = $(this);
+        showTimeInput({
+            minutes: $btn.val(),
+            title: _("Start Time"),
+            showSun: !!checkOSVersion(213),
+            callback: function (val) { $btn.val(val); $btn.text(readStartTime(val)); },
+        });
+    });
+    $html.find("[id^='repeat-']").on("click", function () {
+        var $btn = $(this);
+        var label = $html.find("label[for='" + $btn.attr("id") + "']").text();
+        showSingleDurationInput({
+            data: $btn.val(),
+            title: label,
+            label: _("Repeat Count"),
+            callback: function (val) { $btn.val(val).text(val); },
+            maximum: 1440,
+        });
+    });
+    $html.find("[id^=station_]").on("click", function () {
+        var $btn = $(this);
+        var stationName = controller.stations.snames[$btn.attr("id").split("_")[1].split("-")[0]];
+        showDurationBox({
+            seconds: $btn.val(),
+            title: stationName,
+            callback: function (val) {
+                $btn.val(val).addClass("green");
+                $btn.text(getDurationText(val));
+                if (val === 0) { $btn.removeClass("green"); }
+            },
+            maximum: 65535,
+            showSun: !!checkOSVersion(214),
+        });
+    });
+    fixInputClick($html);
+    return $html;
 }
 function addProgram(programId) {
-    programId = 0 <= programId ? programId : "new";
-    var $page = $("<div data-role='page' id='addprogram'><div class='ui-content' role='main' id='newprogram'><fieldset id='program-new'></fieldset></div></div>"),
-        $header = changeHeader({
-            title: _("Add Program"),
-            leftBtn: { icon: "carat-l", text: _("Back"), class: "ui-toolbar-back-btn", on: checkChangesBeforeBack },
-            rightBtn: {
-                icon: "check",
-                text: _("Submit"),
-                on: function () {
-                    return submitProgram("new"), !1;
-                },
-            },
-        });
-    $page
-        .find("#program-new")
-        .html(makeProgram(programId, !0))
-        .one("change input", function () {
-            $header.eq(2).prop("disabled", !1).addClass("hasChanges");
-        }),
-        $page.find("[id^='submit-']").on("click", function () {
-            return submitProgram("new"), !1;
-        }),
-        $page.one("pagehide", function () {
-            $page.remove();
-        }),
-        "string" == typeof programId && $header.eq(2).prop("disabled", !0),
-        $("#addprogram").remove(),
-        $.mobile.pageContainer.append($page);
+    programId = programId >= 0 ? programId : "new";
+    var $page = $("<div data-role='page' id='addprogram'><div class='ui-content' role='main' id='newprogram'><fieldset id='program-new'></fieldset></div></div>");
+    var $header = changeHeader({
+        title: _("Add Program"),
+        leftBtn: { icon: "carat-l", text: _("Back"), class: "ui-toolbar-back-btn", on: checkChangesBeforeBack },
+        rightBtn: {
+            icon: "check",
+            text: _("Submit"),
+            on: function () { submitProgram("new"); return false; },
+        },
+    });
+    $page.find("#program-new").html(makeProgram(programId, true)).one("change input", function () {
+        $header.eq(2).prop("disabled", false).addClass("hasChanges");
+    });
+    $page.find("[id^='submit-']").on("click", function () { submitProgram("new"); return false; });
+    $page.one("pagehide", function () { $page.remove(); });
+    if (typeof programId === "string") { $header.eq(2).prop("disabled", true); }
+    $("#addprogram").remove();
+    $.mobile.pageContainer.append($page);
 }
 function deleteProgram(programIdx) {
     var name = pidname(parseInt(programIdx) + 1);
     areYouSure(_("Are you sure you want to delete program") + " " + name + "?", "", function () {
-        $.mobile.loading("show"),
-            sendToOS("/dp?pw=&pid=" + programIdx).done(function () {
-                $.mobile.loading("hide"),
-                    updateControllerPrograms(function () {
-                        $("#programs").trigger("programrefresh"), showerror(_("Program") + " " + name + " " + _("deleted"));
-                    });
+        $.mobile.loading("show");
+        sendToOS("/dp?pw=&pid=" + programIdx).done(function () {
+            $.mobile.loading("hide");
+            updateControllerPrograms(function () {
+                $("#programs").trigger("programrefresh");
+                showerror(_("Program") + " " + name + " " + _("deleted"));
             });
+        });
     });
 }
 function submitProgram(programId) {
-    $("#program-" + programId)
-        .find(".hasChanges")
-        .removeClass("hasChanges"),
-        (checkOSVersion(210) ? submitProgram21 : submitProgram183)(programId);
+    $("#program-" + programId).find(".hasChanges").removeClass("hasChanges");
+    (checkOSVersion(210) ? submitProgram21 : submitProgram183)(programId);
 }
 function submitProgram183(programId) {
-    var daysArr,
-        dayIdx,
-        bitIdx,
-        progData = [],
-        days = [0, 0],
-        hasStation = 0,
-        enabled = $("#en-" + programId).is(":checked") ? 1 : 0;
-    if (((progData[0] = enabled), $("#days_week-" + programId).is(":checked"))) {
-        for (daysArr = null === (daysArr = $("#d-" + programId).val()) ? [] : parseIntArray(daysArr), dayIdx = 0; dayIdx < 7; dayIdx++) -1 !== $.inArray(dayIdx, daysArr) && (days[0] |= 1 << dayIdx);
-        if (0 === days[0]) return void showerror(_("Error: You have not selected any days of the week."));
-        "odd" === $("#days_rst-" + programId).val() ? ((days[0] |= 128), (days[1] = 1)) : "even" === $("#days_rst-" + programId).val() && ((days[0] |= 128), (days[1] = 0));
+    var daysArr, dayIdx, bitIdx;
+    var progData = [], days = [0, 0], hasStation = 0;
+    var enabled = $("#en-" + programId).is(":checked") ? 1 : 0;
+    progData[0] = enabled;
+    if ($("#days_week-" + programId).is(":checked")) {
+        daysArr = $("#d-" + programId).val();
+        daysArr = daysArr === null ? [] : parseIntArray(daysArr);
+        for (dayIdx = 0; dayIdx < 7; dayIdx++) {
+            if ($.inArray(dayIdx, daysArr) !== -1) { days[0] |= 1 << dayIdx; }
+        }
+        if (days[0] === 0) { showerror(_("Error: You have not selected any days of the week.")); return; }
+        if ($("#days_rst-" + programId).val() === "odd") {
+            days[0] |= 128; days[1] = 1;
+        } else if ($("#days_rst-" + programId).val() === "even") {
+            days[0] |= 128; days[1] = 0;
+        }
     } else if ($("#days_n-" + programId).is(":checked")) {
-        if (((days[1] = parseInt($("#every-" + programId).val(), 10)), !(2 <= days[1] && days[1] <= 128))) return void showerror(_("Error: Interval days must be between 2 and 128."));
-        if (((days[0] = parseInt($("#starting-" + programId).val(), 10)), !(0 <= days[0] && days[0] < days[1]))) return void showerror(_("Error: Starting in days wrong."));
+        days[1] = parseInt($("#every-" + programId).val(), 10);
+        if (!(days[1] >= 2 && days[1] <= 128)) { showerror(_("Error: Interval days must be between 2 and 128.")); return; }
+        days[0] = parseInt($("#starting-" + programId).val(), 10);
+        if (!(days[0] >= 0 && days[0] < days[1])) { showerror(_("Error: Starting in days wrong.")); return; }
         days[0] |= 128;
     }
-    if (((progData[1] = days[0]), (progData[2] = days[1]), (progData[3] = parseInt($("#start-" + programId).val())), (progData[4] = parseInt($("#end-" + programId).val())), progData[3] > progData[4])) showerror(_("Error: Start time must be prior to end time."));
-    else {
+    progData[1] = days[0];
+    progData[2] = days[1];
+    progData[3] = parseInt($("#start-" + programId).val());
+    progData[4] = parseInt($("#end-" + programId).val());
+    if (progData[3] > progData[4]) {
+        showerror(_("Error: Start time must be prior to end time."));
+    } else {
         progData[5] = parseInt($("#interval-" + programId).val() / 60);
-        for (var nBoards = $("[id^=station_][id$=-" + programId + "]").length / 8, stationBits = ((progData[6] = parseInt($("#duration-" + programId).val())), [0]), brd = 0; brd < nBoards; brd++)
-            for (bitIdx = stationBits[brd] = 0; bitIdx < 8; bitIdx++) $("#station_" + (8 * brd + bitIdx) + "-" + programId).is(":checked") && ((stationBits[brd] |= 1 << bitIdx), (hasStation = 1));
-        (progData = JSON.stringify(progData.concat(stationBits))),
-            0 === hasStation
-                ? showerror(_("Error: You have not selected any stations."))
-                : ($.mobile.loading("show"),
-                    "new" === programId
-                        ? sendToOS("/cp?pw=&pid=-1&v=" + progData).done(function () {
-                            $.mobile.loading("hide"),
-                                updateControllerPrograms(function () {
-                                    $.mobile.document.one("pageshow", function () {
-                                        showerror(_("Program added successfully"));
-                                    }),
-                                        goBack();
-                                });
-                        })
-                        : sendToOS("/cp?pw=&pid=" + programId + "&v=" + progData).done(function () {
-                            $.mobile.loading("hide"),
-                                updateControllerPrograms(function () {
-                                    updateProgramHeader();
-                                }),
-                                showerror(_("Program has been updated"));
-                        }));
+        progData[6] = parseInt($("#duration-" + programId).val());
+        var nBoards = $("[id^=station_][id$=-" + programId + "]").length / 8;
+        var stationBits = [0];
+        for (var brd = 0; brd < nBoards; brd++) {
+            for (bitIdx = stationBits[brd] = 0; bitIdx < 8; bitIdx++) {
+                if ($("#station_" + (8 * brd + bitIdx) + "-" + programId).is(":checked")) {
+                    stationBits[brd] |= 1 << bitIdx;
+                    hasStation = 1;
+                }
+            }
+        }
+        progData = JSON.stringify(progData.concat(stationBits));
+        if (hasStation === 0) {
+            showerror(_("Error: You have not selected any stations."));
+        } else {
+            $.mobile.loading("show");
+            if (programId === "new") {
+                sendToOS("/cp?pw=&pid=-1&v=" + progData).done(function () {
+                    $.mobile.loading("hide");
+                    updateControllerPrograms(function () {
+                        $.mobile.document.one("pageshow", function () { showerror(_("Program added successfully")); });
+                        goBack();
+                    });
+                });
+            } else {
+                sendToOS("/cp?pw=&pid=" + programId + "&v=" + progData).done(function () {
+                    $.mobile.loading("hide");
+                    updateControllerPrograms(function () { updateProgramHeader(); });
+                    showerror(_("Program has been updated"));
+                });
+            }
+        }
     }
 }
 function submitProgram21(programId, force) {
@@ -10118,89 +10306,106 @@ function submitProgram21(programId, force) {
         minInterval = checkOSVersion(2199) ? 1 : 2,
         dateRangeStr = "";
     flags = flags | (enabled << 0) | (useWeather << 1);
-    if (("odd" === $("#days_rst-" + programId).val() ? (flags |= 4) : "even" === $("#days_rst-" + programId).val() && (flags |= 8), $("#days_n-" + programId).is(":checked"))) {
-        if (((flags |= 48), (days[1] = parseInt($("#every-" + programId).val(), 10)), !(minInterval <= days[1] && days[1] <= 128))) return void showerror(_("Error: Interval days must be between " + minInterval + " and 128."));
-        if (((days[0] = parseInt($("#starting-" + programId).val(), 10)), !(0 <= days[0] && days[0] < days[1]))) return void showerror(_("Error: Starting in days wrong."));
+    if ($("#days_rst-" + programId).val() === "odd") { flags |= 4; }
+    else if ($("#days_rst-" + programId).val() === "even") { flags |= 8; }
+    if ($("#days_n-" + programId).is(":checked")) {
+        flags |= 48;
+        days[1] = parseInt($("#every-" + programId).val(), 10);
+        if (!(days[1] >= minInterval && days[1] <= 128)) { showerror(_("Error: Interval days must be between " + minInterval + " and 128.")); return; }
+        days[0] = parseInt($("#starting-" + programId).val(), 10);
+        if (!(days[0] >= 0 && days[0] < days[1])) { showerror(_("Error: Starting in days wrong.")); return; }
     } else if ($("#days_week-" + programId).is(":checked")) {
-        for (flags |= 0, daysArr = null === (daysArr = $("#d-" + programId).val()) ? [] : parseIntArray(daysArr), dayIdx = 0; dayIdx < 7; dayIdx++) -1 !== $.inArray(dayIdx, daysArr) && (days[0] |= 1 << dayIdx);
-        if (0 === days[0]) return void showerror(_("Error: You have not selected any days of the week."));
+        daysArr = $("#d-" + programId).val();
+        daysArr = daysArr === null ? [] : parseIntArray(daysArr);
+        for (dayIdx = 0; dayIdx < 7; dayIdx++) {
+            if ($.inArray(dayIdx, daysArr) !== -1) { days[0] |= 1 << dayIdx; }
+        }
+        if (days[0] === 0) { showerror(_("Error: You have not selected any days of the week.")); return; }
     }
-    $("#stype_repeat-" + programId).is(":checked")
-        ? ((flags |= 0), (startTimes[0] = parseInt($("#start_1-" + programId).val())), (startTimes[1] = parseInt($("#repeat-" + programId).val())), (startTimes[2] = parseInt($("#interval-" + programId).val() / 60)))
-        : $("#stype_set-" + programId).is(":checked") &&
-        ((flags |= 64),
-            $("[id^='start_'][id$='-" + programId + "']").each(function (idx, el) {
-                var val = parseInt(el.value);
-                ("number" != typeof val || (0 < idx && !$("#ust_" + (idx + 1)).is(":checked"))) && (val = -1), (startTimes[idx] = val);
-            }));
-    var $stations = $("[id^=station_][id$=-" + programId + "]"),
-        durations = [];
-    if (
-        ($stations.each(function () {
-            var dur = parseInt(this.value);
-            0 < parseInt(dur) && (hasStation = 1), durations.push(dur);
-        }),
-            (progData[0] = flags),
-            (progData[1] = days[0]),
-            (progData[2] = days[1]),
-            (progData[3] = startTimes),
-            (progData[4] = durations),
-            (queryStr = $("#name-" + programId).val()),
-            (dateRangeStr = ""),
-            Supported.dateRange())
-    ) {
-        var useDateRange = $("#use-dr-" + programId).is(":checked"),
-            fromDate = $("#from-dr-" + programId).val(),
-            toDate = $("#to-dr-" + programId).val();
-        if (!isValidDateRange(fromDate, toDate)) return void showerror(_("Error: date range is malformed"));
-        (dateRangeStr = "&endr=" + (useDateRange ? 1 : 0) + "&from=" + encodeDate(fromDate) + "&to=" + encodeDate(toDate)), (progData[0] |= useDateRange ? 128 : 0);
+    if ($("#stype_repeat-" + programId).is(":checked")) {
+        startTimes[0] = parseInt($("#start_1-" + programId).val());
+        startTimes[1] = parseInt($("#repeat-" + programId).val());
+        startTimes[2] = parseInt($("#interval-" + programId).val() / 60);
+    } else if ($("#stype_set-" + programId).is(":checked")) {
+        flags |= 64;
+        $("[id^='start_'][id$='-" + programId + "']").each(function (idx, el) {
+            var val = parseInt(el.value);
+            if (typeof val !== "number" || (idx > 0 && !$("#ust_" + (idx + 1)).is(":checked"))) { val = -1; }
+            startTimes[idx] = val;
+        });
+    }
+    var $stations = $("[id^=station_][id$=-" + programId + "]");
+    var durations = [];
+    $stations.each(function () {
+        var dur = parseInt(this.value);
+        if (parseInt(dur) > 0) { hasStation = 1; }
+        durations.push(dur);
+    });
+    progData[0] = flags;
+    progData[1] = days[0];
+    progData[2] = days[1];
+    progData[3] = startTimes;
+    progData[4] = durations;
+    queryStr = $("#name-" + programId).val();
+    dateRangeStr = "";
+    if (Supported.dateRange()) {
+        var useDateRange = $("#use-dr-" + programId).is(":checked");
+        var fromDate = $("#from-dr-" + programId).val();
+        var toDate = $("#to-dr-" + programId).val();
+        if (!isValidDateRange(fromDate, toDate)) { showerror(_("Error: date range is malformed")); return; }
+        dateRangeStr = "&endr=" + (useDateRange ? 1 : 0) + "&from=" + encodeDate(fromDate) + "&to=" + encodeDate(toDate);
+        progData[0] |= useDateRange ? 128 : 0;
     }
     var params = "&v=" + JSON.stringify(progData) + "&name=" + encodeURIComponent(queryStr);
-    if (0 === hasStation) showerror(_("Error: You have not selected any stations."));
-    else {
-        if (!force && $("#stype_repeat-" + programId).is(":checked") && 0 < startTimes[1]) {
-            var totalRunTime = calculateTotalRunningTime(durations),
-                repeatSec = 60 * startTimes[2];
-            if (repeatSec < totalRunTime)
-                return void areYouSure(_("Warning: The repeat interval (" + repeatSec + " sec) is less than the program run time (" + totalRunTime + " sec)."), _("Do you want to continue?"), function () {
-                    submitProgram21(programId, !0);
+    if (hasStation === 0) {
+        showerror(_("Error: You have not selected any stations."));
+    } else {
+        if (!force && $("#stype_repeat-" + programId).is(":checked") && startTimes[1] > 0) {
+            var totalRunTime = calculateTotalRunningTime(durations);
+            var repeatSec = 60 * startTimes[2];
+            if (repeatSec < totalRunTime) {
+                areYouSure(_("Warning: The repeat interval (" + repeatSec + " sec) is less than the program run time (" + totalRunTime + " sec)."), _("Do you want to continue?"), function () {
+                    submitProgram21(programId, true);
                 });
+                return;
+            }
         }
-        force || 3 != ((flags >> 4) & 3) || 1 & days[1] || !(0 < ((flags >> 2) & 3))
-            ? ($.mobile.loading("show"),
-                "new" === programId
-                    ? sendToOS("/cp?pw=&pid=-1" + params + dateRangeStr).done(function () {
-                        $.mobile.loading("hide"),
-                            updateControllerPrograms(function () {
-                                $.mobile.document.one("pageshow", function () {
-                                    showerror(_("Program added successfully"));
-                                }),
-                                    goBack();
-                            });
-                    })
-                    : sendToOS("/cp?pw=&pid=" + programId + params + dateRangeStr).done(function () {
-                        $.mobile.loading("hide"),
-                            updateControllerPrograms(function () {
-                                updateProgramHeader(),
-                                    $("#program-" + programId)
-                                        .find(".program-name")
-                                        .text(queryStr);
-                            }),
-                            showerror(_("Program has been updated"));
-                    }))
-            : areYouSure(_("Warning: The use of odd/even restrictions with the selected interval day may result in the program not running at all."), _("Do you want to continue?"), function () {
-                submitProgram21(programId, !0);
+        if (!force && ((flags >> 4) & 3) === 3 && !(days[1] & 1) && ((flags >> 2) & 3) > 0) {
+            areYouSure(_("Warning: The use of odd/even restrictions with the selected interval day may result in the program not running at all."), _("Do you want to continue?"), function () {
+                submitProgram21(programId, true);
             });
+        } else {
+            $.mobile.loading("show");
+            if (programId === "new") {
+                sendToOS("/cp?pw=&pid=-1" + params + dateRangeStr).done(function () {
+                    $.mobile.loading("hide");
+                    updateControllerPrograms(function () {
+                        $.mobile.document.one("pageshow", function () { showerror(_("Program added successfully")); });
+                        goBack();
+                    });
+                });
+            } else {
+                sendToOS("/cp?pw=&pid=" + programId + params + dateRangeStr).done(function () {
+                    $.mobile.loading("hide");
+                    updateControllerPrograms(function () {
+                        updateProgramHeader();
+                        $("#program-" + programId).find(".program-name").text(queryStr);
+                    });
+                    showerror(_("Program has been updated"));
+                });
+            }
+        }
     }
 }
 function raindelay(seconds) {
-    return (
-        $.mobile.loading("show"),
-        sendToOS("/cv?pw=&rd=" + seconds / 3600).done(function () {
-            $.mobile.loading("hide"), showLoading("#footer-running"), refreshStatus(updateWeather), showerror(_("Rain delay has been successfully set"));
-        }),
-        !1
-    );
+    $.mobile.loading("show");
+    sendToOS("/cv?pw=&rd=" + seconds / 3600).done(function () {
+        $.mobile.loading("hide");
+        showLoading("#footer-running");
+        refreshStatus(updateWeather);
+        showerror(_("Rain delay has been successfully set"));
+    });
+    return false;
 }
 function getExportMethod() {
     var e = $(
@@ -10213,98 +10418,111 @@ function getExportMethod() {
         "</a><a class='ui-btn localMethod'>" +
         _("Internal (within app)") +
         "</a></div></div>"
-    ),
-        t = encodeURIComponent(JSON.stringify(controller)),
-        n = "OpenSprinkler Data Export on " + dateToString(new Date()),
-        i =
-            (isFileCapable &&
-                e
-                    .find(".fileMethod")
-                    .removeClass("hidden")
-                    .attr({ href: "data:text/json;charset=utf-8," + t, download: "backup-" + new Date().toLocaleDateString().replace(/\//g, "-") + ".json" })
-                    .on("click", function () {
-                        e.popup("close");
-                    }),
-                "mailto:?subject=" + encodeURIComponent(n) + "&body=" + t);
-    e
-        .find(".pasteMethod")
-        .attr("href", i)
-        .on("click", function () {
-            window.open(i, isOSXApp ? "_system" : void 0), e.popup("close");
-        }),
-        e.find(".localMethod").on("click", function () {
-            e.popup("close"),
-                storage.set({ backup: JSON.stringify(controller) }, function () {
-                    showerror(_("Backup saved on this device"));
-                });
-        }),
-        openPopup(e, { positionTo: $("#sprinklers-settings").find(".export_config") });
+    );
+    var t = encodeURIComponent(JSON.stringify(controller));
+    var n = "OpenSprinkler Data Export on " + dateToString(new Date());
+    if (isFileCapable) {
+        e.find(".fileMethod").removeClass("hidden").attr({
+            href: "data:text/json;charset=utf-8," + t,
+            download: "backup-" + new Date().toLocaleDateString().replace(/\//g, "-") + ".json"
+        }).on("click", function () { e.popup("close"); });
+    }
+    var i = "mailto:?subject=" + encodeURIComponent(n) + "&body=" + t;
+    e.find(".pasteMethod").attr("href", i).on("click", function () {
+        window.open(i, isOSXApp ? "_system" : undefined);
+        e.popup("close");
+    });
+    e.find(".localMethod").on("click", function () {
+        e.popup("close");
+        storage.set({ backup: JSON.stringify(controller) }, function () {
+            showerror(_("Backup saved on this device"));
+        });
+    });
+    openPopup(e, { positionTo: $("#sprinklers-settings").find(".export_config") });
 }
 function getImportMethod(localBackup) {
-    function t() {
-        var t = $(
-            "<div data-role='popup' data-theme='a' id='paste_config'><p class='ui-bar'><textarea class='textarea' rows='10' placeholder='" +
-            _("Paste your backup here") +
-            "'></textarea><button data-mini='true' data-theme='b'>" +
-            _("Import") +
-            "</button></p></div>"
-        ),
-            e = $.mobile.window.width();
-        t.find("button").on("click", function () {
-            var e = t.find("textarea").val();
-            if ("" !== e)
+    function showPastePopup() {
+        var $popup = $(
+            "<div data-role='popup' data-theme='a' id='paste_config'><p class='ui-bar'>"
+            + "<textarea class='textarea' rows='10' placeholder='"
+            + _("Paste your backup here")
+            + "'></textarea><button data-mini='true' data-theme='b'>"
+            + _("Import")
+            + "</button></p></div>"
+        );
+        var windowWidth = $.mobile.window.width();
+        $popup.find("button").on("click", function () {
+            var text = $popup.find("textarea").val();
+            if (text !== "") {
                 try {
-                    (e = JSON.parse($.trim(e).replace(/“|”|″/g, '"'))), t.popup("close"), importConfig(e);
+                    var parsed = JSON.parse($.trim(text).replace(/”|”|″/g, '”'));
+                    $popup.popup("close");
+                    importConfig(parsed);
                 } catch (e) {
-                    t.find("textarea").val(""), showerror(_("Unable to read the configuration file. Please check the file and try again."));
+                    $popup.find("textarea").val("");
+                    showerror(_("Unable to read the configuration file. Please check the file and try again."));
                 }
-        }),
-            t.css("width", 600 < e ? 0.4 * e + "px" : "100%"),
-            openPopup(t);
+            }
+        });
+        $popup.css("width", windowWidth > 600 ? 0.4 * windowWidth + "px" : "100%");
+        openPopup($popup);
     }
-    var n = $(
-        "<div data-role='popup' data-theme='a'><div class='ui-bar ui-bar-a'>" +
-        _("Select Import Method") +
-        "</div><div data-role='controlgroup' class='tight'><button class='hidden fileMethod'>" +
-        _("File") +
-        "</button><button class='pasteMethod'>" +
-        _("Email (copy/paste)") +
-        "</button><button class='hidden localMethod'>" +
-        _("Internal (within app)") +
-        "</button></div></div>"
+    var $menu = $(
+        "<div data-role='popup' data-theme='a'><div class='ui-bar ui-bar-a'>"
+        + _("Select Import Method")
+        + "</div><div data-role='controlgroup' class='tight'><button class='hidden fileMethod'>"
+        + _("File")
+        + "</button><button class='pasteMethod'>"
+        + _("Email (copy/paste)")
+        + "</button><button class='hidden localMethod'>"
+        + _("Internal (within app)")
+        + "</button></div></div>"
     );
-    if (isFileCapable)
-        n.find(".fileMethod")
+    if (isFileCapable) {
+        $menu.find(".fileMethod")
             .removeClass("hidden")
             .on("click", function () {
-                n.popup("close");
-                var e = $("<input type='file' id='configInput' data-role='none' style='visibility:hidden;position:absolute;top:-50px;left:-50px'/>").on("change", function () {
-                    var e = this.files[0],
-                        t = new FileReader();
-                    "object" == typeof e &&
-                        ((t.onload = function (e) {
+                $menu.popup("close");
+                var $input = $(
+                    "<input type='file' id='configInput' data-role='none'"
+                    + " style='visibility:hidden;position:absolute;top:-50px;left:-50px'/>"
+                ).on("change", function () {
+                    var file = this.files[0];
+                    var reader = new FileReader();
+                    if (typeof file === "object") {
+                        reader.onload = function (ev) {
                             try {
-                                importConfig(JSON.parse($.trim(e.target.result)));
+                                importConfig(JSON.parse($.trim(ev.target.result)));
                             } catch (e) {
                                 showerror(_("Unable to read the configuration file. Please check the file and try again."));
                             }
-                        }),
-                            t.readAsText(e));
+                        };
+                        reader.readAsText(file);
+                    }
                 });
-                return e.appendTo("#sprinklers-settings"), e.click(), !1;
+                $input.appendTo("#sprinklers-settings");
+                $input.click();
+                return false;
             });
-    else if (!localBackup) return void t();
-    n.find(".pasteMethod").on("click", function () {
-        return n.popup("close"), t(), !1;
-    }),
-        localBackup &&
-        n
-            .find(".localMethod")
+    } else if (!localBackup) {
+        showPastePopup();
+        return;
+    }
+    $menu.find(".pasteMethod").on("click", function () {
+        $menu.popup("close");
+        showPastePopup();
+        return false;
+    });
+    if (localBackup) {
+        $menu.find(".localMethod")
             .removeClass("hidden")
             .on("click", function () {
-                return n.popup("close"), importConfig(JSON.parse(localBackup)), !1;
-            }),
-        openPopup(n, { positionTo: $("#sprinklers-settings").find(".import_config") });
+                $menu.popup("close");
+                importConfig(JSON.parse(localBackup));
+                return false;
+            });
+    }
+    openPopup($menu, { positionTo: $("#sprinklers-settings").find(".import_config") });
 }
 function importConfig(p) {
     var e = "";
@@ -10864,116 +11082,127 @@ function getTokenUser(e) {
     return atob(e).split("|")[0];
 }
 function detectUnusedExpansionBoards() {
-    "number" == typeof controller.options.dexp &&
+    if (typeof controller.options.dexp === "number" &&
         controller.options.dexp < 255 &&
-        0 <= controller.options.dexp &&
-        controller.options.ext < controller.options.dexp &&
+        controller.options.dexp >= 0 &&
+        controller.options.ext < controller.options.dexp) {
         addNotification({
             title: _("Unused Expanders Detected"),
             desc: _("Click here to enable all connected stations."),
             on: function () {
-                return removeNotification($(this).parent()), changePage("#os-options", { expandItem: "station" }), !1;
+                removeNotification($(this).parent());
+                changePage("#os-options", { expandItem: "station" });
+                return false;
             },
         });
+    }
 }
 function showUnifiedFirmwareNotification() {
-    isOSPi() &&
-        storage.get("ignoreUnifiedFirmware", function (e) {
-            "1" !== e.ignoreUnifiedFirmware &&
-                addNotification({
-                    title: _("Unified firmware is now available"),
-                    desc: _("Click here for more details"),
-                    on: function () {
-                        return (
-                            window.open(
-                                "https://openthings.freshdesk.com/support/solutions/articles/5000631599",
-                                "_blank",
-                                "location=" + (isAndroid ? "yes" : "no") + ",enableViewportScale=yes,toolbarposition=top,closebuttoncaption=" + _("Back")
-                            ),
-                            !1
-                        );
-                    },
-                    off: function () {
-                        return storage.set({ ignoreUnifiedFirmware: "1" }), !0;
-                    },
-                });
+    if (!isOSPi()) { return; }
+    storage.get("ignoreUnifiedFirmware", function (e) {
+        if (e.ignoreUnifiedFirmware === "1") { return; }
+        addNotification({
+            title: _("Unified firmware is now available"),
+            desc: _("Click here for more details"),
+            on: function () {
+                window.open(
+                    "https://openthings.freshdesk.com/support/solutions/articles/5000631599",
+                    "_blank",
+                    "location=" + (isAndroid ? "yes" : "no") + ",enableViewportScale=yes,toolbarposition=top,closebuttoncaption=" + _("Back")
+                );
+                return false;
+            },
+            off: function () {
+                storage.set({ ignoreUnifiedFirmware: "1" });
+                return true;
+            },
         });
+    });
 }
 function intToIP(e) {
     return ((e >> 24) & 255) + "." + ((e >> 16) & 255) + "." + ((e >> 8) & 255) + "." + (255 & e);
 }
 function checkPublicAccess(e) {
-    var t, n;
-    0 === e ||
-        currToken ||
-        ((e = intToIP(e)),
-            (t = currIp.match(/.*:(\d+)/)),
-            (n = function () {
-                storage.get("ignoreRemoteFailed", function (e) {
-                    "1" !== e.ignoreRemoteFailed &&
-                        addNotification({
-                            title: _("Remote access is not enabled"),
-                            desc: _("Click here to troubleshoot remote access issues"),
-                            on: function () {
-                                return (
-                                    window.open(
-                                        "https://openthings.freshdesk.com/support/solutions/articles/5000569763",
-                                        "_blank",
-                                        "location=" + (isAndroid ? "yes" : "no") + ",enableViewportScale=yes,toolbarposition=top,closebuttoncaption=" + _("Back")
-                                    ),
-                                    !1
-                                );
-                            },
-                            off: function () {
-                                return storage.set({ ignoreRemoteFailed: "1" }), !0;
-                            },
-                        });
-                });
-            }),
-            e !== currIp &&
-            !isLocalIP(e) &&
-            isLocalIP(currIp) &&
-            ((t = t ? parseInt(t[1]) : 80),
-                $.ajax({ url: currPrefix + e + ":" + t + "/jo?pw=" + currPass, global: !1, dataType: "json", type: "GET" }).then(function (e) {
-                    ("object" != typeof e || !e.hasOwnProperty("fwv") || e.fwv !== controller.options.fwv || (checkOSVersion(214) && controller.options.ip4 !== e.ip4)) && n();
-                }, n)));
+    if (e === 0 || currToken) { return; }
+    e = intToIP(e);
+    var t = currIp.match(/.*:(\d+)/);
+    var n = function () {
+        storage.get("ignoreRemoteFailed", function (e) {
+            if (e.ignoreRemoteFailed === "1") { return; }
+            addNotification({
+                title: _("Remote access is not enabled"),
+                desc: _("Click here to troubleshoot remote access issues"),
+                on: function () {
+                    window.open(
+                        "https://openthings.freshdesk.com/support/solutions/articles/5000569763",
+                        "_blank",
+                        "location=" + (isAndroid ? "yes" : "no") + ",enableViewportScale=yes,toolbarposition=top,closebuttoncaption=" + _("Back")
+                    );
+                    return false;
+                },
+                off: function () {
+                    storage.set({ ignoreRemoteFailed: "1" });
+                    return true;
+                },
+            });
+        });
+    };
+    if (e !== currIp && !isLocalIP(e) && isLocalIP(currIp)) {
+        t = t ? parseInt(t[1]) : 80;
+        $.ajax({ url: currPrefix + e + ":" + t + "/jo?pw=" + currPass, global: false, dataType: "json", type: "GET" }).then(function (e) {
+            if (typeof e !== "object" || !e.hasOwnProperty("fwv") || e.fwv !== controller.options.fwv || (checkOSVersion(214) && controller.options.ip4 !== e.ip4)) { n(); }
+        }, n);
+    }
 }
 function logout(e) {
-    "function" != typeof e && (e = function () { }),
-        areYouSure(_("Are you sure you want to logout?"), "", function () {
-            currLocal
-                ? storage.remove(["sites", "current_site", "lang", "provider", "wapikey", "runonce", "cloudToken"], function () {
-                    location.reload();
-                })
-                : storage.remove(["cloudToken"], function () {
-                    updateLoginButtons(), e();
-                });
-        });
+    if (typeof e !== "function") { e = function () {}; }
+    areYouSure(_("Are you sure you want to logout?"), "", function () {
+        if (currLocal) {
+            storage.remove(["sites", "current_site", "lang", "provider", "wapikey", "runonce", "cloudToken"], function () {
+                location.reload();
+            });
+        } else {
+            storage.remove(["cloudToken"], function () {
+                updateLoginButtons();
+                e();
+            });
+        }
+    });
 }
 function updateLoginButtons() {
     var i = $(".ui-page-active");
     storage.get("cloudToken", function (e) {
         var t = $(".login-button"),
             n = $(".logout-button");
-        null === e.cloudToken || void 0 === e.cloudToken
-            ? (t.removeClass("hidden"), currLocal || n.addClass("hidden"), n.find("a").text(_("Logout")), "site-control" === i.attr("id") && i.find(".logged-in-alert").remove())
-            : (n
-                .removeClass("hidden")
-                .find("a")
-                .text(_("Logout") + " (" + getTokenUser(e.cloudToken) + ")"),
-                t.addClass("hidden"),
-                "site-control" === i.attr("id") && 0 === i.find(".logged-in-alert").length && i.find(".ui-content").prepend(addSyncStatus(e.cloudToken)));
+        if (e.cloudToken === null || e.cloudToken === undefined) {
+            t.removeClass("hidden");
+            if (!currLocal) { n.addClass("hidden"); }
+            n.find("a").text(_("Logout"));
+            if (i.attr("id") === "site-control") { i.find(".logged-in-alert").remove(); }
+        } else {
+            n.removeClass("hidden").find("a").text(_("Logout") + " (" + getTokenUser(e.cloudToken) + ")");
+            t.addClass("hidden");
+            if (i.attr("id") === "site-control" && i.find(".logged-in-alert").length === 0) {
+                i.find(".ui-content").prepend(addSyncStatus(e.cloudToken));
+            }
+        }
     });
 }
 function addNotification(e) {
-    notifications.push(e), updateNotificationBadge();
+    notifications.push(e);
+    updateNotificationBadge();
     var t = $("#notificationPanel");
-    t.hasClass("ui-panel-open") && t.find("ul").append(createNotificationItem(e)).listview("refresh");
+    if (t.hasClass("ui-panel-open")) { t.find("ul").append(createNotificationItem(e)).listview("refresh"); }
 }
 function updateNotificationBadge() {
     var e = notifications.length,
         t = $("#header");
-    0 === e ? t.find(".notifications").hide() : (t.find(".notifications").show(), t.find(".notificationCount").text(e));
+    if (e === 0) {
+        t.find(".notifications").hide();
+    } else {
+        t.find(".notifications").show();
+        t.find(".notificationCount").text(e);
+    }
 }
 function createNotificationItem(e) {
     var t = $("<li><a class='primary' href='#'><h2>" + e.title + "</h2>" + (e.desc ? "<p>" + e.desc + "</p>" : "") + "</a><a class='ui-btn ui-btn-icon-notext ui-icon-delete'></a></li>");
@@ -11008,23 +11237,31 @@ function showNotifications() {
             i--
         )
             n.push(createNotificationItem(notifications[i]));
-        e.find("ul").replaceWith($("<ul/>").append(n).listview()),
-            e.on("panelbeforeclose", function () {
-                t.removeClass("moveLeft");
-            }),
-            e.panel().panel("option", "classes.modal", "needsclick ui-panel-dismiss"),
-            t.addClass("moveLeft"),
-            e.panel("open");
+        e.find("ul").replaceWith($("<ul/>").append(n).listview());
+        e.on("panelbeforeclose", function () {
+            t.removeClass("moveLeft");
+        });
+        e.panel().panel("option", "classes.modal", "needsclick ui-panel-dismiss");
+        t.addClass("moveLeft");
+        e.panel("open");
     }
 }
 function clearNotifications() {
     var e = $("#notificationPanel");
-    (notifications = []), updateNotificationBadge(), e.find("ul").empty(), e.hasClass("ui-panel-open") && e.panel("close");
+    notifications = [];
+    updateNotificationBadge();
+    e.find("ul").empty();
+    if (e.hasClass("ui-panel-open")) { e.panel("close"); }
 }
 function removeNotification(e) {
     var t = $("#notificationPanel"),
         n = notifications[e.index() - 1].off;
-    ("function" != typeof n || n()) && (notifications.remove(e.index() - 1), e.remove(), updateNotificationBadge(), 0 === notifications.length) && t.hasClass("ui-panel-open") && t.panel("close");
+    if (typeof n !== "function" || n()) {
+        notifications.remove(e.index() - 1);
+        e.remove();
+        updateNotificationBadge();
+        if (notifications.length === 0 && t.hasClass("ui-panel-open")) { t.panel("close"); }
+    }
 }
 function checkFirmwareUpdate() {
     checkOSVersion(200) &&
@@ -11099,7 +11336,10 @@ function checkFirmwareUpdate() {
                                             .click();
                                     }),
                                     i.find(".dismiss").one("click", function () {
-                                        return storage.set({ updateDismiss: o[0].tag_name }), i.popup("close"), removeNotification(e), !1;
+                                        storage.set({ updateDismiss: o[0].tag_name });
+                                        i.popup("close");
+                                        removeNotification(e);
+                                        return false;
                                     }),
                                     openPopup(i);
                             },
@@ -11108,12 +11348,15 @@ function checkFirmwareUpdate() {
         });
 }
 function stopAllStations() {
-    if (!isControllerConnected()) return !1;
+    if (!isControllerConnected()) { return false; }
     areYouSure(_("Are you sure you want to stop all stations?"), "", function () {
-        $.mobile.loading("show"),
-            sendToOS("/cv?pw=&rsn=1").done(function () {
-                $.mobile.loading("hide"), removeStationTimers(), refreshStatus(), showerror(_("All stations have been stopped"));
-            });
+        $.mobile.loading("show");
+        sendToOS("/cv?pw=&rsn=1").done(function () {
+            $.mobile.loading("hide");
+            removeStationTimers();
+            refreshStatus();
+            showerror(_("All stations have been stopped"));
+        });
     });
 }
 function checkOSPiVersion(e) {
@@ -11122,30 +11365,36 @@ function checkOSPiVersion(e) {
 }
 function checkOSVersion(e) {
     var t = controller.options.fwv;
-    if (1e3 <= e) {
-        if (isNaN(controller.options.fwm)) return !1;
+    if (e >= 1e3) {
+        if (isNaN(controller.options.fwm)) { return false; }
         t = 10 * t + controller.options.fwm;
     }
     return !isOSPi() && (e === t || versionCompare(t.toString().split(""), e.toString().split("")));
 }
 function versionCompare(e, t) {
-    for (var n, i = Math.max(e.length, t.length); e.length < i;) e.push(0);
-    for (; t.length < i;) t.push(0);
+    for (var n, i = Math.max(e.length, t.length); e.length < i;) { e.push(0); }
+    for (; t.length < i;) { t.push(0); }
     for (var o = 0; o < i && 0 === (n = Math.max(-1, Math.min(1, e[o] - t[o]))); o++);
-    return (n = -1 === n ? !1 : n);
+    n = n === -1 ? false : n;
+    return n;
 }
 function getOSVersion(e) {
     return "string" == typeof (e = e || "object" != typeof controller.options ? e : controller.options.fwv) && -1 !== e.search(/ospi/i) ? e : ((e / 100) >> 0) + "." + (((e / 10) >> 0) % 10) + "." + (e % 10);
 }
 function getOSMinorVersion() {
-    return !isOSPi() && "object" == typeof controller.options && "number" == typeof controller.options.fwm && 0 < controller.options.fwm ? " (" + controller.options.fwm + ")" : "";
+    return !isOSPi() && typeof controller.options === "object" && typeof controller.options.fwm === "number" && controller.options.fwm > 0 ? " (" + controller.options.fwm + ")" : "";
 }
 function getHWVersion(e) {
     if (!e) {
-        if ("object" != typeof controller.options || void 0 === controller.options.hwv) return !1;
+        if (typeof controller.options !== "object" || controller.options.hwv === undefined) { return false; }
         e = controller.options.hwv;
     }
-    return "string" == typeof e ? e : 64 === e ? "OSPi" : 128 === e ? "OSBo" : 192 === e ? "Linux" : 255 === e ? "Demo" : (((e / 10) >> 0) % 10) + "." + (e % 10);
+    if (typeof e === "string") { return e; }
+    if (e === 64) { return "OSPi"; }
+    if (e === 128) { return "OSBo"; }
+    if (e === 192) { return "Linux"; }
+    if (e === 255) { return "Demo"; }
+    return (((e / 10) >> 0) % 10) + "." + (e % 10);
 }
 function getHWType() {
     return isOSPi() || "number" != typeof controller.options.hwt || 0 === controller.options.hwt
@@ -11159,30 +11408,32 @@ function getHWType() {
                     : "";
 }
 function areYouSure(e, t, n, i, o) {
-    $("#sure").popup("destroy").remove(), (n = n || function () { }), (i = i || function () { });
-    var a = 0,
-        s =
-            ("object" == typeof o && (a = o.type === dialog.REMOVE_STATION && Groups.canShift(o.gid) && Station.isSequential(o.station)),
-                $(
-                    "<div data-role='popup' data-theme='a' id='sure'><h3 class='sure-1 center'>" +
-                    e +
-                    "</h3><p class='sure-2 center'>" +
-                    t +
-                    "</p><a class='sure-do ui-btn ui-btn-b ui-corner-all ui-shadow' href='#'>" +
-                    _("Yes") +
-                    "</a><a class='sure-dont ui-btn ui-corner-all ui-shadow' href='#'>" +
-                    _("No") +
-                    "</a>" +
-                    (a ? "<label><input id='shift-sta' type='checkbox'>Move up remaining stations in the same sequential group?</label>" : "") +
-                    "</div>"
-                ));
+    $("#sure").popup("destroy").remove();
+    n = n || function () {};
+    i = i || function () {};
+    var a = 0;
+    if (typeof o === "object") {
+        a = o.type === dialog.REMOVE_STATION && Groups.canShift(o.gid) && Station.isSequential(o.station);
+    }
+    var s = $(
+        "<div data-role='popup' data-theme='a' id='sure'><h3 class='sure-1 center'>" + e +
+        "</h3><p class='sure-2 center'>" + t +
+        "</p><a class='sure-do ui-btn ui-btn-b ui-corner-all ui-shadow' href='#'>" + _("Yes") +
+        "</a><a class='sure-dont ui-btn ui-corner-all ui-shadow' href='#'>" + _("No") + "</a>" +
+        (a ? "<label><input id='shift-sta' type='checkbox'>Move up remaining stations in the same sequential group?</label>" : "") +
+        "</div>"
+    );
     s.find(".sure-do").one("click.sure", function () {
-        return s.popup("close"), n(), !1;
-    }),
-        s.find(".sure-dont").one("click.sure", function () {
-            return s.popup("close"), i(), !1;
-        }),
-        openPopup(s);
+        s.popup("close");
+        n();
+        return false;
+    });
+    s.find(".sure-dont").one("click.sure", function () {
+        s.popup("close");
+        i();
+        return false;
+    });
+    openPopup(s);
 }
 function showIPRequest(i) {
     function t(e, t) {
@@ -11197,91 +11448,112 @@ function showIPRequest(i) {
             })
         );
     }
-    var e = { title: _("Enter IP Address"), ip: [0, 0, 0, 0], showBack: !0, callback: function () { } },
-        a =
-            ((i = $.extend({}, e, i)),
-                $("#ipInput").popup("destroy").remove(),
-                $(
-                    "<div data-role='popup' id='ipInput' data-theme='a'><div data-role='header' data-theme='b'><h1>" +
-                    i.title +
-                    "</h1></div><div class='ui-content'><span><fieldset class='ui-grid-c incr'><div class='ui-block-a'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='plus' data-iconpos='bottom'></a></div><div class='ui-block-b'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='plus' data-iconpos='bottom'></a></div><div class='ui-block-c'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='plus' data-iconpos='bottom'></a></div><div class='ui-block-d'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='plus' data-iconpos='bottom'></a></div></fieldset><div class='ui-grid-c inputs'><div class='ui-block-a'><input data-wrapper-class='pad_buttons' class='ip_addr' type='number' pattern='[0-9]*' max='255' value='" +
-                    i.ip[0] +
-                    "'></div><div class='ui-block-b'><input data-wrapper-class='pad_buttons' class='ip_addr' type='number' pattern='[0-9]*' max='255' value='" +
-                    i.ip[1] +
-                    "'></div><div class='ui-block-c'><input data-wrapper-class='pad_buttons' class='ip_addr' type='number' pattern='[0-9]*' max='255' value='" +
-                    i.ip[2] +
-                    "'></div><div class='ui-block-d'><input data-wrapper-class='pad_buttons' class='ip_addr' type='number' pattern='[0-9]*' max='255' value='" +
-                    i.ip[3] +
-                    "'></div></div><fieldset class='ui-grid-c decr'><div class='ui-block-a'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='minus' data-iconpos='bottom'></a></div><div class='ui-block-b'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='minus' data-iconpos='bottom'></a></div><div class='ui-block-c'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='minus' data-iconpos='bottom'></a></div><div class='ui-block-d'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='minus' data-iconpos='bottom'></a></div></fieldset></span>" +
-                    (i.showBack ? "<button class='submit' data-theme='b'>" + _("Submit") + "</button>" : "") +
-                    "</div></div>"
-                ));
+    var e = { title: _("Enter IP Address"), ip: [0, 0, 0, 0], showBack: true, callback: function () {} };
+    i = $.extend({}, e, i);
+    $("#ipInput").popup("destroy").remove();
+    var a = $(
+        "<div data-role='popup' id='ipInput' data-theme='a'><div data-role='header' data-theme='b'><h1>" +
+        i.title +
+        "</h1></div><div class='ui-content'><span><fieldset class='ui-grid-c incr'><div class='ui-block-a'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='plus' data-iconpos='bottom'></a></div><div class='ui-block-b'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='plus' data-iconpos='bottom'></a></div><div class='ui-block-c'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='plus' data-iconpos='bottom'></a></div><div class='ui-block-d'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='plus' data-iconpos='bottom'></a></div></fieldset><div class='ui-grid-c inputs'><div class='ui-block-a'><input data-wrapper-class='pad_buttons' class='ip_addr' type='number' pattern='[0-9]*' max='255' value='" +
+        i.ip[0] +
+        "'></div><div class='ui-block-b'><input data-wrapper-class='pad_buttons' class='ip_addr' type='number' pattern='[0-9]*' max='255' value='" +
+        i.ip[1] +
+        "'></div><div class='ui-block-c'><input data-wrapper-class='pad_buttons' class='ip_addr' type='number' pattern='[0-9]*' max='255' value='" +
+        i.ip[2] +
+        "'></div><div class='ui-block-d'><input data-wrapper-class='pad_buttons' class='ip_addr' type='number' pattern='[0-9]*' max='255' value='" +
+        i.ip[3] +
+        "'></div></div><fieldset class='ui-grid-c decr'><div class='ui-block-a'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='minus' data-iconpos='bottom'></a></div><div class='ui-block-b'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='minus' data-iconpos='bottom'></a></div><div class='ui-block-c'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='minus' data-iconpos='bottom'></a></div><div class='ui-block-d'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='minus' data-iconpos='bottom'></a></div></fieldset></span>" +
+        (i.showBack ? "<button class='submit' data-theme='b'>" + _("Submit") + "</button>" : "") +
+        "</div></div>"
+    );
     a.find("button.submit").on("click", function () {
-        i.callback(o()), a.popup("destroy").remove();
-    }),
-        a
-            .on("focus", "input[type='number']", function () {
-                this.value = "";
-            })
-            .on("blur", "input[type='number']", function () {
-                "" === this.value && (this.value = "0");
-            }),
-        holdButton(a.find(".incr").children(), function (e) {
-            e = $(e.currentTarget).index();
-            return t(e, 1), !1;
-        }),
-        holdButton(a.find(".decr").children(), function (e) {
-            e = $(e.currentTarget).index();
-            return t(e, -1), !1;
-        }),
-        a.css("max-width", "350px").one("popupafterclose", function () {
-            i.callback(o());
-        }),
-        openPopup(a);
+        i.callback(o());
+        a.popup("destroy").remove();
+    });
+    a.on("focus", "input[type='number']", function () {
+        this.value = "";
+    }).on("blur", "input[type='number']", function () {
+        if (this.value === "") { this.value = "0"; }
+    });
+    holdButton(a.find(".incr").children(), function (e) {
+        e = $(e.currentTarget).index();
+        t(e, 1);
+        return false;
+    });
+    holdButton(a.find(".decr").children(), function (e) {
+        e = $(e.currentTarget).index();
+        t(e, -1);
+        return false;
+    });
+    a.css("max-width", "350px").one("popupafterclose", function () {
+        i.callback(o());
+    });
+    openPopup(a);
 }
 function showDurationBox(a) {
-    var e = { seconds: 0, title: _("Duration"), granularity: 0, preventCompression: !1, incrementalUpdate: !0, showBack: !0, showSun: !1, minimum: 0, callback: function () { } },
-        t = 0,
-        n =
-            ((a = $.extend({}, e, a)),
-                $("#durationBox").popup("destroy").remove(),
-                (a.seconds = parseInt(a.seconds)),
-                65535 === a.seconds ? ((t = 1), (a.seconds = 0)) : 65534 === a.seconds && ((t = 2), (a.seconds = 0)),
-                checkOSVersion(217) && (a.preventCompression = !0),
-                ["days", "hours", "minutes", "seconds"]),
+    var e = { seconds: 0, title: _("Duration"), granularity: 0, preventCompression: false, incrementalUpdate: true, showBack: true, showSun: false, minimum: 0, callback: function () {} };
+    a = $.extend({}, e, a);
+    $("#durationBox").popup("destroy").remove();
+    a.seconds = parseInt(a.seconds);
+    var t = 0;
+    if (a.seconds === 65535) { t = 1; a.seconds = 0; }
+    else if (a.seconds === 65534) { t = 2; a.seconds = 0; }
+    if (checkOSVersion(217)) { a.preventCompression = true; }
+    var n = ["days", "hours", "minutes", "seconds"],
         i = [_("Days"), _("Hours"), _("Minutes"), _("Seconds")],
         s = [86400, 3600, 60, 1],
         r = [0, 23, 59, 59],
         o = 4 - a.granularity,
         l = 0,
         c = sec2dhms(a.seconds);
-    if ((!a.preventCompression && checkOSVersion(210) && 64800 < a.maximum && (a.maximum = checkOSVersion(214) ? 57600 : 64800), a.maximum))
-        for (v = s.length - 1; 0 <= v; v--)
+    if (!a.preventCompression && checkOSVersion(210) && a.maximum > 64800) {
+        a.maximum = checkOSVersion(214) ? 57600 : 64800;
+    }
+    if (a.maximum) {
+        for (v = s.length - 1; v >= 0; v--) {
             if (a.maximum < s[v]) {
-                (l = v + 1), (o = s.length - l - a.granularity);
+                l = v + 1;
+                o = s.length - l - a.granularity;
                 break;
             }
+        }
+    }
     function d(e, t) {
         var n = g.find(".inputs input").eq(e),
             i = e + l,
             o = parseInt(n.val());
-        n.prop("disabled") ||
-            (-1 === t && (u() <= a.minimum || o <= 0)) ||
-            (1 === t && u() + s[i] > a.maximum) ||
-            (0 !== r[i] && 0 !== e && Math.abs(o) >= r[i] && (n.val(0), (n = g.find(".inputs input").eq(e - 1)), (o = parseInt(n.val()))),
-                n.val(o + t),
-                a.incrementalUpdate && a.callback(u()),
-                !a.preventCompression &&
-                checkOSVersion(210) &&
-                ((i = 1 === t)
-                    ? (60 <= u() && p("seconds", i), 10800 <= u() && p("minutes", i))
-                    : -1 === t && (u() <= -60 ? p("seconds", !i) : u() <= -10800 ? p("minutes", !i) : u() < 60 ? p("seconds", i) : u() < 10800 && p("minutes", i))));
+        if (n.prop("disabled")) { return; }
+        if (t === -1 && (u() <= a.minimum || o <= 0)) { return; }
+        if (t === 1 && u() + s[i] > a.maximum) { return; }
+        if (r[i] !== 0 && e !== 0 && Math.abs(o) >= r[i]) {
+            n.val(0);
+            n = g.find(".inputs input").eq(e - 1);
+            o = parseInt(n.val());
+        }
+        n.val(o + t);
+        if (a.incrementalUpdate) { a.callback(u()); }
+        if (!a.preventCompression && checkOSVersion(210)) {
+            i = (t === 1);
+            if (t === 1) {
+                if (u() >= 60) { p("seconds", i); }
+                if (u() >= 10800) { p("minutes", i); }
+            } else if (t === -1) {
+                if (u() <= -60) { p("seconds", !i); }
+                else if (u() <= -10800) { p("minutes", !i); }
+                else if (u() < 60) { p("seconds", i); }
+                else if (u() < 10800) { p("minutes", i); }
+            }
+        }
     }
     function u() {
         var e = g.find(".useSun").find("button.ui-btn-active");
-        return 1 === e.length
-            ? parseInt(e.val())
-            : dhms2sec({ days: parseInt(g.find(".days").val()) || 0, hours: parseInt(g.find(".hours").val()) || 0, minutes: parseInt(g.find(".minutes").val()) || 0, seconds: parseInt(g.find(".seconds").val()) || 0 });
+        if (e.length === 1) { return parseInt(e.val()); }
+        return dhms2sec({
+            days: parseInt(g.find(".days").val()) || 0,
+            hours: parseInt(g.find(".hours").val()) || 0,
+            minutes: parseInt(g.find(".minutes").val()) || 0,
+            seconds: parseInt(g.find(".seconds").val()) || 0
+        });
     }
     function p(e, t) {
         g.find("." + e)
@@ -11320,60 +11592,65 @@ function showDurationBox(a) {
         v = l;
         v < s.length - a.granularity;
         v++
-    )
-        (h += "<div " + (1 < o ? "class='ui-block-" + String.fromCharCode(97 + v - l) + "'" : "") + "><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='plus' data-iconpos='bottom'></a></div>"),
-            (f +=
-                "<div " +
-                (1 < o ? "class='ui-block-" + String.fromCharCode(97 + v - l) + "'" : "") +
-                "><label class='center'>" +
-                _(i[v]) +
-                "</label><input data-wrapper-class='pad_buttons' class='" +
-                n[v] +
-                "' type='number' pattern='[0-9]*' value='" +
-                c[n[v]] +
-                "'></div>"),
-            (m += "<div " + (1 < o ? "class='ui-block-" + String.fromCharCode(97 + v - l) + "'" : "") + "><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='minus' data-iconpos='bottom'></a></div>");
-    (h += "</fieldset>"),
-        (f += "</div>"),
-        (m += "</fieldset>"),
-        g.find("span").prepend(h + f + m),
-        g.find("button.submit").on("click", function () {
-            a.callback(u()), g.popup("destroy").remove();
-        }),
-        !a.preventCompression && checkOSVersion(210) && (a.seconds <= -60 && p("seconds", !0), a.seconds <= -10800 && p("minutes", !0), 60 <= a.seconds && p("seconds", !0), 10800 <= a.seconds) && p("minutes", !0),
-        g
-            .on("focus", "input[type='number']", function () {
-                this.value = "";
-            })
-            .on("blur", "input[type='number']", function () {
-                "" === this.value && (this.value = "0");
-            }),
-        holdButton(g.find(".incr").children(), function (e) {
-            e = $(e.currentTarget).index();
-            return d(e, 1), !1;
-        }),
-        holdButton(g.find(".decr").children(), function (e) {
-            e = $(e.currentTarget).index();
-            return d(e, -1), !1;
-        }),
-        a.showSun &&
+    ) {
+        var blk = o > 1 ? "class='ui-block-" + String.fromCharCode(97 + v - l) + "'" : "";
+        h += "<div " + blk + "><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='plus' data-iconpos='bottom'></a></div>";
+        f += "<div " + blk + "><label class='center'>" + _(i[v]) + "</label><input data-wrapper-class='pad_buttons' class='" + n[v] + "' type='number' pattern='[0-9]*' value='" + c[n[v]] + "'></div>";
+        m += "<div " + blk + "><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='minus' data-iconpos='bottom'></a></div>";
+    }
+    h += "</fieldset>";
+    f += "</div>";
+    m += "</fieldset>";
+    g.find("span").prepend(h + f + m);
+    g.find("button.submit").on("click", function () {
+        a.callback(u());
+        g.popup("destroy").remove();
+    });
+    if (!a.preventCompression && checkOSVersion(210)) {
+        if (a.seconds <= -60) { p("seconds", true); }
+        if (a.seconds <= -10800) { p("minutes", true); }
+        if (a.seconds >= 60) { p("seconds", true); }
+        if (a.seconds >= 10800) { p("minutes", true); }
+    }
+    g.on("focus", "input[type='number']", function () {
+        this.value = "";
+    }).on("blur", "input[type='number']", function () {
+        if (this.value === "") { this.value = "0"; }
+    });
+    holdButton(g.find(".incr").children(), function (e) {
+        e = $(e.currentTarget).index();
+        d(e, 1);
+        return false;
+    });
+    holdButton(g.find(".decr").children(), function (e) {
+        e = $(e.currentTarget).index();
+        d(e, -1);
+        return false;
+    });
+    if (a.showSun) {
         g.find(".useSun").on("click", "button", function () {
             var e = $(this),
                 t = g.find(".useSun").find("button").not(e),
                 n = g.find("span").find(".ui-btn,input");
-            t.removeClass("ui-btn-active"),
-                e.hasClass("ui-btn-active") ? (e.removeClass("ui-btn-active"), n.prop("disabled", !1).removeClass("ui-disabled")) : (e.addClass("ui-btn-active"), n.prop("disabled", !0).addClass("ui-disabled")),
-                a.incrementalUpdate && a.callback(u());
-        }),
-        g
-            .css("max-width", "350px")
-            .one("popupafteropen", function () {
-                0 !== t && g.find("span").find(".ui-btn,input").prop("disabled", !0).addClass("ui-disabled");
-            })
-            .one("popupafterclose", function () {
-                a.incrementalUpdate && a.callback(u());
-            }),
-        openPopup(g);
+            t.removeClass("ui-btn-active");
+            if (e.hasClass("ui-btn-active")) {
+                e.removeClass("ui-btn-active");
+                n.prop("disabled", false).removeClass("ui-disabled");
+            } else {
+                e.addClass("ui-btn-active");
+                n.prop("disabled", true).addClass("ui-disabled");
+            }
+            if (a.incrementalUpdate) { a.callback(u()); }
+        });
+    }
+    g.css("max-width", "350px")
+        .one("popupafteropen", function () {
+            if (t !== 0) { g.find("span").find(".ui-btn,input").prop("disabled", true).addClass("ui-disabled"); }
+        })
+        .one("popupafterclose", function () {
+            if (a.incrementalUpdate) { a.callback(u()); }
+        });
+    openPopup(g);
 }
 function showSingleDurationInput(n) {
     $("#singleDuration").popup("destroy").remove();
@@ -11384,47 +11661,47 @@ function showSingleDurationInput(n) {
         var t = parseInt(a.val());
         (-1 === e && t === n.minimum) || (1 === e && t === n.maximum) || (a.val(t + e), n.updateOnChange && i(t + e));
     }
-    var t = { data: 0, title: _("Duration"), minimum: 0, label: "", updateOnChange: !0, showBack: !0, callback: function () { } },
-        o =
-            ((n = $.extend({}, t, n)),
-                $(
-                    "<div data-role='popup' id='singleDuration' data-theme='a'><div data-role='header' data-theme='b'><h1>" +
-                    n.title +
-                    "</h1></div><div class='ui-content'>" +
-                    (n.helptext ? "<p class='rain-desc center smaller'>" + n.helptext + "</p>" : "") +
-                    "<label class='center'>" +
-                    n.label +
-                    "</label><div class='input_with_buttons'><button class='decr ui-btn ui-btn-icon-notext ui-icon-carat-l btn-no-border'></button><input type='number' pattern='[0-9]*' value='" +
-                    n.data +
-                    "'><button class='incr ui-btn ui-btn-icon-notext ui-icon-carat-r btn-no-border'></button></div>" +
-                    (n.updateOnChange && !n.showBack ? "" : "<input type='submit' data-theme='b' value='" + _("Submit") + "'>") +
-                    "</div></div>"
-                )),
-        a = o.find("input");
+    var t = { data: 0, title: _("Duration"), minimum: 0, label: "", updateOnChange: true, showBack: true, callback: function () {} };
+    n = $.extend({}, t, n);
+    var o = $(
+        "<div data-role='popup' id='singleDuration' data-theme='a'><div data-role='header' data-theme='b'><h1>" +
+        n.title +
+        "</h1></div><div class='ui-content'>" +
+        (n.helptext ? "<p class='rain-desc center smaller'>" + n.helptext + "</p>" : "") +
+        "<label class='center'>" + n.label +
+        "</label><div class='input_with_buttons'><button class='decr ui-btn ui-btn-icon-notext ui-icon-carat-l btn-no-border'></button><input type='number' pattern='[0-9]*' value='" +
+        n.data +
+        "'><button class='incr ui-btn ui-btn-icon-notext ui-icon-carat-r btn-no-border'></button></div>" +
+        (n.updateOnChange && !n.showBack ? "" : "<input type='submit' data-theme='b' value='" + _("Submit") + "'>") +
+        "</div></div>"
+    );
+    var a = o.find("input");
     holdButton(o.find(".incr"), function () {
-        return e(1), !1;
-    }),
-        holdButton(o.find(".decr"), function () {
-            return e(-1), !1;
-        }),
-        o
-            .find("input[type='number']")
-            .on("focus", function () {
-                this.value = "";
-            })
-            .on("blur", function () {
-                "" === this.value && (this.value = "0");
-            }),
-        o.find("input[type='submit']").on("click", function () {
-            i(a.val()), o.popup("destroy").remove();
-        }),
-        o.one("popupafterclose", function () {
-            n.updateOnChange && i(a.val());
-        }),
-        openPopup(o);
+        e(1);
+        return false;
+    });
+    holdButton(o.find(".decr"), function () {
+        e(-1);
+        return false;
+    });
+    o.find("input[type='number']").on("focus", function () {
+        this.value = "";
+    }).on("blur", function () {
+        if (this.value === "") { this.value = "0"; }
+    });
+    o.find("input[type='submit']").on("click", function () {
+        i(a.val());
+        o.popup("destroy").remove();
+    });
+    o.one("popupafterclose", function () {
+        if (n.updateOnChange) { i(a.val()); }
+    });
+    openPopup(o);
 }
 function showDateTimeInput(a, n) {
-    $("#datetimeInput").popup("destroy").remove(), a instanceof Date || (a = new Date(1e3 * a)).setMinutes(a.getMinutes() - a.getTimezoneOffset()), (n = n || function () { });
+    $("#datetimeInput").popup("destroy").remove();
+    if (!(a instanceof Date)) { a = new Date(1e3 * a); a.setMinutes(a.getMinutes() - a.getTimezoneOffset()); }
+    n = n || function () {};
     function s(e, t) {
         a["setUTC" + e](a["getUTC" + e]() + t), n(new Date(a.getTime())), i();
     }
@@ -11445,33 +11722,26 @@ function showDateTimeInput(a, n) {
                     (t += "<div class='ui-block-" + String.fromCharCode(97 + o) + "'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='plus' data-iconpos='bottom'></a></div>"),
                     (n += "<div id='" + r[o] + "' class='ui-block-" + String.fromCharCode(97 + o) + "'>" + e + "</div>"),
                     (i += "<div class='ui-block-" + String.fromCharCode(97 + o) + "'><a href='#' data-role='button' data-mini='true' data-corners='true' data-icon='minus' data-iconpos='bottom'></a></div>");
-            (t += "</fieldset>"),
-                (n += "</div>"),
-                (i += "</fieldset>"),
-                c
-                    .find(".ui-content")
-                    .html("<span>" + t + n + i + "</span>")
-                    .enhanceWithin(),
-                c
-                    .find(".incr")
-                    .children()
-                    .on("vclick", function () {
-                        var e = $(this).index();
-                        return s(c.find(".inputs").children().eq(e).attr("id"), 1), !1;
-                    }),
-                c
-                    .find(".decr")
-                    .children()
-                    .on("vclick", function () {
-                        var e = $(this).index();
-                        return s(c.find(".inputs").children().eq(e).attr("id"), -1), !1;
-                    });
+            t += "</fieldset>";
+            n += "</div>";
+            i += "</fieldset>";
+            c.find(".ui-content").html("<span>" + t + n + i + "</span>").enhanceWithin();
+            c.find(".incr").children().on("vclick", function () {
+                var e = $(this).index();
+                s(c.find(".inputs").children().eq(e).attr("id"), 1);
+                return false;
+            });
+            c.find(".decr").children().on("vclick", function () {
+                var e = $(this).index();
+                s(c.find(".inputs").children().eq(e).attr("id"), -1);
+                return false;
+            });
         };
-    i(),
-        c.css("width", "280px").one("popupafterclose", function () {
-            n(a);
-        }),
-        openPopup(c);
+    i();
+    c.css("width", "280px").one("popupafterclose", function () {
+        n(a);
+    });
+    openPopup(c);
 }
 function showTimeInput(l) {
     function c() {
@@ -11500,12 +11770,15 @@ function showTimeInput(l) {
             ? ((e = 0), (t = parseInt(p.find(".offsetInput input").val())), n.hasClass("rise") ? (0 <= t ? (e = t) : ((e = -t), (e |= 4096)), (e |= 16384)) : (0 <= t ? (e = t) : ((e = -t), (e |= 4096)), (e |= 8192)), e)
             : ((n = parseInt(p.find(".hour").val())), 60 * (n = isMetric || (u && 12 !== n && (n += 12), u) || 12 !== n ? n : 0) + parseInt(p.find(".minute").val()));
     }
-    var i,
-        e,
-        t = { minutes: 0, title: _("Time"), incrementalUpdate: !0, showBack: !0, showSun: !1, callback: function () { } },
-        t = ((l = $.extend({}, t, l)), $("#timeInput").popup("destroy").remove(), 2047 & l.minutes),
-        o = 0,
-        u = ((l.minutes >> 12) & 1 && (t = -t), (l.minutes >> 14) & 1 ? (o = 1) : (l.minutes >> 13) & 1 && (o = 2), 719 < l.minutes),
+    var i, e;
+    var defaults = { minutes: 0, title: _("Time"), incrementalUpdate: true, showBack: true, showSun: false, callback: function () {} };
+    l = $.extend({}, defaults, l);
+    $("#timeInput").popup("destroy").remove();
+    var t = 2047 & l.minutes;
+    if ((l.minutes >> 12) & 1) { t = -t; }
+    var o = 0;
+    if ((l.minutes >> 14) & 1) { o = 1; } else if ((l.minutes >> 13) & 1) { o = 2; }
+    var u = l.minutes > 719,
         p = $(
             "<div data-role='popup' id='timeInput' data-theme='a'><div data-role='header' data-theme='b'><h1>" +
             l.title +
@@ -11549,149 +11822,143 @@ function showTimeInput(l) {
             "</div></div>"
         );
     p.find("button.submit").on("click", function () {
-        l.callback(d()), p.popup("destroy").remove();
-    }),
-        p
-            .on("focus", "input[type='number']", function (e) {
-                e.target.value = "";
-            })
-            .on("blur", "input[type='number']", function (e) {
-                var t = parseInt(e.target.value) || 0;
-                e.target.value = $(e.target).hasClass("dontPad") ? t : pad(t);
-            }),
-        holdButton(p.find(".incr").children(), function (e) {
-            var e = $(e.currentTarget),
-                t = e.index();
-            return 0 === e.find(".ui-disabled").length && n(t, 1), !1;
-        }),
-        holdButton(p.find(".decr").children(), function (e) {
-            var e = $(e.currentTarget),
-                t = e.index();
-            return 0 === e.find(".ui-disabled").length && n(t, -1), !1;
-        }),
-        l.showSun &&
-        (p.find(".useSun").on("click", "button", function () {
+        l.callback(d());
+        p.popup("destroy").remove();
+    });
+    p.on("focus", "input[type='number']", function (e) {
+        e.target.value = "";
+    }).on("blur", "input[type='number']", function (e) {
+        var t = parseInt(e.target.value) || 0;
+        e.target.value = $(e.target).hasClass("dontPad") ? t : pad(t);
+    });
+    holdButton(p.find(".incr").children(), function (e) {
+        var e = $(e.currentTarget),
+            t = e.index();
+        if (e.find(".ui-disabled").length === 0) { n(t, 1); }
+        return false;
+    });
+    holdButton(p.find(".decr").children(), function (e) {
+        var e = $(e.currentTarget),
+            t = e.index();
+        if (e.find(".ui-disabled").length === 0) { n(t, -1); }
+        return false;
+    });
+    if (l.showSun) {
+        p.find(".useSun").on("click", "button", function () {
             var e = $(this),
                 t = p.find(".useSun").find("button").not(e),
                 n = p.find(".offsetInput"),
                 i = p.find("span").find(".ui-btn,input,p");
-            t.removeClass("ui-btn-active"),
-                e.hasClass("ui-btn-active")
-                    ? (e.removeClass("ui-btn-active"), n.slideUp(), i.prop("disabled", !1).removeClass("ui-disabled"))
-                    : (e.addClass("ui-btn-active"), n.slideDown(), i.prop("disabled", !0).addClass("ui-disabled")),
-                l.incrementalUpdate && l.callback(d());
-        }),
-            (i = p.find(".offsetInput").find("input")),
-            (e = function (e) {
-                var t = parseInt(i.val());
-                (-1 === e && -240 === t) || (1 === e && 240 === t) || (i.val(t + e), l.incrementalUpdate && l.callback(d()));
-            }),
-            i
-                .on("focus", function () {
-                    this.value = "";
-                })
-                .on("blur", function () {
-                    "" === this.value ? (this.value = "0") : 240 < this.value ? (this.value = "240") : this.value < -240 && (this.value = "-240");
-                }),
-            holdButton(p.find(".offsetInput").find(".incr"), function () {
-                return e(1), !1;
-            }),
-            holdButton(p.find(".offsetInput").find(".decr"), function () {
-                return e(-1), !1;
-            })),
-        p
-            .css("max-width", "350px")
-            .one("popupafteropen", function () {
-                0 !== o && p.find("span").find(".ui-btn,input,p").prop("disabled", !0).addClass("ui-disabled");
-            })
-            .one("popupafterclose", function () {
-                l.incrementalUpdate && l.callback(d());
-            }),
-        openPopup(p);
+            t.removeClass("ui-btn-active");
+            if (e.hasClass("ui-btn-active")) {
+                e.removeClass("ui-btn-active");
+                n.slideUp();
+                i.prop("disabled", false).removeClass("ui-disabled");
+            } else {
+                e.addClass("ui-btn-active");
+                n.slideDown();
+                i.prop("disabled", true).addClass("ui-disabled");
+            }
+            if (l.incrementalUpdate) { l.callback(d()); }
+        });
+        i = p.find(".offsetInput").find("input");
+        e = function (e) {
+            var t = parseInt(i.val());
+            if (e === -1 && t === -240) { return; }
+            if (e === 1 && t === 240) { return; }
+            i.val(t + e);
+            if (l.incrementalUpdate) { l.callback(d()); }
+        };
+        i.on("focus", function () {
+            this.value = "";
+        }).on("blur", function () {
+            if (this.value === "") { this.value = "0"; }
+            else if (this.value > 240) { this.value = "240"; }
+            else if (this.value < -240) { this.value = "-240"; }
+        });
+        holdButton(p.find(".offsetInput").find(".incr"), function () {
+            e(1);
+            return false;
+        });
+        holdButton(p.find(".offsetInput").find(".decr"), function () {
+            e(-1);
+            return false;
+        });
+    }
+    p.css("max-width", "350px")
+        .one("popupafteropen", function () {
+            if (o !== 0) { p.find("span").find(".ui-btn,input,p").prop("disabled", true).addClass("ui-disabled"); }
+        })
+        .one("popupafterclose", function () {
+            if (l.incrementalUpdate) { l.callback(d()); }
+        });
+    openPopup(p);
 }
 function showHelpText(e) {
     e.stopImmediatePropagation();
     var e = $(this),
         t = e.data("helptext");
-    return openPopup($("<div data-role='popup' data-theme='a'><p>" + t + "</p></div>"), { positionTo: e }), !1;
+    openPopup($("<div data-role='popup' data-theme='a'><p>" + t + "</p></div>"), { positionTo: e });
+    return false;
 }
 function changePage(e, t) {
-    (t = t || {}),
-        0 !== e.indexOf("#") && (e = "#" + e),
-        closePanel(function () {
-            $.mobile.pageContainer.pagecontainer("change", e, t);
-        });
+    t = t || {};
+    if (e.indexOf("#") !== 0) { e = "#" + e; }
+    closePanel(function () {
+        $.mobile.pageContainer.pagecontainer("change", e, t);
+    });
 }
 function openPopup(t, e) {
-    (e = $.extend({}, { history: !1, positionTo: "window", overlayTheme: "b" }, e)),
-        $.mobile.pageContainer.append(t),
-        t
-            .one("popupafterclose", function () {
-                var e = $("#shift-sta").is(":checked");
-                void 0 !== e && (popupData.shift = e), t.popup("destroy").remove();
-            })
-            .popup(e)
-            .enhanceWithin(),
-        t.popup("open");
+    e = $.extend({}, { history: false, positionTo: "window", overlayTheme: "b" }, e);
+    $.mobile.pageContainer.append(t);
+    t.one("popupafterclose", function () {
+        var e = $("#shift-sta").is(":checked");
+        if (e !== undefined) { popupData.shift = e; }
+        t.popup("destroy").remove();
+    }).popup(e).enhanceWithin();
+    t.popup("open");
 }
 function closePanel(e) {
     var t = $(".ui-panel-open");
-    0 < t.length
-        ? (t.one("panelclose", function () {
+    if (t.length > 0) {
+        t.one("panelclose", function () {
             e();
-        }),
-            t.panel("close"))
-        : e();
+        });
+        t.panel("close");
+    } else {
+        e();
+    }
 }
 function changeHeader(e) {
+    e = $.extend(true, {}, { title: "", class: "", animate: true, leftBtn: { icon: "", class: "", text: "", on: function () {} }, rightBtn: { icon: "", class: "", text: "", on: function () {} } }, e);
+    if (e.title === "" && e.class === "") { e.class = "logo"; }
     var t = $("#header"),
-        n =
-            ("" === (e = $.extend(!0, {}, { title: "", class: "", animate: !0, leftBtn: { icon: "", class: "", text: "", on: function () { } }, rightBtn: { icon: "", class: "", text: "", on: function () { } } }, e)).title &&
-                "" === e.class &&
-                (e.class = "logo"),
-                $(
-                    "<button data-icon='" +
-                    e.leftBtn.icon +
-                    "' " +
-                    ("" === e.leftBtn.text ? "data-iconpos='notext' " : "") +
-                    "class='ui-btn-left " +
-                    e.leftBtn.class +
-                    "'>" +
-                    e.leftBtn.text +
-                    "</button><h3 class='" +
-                    e.class +
-                    "'>" +
-                    e.title +
-                    "</h3><button data-icon='" +
-                    e.rightBtn.icon +
-                    "' " +
-                    ("" === e.rightBtn.text ? "data-iconpos='notext' " : "") +
-                    "class='ui-btn-right " +
-                    e.rightBtn.class +
-                    "'>" +
-                    e.rightBtn.text +
-                    "</button>"
-                )),
+        n = $(
+            "<button data-icon='" + e.leftBtn.icon + "' " +
+            (e.leftBtn.text === "" ? "data-iconpos='notext' " : "") +
+            "class='ui-btn-left " + e.leftBtn.class + "'>" + e.leftBtn.text +
+            "</button><h3 class='" + e.class + "'>" + e.title +
+            "</h3><button data-icon='" + e.rightBtn.icon + "' " +
+            (e.rightBtn.text === "" ? "data-iconpos='notext' " : "") +
+            "class='ui-btn-right " + e.rightBtn.class + "'>" + e.rightBtn.text + "</button>"
+        ),
         i = e.animate ? "fast" : 0;
-    return (
-        t
-            .children()
-            .stop()
-            .fadeOut(i, function () {
-                t.html(n).toolbar(t.hasClass("ui-header") ? "refresh" : null), t.find(".ui-btn-left").on("click", e.leftBtn.on), t.find(".ui-btn-right").on("click", e.rightBtn.on);
-            })
-            .fadeIn(i),
-        n
-    );
+    t.children().stop().fadeOut(i, function () {
+        t.html(n).toolbar(t.hasClass("ui-header") ? "refresh" : null);
+        t.find(".ui-btn-left").on("click", e.leftBtn.on);
+        t.find(".ui-btn-right").on("click", e.rightBtn.on);
+    }).fadeIn(i);
+    return n;
 }
 function getPageTop() {
     var e = $.mobile.window;
     return { x: (e[0].innerWidth || e.width()) / 2 + e.scrollLeft(), y: e.scrollTop() + 22.5 };
 }
 function showLoading(e) {
-    (e = "string" == typeof e ? $(e) : e).off("click").html("<p class='ui-icon ui-icon-loading mini-load'></p>");
+    e = (typeof e === "string" ? $(e) : e);
+    e.off("click").html("<p class='ui-icon ui-icon-loading mini-load'></p>");
     e = e.filter("#footer-running");
-    1 === e.length && e.find(".mini-load").addClass("bottom");
+    if (e.length === 1) { e.find(".mini-load").addClass("bottom"); }
 }
 function getPicture(o) {
     var a = $("<input style='display: none' type='file' accept='image/*' />")
@@ -11719,11 +11986,12 @@ function getPicture(o) {
     a.get(0).click();
 }
 function goHome(e) {
-    "sprinklers" !== $(".ui-page-active").attr("id") &&
-        ($.mobile.document.one("pageshow", function () {
+    if ($(".ui-page-active").attr("id") !== "sprinklers") {
+        $.mobile.document.one("pageshow", function () {
             delete $.mobile.navigate.history.getActive().transition;
-        }),
-            changePage("#sprinklers", !0 === e ? { firstLoad: !0, showLoading: !1, transition: "none" } : { reverse: !0 }));
+        });
+        changePage("#sprinklers", e === true ? { firstLoad: true, showLoading: false, transition: "none" } : { reverse: true });
+    }
 }
 function goBack() {
     var e = $(".ui-page-active");
@@ -11735,65 +12003,63 @@ function goBack() {
             try {
                 navigator.app.exitApp();
             } catch (e) { }
-        else 0 < pageHistoryCount && pageHistoryCount--, 0 === pageHistoryCount ? navigator.app.exitApp() : ((goingBack = !0), $.mobile.back());
+        else {
+            if (pageHistoryCount > 0) { pageHistoryCount--; }
+            if (pageHistoryCount === 0) { navigator.app.exitApp(); } else { goingBack = true; $.mobile.back(); }
+        }
     }
 }
 function checkChangesBeforeBack() {
     checkChanges(goBack);
 }
 function checkChanges(e) {
+    e = e || function () {};
     var t = $(".ui-page-active").find(".hasChanges");
-    if (((e = e || function () { }), 0 !== t.length))
-        return (
-            areYouSure(
-                _("Do you want to save your changes?"),
-                "",
-                function () {
-                    t.click(), t.hasClass("preventBack") || e();
-                },
-                e
-            ),
-            !1
+    if (t.length !== 0) {
+        areYouSure(
+            _("Do you want to save your changes?"),
+            "",
+            function () {
+                t.click();
+                if (!t.hasClass("preventBack")) { e(); }
+            },
+            e
         );
+        return false;
+    }
     e();
 }
 function showerror(message, duration) {
-    (duration = duration || 2500),
-        clearTimeout(errorTimeout),
-        $.mobile.loading("show", { text: message, textVisible: !0, textonly: !0, theme: "b" }),
-        (errorTimeout = setTimeout(function () {
-            $.mobile.loading("hide");
-        }, duration));
+    duration = duration || 2500;
+    clearTimeout(errorTimeout);
+    $.mobile.loading("show", { text: message, textVisible: true, textonly: true, theme: "b" });
+    errorTimeout = setTimeout(function () {
+        $.mobile.loading("hide");
+    }, duration);
 }
 function loadLocalSettings() {
     storage.get("isMetric", function (stored) {
         switch (stored.isMetric) {
-            case "true":
-                isMetric = !0;
-                break;
-            case "false":
-                isMetric = !1;
+            case "true":  isMetric = true;  break;
+            case "false": isMetric = false; break;
         }
-    }),
-        storage.get("groupView", function (stored) {
-            switch (stored.groupView) {
-                case "true":
-                    groupView = !0;
-                    break;
-                case "false":
-                    groupView = !1;
-            }
-        });
+    });
+    storage.get("groupView", function (stored) {
+        switch (stored.groupView) {
+            case "true":  groupView = true;  break;
+            case "false": groupView = false; break;
+        }
+    });
 }
 function fixInputClick($container) {
-    FastClick.notNeeded(document.body) ||
-        ($container.find("input[type='checkbox']:not([data-role='flipswitch']),.ui-select > .ui-btn").addClass("needsclick"),
-            $container.find(".ui-collapsible-heading-toggle").on("click", function () {
-                var $btn = $(this);
-                setTimeout(function () {
-                    $btn.removeClass("ui-btn-active");
-                }, 100);
-            }));
+    if (FastClick.notNeeded(document.body)) { return; }
+    $container.find("input[type='checkbox']:not([data-role='flipswitch']),.ui-select > .ui-btn").addClass("needsclick");
+    $container.find(".ui-collapsible-heading-toggle").on("click", function () {
+        var $btn = $(this);
+        setTimeout(function () {
+            $btn.removeClass("ui-btn-active");
+        }, 100);
+    });
 }
 function holdButton($buttons, handler) {
     var repeatInterval;
@@ -11812,14 +12078,17 @@ function holdButton($buttons, handler) {
 }
 function insertStyle(cssText) {
     var styleEl = document.createElement("style");
-    (styleEl.innerHTML = cssText), document.head.appendChild(styleEl);
+    styleEl.innerHTML = cssText;
+    document.head.appendChild(styleEl);
 }
 function parseIntArray(arr) {
     for (var idx = 0; idx < arr.length; idx++) arr[idx] = +arr[idx];
     return arr;
 }
 function getDurationText(seconds) {
-    return 65535 === seconds ? _("Sunset to Sunrise") : 65534 === seconds ? _("Sunrise to Sunset") : dhms2str(sec2dhms(seconds));
+    if (seconds === 65535) { return _("Sunset to Sunrise"); }
+    if (seconds === 65534) { return _("Sunrise to Sunset"); }
+    return dhms2str(sec2dhms(seconds));
 }
 function sec2hms(totalSeconds) {
     var result = "",
@@ -11830,14 +12099,22 @@ function sec2hms(totalSeconds) {
 }
 function sec2dhms(totalSeconds) {
     var sign = totalSeconds < 0 ? -1 : 1;
-    return (
-        (totalSeconds = Math.abs(totalSeconds)),
-        { days: Math.max(0, parseInt(totalSeconds / 86400)) * sign, hours: Math.max(0, parseInt((totalSeconds % 86400) / 3600)) * sign, minutes: Math.max(0, parseInt(((totalSeconds % 86400) % 3600) / 60)) * sign, seconds: Math.max(0, parseInt(((totalSeconds % 86400) % 3600) % 60)) * sign }
-    );
+    totalSeconds = Math.abs(totalSeconds);
+    return {
+        days: Math.max(0, parseInt(totalSeconds / 86400)) * sign,
+        hours: Math.max(0, parseInt((totalSeconds % 86400) / 3600)) * sign,
+        minutes: Math.max(0, parseInt(((totalSeconds % 86400) % 3600) / 60)) * sign,
+        seconds: Math.max(0, parseInt(((totalSeconds % 86400) % 3600) % 60)) * sign
+    };
 }
 function dhms2str(dhms) {
     var result = "";
-    return dhms.days && (result += dhms.days + _("d") + " "), dhms.hours && (result += dhms.hours + _("h") + " "), dhms.minutes && (result += dhms.minutes + _("m") + " "), dhms.seconds && (result += dhms.seconds + _("s") + " "), (result = "" === result ? "0" + _("s") : result).trim();
+    if (dhms.days) { result += dhms.days + _("d") + " "; }
+    if (dhms.hours) { result += dhms.hours + _("h") + " "; }
+    if (dhms.minutes) { result += dhms.minutes + _("m") + " "; }
+    if (dhms.seconds) { result += dhms.seconds + _("s") + " "; }
+    result = result === "" ? "0" + _("s") : result;
+    return result.trim();
 }
 function dhms2sec(dhms) {
     return parseInt(86400 * dhms.days + 3600 * dhms.hours + 60 * dhms.minutes + dhms.seconds);
@@ -11854,31 +12131,33 @@ function isControllerConnected() {
     );
 }
 function exportObj(selector, data, emailSubject) {
-    var mailtoUrl;
-    (data = encodeURIComponent(JSON.stringify(data))),
-        isFileCapable
-            ? $(selector).attr({ href: "data:text/json;charset=utf-8," + data, download: "backup-" + new Date().toLocaleDateString().replace(/\//g, "-") + ".json" })
-            : ((emailSubject = emailSubject || "OpenSprinkler Data Export on " + dateToString(new Date())),
-                (mailtoUrl = "mailto:?subject=" + encodeURIComponent(emailSubject) + "&body=" + data),
-                $(selector)
-                    .attr("href", mailtoUrl)
-                    .on("click", function () {
-                        window.open(mailtoUrl);
-                    }));
+    data = encodeURIComponent(JSON.stringify(data));
+    if (isFileCapable) {
+        $(selector).attr({ href: "data:text/json;charset=utf-8," + data, download: "backup-" + new Date().toLocaleDateString().replace(/\//g, "-") + ".json" });
+    } else {
+        emailSubject = emailSubject || "OpenSprinkler Data Export on " + dateToString(new Date());
+        var mailtoUrl = "mailto:?subject=" + encodeURIComponent(emailSubject) + "&body=" + data;
+        $(selector).attr("href", mailtoUrl).on("click", function () {
+            window.open(mailtoUrl);
+        });
+    }
 }
 function sortObj(obj, sortBy) {
-    var key,
-        keys = [];
-    for (key in obj) obj.hasOwnProperty(key) && keys.push(key);
-    "function" == typeof sortBy
-        ? keys.sort(sortBy)
-        : "value" === sortBy
-            ? keys.sort(function (a, b) {
-                (a = obj[a]), (b = obj[b]);
-                return a < b ? -1 : b < a ? 1 : 0;
-            })
-            : keys.sort();
-    for (var result = {}, idx = 0; idx < keys.length; idx++) result[keys[idx]] = obj[keys[idx]];
+    var key, keys = [];
+    for (key in obj) { if (obj.hasOwnProperty(key)) { keys.push(key); } }
+    if (typeof sortBy === "function") {
+        keys.sort(sortBy);
+    } else if (sortBy === "value") {
+        keys.sort(function (a, b) {
+            a = obj[a];
+            b = obj[b];
+            return a < b ? -1 : b < a ? 1 : 0;
+        });
+    } else {
+        keys.sort();
+    }
+    var result = {};
+    for (var idx = 0; idx < keys.length; idx++) { result[keys[idx]] = obj[keys[idx]]; }
     return result;
 }
 function getDayName(date, format) {
@@ -11894,30 +12173,37 @@ function htmlEscape(str) {
     return String(str).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/'/g, "&#39;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 function _(key) {
-    return ("object" == typeof language && language.hasOwnProperty(key) && language[key]) || key;
+    return (typeof language === "object" && language.hasOwnProperty(key) && language[key]) || key;
 }
 function setLang() {
     $("[data-translate]").text(function () {
         var $el = $(this),
             key = $el.data("translate");
-        if (!$el.is("input[type='submit']")) return _(key);
-        $el.val(_(key)), 0 < $el.parent("div.ui-btn").length && $el.button("refresh");
-    }),
-        $(".ui-toolbar-back-btn").text(_("Back")),
-        checkCurrLang();
+        if (!$el.is("input[type='submit']")) { return _(key); }
+        $el.val(_(key));
+        if ($el.parent("div.ui-btn").length > 0) { $el.button("refresh"); }
+    });
+    $(".ui-toolbar-back-btn").text(_("Back"));
+    checkCurrLang();
 }
 function updateLang(langCode) {
-    (language = {}),
-        void 0 === langCode
-            ? storage.get("lang", function (stored) {
-                updateLang((stored.lang || navigator.language || navigator.browserLanguage || navigator.systemLanguage || navigator.userLanguage || "en").substring(0, 2));
-            })
-            : (storage.set({ lang: langCode }),
-                "en" === (currLang = langCode)
-                    ? setLang()
-                    : $.getJSON(getAppURLPath() + "locale/" + langCode + ".js", function (translations) {
-                        (language = translations.messages), setLang();
-                    }).fail(setLang));
+    language = {};
+    if (langCode === undefined) {
+        storage.get("lang", function (stored) {
+            updateLang((stored.lang || navigator.language || navigator.browserLanguage || navigator.systemLanguage || navigator.userLanguage || "en").substring(0, 2));
+        });
+    } else {
+        storage.set({ lang: langCode });
+        currLang = langCode;
+        if (currLang === "en") {
+            setLang();
+        } else {
+            $.getJSON(getAppURLPath() + "locale/" + langCode + ".js", function (translations) {
+                language = translations.messages;
+                setLang();
+            }).fail(setLang);
+        }
+    }
 }
 function languageSelect() {
     $("#localization").popup("destroy").remove();
@@ -11925,68 +12211,50 @@ function languageSelect() {
         "<div data-role='popup' data-theme='a' id='localization' data-corners='false'><ul data-inset='true' data-role='listview' id='lang' data-corners='false'><li data-role='list-divider' data-theme='b' class='center' data-translate='Localization'>" +
         _("Localization") +
         "</li>";
-    return (
-        $.each(
-            {
-                af: "Afrikaans",
-                am: "Amharic",
-                bg: "Bulgarian",
-                zh: "Chinese",
-                hr: "Croatian",
-                cs: "Czech",
-                nl: "Dutch",
-                en: "English",
-                et: "Estonian",
-                pes: "Farsi",
-                fr: "French",
-                de: "German",
-                el: "Greek",
-                he: "Hebrew",
-                hu: "Hungarian",
-                is: "Icelandic",
-                it: "Italian",
-                lv: "Latvian",
-                mn: "Mongolian",
-                no: "Norwegian",
-                pl: "Polish",
-                pt: "Portuguese",
-                ru: "Russian",
-                sk: "Slovak",
-                sl: "Slovenian",
-                es: "Spanish",
-                ta: "Tamil",
-                th: "Thai",
-                tr: "Turkish",
-                sv: "Swedish",
-                ro: "Romanian",
-            },
-            function (langCode, langName) {
-                langListHtml += "<li><a href='#' data-lang-code='" + langCode + "'><span data-translate='" + langName + "'>" + _(langName) + "</span> (" + langCode.toUpperCase() + ")</a></li>";
-            }
-        ),
-        (langListHtml += "</ul></div>"),
-        (langListHtml = $(langListHtml)).find("a").on("click", function () {
-            updateLang($(this).data("lang-code"));
-        }),
-        openPopup(langListHtml),
-        !1
+    $.each(
+        {
+            af: "Afrikaans", am: "Amharic", bg: "Bulgarian", zh: "Chinese", hr: "Croatian",
+            cs: "Czech", nl: "Dutch", en: "English", et: "Estonian", pes: "Farsi",
+            fr: "French", de: "German", el: "Greek", he: "Hebrew", hu: "Hungarian",
+            is: "Icelandic", it: "Italian", lv: "Latvian", mn: "Mongolian", no: "Norwegian",
+            pl: "Polish", pt: "Portuguese", ru: "Russian", sk: "Slovak", sl: "Slovenian",
+            es: "Spanish", ta: "Tamil", th: "Thai", tr: "Turkish", sv: "Swedish", ro: "Romanian",
+        },
+        function (langCode, langName) {
+            langListHtml += "<li><a href='#' data-lang-code='" + langCode + "'><span data-translate='" + langName + "'>" + _(langName) + "</span> (" + langCode.toUpperCase() + ")</a></li>";
+        }
     );
+    langListHtml += "</ul></div>";
+    langListHtml = $(langListHtml);
+    langListHtml.find("a").on("click", function () {
+        updateLang($(this).data("lang-code"));
+    });
+    openPopup(langListHtml);
+    return false;
 }
 function checkCurrLang() {
     storage.get("lang", function (stored) {
         var $popup = $("#localization");
         $popup.find("a").each(function () {
             var $link = $(this);
-            $link.data("lang-code") === stored.lang ? $link.removeClass("ui-icon-carat-r").addClass("ui-icon-check") : $link.removeClass("ui-icon-check").addClass("ui-icon-carat-r");
-        }),
-            $popup.find("li.ui-last-child").removeClass("ui-last-child");
+            if ($link.data("lang-code") === stored.lang) {
+                $link.removeClass("ui-icon-carat-r").addClass("ui-icon-check");
+            } else {
+                $link.removeClass("ui-icon-check").addClass("ui-icon-carat-r");
+            }
+        });
+        $popup.find("li.ui-last-child").removeClass("ui-last-child");
     });
 }
 function getAppURLPath() {
     return currLocal ? $.mobile.path.parseUrl($("head").find("script[src$='app.js']").attr("src")).hrefNoHash.slice(0, -9) : "";
 }
 function getUrlVars(url) {
-    for (var pair, params = {}, parts = url.slice(url.indexOf("?") + 1).split("&"), idx = 0; idx < parts.length; idx++) params[(pair = parts[idx].split("="))[0]] = decodeURIComponent(pair[1].replace(/\+/g, "%20"));
+    var pair, params = {}, parts = url.slice(url.indexOf("?") + 1).split("&");
+    for (var idx = 0; idx < parts.length; idx++) {
+        pair = parts[idx].split("=");
+        params[pair[0]] = decodeURIComponent(pair[1].replace(/\+/g, "%20"));
+    }
     return params;
 }
 function escapeJSON(obj) {
@@ -12004,7 +12272,8 @@ function sortByStation(a, b) {
 function minutesToTime(totalMinutes) {
     var ampm = 719 < totalMinutes ? "PM" : "AM",
         hours12 = parseInt(totalMinutes / 60) % 12;
-    return 0 === hours12 && (hours12 = 12), isMetric ? pad(((totalMinutes / 60) >> 0) % 24) + ":" + pad(totalMinutes % 60) : hours12 + ":" + pad(totalMinutes % 60) + " " + ampm;
+    if (hours12 === 0) { hours12 = 12; }
+    return isMetric ? pad(((totalMinutes / 60) >> 0) % 24) + ":" + pad(totalMinutes % 60) : hours12 + ":" + pad(totalMinutes % 60) + " " + ampm;
 }
 function getBitFromByte(byte, bitPos) {
     return 0 != (byte & (1 << bitPos));
@@ -12050,107 +12319,104 @@ function humaniseDuration(startTime, endTime) {
 function dateToString(date, applyTzOffset, format) {
     var dayNames = [_("Sun"), _("Mon"), _("Tue"), _("Wed"), _("Thu"), _("Fri"), _("Sat")],
         monthNames = [_("Jan"), _("Feb"), _("Mar"), _("Apr"), _("May"), _("Jun"), _("Jul"), _("Aug"), _("Sep"), _("Oct"), _("Nov"), _("Dec")];
-    return 0 === date.getTime()
-        ? "--"
-        : (!1 !== applyTzOffset && date.setMinutes(date.getMinutes() + date.getTimezoneOffset()),
-            "de" === currLang
-                ? pad(date.getDate()) + "." + pad(date.getMonth() + 1) + "." + date.getFullYear() + " " + pad(date.getHours()) + ":" + pad(date.getMinutes()) + ":" + pad(date.getSeconds())
-                : 1 === format
-                    ? monthNames[date.getMonth()] + " " + pad(date.getDate()) + ", " + date.getFullYear() + " " + pad(date.getHours()) + ":" + pad(date.getMinutes()) + ":" + pad(date.getSeconds())
-                    : 2 === format
-                        ? monthNames[date.getMonth()] + " " + pad(date.getDate()) + ", " + pad(date.getHours()) + ":" + pad(date.getMinutes()) + ":" + pad(date.getSeconds())
-                        : dayNames[date.getDay()] + ", " + pad(date.getDate()) + " " + monthNames[date.getMonth()] + " " + date.getFullYear() + " " + pad(date.getHours()) + ":" + pad(date.getMinutes()) + ":" + pad(date.getSeconds()));
+    if (date.getTime() === 0) { return "--"; }
+    if (applyTzOffset !== false) { date.setMinutes(date.getMinutes() + date.getTimezoneOffset()); }
+    if (currLang === "de") {
+        return pad(date.getDate()) + "." + pad(date.getMonth() + 1) + "." + date.getFullYear() + " " + pad(date.getHours()) + ":" + pad(date.getMinutes()) + ":" + pad(date.getSeconds());
+    }
+    if (format === 1) {
+        return monthNames[date.getMonth()] + " " + pad(date.getDate()) + ", " + date.getFullYear() + " " + pad(date.getHours()) + ":" + pad(date.getMinutes()) + ":" + pad(date.getSeconds());
+    }
+    if (format === 2) {
+        return monthNames[date.getMonth()] + " " + pad(date.getDate()) + ", " + pad(date.getHours()) + ":" + pad(date.getMinutes()) + ":" + pad(date.getSeconds());
+    }
+    return dayNames[date.getDay()] + ", " + pad(date.getDate()) + " " + monthNames[date.getMonth()] + " " + date.getFullYear() + " " + pad(date.getHours()) + ":" + pad(date.getMinutes()) + ":" + pad(date.getSeconds());
 }
 function transformKeys(optionsObj) {
-    var transformed;
-    return checkOSVersion(219)
-        ? ((transformed = {}),
-            Object.keys(optionsObj).forEach(function (key) {
-                var match = key.match(/^o(\d+)$/);
-                match && match[1]
-                    ? (transformed[
-                        Object.keys(keyIndex).find(function (k) {
-                            return keyIndex[k] === parseInt(match[1], 10);
-                        })
-                    ] = optionsObj[key])
-                    : (transformed[key] = optionsObj[key]);
-            }),
-            transformed)
-        : optionsObj;
+    if (!checkOSVersion(219)) { return optionsObj; }
+    var transformed = {};
+    Object.keys(optionsObj).forEach(function (key) {
+        var match = key.match(/^o(\d+)$/);
+        if (match && match[1]) {
+            transformed[Object.keys(keyIndex).find(function (k) {
+                return keyIndex[k] === parseInt(match[1], 10);
+            })] = optionsObj[key];
+        } else {
+            transformed[key] = optionsObj[key];
+        }
+    });
+    return transformed;
 }
 function transformKeysinString(queryString) {
-    var params = {},
-        parts =
-            (queryString.split("&").forEach(function (part) {
-                (part = part.split("=")), (params[part[0]] = part[1]);
-            }),
-                (params = transformKeys(params)),
-                []);
-    return (
-        Object.keys(params).forEach(function (key) {
-            parts.push(key + "=" + params[key]);
-        }),
-        (queryString = parts.join("&"))
-    );
+    var params = {};
+    queryString.split("&").forEach(function (part) {
+        part = part.split("=");
+        params[part[0]] = part[1];
+    });
+    params = transformKeys(params);
+    var parts = [];
+    Object.keys(params).forEach(function (key) {
+        parts.push(key + "=" + params[key]);
+    });
+    return parts.join("&");
 }
 function Supported() { }
 function Station() { }
-($.fn.focusInput = function () {
+$.fn.focusInput = function () {
     var range;
-    return (
-        this.get(0).setSelectionRange
-            ? (this.focus(), this.get(0).setSelectionRange(0, this.val().length))
-            : this.get(0).createTextRange && ((range = this.get(0).createTextRange()).collapse(!0), range.moveEnd("character", this.val().length), range.moveStart("character", 0), range.select()),
-        this
-    );
-}),
-    (Number.prototype.clamp = function (min, max) {
-        return Math.min(Math.max(this, min), max);
-    }),
-    (Supported.master = function (masterNum) {
-        switch (masterNum) {
-            case MASTER_STATION_1:
-                return !!controller.options.mas;
-            case MASTER_STATION_2:
-                return !!controller.options.mas2;
-            default:
-                return !1;
-        }
-    }),
-    (Supported.ignoreRain = function () {
-        return "object" == typeof controller.stations.ignore_rain;
-    }),
-    (Supported.ignoreSensor = function (sensorNum) {
-        switch (sensorNum) {
-            case IGNORE_SENSOR_1:
-                return "object" == typeof controller.stations.ignore_sn1;
-            case IGNORE_SENSOR_2:
-                return "object" == typeof controller.stations.ignore_sn2;
-            default:
-                return !1;
-        }
-    }),
-    (Supported.actRelay = function () {
-        return "object" == typeof controller.stations.act_relay;
-    }),
-    (Supported.disabled = function () {
-        return "object" == typeof controller.stations.stn_dis;
-    }),
-    (Supported.sequential = function () {
-        return !checkOSVersion(220) && "object" == typeof controller.stations.stn_seq;
-    }),
-    (Supported.special = function () {
-        return "object" == typeof controller.stations.stn_spe;
-    }),
-    (Supported.pausing = function () {
-        return void 0 !== controller.settings.pq;
-    }),
-    (Supported.groups = function () {
-        return 4 <= getNumberProgramStatusOptions();
-    }),
-    (Supported.dateRange = function () {
-        return checkOSVersion(220);
-    });
+    if (this.get(0).setSelectionRange) {
+        this.focus();
+        this.get(0).setSelectionRange(0, this.val().length);
+    } else if (this.get(0).createTextRange) {
+        range = this.get(0).createTextRange();
+        range.collapse(true);
+        range.moveEnd("character", this.val().length);
+        range.moveStart("character", 0);
+        range.select();
+    }
+    return this;
+};
+Number.prototype.clamp = function (min, max) {
+    return Math.min(Math.max(this, min), max);
+};
+Supported.master = function (masterNum) {
+    switch (masterNum) {
+        case MASTER_STATION_1: return !!controller.options.mas;
+        case MASTER_STATION_2: return !!controller.options.mas2;
+        default: return false;
+    }
+};
+Supported.ignoreRain = function () {
+    return typeof controller.stations.ignore_rain === "object";
+};
+Supported.ignoreSensor = function (sensorNum) {
+    switch (sensorNum) {
+        case IGNORE_SENSOR_1: return typeof controller.stations.ignore_sn1 === "object";
+        case IGNORE_SENSOR_2: return typeof controller.stations.ignore_sn2 === "object";
+        default: return false;
+    }
+};
+Supported.actRelay = function () {
+    return typeof controller.stations.act_relay === "object";
+};
+Supported.disabled = function () {
+    return typeof controller.stations.stn_dis === "object";
+};
+Supported.sequential = function () {
+    return !checkOSVersion(220) && typeof controller.stations.stn_seq === "object";
+};
+Supported.special = function () {
+    return typeof controller.stations.stn_spe === "object";
+};
+Supported.pausing = function () {
+    return controller.settings.pq !== undefined;
+};
+Supported.groups = function () {
+    return getNumberProgramStatusOptions() >= 4;
+};
+Supported.dateRange = function () {
+    return checkOSVersion(220);
+};
 var ProgramStatusOptions = { PID: 0, REM: 1, START: 2, GID: 3, GALLONS: 4 };
 function getNumberProgramStatusOptions() {
     if (!(controller.settings.ps.length <= 0)) return controller.settings.ps[0].length;
@@ -12183,160 +12449,156 @@ function mapGIDNameToValue(groupName) {
             return groupName.charCodeAt(0) - 65;
     }
 }
-(Station.getName = function (stationIndex) {
+Station.getName = function (stationIndex) {
     return controller.stations.snames[stationIndex];
-}),
-    (Station.setName = function (stationIndex, name) {
-        controller.settings.snames[stationIndex] = name;
-    }),
-    (Station.getPID = function (stationIndex) {
-        return controller.settings.ps[stationIndex][ProgramStatusOptions.PID];
-    }),
-    (Station.setPID = function (stationIndex, pid) {
-        controller.settings.ps[stationIndex][ProgramStatusOptions.PID] = pid;
-    }),
-    (Station.getRemainingRuntime = function (stationIndex) {
-        return controller.settings.ps[stationIndex][ProgramStatusOptions.REM];
-    }),
-    (Station.setRemainingRuntime = function (stationIndex, runtime) {
-        controller.settings.ps[stationIndex][ProgramStatusOptions.REM] = runtime;
-    }),
-    (Station.getStartTime = function (stationIndex) {
-        return controller.settings.ps[stationIndex][ProgramStatusOptions.START];
-    }),
-    (Station.setStartTime = function (stationIndex, startTime) {
-        controller.settings.ps[stationIndex][ProgramStatusOptions.START] = startTime;
-    }),
-    (Station.getGIDValue = function (stationIndex) {
-        if (Supported.groups()) return controller.settings.ps[stationIndex][ProgramStatusOptions.GID];
-    }),
-    (Station.setGIDValue = function (stationIndex, gidValue) {
-        Supported.groups() && (controller.settings.ps[stationIndex][ProgramStatusOptions.GID] = gidValue);
-    }),
-    (Station.getStatus = function (stationIndex) {
-        return controller.status[stationIndex];
-    }),
-    (Station.setStatus = function (stationIndex, status) {
-        controller.status[stationIndex] = status;
-    }),
-    (Station.isRunning = function (stationIndex) {
-        return 0 < Station.getStatus(stationIndex);
-    }),
-    (Station.isMaster = function (stationIndex) {
-        var master1 = "number" == typeof controller.options.mas ? controller.options.mas : 0,
-            master2 = "number" == typeof controller.options.mas2 ? controller.options.mas2 : 0;
-        return master1 === ++stationIndex ? 1 : master2 === stationIndex ? 2 : 0;
-    }),
-    (Station.isSequential = function (stationIndex) {
-        return 0 < StationAttribute.getSequential(stationIndex);
-    }),
-    (Station.isSpecial = function (stationIndex) {
-        return 0 < StationAttribute.getSpecial(stationIndex);
-    }),
-    (Station.isDisabled = function (stationIndex) {
-        return 0 < StationAttribute.getDisabled(stationIndex);
-    }),
-    (StationAttribute.getMasterOperation = function (stationIndex, masterNum) {
-        var byteArr,
-            bytePos = (stationIndex / 8) >> 0;
-        if (!Supported.master(masterNum)) return 0;
-        switch (masterNum) {
-            case MASTER_STATION_1:
-                byteArr = controller.stations.masop;
-                break;
-            case MASTER_STATION_2:
-                byteArr = controller.stations.masop2;
-                break;
-            default:
-                return 0;
-        }
-        return byteArr[bytePos] & (1 << stationIndex % 8) ? 1 : 0;
-    }),
-    (StationAttribute.getIgnoreRain = function (stationIndex) {
-        return Supported.ignoreRain() && controller.stations.ignore_rain[(stationIndex / 8) >> 0] & (1 << stationIndex % 8) ? 1 : 0;
-    }),
-    (StationAttribute.getIgnoreSensor = function (stationIndex, sensorNum) {
-        var byteArr,
-            bytePos = (stationIndex / 8) >> 0;
-        if (!Supported.ignoreSensor(sensorNum)) return 0;
-        switch (sensorNum) {
-            case IGNORE_SENSOR_1:
-                byteArr = controller.stations.ignore_sn1;
-                break;
-            case IGNORE_SENSOR_2:
-                byteArr = controller.stations.ignore_sn2;
-                break;
-            default:
-                return 0;
-        }
-        return byteArr[bytePos] & (1 << stationIndex % 8) ? 1 : 0;
-    }),
-    (StationAttribute.getActRelay = function (stationIndex) {
-        return Supported.actRelay() && controller.stations.act_relay[(stationIndex / 8) >> 0] & (1 << stationIndex % 8) ? 1 : 0;
-    }),
-    (StationAttribute.getDisabled = function (stationIndex) {
-        return Supported.disabled() && controller.stations.stn_dis[(stationIndex / 8) >> 0] & (1 << stationIndex % 8) ? 1 : 0;
-    }),
-    (StationAttribute.getSequential = function (stationIndex) {
-        return Supported.groups() ? (Station.getGIDValue !== PARALLEL_GID_VALUE ? 1 : 0) : Supported.sequential() && controller.stations.stn_seq[(stationIndex / 8) >> 0] & (1 << stationIndex % 8) ? 1 : 0;
-    }),
-    (StationAttribute.getSpecial = function (stationIndex) {
-        return Supported.special() && controller.stations.stn_spe[(stationIndex / 8) >> 0] & (1 << stationIndex % 8) ? 1 : 0;
-    }),
-    (CardList.getAllCards = function ($list) {
-        return $list.filter(".card");
-    }),
-    (CardList.getCardBySID = function ($list, stationId) {
-        return $list.filter("[data-station='" + stationId + "']");
-    }),
-    (CardList.getCardByIndex = function ($list, idx) {
-        return $($list[idx]);
-    }),
-    (Card.getSID = function ($card) {
-        return $card.data("station");
-    }),
-    (Card.getDivider = function ($card) {
-        return $card.find(".content-divider");
-    }),
-    (Card.getGroupLabel = function ($card) {
-        if (Supported.groups()) return $card.find(".station-gid");
-    }),
-    (Card.setGroupLabel = function ($card, labelText) {
-        Supported.groups() && (($card = Card.getGroupLabel($card)).removeClass("hidden"), $card.text(labelText));
-    }),
-    (Card.getGIDValue = function ($card) {
-        return Supported.groups() ? (($card = $($card.children()[0]).children().filter("span")), ($card = $($card[$card.length - 1])), parseInt($card.attr("data-gid"))) : 0;
-    }),
-    (Card.getGIDName = function ($card) {
-        return mapGIDValueToName(Station.getGIDValue(Card.getSID($card)));
-    }),
-    (Card.isMasterStation = function ($card) {
-        return Station.isMaster(Card.getSID($card));
-    }),
-    (Groups.numActiveStations = function (t) {
-        var n = $(".station-status.on, .station-status.wait").parents(".card"),
-            i = 0;
-        return (
-            $.each(n, function (e) {
-                e = $(n[e]);
-                Card.getGIDValue(e) !== t || Card.isMasterStation(e) || i++;
-            }),
-            i
-        );
-    }),
-    (Groups.canShift = function (e) {
-        return 1 < Groups.numActiveStations(e);
-    }),
-    (StationQueue.isActive = function () {
-        for (var e = 0; e < controller.status.length; e++) if (0 < Station.getStatus(e) && 0 < Station.getPID(e)) return e;
-        return -1;
-    }),
-    (StationQueue.isPaused = function () {
-        return controller.settings.pq;
-    }),
-    (StationQueue.size = function () {
-        return controller.settings.nq;
+};
+Station.setName = function (stationIndex, name) {
+    controller.settings.snames[stationIndex] = name;
+};
+Station.getPID = function (stationIndex) {
+    return controller.settings.ps[stationIndex][ProgramStatusOptions.PID];
+};
+Station.setPID = function (stationIndex, pid) {
+    controller.settings.ps[stationIndex][ProgramStatusOptions.PID] = pid;
+};
+Station.getRemainingRuntime = function (stationIndex) {
+    return controller.settings.ps[stationIndex][ProgramStatusOptions.REM];
+};
+Station.setRemainingRuntime = function (stationIndex, runtime) {
+    controller.settings.ps[stationIndex][ProgramStatusOptions.REM] = runtime;
+};
+Station.getStartTime = function (stationIndex) {
+    return controller.settings.ps[stationIndex][ProgramStatusOptions.START];
+};
+Station.setStartTime = function (stationIndex, startTime) {
+    controller.settings.ps[stationIndex][ProgramStatusOptions.START] = startTime;
+};
+Station.getGIDValue = function (stationIndex) {
+    if (Supported.groups()) { return controller.settings.ps[stationIndex][ProgramStatusOptions.GID]; }
+};
+Station.setGIDValue = function (stationIndex, gidValue) {
+    if (Supported.groups()) { controller.settings.ps[stationIndex][ProgramStatusOptions.GID] = gidValue; }
+};
+Station.getStatus = function (stationIndex) {
+    return controller.status[stationIndex];
+};
+Station.setStatus = function (stationIndex, status) {
+    controller.status[stationIndex] = status;
+};
+Station.isRunning = function (stationIndex) {
+    return Station.getStatus(stationIndex) > 0;
+};
+Station.isMaster = function (stationIndex) {
+    var master1 = typeof controller.options.mas === "number" ? controller.options.mas : 0,
+        master2 = typeof controller.options.mas2 === "number" ? controller.options.mas2 : 0;
+    return master1 === ++stationIndex ? 1 : master2 === stationIndex ? 2 : 0;
+};
+Station.isSequential = function (stationIndex) {
+    return StationAttribute.getSequential(stationIndex) > 0;
+};
+Station.isSpecial = function (stationIndex) {
+    return StationAttribute.getSpecial(stationIndex) > 0;
+};
+Station.isDisabled = function (stationIndex) {
+    return StationAttribute.getDisabled(stationIndex) > 0;
+};
+StationAttribute.getMasterOperation = function (stationIndex, masterNum) {
+    var byteArr, bytePos = (stationIndex / 8) >> 0;
+    if (!Supported.master(masterNum)) { return 0; }
+    switch (masterNum) {
+        case MASTER_STATION_1: byteArr = controller.stations.masop; break;
+        case MASTER_STATION_2: byteArr = controller.stations.masop2; break;
+        default: return 0;
+    }
+    return byteArr[bytePos] & (1 << stationIndex % 8) ? 1 : 0;
+};
+StationAttribute.getIgnoreRain = function (stationIndex) {
+    return Supported.ignoreRain() && controller.stations.ignore_rain[(stationIndex / 8) >> 0] & (1 << stationIndex % 8) ? 1 : 0;
+};
+StationAttribute.getIgnoreSensor = function (stationIndex, sensorNum) {
+    var byteArr, bytePos = (stationIndex / 8) >> 0;
+    if (!Supported.ignoreSensor(sensorNum)) { return 0; }
+    switch (sensorNum) {
+        case IGNORE_SENSOR_1: byteArr = controller.stations.ignore_sn1; break;
+        case IGNORE_SENSOR_2: byteArr = controller.stations.ignore_sn2; break;
+        default: return 0;
+    }
+    return byteArr[bytePos] & (1 << stationIndex % 8) ? 1 : 0;
+};
+StationAttribute.getActRelay = function (stationIndex) {
+    return Supported.actRelay() && controller.stations.act_relay[(stationIndex / 8) >> 0] & (1 << stationIndex % 8) ? 1 : 0;
+};
+StationAttribute.getDisabled = function (stationIndex) {
+    return Supported.disabled() && controller.stations.stn_dis[(stationIndex / 8) >> 0] & (1 << stationIndex % 8) ? 1 : 0;
+};
+StationAttribute.getSequential = function (stationIndex) {
+    return Supported.groups() ? (Station.getGIDValue !== PARALLEL_GID_VALUE ? 1 : 0) : Supported.sequential() && controller.stations.stn_seq[(stationIndex / 8) >> 0] & (1 << stationIndex % 8) ? 1 : 0;
+};
+StationAttribute.getSpecial = function (stationIndex) {
+    return Supported.special() && controller.stations.stn_spe[(stationIndex / 8) >> 0] & (1 << stationIndex % 8) ? 1 : 0;
+};
+CardList.getAllCards = function ($list) {
+    return $list.filter(".card");
+};
+CardList.getCardBySID = function ($list, stationId) {
+    return $list.filter("[data-station='" + stationId + "']");
+};
+CardList.getCardByIndex = function ($list, idx) {
+    return $($list[idx]);
+};
+Card.getSID = function ($card) {
+    return $card.data("station");
+};
+Card.getDivider = function ($card) {
+    return $card.find(".content-divider");
+};
+Card.getGroupLabel = function ($card) {
+    if (Supported.groups()) { return $card.find(".station-gid"); }
+};
+Card.setGroupLabel = function ($card, labelText) {
+    if (Supported.groups()) {
+        $card = Card.getGroupLabel($card);
+        $card.removeClass("hidden");
+        $card.text(labelText);
+    }
+};
+Card.getGIDValue = function ($card) {
+    if (!Supported.groups()) { return 0; }
+    $card = $($card.children()[0]).children().filter("span");
+    $card = $($card[$card.length - 1]);
+    return parseInt($card.attr("data-gid"));
+};
+Card.getGIDName = function ($card) {
+    return mapGIDValueToName(Station.getGIDValue(Card.getSID($card)));
+};
+Card.isMasterStation = function ($card) {
+    return Station.isMaster(Card.getSID($card));
+};
+Groups.numActiveStations = function (t) {
+    var n = $(".station-status.on, .station-status.wait").parents(".card"),
+        i = 0;
+    $.each(n, function (e) {
+        e = $(n[e]);
+        if (Card.getGIDValue(e) !== t || Card.isMasterStation(e)) { return; }
+        i++;
     });
+    return i;
+};
+Groups.canShift = function (e) {
+    return Groups.numActiveStations(e) > 1;
+};
+StationQueue.isActive = function () {
+    for (var e = 0; e < controller.status.length; e++) {
+        if (Station.getStatus(e) > 0 && Station.getPID(e) > 0) { return e; }
+    }
+    return -1;
+};
+StationQueue.isPaused = function () {
+    return controller.settings.pq;
+};
+StationQueue.size = function () {
+    return controller.settings.nq;
+};
 var dateRegex = /[0-9]{1,2}[\/][0-9]{1,2}/g;
 function Program() { }
 function extractDateFromString(e) {
@@ -12349,27 +12611,36 @@ function isValidDateRange(e, t) {
     return isValidDateFormat(e) && isValidDateFormat(t);
 }
 function encodeDate(e) {
-    var e = extractDateFromString(e);
-    return null === e ? -1 : ((e = e[0].split("/", 2)), (parseInt(e[0]) << 5) + parseInt(e[1]));
+    e = extractDateFromString(e);
+    if (e === null) { return -1; }
+    e = e[0].split("/", 2);
+    return (parseInt(e[0]) << 5) + parseInt(e[1]);
 }
-(Program.getDateRange = function (e) {
+Program.getDateRange = function (e) {
     return controller.programs.pd[e][6];
-}),
-    (Program.isDateRangeEnabled = function (e) {
-        return "new" === e ? 0 : Program.getDateRange(e)[0];
-    }),
-    (Program.getDateRangeStart = function (e) {
-        return "new" === e ? minEncodedDate : Program.getDateRange(e)[1];
-    }),
-    (Program.getDateRangeEnd = function (e) {
-        return "new" === e ? maxEncodedDate : Program.getDateRange(e)[2];
-    });
+};
+Program.isDateRangeEnabled = function (e) {
+    return e === "new" ? 0 : Program.getDateRange(e)[0];
+};
+Program.getDateRangeStart = function (e) {
+    return e === "new" ? minEncodedDate : Program.getDateRange(e)[1];
+};
+Program.getDateRangeEnd = function (e) {
+    return e === "new" ? maxEncodedDate : Program.getDateRange(e)[2];
+};
 var minEncodedDate = encodeDate("01/01"),
     maxEncodedDate = encodeDate("12/31");
 function decodeDate(e) {
     var t,
         n = [];
-    return minEncodedDate <= e && e <= maxEncodedDate ? (n.push(((t = e >> 5) / 10) >> 0, t % 10, "/", ((t = e % 32) / 10) >> 0, t % 10), n.join("")) : e < minEncodedDate ? "01/01" : "12/31";
+    if (minEncodedDate <= e && e <= maxEncodedDate) {
+        t = e >> 5;
+        n.push((t / 10) >> 0, t % 10, "/");
+        t = e % 32;
+        n.push((t / 10) >> 0, t % 10);
+        return n.join("");
+    }
+    return e < minEncodedDate ? "01/01" : "12/31";
 }
 function q(e) {
     throw e;
