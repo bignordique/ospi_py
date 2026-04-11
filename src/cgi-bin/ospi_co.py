@@ -1,4 +1,4 @@
-#!/var/www/html/python3_11/bin/python3.11
+#!/home/leith/ospi_py/.venv/bin/python
 
 import json
 import re
@@ -8,8 +8,9 @@ import logging
 
 class ospi_co():
 
-    def __init__ (self, ospi_db):
+    def __init__ (self, ospi_db, sb):
         self.ospi_db = ospi_db
+        self.sb = sb
         self.logger = logging.getLogger(__name__)
         self.cmd_re = re.compile(r"&(\w*)=([a-zA-Z0-9.,-]*)")
 
@@ -39,6 +40,8 @@ class ospi_co():
                      "wl" | "ipas" | "devid" | "uwt" | "lg" | "fpr0" | "fpr1" | "sar" | "ife" | "vm":  
                     try:
                         param = int(opt_set[1])
+                        if option == "vm" and param != self.ospi_db.db["options"]["vm"] :
+                            self.sb.apply_all_station_bits()
                     except ValueError:
                         self.logger.error(f'\n    co "{option}" inappropriate parameter\n')
                         return['{"result":18}'] 
@@ -62,17 +65,17 @@ if __name__ == "__main__":
 
     import os
 
-    LOGFILE = "test/log"
+    LOGFILE = "../../test/log"
     try :
         os.remove(LOGFILE)
     except: OSError:any
   
-    DBFILE = "test/db_file"
+    DBFILE = "../../test/db_file"
     try :
         os.remove(DBFILE)
     except: OSError:any
 
-    DEFFILE = "config/ospi_defaults.txt"
+    DEFFILE = "../../config/ospi_defaults.txt"
 
     from logging.handlers import RotatingFileHandler
     logging.basicConfig(format='%(asctime)s %(name)s %(module)s:%(lineno)d ' +
@@ -88,7 +91,10 @@ if __name__ == "__main__":
     ospi_db_i = ospi_db()
     ospi_db_i.init_db(DBFILE, DEFFILE)
 
-    co = ospi_co(ospi_db_i)
+    from ospi_station_bits import ospi_station_bits as station_bits
+    sb=station_bits(ospi_db_i)
+
+    co = ospi_co(ospi_db_i, sb)
 
 #nominal
 # not in DB
@@ -110,4 +116,6 @@ if __name__ == "__main__":
 #set tz an loc
     print(co.handle(["&tz=14&loc=42.1,-110.4"]))
 #set a bunch
-    print(co.handle(["&tz=20&loc=40.44984,-105.00539&lg=1&mas=0&mton=0&mtof=0&mas2=0&mton2=0&mtof2=0&ext=2&sdt=0&uwt=0&wl=100&sn1o=1&fpr0=100&fpr1=0&sn1on=0&sn1of=0&sn2o=1&sn2on=0&sn2of=0&ifkey=&ife=0&dname=My+OpenSprinkler&hp0=144&hp1=31&devid=0&ipas=0&sar=0&sn1t=0&sn2t=0"]))
+    print(co.handle(["&tz=20&loc=40.44984,-105.00539&lg=1&mas=0&mton=0&mtof=0&mas2=0&mton2=0&mtof2=0&ext=2&sdt=0&uwt=0&wl=100&sn1o=1&fpr0=100&f"]))
+#try a virtual mode set
+    print(co.handle(["&vm=1"]))

@@ -27,7 +27,9 @@ class ospi_station_bits():
 
     def apply_all_station_bits (self):
         self.logger.debug(f'\n    apply_all_station_bits: {self.station_bits}\n')
-        gpio.update_zones(self.station_bits)
+        if self.ospi_db.db["options"]["vm"] == 1 :  
+            gpio.update_zones(0x0)
+        else:gpio.update_zones(self.station_bits)
         
 
     def clear_all_station_bits (self):
