@@ -14,7 +14,7 @@ class ospi_jp():
     def handle(self):
         self.logger.debug(f'\n')
 # Shift interval back to absolute for display on GUI.
-        programs = copy.copy(self.ospi_db.db["programs"])
+        programs = copy.deepcopy(self.ospi_db.db["programs"])
         nprogs = programs["nprogs"]
         for ii in range (0, nprogs) :
             program = programs["pd"][ii]
@@ -26,7 +26,9 @@ class ospi_jp():
                     self.logger.warning (f'\n    interval equals zero\n')
                 else:
                     today = int(self.ospi_db.get_lcl_stamp(self.logger)/ospi_defs.SECS_PER_DAY) 
-                    programs["pd"][ii][1] = (today + rem) % inv
+                    programs["pd"][ii][1] = (rem + inv - today % inv) % inv
+                    #self.logger.debug(f'\n   today: {today} today_rem: {today%inv} rem:{rem} inv:{inv} days0:{programs["pd"][ii][1]}\n')
+                    self.logger.debug(f'\n {programs}\n')
         return [json.dumps(programs)]
 
 if __name__ == "__main__":

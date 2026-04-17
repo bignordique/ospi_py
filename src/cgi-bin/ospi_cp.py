@@ -39,7 +39,7 @@ class ospi_cp():
                 self.logger.warning(f'\n    interval == 0\n')
             else:
                 today = int(self.ospi_db.get_lcl_stamp(self.logger) / ospi_defs.SECS_PER_DAY) 
-                program[1] = (rem + inv - today % inv) % inv
+                program[1] = (rem + today) % inv
                 self.logger.debug(f'\n   today: {today} rem: {today%inv} rem:{rem} inv:{inv} days0:{program[1]}\n')
         program.append(name)
         program.append([endr,frm,to])
