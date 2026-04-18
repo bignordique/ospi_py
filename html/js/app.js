@@ -8461,105 +8461,159 @@ function removeStationTimers() {
 }
 //BTW, there is no "settings" "mm" is the config
 var getManual = (function () {
-    function e() {
-        var e, t, n, i;
+    function handleStationClick() {
+        var clickedEl, listItem, stationIndex, stationId, timerSeconds;
         if (controller.settings.mm) {
-            n = (e = $(this)).closest("li");
-            n = (t = a.index(n)) + 1;
-            i = r.val();
-            if (!e.hasClass("yellow")) {
-                o = controller.status[t]
+            listItem = (clickedEl = $(this)).closest("li");
+            stationIndex = stationItems.index(listItem);
+            stationId = stationIndex + 1;
+            timerSeconds = autoOffBtn.val();
+            if (!clickedEl.hasClass("yellow")) {
+                url = controller.status[stationIndex]
                     ? checkOSPiVersion("2.1")
-                        ? "/sn?sid=" + n + "&set_to=0&pw="
-                        : "/sn" + n + "=0"
+                        ? "/sn?sid=" + stationId + "&set_to=0&pw="
+                        : "/sn" + stationId + "=0"
                     : checkOSPiVersion("2.1")
-                        ? "/sn?sid=" + n + "&set_to=1&set_time=" + i + "&pw="
-                        : "/sn" + n + "=1&t=" + i;
-                e.removeClass("green").addClass("yellow");
-                e.html("<p class='ui-icon ui-icon-loading mini-load'></p>");
-                sendToOS(o).always(function () {
-                    setTimeout(s, 1e3, t);
+                        ? "/sn?sid=" + stationId + "&set_to=1&set_time=" + timerSeconds + "&pw="
+                        : "/sn" + stationId + "=1&t=" + timerSeconds;
+                clickedEl.removeClass("green").addClass("yellow");
+                clickedEl.html("<p class='ui-icon ui-icon-loading mini-load'></p>");
+                sendToOS(url).always(function () {
+                    setTimeout(refreshStation, 1e3, stationIndex);
                 });
             }
         } else {
-            showerror(_("Manual mode is not enabled. Please enable manual mode then try again."));
+            showerror(_(
+                "Manual mode is not enabled. Please enable manual mode then try again."
+            ));
         }
         return false;
     }
-    var o,
-        t,
-        a,
-        i = $(
-            "<div data-role='page' id='manual'><div class='ui-content' role='main'><p class='center'>" +
+
+    var url,
+        listView,
+        stationItems,
+        page = $(
+            "<div data-role='page' id='manual'>" +
+            "<div class='ui-content' role='main'>" +
+            "<p class='center'>" +
             _("With manual mode turned on, tap a station to toggle it.") +
-            "</p><fieldset data-role='collapsible' data-collapsed='false' data-mini='true'><legend>" +
-            _("Options") +
-            "</legend><div class='ui-field-contain'><label for='mmm'><b>" +
-            _("Manual Mode") +
-            "</b></label><input type='checkbox' data-on-text='On' data-off-text='Off' data-role='flipswitch' name='mmm' id='mmm'></div><p class='rain-desc smaller center' style='padding-top:5px'>" +
-            _("Station timer prevents a station from running indefinitely and will automatically turn it off after the set duration (or when toggled off)") +
-            "</p><div class='ui-field-contain duration-input'><label for='auto-off'><b>" +
-            _("Station Timer") +
-            "</b></label><button data-mini='true' name='auto-off' id='auto-off' value='3600'>1h</button></div></fieldset><div id='manual-station-list'></div></div></div>"
+            "</p>" +
+            "<fieldset data-role='collapsible' data-collapsed='false' data-mini='true'>" +
+            "<legend>" + _("Options") + "</legend>" +
+            "<div class='ui-field-contain'>" +
+            "<label for='mmm'><b>" + _("Manual Mode") + "</b></label>" +
+            "<input type='checkbox' data-on-text='On' data-off-text='Off' " +
+            "data-role='flipswitch' name='mmm' id='mmm'>" +
+            "</div>" +
+            "<p class='rain-desc smaller center' style='padding-top:5px'>" +
+            _("Station timer prevents a station from running indefinitely and will " +
+              "automatically turn it off after the set duration (or when toggled off)") +
+            "</p>" +
+            "<div class='ui-field-contain duration-input'>" +
+            "<label for='auto-off'><b>" + _("Station Timer") + "</b></label>" +
+            "<button data-mini='true' name='auto-off' id='auto-off' value='3600'>1h</button>" +
+            "</div>" +
+            "</fieldset>" +
+            "<div id='manual-station-list'></div>" +
+            "</div>" +
+            "</div>"
         ),
-        s = function (t) {
+        refreshStation = function (stationIndex) {
             updateControllerStatus().done(function () {
-                var e = a.eq(t).find("a");
+                var stationAnchor = stationItems.eq(stationIndex).find("a");
+                var masterIndex = controller.options.mas - 1;
                 if (controller.options.mas) {
-                    if (controller.status[controller.options.mas - 1]) {
-                        a.eq(controller.options.mas - 1).addClass("green");
+                    if (controller.status[masterIndex]) {
+                        stationItems.eq(masterIndex).addClass("green");
                     } else {
-                        a.eq(controller.options.mas - 1).removeClass("green");
+                        stationItems.eq(masterIndex).removeClass("green");
                     }
                 }
-                e.text(controller.stations.snames[t]);
-                if (controller.status[t]) {
-                    e.removeClass("yellow").addClass("green");
+                stationAnchor.text(controller.stations.snames[stationIndex]);
+                if (controller.status[stationIndex]) {
+                    stationAnchor.removeClass("yellow").addClass("green");
                 } else {
-                    e.removeClass("green yellow");
+                    stationAnchor.removeClass("green yellow");
                 }
             });
         },
-        r = i.find("#auto-off");
-    i.on("pagehide", function () {
-        i.detach();
+        autoOffBtn = page.find("#auto-off");
+
+    page.on("pagehide", function () {
+        page.detach();
     });
-    storage.get("autoOff", function (e) {
-        if (e.autoOff) { r.val(e.autoOff); r.text(dhms2str(sec2dhms(e.autoOff))); }
+
+    storage.get("autoOff", function (stored) {
+        if (stored.autoOff) {
+            autoOffBtn.val(stored.autoOff);
+            autoOffBtn.text(dhms2str(sec2dhms(stored.autoOff)));
+        }
     });
-    r.on("click", function () {
-        var t = $(this),
-            e = i.find("label[for='" + t.attr("id") + "']").text();
+
+    autoOffBtn.on("click", function () {
+        var btn = $(this),
+            labelText = page.find("label[for='" + btn.attr("id") + "']").text();
         showDurationBox({
-            seconds: t.val(),
-            title: e,
-            callback: function (e) {
-                t.val(e);
-                t.text(dhms2str(sec2dhms(e)));
-                storage.set({ autoOff: e });
+            seconds: btn.val(),
+            title: labelText,
+            callback: function (seconds) {
+                btn.val(seconds);
+                btn.text(dhms2str(sec2dhms(seconds)));
+                storage.set({ autoOff: seconds });
             },
             maximum: 32768,
         });
         return false;
     });
-    i.find("#mmm").on("change", flipSwitched);
+
+    page.find("#mmm").on("change", flipSwitched);
+
     return function () {
-        var n = "<li data-role='list-divider' data-theme='a'>" + _("Sprinkler Stations") + "</li>";
-        i.find("#mmm").prop("checked", !!controller.settings.mm);
-        $.each(controller.stations.snames, function (e, t) {
-            if (Station.isMaster(e)) {
-                n += "<li data-icon='false' class='center" + (controller.status[e] ? " green" : "") + (Station.isDisabled(e) ? " station-hidden' style='display:none" : "") + "'>" + t + " (" + _("Master") + ")</li>";
+        var listHtml =
+            "<li data-role='list-divider' data-theme='a'>" +
+            _("Sprinkler Stations") +
+            "</li>";
+        page.find("#mmm").prop("checked", !!controller.settings.mm);
+        $.each(controller.stations.snames, function (stationIndex, stationName) {
+            if (Station.isMaster(stationIndex)) {
+                listHtml +=
+                    "<li data-icon='false' class='center" +
+                    (controller.status[stationIndex] ? " green" : "") +
+                    (Station.isDisabled(stationIndex)
+                        ? " station-hidden' style='display:none"
+                        : "") +
+                    "'>" + stationName + " (" + _("Master") + ")</li>";
             } else {
-                n += "<li data-icon='false'><a class='mm_station center" + (controller.status[e] ? " green" : "") + (Station.isDisabled(e) ? " station-hidden' style='display:none" : "") + "'>" + t + "</a></li>";
+                listHtml +=
+                    "<li data-icon='false'>" +
+                    "<a class='mm_station center" +
+                    (controller.status[stationIndex] ? " green" : "") +
+                    (Station.isDisabled(stationIndex)
+                        ? " station-hidden' style='display:none"
+                        : "") +
+                    "'>" + stationName + "</a></li>";
             }
         });
-        t = $("<ul data-role='listview' data-inset='true' id='mm_list'>" + n + "</ul>");
-        a = t.children("li").slice(1);
-        t.find(".mm_station").on("vclick", e);
-        i.find("#manual-station-list").html(t).enhanceWithin();
-        changeHeader({ title: _("Manual Control"), leftBtn: { icon: "carat-l", text: _("Back"), class: "ui-toolbar-back-btn", on: goBack } });
+        listView = $(
+            "<ul data-role='listview' data-inset='true' id='mm_list'>" +
+            listHtml +
+            "</ul>"
+        );
+        stationItems = listView.children("li").slice(1);
+        listView.find(".mm_station").on("vclick", handleStationClick);
+        page.find("#manual-station-list").html(listView).enhanceWithin();
+        changeHeader({
+            title: _("Manual Control"),
+            leftBtn: {
+                icon: "carat-l",
+                text: _("Back"),
+                class: "ui-toolbar-back-btn",
+                on: goBack
+            }
+        });
         $("#manual").remove();
-        $.mobile.pageContainer.append(i);
+        $.mobile.pageContainer.append(page);
     };
 })(),
     getRunonce = (function () {
