@@ -1769,24 +1769,64 @@
                 );
             }
         },
-        dispatch: function (e) {
-            e = S.event.fix(e);
-            var t,
-                n,
-                i,
-                o,
-                a,
-                s = d.call(arguments),
-                r = (v.get(this, "events") || {})[e.type] || [],
-                l = S.event.special[e.type] || {};
-            if ((((s[0] = e).delegateTarget = this), !l.preDispatch || !1 !== l.preDispatch.call(this, e))) {
-                for (a = S.event.handlers.call(this, e, r), t = 0; (i = a[t++]) && !e.isPropagationStopped();)
-                    for (e.currentTarget = i.elem, n = 0; (o = i.handlers[n++]) && !e.isImmediatePropagationStopped();)
-                        (e.namespace_re && !e.namespace_re.test(o.namespace)) ||
-                            ((e.handleObj = o), (e.data = o.data), void 0 === (o = ((S.event.special[o.origType] || {}).handle || o.handler).apply(i.elem, s))) ||
-                            !1 !== (e.result = o) ||
-                            (e.preventDefault(), e.stopPropagation());
-                return l.postDispatch && l.postDispatch.call(this, e), e.result;
+        dispatch: function (rawEvent) {
+            var event = S.event.fix(rawEvent);
+            var args,
+                groupIndex,
+                handlerGroup,
+                handlerIndex,
+                handlerObj,
+                returnValue,
+                handlerGroups,
+                eventHandlers = (v.get(this, "events") || {})[event.type] || [],
+                special = S.event.special[event.type] || {};
+
+            args = d.call(arguments);
+            args[0] = event;
+            event.delegateTarget = this;
+
+            if (!special.preDispatch || special.preDispatch.call(this, event) !== false) {
+                handlerGroups = S.event.handlers.call(this, event, eventHandlers);
+
+                for (
+                    groupIndex = 0;
+                    (handlerGroup = handlerGroups[groupIndex++]) &&
+                        !event.isPropagationStopped();
+                ) {
+                    event.currentTarget = handlerGroup.elem;
+
+                    for (
+                        handlerIndex = 0;
+                        (handlerObj = handlerGroup.handlers[handlerIndex++]) &&
+                            !event.isImmediatePropagationStopped();
+                    ) {
+                        if (event.namespace_re && !event.namespace_re.test(handlerObj.namespace)) {
+                            continue;
+                        }
+
+                        event.handleObj = handlerObj;
+                        event.data = handlerObj.data;
+
+                        returnValue = (
+                            (S.event.special[handlerObj.origType] || {}).handle ||
+                            handlerObj.handler
+                        ).apply(handlerGroup.elem, args);
+
+                        if (returnValue !== undefined) {
+                            event.result = returnValue;
+                            if (event.result === false) {
+                                event.preventDefault();
+                                event.stopPropagation();
+                            }
+                        }
+                    }
+                }
+
+                if (special.postDispatch) {
+                    special.postDispatch.call(this, event);
+                }
+
+                return event.result;
             }
         },
         handlers: function (e, t) {
