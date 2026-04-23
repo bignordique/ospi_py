@@ -183,9 +183,13 @@
 						// Load jQuery Mobile
 						try {
 						    $.ajax( {
+// For reasons unknown, jqm.js is injected into the DOM and not just sourced.
+// As such it doesn't show up in the debugger sources tab.
+// This can be overcome by add the comment "//# sourceURL=jqm.js" to the end of the file, but that is not ideal since it breaks the minified version of jqm.js.
 //  cause jqm.js to load from local server
 //							url: "https://ui.opensprinkler.com/js/jqm.js",
-							    url: assetLocation + "js/jqm.js",
+//						    url: assetLocation + "js/jqm.js",
+                            url: assetLocation + "js/jquery.mobile-1.4.5.js",  // source version
 							    dataType: "script",
 							    cache: true
 						    } );

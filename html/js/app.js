@@ -4172,10 +4172,10 @@ function updateControllerStatus(callback) {
         }
     );
 }
-function updateControllerSettings(callback) {
+    function updateControllerSettings(callback) {
     callback = callback || function () {};
     return sendToOS("/jc?pw=").then(
-        function (data) {
+            function (data) {
             if (typeof data !== "object") {
                 try {
                     data = JSON.parse(data);
@@ -6241,42 +6241,61 @@ function bindPanel() {
     };
 }
 function showOptions(section) {
-    function t(e, t, n) {
+    function buildSensorTypeRadios(keyIdx, curType, sensorNum) {
         return (
-            "<div class='ui-field-contain'><fieldset data-role='controlgroup' class='ui-mini center sensor-options' data-type='horizontal'><legend class='left'>" +
+            "<div class='ui-field-contain'>" +
+            "<fieldset data-role='controlgroup'" +
+            " class='ui-mini center sensor-options' data-type='horizontal'>" +
+            "<legend class='left'>" +
             _("Sensor") +
-            (n ? " " + n + " " : " ") +
+            (sensorNum ? " " + sensorNum + " " : " ") +
             _("Type") +
             "</legend><input class='noselect' type='radio' name='o" +
-            e +
+            keyIdx +
             "' id='o" +
-            e +
+            keyIdx +
             "-none' value='0'" +
-            (0 === t ? " checked='checked'" : "") +
+            (0 === curType ? " checked='checked'" : "") +
             "><label for='o" +
-            e +
+            keyIdx +
             "-none'>" +
             _("None") +
             "</label><input class='noselect' type='radio' name='o" +
-            e +
+            keyIdx +
             "' id='o" +
-            e +
+            keyIdx +
             "-rain' value='1'" +
-            (1 === t ? " checked='checked'" : "") +
+            (1 === curType ? " checked='checked'" : "") +
             "><label for='o" +
-            e +
+            keyIdx +
             "-rain'>" +
             _("Rain") +
             "</label>" +
-            (52 === e ? "" : "<input class='noselect' type='radio' name='o" + e + "' id='o" + e + "-flow' value='2'" + (2 === t ? " checked='checked'" : "") + "><label for='o" + e + "-flow'>" + _("Flow") + "</label>") +
-            (checkOSVersion(219) ? "<input class='noselect' type='radio' name='o" + e + "' id='o" + e + "-soil' value='3'" + (3 === t ? " checked='checked'" : "") + "><label for='o" + e + "-soil'>" + _("Soil") + "</label>" : "") +
+            (52 === keyIdx
+                ? ""
+                : "<input class='noselect' type='radio' name='o" + keyIdx +
+                  "' id='o" + keyIdx + "-flow' value='2'" +
+                  (2 === curType ? " checked='checked'" : "") +
+                  "><label for='o" + keyIdx + "-flow'>" +
+                  _("Flow") + "</label>") +
+            (checkOSVersion(219)
+                ? "<input class='noselect' type='radio' name='o" + keyIdx +
+                  "' id='o" + keyIdx + "-soil' value='3'" +
+                  (3 === curType ? " checked='checked'" : "") +
+                  "><label for='o" + keyIdx + "-soil'>" +
+                  _("Soil") + "</label>"
+                : "") +
             (checkOSVersion(217)
-                ? "<input class='noselect' type='radio' name='o" + e + "' id='o" + e + "-program' value='240'" + (240 === t ? " checked='checked'" : "") + "><label for='o" + e + "-program'>" + _("Program Switch") + "</label>"
+                ? "<input class='noselect' type='radio' name='o" + keyIdx +
+                  "' id='o" + keyIdx + "-program' value='240'" +
+                  (240 === curType ? " checked='checked'" : "") +
+                  "><label for='o" + keyIdx + "-program'>" +
+                  _("Program Switch") + "</label>"
                 : "") +
             "</fieldset></div>"
         );
     }
-    function n() {
+    function saveOptions() {
         var a;
         var s = {};
         var r = false;
@@ -6284,7 +6303,8 @@ function showOptions(section) {
         var e = d.eq(2);
         e.prop("disabled", true);
         c.find(".submit").removeClass("hasChanges");
-        c.find("#os-options-list").find(":input,button").filter(":not(.noselect)").each(function () {
+        c.find("#os-options-list")
+            .find(":input,button").filter(":not(.noselect)").each(function () {
             var e;
             var t = $(this);
             var n = t.attr("id");
@@ -6310,22 +6330,38 @@ function showOptions(section) {
                     return true;
                 case "ip_addr":
                     e = i.split(".");
-                    if (e.join(".") === "0.0.0.0") { showerror(_("A valid IP address is required when DHCP is not used")); r = true; return false; }
+                    if (e.join(".") === "0.0.0.0") {
+                        showerror(_("A valid IP address is required when DHCP is not used"));
+                        r = true;
+                        return false;
+                    }
                     s.o4 = e[0]; s.o5 = e[1]; s.o6 = e[2]; s.o7 = e[3];
                     return true;
                 case "subnet":
                     e = i.split(".");
-                    if (e.join(".") === "0.0.0.0") { showerror(_("A valid subnet address is required when DHCP is not used")); r = true; return false; }
+                    if (e.join(".") === "0.0.0.0") {
+                        showerror(_("A valid subnet address is required when DHCP is not used"));
+                        r = true;
+                        return false;
+                    }
                     s.o58 = e[0]; s.o59 = e[1]; s.o60 = e[2]; s.o61 = e[3];
                     return true;
                 case "gateway":
                     e = i.split(".");
-                    if (e.join(".") === "0.0.0.0") { showerror(_("A valid gateway address is required when DHCP is not used")); r = true; return false; }
+                    if (e.join(".") === "0.0.0.0") {
+                        showerror(_("A valid gateway address is required when DHCP is not used"));
+                        r = true;
+                        return false;
+                    }
                     s.o8 = e[0]; s.o9 = e[1]; s.o10 = e[2]; s.o11 = e[3];
                     return true;
                 case "dns":
                     e = i.split(".");
-                    if (e.join(".") === "0.0.0.0") { showerror(_("A valid DNS address is required when DHCP is not used")); r = true; return false; }
+                    if (e.join(".") === "0.0.0.0") {
+                        showerror(_("A valid DNS address is required when DHCP is not used"));
+                        r = true;
+                        return false;
+                    }
                     s.o44 = e[0]; s.o45 = e[1]; s.o46 = e[2]; s.o47 = e[3];
                     return true;
                 case "ntp_addr":
@@ -6357,7 +6393,9 @@ function showOptions(section) {
                     return true;
                 case "o31":
                     if (parseInt(i) === 3 && !unescapeJSON($("#wto")[0].value).baseETo) {
-                        showerror(_("You must specify a baseline ETo adjustment method option to use the ET adjustment method."));
+                        showerror(_(
+                            "You must specify a baseline ETo adjustment method option to use the ET adjustment method."
+                        ));
                         r = true;
                         return false;
                     }
@@ -6396,7 +6434,8 @@ function showOptions(section) {
                     n = "o" + n;
                 } else {
                     a = /\d+/.exec(n);
-                    n = "o" + Object.keys(keyIndex).find(function (e) { return keyIndex[e] === a; });
+                    n = "o" + Object.keys(keyIndex)
+                        .find(function (e) { return keyIndex[e] === a; });
                 }
             }
             if (checkOSVersion(208) === true && n === "loc") { i = i.replace(/\s/g, "_"); }
@@ -6410,15 +6449,21 @@ function showOptions(section) {
                 if (controller.options.urs !== undefined) {
                     s.o21 = c.find("input[name='o21'][type='radio']:checked").val();
                 } else {
-                    if (controller.options.sn1t !== undefined) { s.o50 = c.find("input[name='o50'][type='radio']:checked").val(); }
-                    if (controller.options.sn2t !== undefined) { s.o52 = c.find("input[name='o52'][type='radio']:checked").val(); }
+                    if (controller.options.sn1t !== undefined) {
+                        s.o50 = c.find("input[name='o50'][type='radio']:checked").val();
+                    }
+                    if (controller.options.sn2t !== undefined) {
+                        s.o52 = c.find("input[name='o52'][type='radio']:checked").val();
+                    }
                 }
             }
             s = transformKeys(s);
             $.mobile.loading("show");
             sendToOS("/co?pw=&" + $.param(s))
                 .done(function () {
-                    $.mobile.document.one("pageshow", function () { showerror(_("Settings have been saved")); });
+                    $.mobile.document.one("pageshow", function () {
+                        showerror(_("Settings have been saved"));
+                    });
                     goBack();
                     updateController(updateWeather);
                 })
@@ -6434,10 +6479,34 @@ function showOptions(section) {
         s,
         r,
         l = "",
-        c = $("<div data-role='page' id='os-options'><div class='ui-content' role='main'><div data-role='collapsibleset' id='os-options-list'></div><a class='submit preventBack' style='display:none'></a></div></div>"),
-        d = changeHeader({ title: _("Edit Options"), leftBtn: { icon: "carat-l", text: _("Back"), class: "ui-toolbar-back-btn", on: checkChangesBeforeBack }, rightBtn: { icon: "check", text: _("Submit"), class: "submit", on: n } });
-    c.find(".submit").on("click", n);
-    l = "<fieldset data-role='collapsible'" + (typeof section !== "string" || section === "system" ? " data-collapsed='false'" : "") + "><legend>" + _("System") + "</legend>";
+        c = $(
+            "<div data-role='page' id='os-options'>" +
+            "<div class='ui-content' role='main'>" +
+            "<div data-role='collapsibleset' id='os-options-list'></div>" +
+            "<a class='submit preventBack' style='display:none'></a>" +
+            "</div></div>"
+        ),
+        d = changeHeader({
+            title: _("Edit Options"),
+            leftBtn: {
+                icon: "carat-l",
+                text: _("Back"),
+                class: "ui-toolbar-back-btn",
+                on: checkChangesBeforeBack
+            },
+            rightBtn: {
+                icon: "check",
+                text: _("Submit"),
+                class: "submit",
+                on: saveOptions
+            }
+        });
+    c.find(".submit").on("click", saveOptions);
+    l = "<fieldset data-role='collapsible'" +
+        (typeof section !== "string" || section === "system"
+            ? " data-collapsed='false'"
+            : "") +
+        "><legend>" + _("System") + "</legend>";
     if (controller.options.ntp !== undefined) {
         l +=
             "<div class='ui-field-contain datetime-input'><label for='datetime'>" +
@@ -6445,7 +6514,8 @@ function showOptions(section) {
             "</label><button " +
             (controller.options.ntp ? "disabled " : "") +
             "data-mini='true' id='datetime' value='" +
-            (controller.settings.devt + 60 * new Date(1e3 * controller.settings.devt).getTimezoneOffset()) +
+            (controller.settings.devt +
+                60 * new Date(1e3 * controller.settings.devt).getTimezoneOffset()) +
             "'>" +
             dateToString(new Date(1e3 * controller.settings.devt)).slice(0, -3) +
             "</button></div>";
@@ -6496,10 +6566,21 @@ function showOptions(section) {
             "+13:45",
             "+14:00",
         ];
-        o = (0 <= (o = controller.options.tz - 48) ? "+" : "-") + pad((Math.abs(o) / 4) >> 0) + ":" + ((((Math.abs(o) % 4) * 15) / 10) >> 0) + (((Math.abs(o) % 4) * 15) % 10);
-        l += "<div class='ui-field-contain'><label for='o1' class='select'>" + _("Timezone") + "</label><select " + (checkOSVersion(210) && typeof weather === "object" ? "disabled='disabled' " : "") + "data-mini='true' id='o1'>";
+        o = (0 <= (o = controller.options.tz - 48) ? "+" : "-") +
+            pad((Math.abs(o) / 4) >> 0) + ":" +
+            ((((Math.abs(o) % 4) * 15) / 10) >> 0) +
+            (((Math.abs(o) % 4) * 15) % 10);
+        l +=
+            "<div class='ui-field-contain'>" +
+            "<label for='o1' class='select'>" + _("Timezone") + "</label>" +
+            "<select " +
+            (checkOSVersion(210) && typeof weather === "object"
+                ? "disabled='disabled' "
+                : "") +
+            "data-mini='true' id='o1'>";
         for (a = 0; a < i.length; a++) {
-            l += "<option " + (i[a] === o ? "selected" : "") + " value='" + i[a] + "'>" + i[a] + "</option>";
+            l += "<option " + (i[a] === o ? "selected" : "") +
+                " value='" + i[a] + "'>" + i[a] + "</option>";
         }
         l += "</select></div>";
     }
@@ -6510,18 +6591,35 @@ function showOptions(section) {
         ("''" === controller.settings.loc.trim() ? _("Not specified") : controller.settings.loc) +
         "'><span>" +
         controller.settings.loc +
-        "</span><a class='ui-btn btn-no-border ui-btn-icon-notext ui-icon-delete ui-btn-corner-all clear-loc'></a></button></div>";
+        "</span>" +
+        "<a class='ui-btn btn-no-border ui-btn-icon-notext ui-icon-delete" +
+        " ui-btn-corner-all clear-loc'></a></button></div>";
     if (controller.options.lg !== undefined) {
-        l += "<label for='o36'><input data-mini='true' id='o36' type='checkbox' " + (1 === controller.options.lg ? "checked='checked'" : "") + ">" + _("Enable Logging") + "</label>";
+        l += "<label for='o36'>" +
+            "<input data-mini='true' id='o36' type='checkbox' " +
+            (1 === controller.options.lg ? "checked='checked'" : "") +
+            ">" + _("Enable Logging") + "</label>";
     }
-    l += "<label for='isMetric'><input data-mini='true' id='isMetric' type='checkbox' " + (isMetric ? "checked='checked'" : "") + ">" + _("Use Metric") + "</label>";
+    l += "<label for='isMetric'><input data-mini='true' id='isMetric' type='checkbox' " +
+        (isMetric ? "checked='checked'" : "") +
+        ">" + _("Use Metric") + "</label>";
     if (Supported.groups()) {
-        l += "<label for='groupView'><input data-mini='true' id='groupView' type='checkbox' " + (groupView ? "checked='checked'" : "") + ">" + _("Order Stations by Groups") + "</label>";
+        l += "<label for='groupView'>" +
+            "<input data-mini='true' id='groupView' type='checkbox' " +
+            (groupView ? "checked='checked'" : "") +
+            ">" + _("Order Stations by Groups") + "</label>";
     }
     if (controller.options.vm !== undefined) {
-        l += "<label for='o62'><input data-mini='true' id='o62' type='checkbox' " + (1 === controller.options.vm ? "checked='checked'" : "") + ">" + _("Virtual Mode (disable zone outputs)") + "</label>";
+        l += "<label for='o62'><input data-mini='true' id='o62' type='checkbox' " +
+            (1 === controller.options.vm ? "checked='checked'" : "") +
+            ">" + _("Virtual Mode (disable zone outputs)") + "</label>";
     }
-    l += "</fieldset><fieldset data-role='collapsible'" + (typeof section === "string" && section === "master" ? " data-collapsed='false'" : "") + "><legend>" + _("Configure Master") + "</legend>";
+    l += "</fieldset>" +
+        "<fieldset data-role='collapsible'" +
+        (typeof section === "string" && section === "master"
+            ? " data-collapsed='false'"
+            : "") +
+        "><legend>" + _("Configure Master") + "</legend>";
     if (controller.options.mas !== undefined) {
         l +=
             "<div class='ui-field-contain ui-field-no-border'><label for='o18' class='select'>" +
@@ -6532,14 +6630,16 @@ function showOptions(section) {
             _("None") +
             "</option>";
         for (a = 0; a < controller.stations.snames.length && (checkOSVersion(214) || 7 !== a); a++) {
-            l += "<option " + (1 === Station.isMaster(a) ? "selected" : "") + " value='" + (a + 1) + "'>" + controller.stations.snames[a] + "</option>";
+            l += "<option " + (1 === Station.isMaster(a) ? "selected" : "") +
+                " value='" + (a + 1) + "'>" + controller.stations.snames[a] + "</option>";
         }
         l += "</select></div>";
         if (controller.options.mton !== undefined) {
             l +=
                 "<div " +
                 (0 === controller.options.mas ? "style='display:none' " : "") +
-                "class='ui-field-no-border ui-field-contain duration-field'><label for='o19'>" +
+                "class='ui-field-no-border ui-field-contain duration-field'>" +
+                "<label for='o19'>" +
                 _("Master On Adjustment") +
                 "</label><button data-mini='true' id='o19' value='" +
                 controller.options.mton +
@@ -6551,7 +6651,8 @@ function showOptions(section) {
             l +=
                 "<div " +
                 (0 === controller.options.mas ? "style='display:none' " : "") +
-                "class='ui-field-no-border ui-field-contain duration-field'><label for='o20'>" +
+                "class='ui-field-no-border ui-field-contain duration-field'>" +
+                "<label for='o20'>" +
                 _("Master Off Adjustment") +
                 "</label><button data-mini='true' id='o20' value='" +
                 controller.options.mtof +
@@ -6562,16 +6663,22 @@ function showOptions(section) {
     }
     if (controller.options.mas2 !== undefined) {
         l += "<hr style='width:95%' class='content-divider'>";
-        l += "<div class='ui-field-contain ui-field-no-border'><label for='o37' class='select'>" + _("Master Station") + " 2</label><select data-mini='true' id='o37'><option value='0'>" + _("None") + "</option>";
+        l +=
+            "<div class='ui-field-contain ui-field-no-border'>" +
+            "<label for='o37' class='select'>" + _("Master Station") + " 2</label>" +
+            "<select data-mini='true' id='o37'><option value='0'>" +
+            _("None") + "</option>";
         for (a = 0; a < controller.stations.snames.length && (checkOSVersion(214) || 7 !== a); a++) {
-            l += "<option " + (2 === Station.isMaster(a) ? "selected" : "") + " value='" + (a + 1) + "'>" + controller.stations.snames[a] + "</option>";
+            l += "<option " + (2 === Station.isMaster(a) ? "selected" : "") +
+                " value='" + (a + 1) + "'>" + controller.stations.snames[a] + "</option>";
         }
         l += "</select></div>";
         if (controller.options.mton2 !== undefined) {
             l +=
                 "<div " +
                 (0 === controller.options.mas2 ? "style='display:none' " : "") +
-                "class='ui-field-no-border ui-field-contain duration-field'><label for='o38'>" +
+                "class='ui-field-no-border ui-field-contain duration-field'>" +
+                "<label for='o38'>" +
                 _("Master On Adjustment") +
                 "</label><button data-mini='true' id='o38' value='" +
                 controller.options.mton2 +
@@ -6583,7 +6690,8 @@ function showOptions(section) {
             l +=
                 "<div " +
                 (0 === controller.options.mas2 ? "style='display:none' " : "") +
-                "class='ui-field-no-border ui-field-contain duration-field'><label for='o39'>" +
+                "class='ui-field-no-border ui-field-contain duration-field'>" +
+                "<label for='o39'>" +
                 _("Master Off Adjustment") +
                 "</label><button data-mini='true' id='o39' value='" +
                 controller.options.mtof2 +
@@ -6592,15 +6700,26 @@ function showOptions(section) {
                 "s</button></div>";
         }
     }
-    l += "</fieldset><fieldset data-role='collapsible'" + (typeof section === "string" && section === "station" ? " data-collapsed='false'" : "") + "><legend>" + _("Station Handling") + "</legend>";
+    l += "</fieldset>" +
+        "<fieldset data-role='collapsible'" +
+        (typeof section === "string" && section === "station"
+            ? " data-collapsed='false'"
+            : "") +
+        "><legend>" + _("Station Handling") + "</legend>";
     if (controller.options.ext !== undefined) {
         l +=
             "<div class='ui-field-contain'><label for='o15' class='select'>" +
             _("Number of Stations") +
-            (typeof controller.options.dexp === "number" && controller.options.dexp < 255 && 0 <= controller.options.dexp ? " <span class='nobr'>(" + (8 * controller.options.dexp + 8) + " " + _("available") + ")</span>" : "") +
+            (typeof controller.options.dexp === "number" &&
+                controller.options.dexp < 255 && 0 <= controller.options.dexp
+                ? " <span class='nobr'>(" + (8 * controller.options.dexp + 8) +
+                  " " + _("available") + ")</span>"
+                : "") +
             "</label><select data-mini='true' id='o15'>";
         for (a = 0; a <= (controller.options.mexp || 5); a++) {
-            l += "<option " + (controller.options.ext === a ? "selected" : "") + " value='" + a + "'>" + (8 * a + 8) + " " + _("stations") + "</option>";
+            l += "<option " + (controller.options.ext === a ? "selected" : "") +
+                " value='" + a + "'>" + (8 * a + 8) + " " +
+                _("stations") + "</option>";
         }
         l += "</select></div>";
     }
@@ -6615,7 +6734,8 @@ function showOptions(section) {
             "</button></div>";
     }
     l +=
-        "<label for='showDisabled'><input data-mini='true' class='noselect' id='showDisabled' type='checkbox' " +
+        "<label for='showDisabled'>" +
+        "<input data-mini='true' class='noselect' id='showDisabled' type='checkbox' " +
         ("true" === localStorage.showDisabled ? "checked='checked'" : "") +
         ">" +
         _("Show Disabled") +
@@ -6623,20 +6743,29 @@ function showOptions(section) {
         _("(Changes Auto-Saved)") +
         "</label>";
     if (controller.options.seq !== undefined) {
-        l += "<label for='o16'><input data-mini='true' id='o16' type='checkbox' " + (1 === controller.options.seq ? "checked='checked'" : "") + ">" + _("Sequential") + "</label>";
+        l += "<label for='o16'><input data-mini='true' id='o16' type='checkbox' " +
+            (1 === controller.options.seq ? "checked='checked'" : "") +
+            ">" + _("Sequential") + "</label>";
     }
-    l += "</fieldset><fieldset data-role='collapsible'" + (typeof section === "string" && section === "weather" ? " data-collapsed='false'" : "") + "><legend>" + _("Weather and Sensors") + "</legend>";
+    l += "</fieldset>" +
+        "<fieldset data-role='collapsible'" +
+        (typeof section === "string" && section === "weather"
+            ? " data-collapsed='false'"
+            : "") +
+        "><legend>" + _("Weather and Sensors") + "</legend>";
     if (controller.options.uwt !== undefined) {
         l +=
             "<div class='ui-field-contain'><label for='o31' class='select'>" +
             _("Weather Adjustment Method") +
             "<button data-helptext='" +
             _("Weather adjustment uses DarkSky data in conjunction with the selected method to adjust the watering percentage.") +
-            "' class='help-icon btn-no-border ui-btn ui-icon-info ui-btn-icon-notext'></button></label><select data-mini='true' id='o31'>";
+            "' class='help-icon btn-no-border ui-btn ui-icon-info ui-btn-icon-notext'>" +
+            "</button></label><select data-mini='true' id='o31'>";
         for (a = 0; a < getAdjustmentMethod().length; a++) {
             var u = getAdjustmentMethod()[a];
             if (!u.minVersion || checkOSVersion(u.minVersion)) {
-                l += "<option " + (u.id === getCurrentAdjustmentMethodId() ? "selected" : "") + " value='" + a + "'>" + u.name + "</option>";
+                l += "<option " + (u.id === getCurrentAdjustmentMethodId() ? "selected" : "") +
+                    " value='" + a + "'>" + u.name + "</option>";
             }
         }
         l += "</select></div>";
@@ -6654,14 +6783,18 @@ function showOptions(section) {
         }
         if (checkOSVersion(214)) {
             l +=
-                "<div class='ui-field-contain'><label for='weatherRestriction' class='select'>" +
+                "<div class='ui-field-contain'>" +
+                "<label for='weatherRestriction' class='select'>" +
                 _("Weather-Based Restrictions") +
                 "<button data-helptext='" +
                 _("Prevents watering when the selected restriction is met.") +
-                "' class='help-icon btn-no-border ui-btn ui-icon-info ui-btn-icon-notext'></button></label><select data-mini='true' class='noselect' id='weatherRestriction'>";
+                "' class='help-icon btn-no-border ui-btn ui-icon-info ui-btn-icon-notext'>" +
+                "</button></label>" +
+                "<select data-mini='true' class='noselect' id='weatherRestriction'>";
             for (a = 0; a < 2; a++) {
                 var p = getRestriction(a);
-                l += "<option " + (p.isCurrent === true ? "selected" : "") + " value='" + a + "'>" + p.name + "</option>";
+                l += "<option " + (p.isCurrent === true ? "selected" : "") +
+                    " value='" + a + "'>" + p.name + "</option>";
             }
             l += "</select></div>";
         }
@@ -6672,8 +6805,11 @@ function showOptions(section) {
             _("% Watering") +
             "<button data-helptext='" +
             _("The watering percentage scales station run times by the set value.") +
-            "' class='help-icon btn-no-border ui-btn ui-icon-info ui-btn-icon-notext'></button></label><button " +
-            (controller.options.uwt && 0 < getCurrentAdjustmentMethodId() ? "disabled='disabled' " : "") +
+            "' class='help-icon btn-no-border ui-btn ui-icon-info ui-btn-icon-notext'>" +
+            "</button></label><button " +
+            (controller.options.uwt && 0 < getCurrentAdjustmentMethodId()
+                ? "disabled='disabled' "
+                : "") +
             "data-mini='true' id='o23' value='" +
             controller.options.wl +
             "'>" +
@@ -6682,15 +6818,23 @@ function showOptions(section) {
     }
     if (controller.options.urs !== undefined || controller.options.sn1t !== undefined) {
         if (controller.options.fpr0 !== undefined) {
-            l += controller.options.urs !== undefined ? t(keyIndex.urs, controller.options.urs) : controller.options.sn1t !== undefined ? t(keyIndex.sn1t, controller.options.sn1t, 1) : "";
+            l += controller.options.urs !== undefined
+                ? buildSensorTypeRadios(keyIndex.urs, controller.options.urs)
+                : controller.options.sn1t !== undefined
+                    ? buildSensorTypeRadios(keyIndex.sn1t, controller.options.sn1t, 1)
+                    : "";
         } else {
-            l += "<label for='o21'><input data-mini='true' id='o21' type='checkbox' " + (1 === controller.options.urs ? "checked='checked'" : "") + ">" + _("Use Rain Sensor") + "</label>";
+            l += "<label for='o21'><input data-mini='true' id='o21' type='checkbox' " +
+                (1 === controller.options.urs ? "checked='checked'" : "") +
+                ">" + _("Use Rain Sensor") + "</label>";
         }
     }
     if (controller.options.rso !== undefined) {
         l +=
             "<label for='o22'><input " +
-            (1 === controller.options.urs || 240 === controller.options.urs ? "" : "data-wrapper-class='hidden' ") +
+            (1 === controller.options.urs || 240 === controller.options.urs
+                ? ""
+                : "data-wrapper-class='hidden' ") +
             "data-mini='true' id='o22' type='checkbox' " +
             (1 === controller.options.rso ? "checked='checked'" : "") +
             ">" +
@@ -6700,7 +6844,8 @@ function showOptions(section) {
     if (controller.options.sn1o !== undefined) {
         l +=
             "<label for='o51'><input " +
-            (1 === controller.options.sn1t || 3 === controller.options.sn1t || 240 === controller.options.sn1t ? "" : "data-wrapper-class='hidden' ") +
+            (1 === controller.options.sn1t || 3 === controller.options.sn1t ||
+                240 === controller.options.sn1t ? "" : "data-wrapper-class='hidden' ") +
             "data-mini='true' id='o51' type='checkbox' " +
             (1 === controller.options.sn1o ? "checked='checked'" : "") +
             ">" +
@@ -6713,9 +6858,19 @@ function showOptions(section) {
             (2 === controller.options.urs || 2 === controller.options.sn1t ? "" : " hidden") +
             "'><label for='o41'>" +
             _("Flow Pulse Rate") +
-            "</label><table><tr style='width:100%;vertical-align: top;'><td style='width:100%'><div class='ui-input-text controlgroup-textinput ui-btn ui-body-inherit ui-corner-all ui-mini ui-shadow-inset ui-input-has-clear'><input data-role='none' data-mini='true' type='number' pattern='^[-+]?[0-9]*.?[0-9]*$' id='o41' value='" +
+            "</label><table><tr style='width:100%;vertical-align: top;'>" +
+            "<td style='width:100%'>" +
+            "<div class='ui-input-text controlgroup-textinput ui-btn ui-body-inherit" +
+            " ui-corner-all ui-mini ui-shadow-inset ui-input-has-clear'>" +
+            "<input data-role='none' data-mini='true' type='number'" +
+            " pattern='^[-+]?[0-9]*.?[0-9]*$' id='o41' value='" +
             (256 * controller.options.fpr1 + controller.options.fpr0) / 100 +
-            "'></div></td><td class='tight-select'><select id='o41-units' class='noselect' data-mini='true'><option selected='selected' value='liter'>L/pulse</option><option value='gallon'>Gal/pulse</option></select></td></tr></table></div>";
+            "'></div></td>" +
+            "<td class='tight-select'>" +
+            "<select id='o41-units' class='noselect' data-mini='true'>" +
+            "<option selected='selected' value='liter'>L/pulse</option>" +
+            "<option value='gallon'>Gal/pulse</option>" +
+            "</select></td></tr></table></div>";
     }
     if (controller.options.sn1on !== undefined) {
         l +=
@@ -6750,7 +6905,7 @@ function showOptions(section) {
             "</label>";
     }
     if (controller.options.sn2t !== undefined && checkOSVersion(219)) {
-        l += t(keyIndex.sn2t, controller.options.sn2t, 2);
+        l += buildSensorTypeRadios(keyIndex.sn2t, controller.options.sn2t, 2);
     }
     if (controller.options.sn2o !== undefined) {
         l +=

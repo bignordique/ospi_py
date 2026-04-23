@@ -12,7 +12,8 @@ class ospi_co():
         self.ospi_db = ospi_db
         self.sb = sb
         self.logger = logging.getLogger(__name__)
-        self.cmd_re = re.compile(r"&(\w*)=([a-zA-Z0-9.,-]*)")
+        self.cmd_re = re.compile(r"&(\w*)=([a-zA-Z0-9.,%:-]*)")
+        self.find_quotes = re.compile(r"%22")
 
     def handle(self, cmd):
         matches = self.cmd_re.findall(cmd[0])
@@ -27,10 +28,15 @@ class ospi_co():
             option = opt_set[0]
             param = opt_set[1] 
             match option:
-                case "loc" | "wto" | "ifkey" | "mqtt" | "dname":  
+                case "wto":
+        #Frankly don't understand this.   Seems to make the OS javascript happy.
+                    fixed_param = re.sub(self.find_quotes, '"', param)
+                    fixed_param = '{' + fixed_param + '}'
+                    self.ospi_db.db["settings"][option] = json.loads(fixed_param)
+                    writeback_db = True
+                case "loc" |"ifkey" | "mqtt" | "dname":  
                     self.ospi_db.db["settings"][option] = param
                     writeback_db = True
-                    self.logger.info(f'\n    {option} set to {param}.\n')
                 case "ttt":  
                     #set time manually.   FIXME
                     pass
