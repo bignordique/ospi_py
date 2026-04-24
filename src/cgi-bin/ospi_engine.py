@@ -40,12 +40,13 @@ class ospi_engine():
 
     def get_ps(self):
         ps = []
+        gmtoff = self.ospi_db.get_gmt_off(self.logger)
         for sid in range (0, self.ospi_db.db["status"]["nstations"]) :
             qid = self.station_qid[sid]
             gid = self.ospi_db.db["stations"]["stn_grp"][sid]
             if qid != 255:
                 entry = self.run_q[qid]
-                start = entry["st"]
+                start = entry["st"] + gmtoff
                 rem = entry["deque_time"] - self.ospi_db.get_utc_stamp(self.logger) 
                 pid = entry["pid"] + 1
                 ps.append([pid, rem, start, gid])

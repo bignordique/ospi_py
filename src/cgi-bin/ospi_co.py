@@ -12,7 +12,7 @@ class ospi_co():
         self.ospi_db = ospi_db
         self.sb = sb
         self.logger = logging.getLogger(__name__)
-        self.cmd_re = re.compile(r"&(\w*)=([a-zA-Z0-9.,%:-]*)")
+        self.cmd_re = re.compile(r"&(\w*)=([a-zA-Z0-9.,%:-_]*)")
         self.find_quotes = re.compile(r"%22")
 
     def handle(self, cmd):

@@ -67,6 +67,13 @@ class ospi_db:
         else :
             return self.debug_clk - 7 * 60 * 60
 
+    def get_gmt_off(self, logger):
+        if ospi_db.db["debug"]["accel"] == 0 :
+            tm = time.localtime()
+            return tm.tm_gmtoff
+        else :
+            return 7 * 60 * 60
+
     def get_utc_stamp(self, logger):
         if ospi_db.db["debug"]["accel"] == 0 :
             return int(time.time())
