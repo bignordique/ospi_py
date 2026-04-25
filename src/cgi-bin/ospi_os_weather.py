@@ -23,11 +23,12 @@ class ospi_os_weather():
         self.logger.debug("\n    implement apply_monthly_adjustment\n")
 
     def record_hourly_weather(self):
-        report = json.loads(urllib.request.urlopen(self.url).read())
+        self.logger.debug(f'\n    self.url is {self.url}\n')
+        """report = json.loads(urllib.request.urlopen(self.url).read())
         self.temps_48h = [report["temp"]] + self.temps_48h[0:46]
         self.hums_48h = [report["humidity"]] + self.hums_48h[0:46]
         self.precips_48h = [report["precip"]] + self.precips_48h[0:46]
-        self.logger.debug(f'\n    hourly temps: {self.temps_48h}\n    hums: {self.hums_48h}\n    precips: {self.precips_48h}\n')
+        self.logger.debug(f'\n    hourly temps: {self.temps_48h}\n    hums: {self.hums_48h}\n    precips: {self.precips_48h}\n') """
 
     def compute_daily_adjustment(self):
         self.logger.debug(f'\n    daily temps: {self.temps_48h}\n    hums: {self.hums_48h}\n    precips: {self.precips_48h}\n')

@@ -4,13 +4,13 @@ from cron_entry import cron_entry
 
 class ospi_tasks_hourly(cron_entry):
 
-    def __init__(self, ospi_os_weather):
+    def __init__(self, ospi_os_weather_hourly):
         super().__init__("hourly",  "0 * * * *", self.run_tasks)
         self.logger = logging.getLogger(__name__)
-        self.ospi_os_weather = ospi_os_weather
+        self.ospi_os_weather_hourly = ospi_os_weather_hourly
 
     def run_tasks(self):
-        self.ospi_os_weather.record_hourly_weather()
+        self.ospi_os_weather_hourly()
 
 if __name__ == "__main__":
 

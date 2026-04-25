@@ -36,7 +36,11 @@ class ospi_co():
                     fixed_param = '{' + fixed_param + '}'
                     self.ospi_db.db["settings"][option] = json.loads(fixed_param)
                     writeback_db = True
-                case "loc" |"ifkey" | "mqtt" | "dname":  
+                case "loc":
+                    un_url_encoded_param = unquote(param)
+                    self.ospi_db.db["settings"][option] = un_url_encoded_param
+                    writeback_db = True
+                case "ifkey" | "mqtt" | "dname":  
                     self.ospi_db.db["settings"][option] = param
                     writeback_db = True
                 case "ttt":  

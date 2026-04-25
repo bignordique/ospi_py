@@ -88,6 +88,7 @@ class ospi_fcgi_top ():
         wm.init_clicks
         ol.logging_ready()   #generate warning message if log file not available
         wx.initialize()
+        wx_os.initialize()
         self.ospi_cmd_re = re.compile("pw=([a-f0-9]{32})(&?.*)&_=(\d+)$")
         self.ospi_cmd_re_cm = re.compile("(.*)&pw=([a-f0-9]{32})&_=(\d+)$")
         self.logger = logging.getLogger(__name__)
