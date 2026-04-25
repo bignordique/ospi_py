@@ -34,6 +34,7 @@ from ospi_w1_rd_temps import ospi_w1_rd_temps
 from ospi_mcp3221 import ospi_mcp3221
 from ospi_station_bits import ospi_station_bits
 from ospi_weather import ospi_weather
+from ospi_os_weather import ospi_os_weather
 from ospi_check_match import ospi_check_match
 from ospi_engine import ospi_engine
 from ospi_server_thread import ospi_server_thread
@@ -48,6 +49,7 @@ ol = ospi_log(ospi_db_i)
 sb = ospi_station_bits(ospi_db_i)
 cm = ospi_check_match(ospi_db_i)
 wx = ospi_weather(ospi_db_i)
+wx_os = ospi_os_weather(ospi_db_i)
 eng = ospi_engine(ospi_db_i, cm, sb, ol)
 wm = ospi_water_meter(ospi_db_i, eng, sb, ol)
 sp = ospi_sp(ospi_db_i)
@@ -77,7 +79,7 @@ cx = ospi_cx(ospi_db_i)
 temp = ospi_w1_rd_temps("", js.settemp)
 
 zone_current = ospi_mcp3221(ospi_db_i)
-st = ospi_server_thread(ospi_db_i, eng, ol.prune_log, wx.compute_daily_adjustment)
+st = ospi_server_thread(ospi_db_i, eng, ol.prune_log, wx.compute_daily_adjustment, wx_os)
 
 class ospi_fcgi_top ():
 

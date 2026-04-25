@@ -4,18 +4,20 @@ import threading
 import logging
 from cron_entry import cron_entry
 from ospi_tasks_midnight import ospi_tasks_midnight
+from ospi_tasks_hourly import ospi_tasks_hourly
 import time
 
 
 class ospi_server_thread():
 
-    def __init__ (self, ospi_db, eng, prune_log, compute_daily_adjustment):
+    def __init__ (self, ospi_db, eng, prune_log, compute_daily_adjustment, wx_os):
         self.ospi_db = ospi_db
         self.eng = eng
         self.logger = logging.getLogger(__name__)
         self.thread = threading.Thread(target=self.thread_func, daemon=True)
         self.lock = threading.Lock()
-        self.at_midnight = ospi_tasks_midnight(ospi_db, prune_log, compute_daily_adjustment)
+        self.at_midnight = ospi_tasks_midnight(ospi_db, prune_log, compute_daily_adjustment, wx_os.compute_daily_adjustment)
+        self.hourly = ospi_tasks_hourly(wx_os.record_hourly_weather)
         self.thread.start()
 
 
@@ -25,6 +27,7 @@ class ospi_server_thread():
         while True:
             self.lock.acquire(blocking=True, timeout=1.0)
             self.at_midnight.check_entry()
+            self.hourly.check_entry()
             self.eng.do_loop(self.ospi_db.get_utc_stamp(self.logger))
 
     def unlock_opsi_thread(self):
