@@ -14,9 +14,9 @@ class ospi_os_weather():
 
     def initialize(self) :
         self.url = "https://" + self.ospi_db.db["settings"]["wsp"]+ "/weatherData?loc=" + quote(self.ospi_db.db["settings"]["loc"], safe='')
-        self.temps_48h = [0] * 48
-        self.hums_48h = [0] * 48
-        self.precips_48h = [0] * 48
+        self.temps_48h = [None] * 48
+        self.hums_48h = [None] * 48
+        self.precips_48h = [None] * 48
         #self.compute_daily_adjustment()
 
     def apply_monthly_adjustment(self):
@@ -27,9 +27,10 @@ class ospi_os_weather():
         self.temps_48h = [report["temp"]] + self.temps_48h[0:46]
         self.hums_48h = [report["humidity"]] + self.hums_48h[0:46]
         self.precips_48h = [report["precip"]] + self.precips_48h[0:46]
+        self.logger.debug(f'\n    hourly temps: {self.temps_48h}\n    hums: {self.hums_48h}\n    precips: {self.precips_48h}\n')
 
     def compute_daily_adjustment(self):
-        self.logger.debug(f'\n    temps: {self.temps_48h}\n    hums: {self.hums_48h}\n    precips: {self.precips_48h}\n')
+        self.logger.debug(f'\n    daily temps: {self.temps_48h}\n    hums: {self.hums_48h}\n    precips: {self.precips_48h}\n')
  
  #       ts = self.ospi_db.get_utc_stamp(self.logger)
 
