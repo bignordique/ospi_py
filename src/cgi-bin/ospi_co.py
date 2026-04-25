@@ -3,6 +3,7 @@
 import json
 import re
 import logging
+from urllib.parse import unquote 
 
 # not terribly consistent with return values
 
@@ -13,7 +14,7 @@ class ospi_co():
         self.sb = sb
         self.logger = logging.getLogger(__name__)
         self.cmd_re = re.compile(r"&(\w*)=([a-zA-Z0-9.,%:-_]*)")
-        self.find_quotes = re.compile(r"%22")
+#        self.find_quotes = re.compile(r"%22")
 
     def handle(self, cmd):
         matches = self.cmd_re.findall(cmd[0])
@@ -30,7 +31,8 @@ class ospi_co():
             match option:
                 case "wto":
         #Frankly don't understand this.   Seems to make the OS javascript happy.
-                    fixed_param = re.sub(self.find_quotes, '"', param)
+ #                   fixed_param = re.sub(self.find_quotes, '"', param)
+                    fixed_param = unquote(param)
                     fixed_param = '{' + fixed_param + '}'
                     self.ospi_db.db["settings"][option] = json.loads(fixed_param)
                     writeback_db = True

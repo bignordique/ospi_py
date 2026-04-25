@@ -5405,7 +5405,7 @@ function showAutoRainDelayAdjustmentOptions(inputElement, onSubmit) {
 }
 function showMonthlyAdjustmentOptions(inputElement, onSubmit) {
     $(".ui-popup-active").find("[data-role='popup']").popup("close");
-    var options = $.extend({}, { scales: [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100] }, unescapeJSON(inputElement.value)),
+    var o = $.extend({}, { scales: [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100] }, unescapeJSON(inputElement.value)),
         $popup = $(
             "<div data-role='popup' data-theme='a' id='adjustmentOptions'><div data-role='header' data-theme='b'><h1>" +
             _("Weather Adjustment Options") +
