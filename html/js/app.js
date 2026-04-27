@@ -6048,16 +6048,16 @@ function debugWU() {
         "</table><div class='debugWUHeading'>Weather Service Details</div><div class='debugWUScrollable'><table class='debugWUTable'>";
     if (typeof controller.settings.wtdata === "object" && Object.keys(controller.settings.wtdata).length > 0) {
         e +=
-            (controller.settings.wtdata.h !== undefined ? "<tr><td>" + _("Mean Humidity") + "</td><td>" + formatHumidity(controller.settings.wtdata.h) + "</td></tr>" : "") +
-            (controller.settings.wtdata.t !== undefined ? "<tr><td>" + _("Mean Temp") + "</td><td>" + formatTemp(controller.settings.wtdata.t) + "</td></tr>" : "") +
-            (controller.settings.wtdata.p !== undefined ? "<tr><td>" + _("Total Rain") + "</td><td>" + formatPrecip(controller.settings.wtdata.p) + "</td></tr>" : "") +
+            (controller.settings.wtdata.h !== undefined ? "<tr><td>" + _("Humidity") + "</td><td>" + formatHumidity(controller.settings.wtdata.h) + "</td></tr>" : "") +
+            (controller.settings.wtdata.t !== undefined ? "<tr><td>" + _("Temp") + "</td><td>" + formatTemp(controller.settings.wtdata.t) + "</td></tr>" : "") +
+            (controller.settings.wtdata.p !== undefined ? "<tr><td>" + _("Rain") + "</td><td>" + formatPrecip(controller.settings.wtdata.p) + "</td></tr>" : "") +
             (controller.settings.wtdata.eto !== undefined ? "<tr><td>" + _("ETo") + "</td><td>" + formatPrecip(controller.settings.wtdata.eto) + "</td></tr>" : "") +
             (controller.settings.wtdata.radiation !== undefined ? "<tr><td>" + _("Mean Radiation") + "</td><td>" + controller.settings.wtdata.radiation + " kWh/m2</td></tr>" : "") +
             (controller.settings.wtdata.minT !== undefined ? "<tr><td>" + _("Min Temp") + "</td><td>" + formatTemp(controller.settings.wtdata.minT) + "</td></tr>" : "") +
             (controller.settings.wtdata.maxT !== undefined ? "<tr><td>" + _("Max Temp") + "</td><td>" + formatTemp(controller.settings.wtdata.maxT) + "</td></tr>" : "") +
             (controller.settings.wtdata.minH !== undefined ? "<tr><td>" + _("Min Humidity") + "</td><td>" + formatHumidity(controller.settings.wtdata.minH) + "</td></tr>" : "") +
             (controller.settings.wtdata.maxH !== undefined ? "<tr><td>" + _("Max Humidity") + "</td><td>" + formatHumidity(controller.settings.wtdata.maxH) + "</td></tr>" : "") +
-            (controller.settings.wtdata.wind !== undefined ? "<tr><td>" + _("Mean Wind") + "</td><td>" + formatSpeed(controller.settings.wtdata.wind) + "</td></tr>" : "");
+            (controller.settings.wtdata.wind !== undefined ? "<tr><td>" + _("Wind") + "</td><td>" + formatSpeed(controller.settings.wtdata.wind) + "</td></tr>" : "");
     }
     e += (typeof controller.settings.lwc === "number" ? "<tr><td>" + _("Last Request") + "</td><td>" + dateToString(new Date(1e3 * controller.settings.lwc), null, 2) + "</td></tr>" : "") +
         (typeof controller.settings.wterr === "number" ? "<tr><td>" + _("Last Response") + "</td><td>" + getWeatherError(controller.settings.wterr) + "</td></tr>" : "") +
@@ -6572,7 +6572,7 @@ function showOptions(section) {
             (((Math.abs(o) % 4) * 15) % 10);
         l +=
             "<div class='ui-field-contain'>" +
-            "<label for='o1' class='select'>" + _("Timezone") + "</label>" +
+            "<label for='o1' class='select'>" + _("Timezone (not sure this does anything)") + "</label>" +
             "<select " +
             (checkOSVersion(210) && typeof weather === "object"
                 ? "disabled='disabled' "
@@ -12539,31 +12539,31 @@ function humaniseDuration(startTime, endTime) {
     return (elapsed = Math.abs(elapsed)) < 10
         ? _("Just Now")
         : ((unit = _(
-            1 <= (unit = Math.floor(elapsed / 31536e3))
-                ? 1 < unit
+            1 <= (rem = Math.floor(elapsed / 31536e3))
+                ? 1 < rem
                     ? "years"
                     : "year"
-                : 1 <= (unit = Math.floor(elapsed / 2592e3))
-                    ? 1 < unit
+                : 1 <= (rem = Math.floor(elapsed / 2592e3))
+                    ? 1 < rem
                         ? "months"
                         : "month"
-                    : 1 <= (unit = Math.floor(elapsed / 86400))
-                        ? 1 < unit
+                    : 1 <= (rem = Math.floor(elapsed / 86400))
+                        ? 1 < rem
                             ? "days"
                             : "day"
-                        : 1 <= (unit = Math.floor(elapsed / 3600))
-                            ? 1 < unit
+                        : 1 <= (rem = Math.floor(elapsed / 3600))
+                            ? 1 < rem
                                 ? "hours"
                                 : "hour"
-                            : 1 <= (unit = Math.floor(elapsed / 60))
-                                ? 1 < unit
+                            : 1 <= (rem = Math.floor(elapsed / 60))
+                                ? 1 < rem
                                     ? "minutes"
                                     : "minute"
-                                : 1 < (unit = elapsed)
+                                : 1 < (rem = elapsed)
                                     ? "seconds"
                                     : "second"
         )),
-            isFuture ? _("In") + " " + unit + " " + unit : unit + " " + unit + " " + _("ago"));
+            isFuture ? _("In") + " " + String(rem) + " " + unit : String(rem) + " " + unit + " " + _("ago"));
 }
 function dateToString(date, applyTzOffset, format) {
     var dayNames = [_("Sun"), _("Mon"), _("Tue"), _("Wed"), _("Thu"), _("Fri"), _("Sat")],

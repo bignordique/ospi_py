@@ -34,9 +34,7 @@
     },
     "ifkey": "",
     "mqtt": {},
-    "wtdata": {
-      "wp": "Manual"
-    },
+    "wtdata": {},
     "wterr": 0,
     "dname": "My",
     "sbits": [

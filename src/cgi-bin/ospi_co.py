@@ -34,11 +34,15 @@ class ospi_co():
  #                   fixed_param = re.sub(self.find_quotes, '"', param)
                     fixed_param = unquote(param)
                     fixed_param = '{' + fixed_param + '}'
-                    self.ospi_db.db["settings"][option] = json.loads(fixed_param)
+                    param_json = json.loads(fixed_param)
+                    for key in param_json:
+                        self.ospi_db.db["settings"][option][key] = param_json[key]
                     writeback_db = True
                 case "loc":
                     un_url_encoded_param = unquote(param)
                     self.ospi_db.db["settings"][option] = un_url_encoded_param
+                    self.ospi_db.db["settings"][option] = "40.44984,-105.00539"  # FIXME  Requires rework of google map stuff.
+                                                                                 # set to FNL coordinates.
                     writeback_db = True
                 case "ifkey" | "mqtt" | "dname":  
                     self.ospi_db.db["settings"][option] = param
