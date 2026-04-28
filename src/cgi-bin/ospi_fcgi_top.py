@@ -42,9 +42,11 @@ from ospi_db import ospi_db
 from ospi_log import ospi_log
 from ospi_water_meter import ospi_water_meter
 from ospi_fuse import ospi_fuse
+from ospi_wl_update import ospi_wl_update
 
 ospi_db_i = ospi_db()
 
+wl = ospi_wl_update(ospi_db_i)
 ol = ospi_log(ospi_db_i)
 sb = ospi_station_bits(ospi_db_i)
 cm = ospi_check_match(ospi_db_i)
@@ -61,7 +63,7 @@ fuse = ospi_fuse()
 js = ospi_js(ospi_db_i, sb, fuse, eng)
 ja = ospi_ja(jc, jp, jo, js, jn)
 cv = ospi_cv(ospi_db_i, eng)
-co = ospi_co(ospi_db_i, sb)
+co = ospi_co(ospi_db_i, sb, wl)
 cs = ospi_cs(ospi_db_i)
 mp = ospi_mp(ospi_db_i, eng)
 cm = ospi_cm(ospi_db_i, eng)
@@ -89,6 +91,7 @@ class ospi_fcgi_top ():
         ol.logging_ready()   #generate warning message if log file not available
         wx.initialize()
         wx_os.initialize()
+        wl.update()
         self.ospi_cmd_re = re.compile("pw=([a-f0-9]{32})(&?.*)&_=(\d+)$")
         self.ospi_cmd_re_cm = re.compile("(.*)&pw=([a-f0-9]{32})&_=(\d+)$")
         self.logger = logging.getLogger(__name__)

@@ -54,6 +54,7 @@ logging.getLogger('ospi_os_weather').setLevel(logging.DEBUG)
 logging.getLogger('ospi_water_meter').setLevel(logging.INFO)
 logging.getLogger('ospi_fuse').setLevel(logging.INFO)
 logging.getLogger('ospi_log').setLevel(logging.INFO)
+logging.getLogger('ospi_wl_update').setLevel(logging.DEBUG)
 
 fcgi_top = ospi_fcgi_top()
 

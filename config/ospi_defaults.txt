@@ -29,8 +29,27 @@
     "jsp": "https://ui.opensprinkler.com/js",
     "wsp": "weather.opensprinkler.com",
     "wto": {
+      "h": 100,
+      "t": 100,
+      "r": 99,
+      "bh": 30,
+      "bt": 70,
+      "br": 0,
       "key": "",
-      "pws": ""
+      "scales": [
+        0,
+        100,
+        100,
+        77,
+        100,
+        100,
+        120,
+        100,
+        100,
+        100,
+        250,
+        100
+      ]
     },
     "ifkey": "",
     "mqtt": {},
@@ -670,6 +689,7 @@
   "debug": {
     "weatherapi.com_key": "63c3c5f639564da3ba9141032241804",
     "accel": 0,
-    "start": 1709492261
+    "start": 1709492261,
+    "zimm" : 10
   }
 }

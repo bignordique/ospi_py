@@ -67,6 +67,10 @@ class ospi_db:
         else :
             return self.debug_clk - 7 * 60 * 60
 
+    def get_month_number(self, logger):
+        tm = time.localtime()
+        return tm.tm_mon
+
     def get_gmt_off(self, logger):
         if ospi_db.db["debug"]["accel"] == 0 :
             tm = time.localtime()

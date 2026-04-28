@@ -27,9 +27,6 @@ class ospi_weather():
         self.api_instance = swagger_client.APIsApi(swagger_client.ApiClient(self.configuration))
         self.compute_daily_adjustment()
 
-    def apply_monthly_adjustment(self):
-        self.logger.debug("\n    implement apply_monthly_adjustment\n")
-
     def compute_daily_adjustment(self):
  #       return()
         ts = self.ospi_db.get_utc_stamp(self.logger)
@@ -68,10 +65,35 @@ class ospi_weather():
             avghumidity = avghumidity/wx_factors
             avgtemp_f = avgtemp_f/wx_factors
 
-        hum_factor = ospi_defs.NEUTRAL_HUMIDITY - avghumidity
-        temp_factor = (avgtemp_f - ospi_defs.NEUTRAL_TEMP) * 4
+        if "bh" in self.ospi_db.db["settings"]["wto"]:
+            neutral_humidity = self.ospi_db.db["settings"]["wto"]["bh"]
+        else :
+            neutral_humidity = ospi_defs.NEUTRAL_HUMIDITY
 
-        precip_factor = totalprecip_hundreds * -2
+        if "bt" in self.ospi_db.db["settings"]["wto"]:
+            neutral_temp = self.ospi_db.db["settings"]["wto"]["bt"]
+        else :
+            neutral_temp = ospi_defs.NEUTRAL_TEMP
+
+        if "t" in self.ospi_db.db["settings"]["wto"]:
+            temp_scale = self.ospi_db.db["settings"]["wto"]["t"]
+        else :
+            temp_scale = 100
+
+        if "h" in self.ospi_db.db["settings"]["wto"]:
+            hum_scale = self.ospi_db.db["settings"]["wto"]["h"]
+        else :
+            hum_scale = 100
+
+        if "r" in self.ospi_db.db["settings"]["wto"]:
+            precip_scale = self.ospi_db.db["settings"]["wto"]["r"]
+        else :
+            precip_scale = 100
+
+        hum_factor = (neutral_humidity - avghumidity) * hum_scale/100
+        temp_factor = (avgtemp_f - neutral_temp) * 4 * temp_scale/100
+
+        precip_factor = (totalprecip_hundreds * -2) * precip_scale/100
 
         self.logger.debug(f'\n    avghumidity: {avghumidity}, avgtemp: {avgtemp_f}, ' + \
                           f'totalprecip_hundreds: {totalprecip_hundreds}\n')
@@ -79,7 +101,7 @@ class ospi_weather():
                           f'precip_factor: {precip_factor}\n')
 
         adj = int(min(max(0,100+hum_factor+temp_factor+precip_factor), 200))
-        self.ospi_db.db["options"]["wl"] = adj
+        self.ospi_db.db["debug"]["zimm"] = adj
         
 if __name__ == "__main__":
     import os

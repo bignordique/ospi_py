@@ -9,9 +9,10 @@ from urllib.parse import unquote
 
 class ospi_co():
 
-    def __init__ (self, ospi_db, sb):
+    def __init__ (self, ospi_db, sb, wl_update):
         self.ospi_db = ospi_db
         self.sb = sb
+        self.wl_update = wl_update
         self.logger = logging.getLogger(__name__)
         self.cmd_re = re.compile(r"&(\w*)=([a-zA-Z0-9.,%:-_]*)")
 #        self.find_quotes = re.compile(r"%22")
@@ -24,6 +25,7 @@ class ospi_co():
             return['{"result":18}']
 
         writeback_db = False
+        update_wl = False
 
         for opt_set in matches:
             option = opt_set[0]
@@ -38,6 +40,7 @@ class ospi_co():
                     for key in param_json:
                         self.ospi_db.db["settings"][option][key] = param_json[key]
                     writeback_db = True
+                    update_wl = True
                 case "loc":
                     un_url_encoded_param = unquote(param)
                     self.ospi_db.db["settings"][option] = un_url_encoded_param
@@ -62,6 +65,7 @@ class ospi_co():
                         self.logger.error(f'\n    co "{option}" inappropriate parameter\n')
                         return['{"result":18}'] 
                     self.ospi_db.db["options"][option] = param
+                    if option == "uwt" : update_wl = True
                     writeback_db = True
                     self.logger.info(f'\n    {option} set to {param}.\n')
                 case "fwv" | "fwm" | "hwv" | "hwt" | "dexp" | "mexp":
@@ -75,6 +79,7 @@ class ospi_co():
                     self.logger.warning(f'\n    Unrecognized co "{option}".\n')
 
         if writeback_db : self.ospi_db.wb_db(self.logger)
+        if update_wl : self.wl_update.update()
         return['{"result":1}']
 
 if __name__ == "__main__":
