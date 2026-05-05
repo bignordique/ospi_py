@@ -3807,6 +3807,7 @@ var DEFAULT_WEATHER_SERVER_URL = "https://weather.opensprinkler.com",
         subn3: 60,
         subn4: 61,
         vm: 62,
+        rowl: 63,
     },
     dialog = { REMOVE_STATION: 1 },
     popupData = { shift: void 0 },
@@ -7391,6 +7392,15 @@ function showOptions(section) {
                 maximum: 250,
                 helptext: o,
             });
+        } else if ("o63" === n) {
+            showSingleDurationInput({
+                data: t.val(),
+                title: i,
+                callback: function (e) { t.val(e).text(e + "%"); },
+                label: _("RO % Watering"),
+                maximum: 250,
+                helptext: o,
+            });
         } else if ("o17" === n) {
             e = 0;
             if (checkOSVersion(210)) { a = checkOSVersion(214) ? 57600 : 64800; }
@@ -8883,7 +8893,22 @@ var getManual = (function () {
                         ":</label><button data-mini='true' name='zone-" + e + "' id='zone-" + e + "' value='0'>0s</button></div>";
                 }
             });
-            s += "</form><a class='ui-btn ui-corner-all ui-shadow rsubmit' href='#'>" + _("Submit") + "</a><a class='ui-btn ui-btn-b ui-corner-all ui-shadow rreset' href='#'>" + _("Reset") + "</a>";
+            s += "</form>";
+
+            s +=
+                "<div class='ui-field-contain duration-field'><label for='o63'>" +
+                _("% Watering") +
+                "<button data-helptext='" +
+                _("Scales program station run times by the set value.") +
+                "' class='help-icon btn-no-border ui-btn ui-icon-info ui-btn-icon-notext'>" +
+                //"</button></label><button data-mini='true' id='o63' value='" + 100 + "'>" +
+                "</button></label><button id='o63' value='" + 100 + "'>" + 100 +
+                "%</button> " +
+                "</div>";
+    
+    
+            s += "<a class='ui-btn ui-corner-all ui-shadow rsubmit' href='#'>" + _("Submit") + "</a>";
+            s += "<a class='ui-btn ui-btn-b ui-corner-all ui-shadow rreset' href='#'>" + _("Reset") + "</a>";
             h.find(".ui-content").html(s).enhanceWithin();
             if (typeof controller.settings.rodur === "object") {
                 var n = 0;
@@ -8906,6 +8931,31 @@ var getManual = (function () {
                 }
             });
             h.on("click", ".rsubmit", submitRunonce).on("click", ".rreset", o);
+            h.find(".help-icon").on("click", showHelpText); 
+
+            // llj
+            h.find(".duration-field button:not(.help-icon)").on("click", function () {
+                var e,
+                t = $(this),
+                n = t.attr("id"),
+                i = h.find("label[for='" + n + "']").text(),
+                o = t.parent().find(".help-icon").data("helptext");
+               // a = 240;
+
+                if ("o63" === n) {
+                    showSingleDurationInput({
+                        data: t.val(),
+                        title: i,
+                        callback: function (e) { t.val(e).text(e + "%"); 
+                                                console.log(e);
+                        },
+                        label: _("% Watering"),
+                        maximum: 250,
+                        helptext: o,
+                    });
+                }
+            }); 
+
             h.find("[id^='zone-']").on("click", function () {
                 var t = $(this),
                     e = h.find("label[for='" + t.attr("id") + "']").text().slice(0, -1);
