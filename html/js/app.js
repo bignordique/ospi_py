@@ -8822,80 +8822,101 @@ var getManual = (function () {
     };
 })(),
     getRunonce = (function () {
-        function i(e) {
-            c.l = e;
-            $("<option value='l' selected='selected'>" + _("Last Used Program") + "</option>").insertAfter(h.find("#rprog").find("option[value='t']"));
-            f(e);
+        function loadLastProgram(lastDurations) {
+            allProgramDurations.l = lastDurations;
+            $("<option value='l' selected='selected'>" + _("Last Used Program") + "</option>")
+                .insertAfter(page.find("#rprog").find("option[value='t']"));
+            loadDurations(lastDurations);
         }
-        function o() {
-            h.find("[id^='zone-']").val(0).text("0s").removeClass("green");
+        function resetDurations() {
+            page.find("[id^='zone-']").val(0).text("0s").removeClass("green");
             return false;
         }
-        var a,
-            s,
-            r,
-            l,
-            c,
-            d,
-            u,
-            p,
-            h = $("<div data-role='page' id='runonce'><div class='ui-content' role='main' id='runonce_list'></div></div>"),
-            f = function (n) {
-                h.find("[id^='zone-']").each(function (e, t) {
-                    if (!Station.isMaster(e)) {
-                        t = $(t);
-                        t.val(n[e]).text(getDurationText(n[e]));
-                        if (n[e] > 0) { t.addClass("green"); } else { t.removeClass("green"); }
+        var idx,
+            html,
+            selectHtml,
+            programDurations,
+            allProgramDurations,
+            progIdx,
+            program,
+            progName,
+            page = $("<div data-role='page' id='runonce'>" +
+                     "<div class='ui-content' role='main' id='runonce_list'></div></div>"),
+            loadDurations = function (durations) {
+                scale = Number($("#o63").val())/100;
+                console.log(scale);
+                page.find("[id^='zone-']").each(function (zoneIdx, zoneEl) {
+                    if (!Station.isMaster(zoneIdx)) {
+                        zoneEl = $(zoneEl);
+                        zoneEl.val(durations[zoneIdx]).text(getDurationText(durations[zoneIdx]));
+                        if (durations[zoneIdx] > 0) {
+                            zoneEl.addClass("green");
+                        } else {
+                            zoneEl.removeClass("green");
+                        }
                     }
                 });
             };
-        h.on("pagehide", function () {
-            h.detach();
+        page.on("pagehide", function () {
+            page.detach();
         });
         return function () {
-            s = "<p class='center'>" + _("Zero value excludes the station from the run-once program.") + "</p>";
-            l = [];
+            html = "<p class='center'>" +
+                _("Zero value excludes the station from the run-once program.") +
+                "</p>";
+            programDurations = [];
             if (controller.programs.pd.length) {
-                for (d = 0; d < controller.programs.pd.length; d++) {
-                    u = readProgram(controller.programs.pd[d]);
-                    var e = [];
+                for (progIdx = 0; progIdx < controller.programs.pd.length; progIdx++) {
+                    program = readProgram(controller.programs.pd[progIdx]);
+                    var stationDurations = [];
                     if (checkOSVersion(210)) {
-                        e = u.stations;
+                        stationDurations = program.stations;
                     } else {
-                        var t = u.stations.split("");
-                        for (a = 0; a < controller.stations.snames.length; a++) {
-                            e.push(parseInt(t[a]) ? u.duration : 0);
+                        var stationFlags = program.stations.split("");
+                        for (idx = 0; idx < controller.stations.snames.length; idx++) {
+                            stationDurations.push(
+                                parseInt(stationFlags[idx]) ? program.duration : 0
+                            );
                         }
                     }
-                    l.push(e);
+                    programDurations.push(stationDurations);
                 }
             }
-            c = l;
-            r = "<select data-mini='true' name='rprog' id='rprog'><option value='t'>" + _("Test All Stations") + "</option><option value='s' selected='selected'>" + _("Quick Programs") + "</option>";
-            for (a = 0; a < l.length; a++) {
-                p = checkOSVersion(210) ? controller.programs.pd[a][5] : _("Program") + " " + (a + 1);
-                r += "<option value='" + a + "'>" + p + "</option>";
+            allProgramDurations = programDurations;
+            selectHtml = "<select data-mini='true' name='rprog' id='rprog'>" +
+                "<option value='t'>" + _("Test All Stations") + "</option>" +
+                "<option value='s' selected='selected'>" + _("Quick Programs") + "</option>";
+            for (idx = 0; idx < programDurations.length; idx++) {
+                progName = checkOSVersion(210)
+                    ? controller.programs.pd[idx][5]
+                    : _("Program") + " " + (idx + 1);
+                selectHtml += "<option value='" + idx + "'>" + progName + "</option>";
             }
-            r += "</select>";
-            s += r + "<form>";
-            $.each(controller.stations.snames, function (e, t) {
-                if (Station.isMaster(e)) {
-                    s +=
-                        "<div class='ui-field-contain duration-input" +
-                        (Station.isDisabled(e) ? " station-hidden' style='display:none" : "") +
-                        "'><label for='zone-" + e + "'>" + t +
-                        ":</label><button disabled='true' data-mini='true' name='zone-" + e + "' id='zone-" + e + "' value='0'>Master</button></div>";
+            selectHtml += "</select>";
+            html += selectHtml + "<form>";
+            $.each(controller.stations.snames, function (stationIdx, stationName) {
+                var hiddenAttr = Station.isDisabled(stationIdx)
+                    ? " station-hidden' style='display:none"
+                    : "";
+                if (Station.isMaster(stationIdx)) {
+                    html +=
+                        "<div class='ui-field-contain duration-input" + hiddenAttr +
+                        "'><label for='zone-" + stationIdx + "'>" + stationName +
+                        ":</label><button disabled='true' data-mini='true'" +
+                        " name='zone-" + stationIdx + "' id='zone-" + stationIdx +
+                        "' value='0'>Master</button></div>";
                 } else {
-                    s +=
-                        "<div class='ui-field-contain duration-input" +
-                        (Station.isDisabled(e) ? " station-hidden' style='display:none" : "") +
-                        "'><label for='zone-" + e + "'>" + t +
-                        ":</label><button data-mini='true' name='zone-" + e + "' id='zone-" + e + "' value='0'>0s</button></div>";
+                    html +=
+                        "<div class='ui-field-contain duration-input" + hiddenAttr +
+                        "'><label for='zone-" + stationIdx + "'>" + stationName +
+                        ":</label><button data-mini='true'" +
+                        " name='zone-" + stationIdx + "' id='zone-" + stationIdx +
+                        "' value='0'>0s</button></div>";
                 }
             });
-            s += "</form>";
+            html += "</form>";
 
-            s +=
+            html +=
                 "<div class='ui-field-contain duration-field'><label for='o63'>" +
                 _("% Watering") +
                 "<button data-helptext='" +
@@ -8905,76 +8926,93 @@ var getManual = (function () {
                 "</button></label><button id='o63' value='" + 100 + "'>" + 100 +
                 "%</button> " +
                 "</div>";
-    
-    
-            s += "<a class='ui-btn ui-corner-all ui-shadow rsubmit' href='#'>" + _("Submit") + "</a>";
-            s += "<a class='ui-btn ui-btn-b ui-corner-all ui-shadow rreset' href='#'>" + _("Reset") + "</a>";
-            h.find(".ui-content").html(s).enhanceWithin();
+
+
+            html += "<a class='ui-btn ui-corner-all ui-shadow rsubmit' href='#'>" +
+                _("Submit") + "</a>";
+            html += "<a class='ui-btn ui-btn-b ui-corner-all ui-shadow rreset' href='#'>" +
+                _("Reset") + "</a>";
+            page.find(".ui-content").html(html).enhanceWithin();
             if (typeof controller.settings.rodur === "object") {
-                var n = 0;
-                for (a = 0; a < controller.settings.rodur.length; a++) { n += controller.settings.rodur[a]; }
-                if (n !== 0) { i(controller.settings.rodur); }
+                var total = 0;
+                for (idx = 0; idx < controller.settings.rodur.length; idx++) {
+                    total += controller.settings.rodur[idx];
+                }
+                if (total !== 0) { loadLastProgram(controller.settings.rodur); }
             } else {
-                storage.get("runonce", function (e) {
-                    e = e.runonce;
-                    if (e) { e = JSON.parse(e); i(e); }
+                storage.get("runonce", function (stored) {
+                    stored = stored.runonce;
+                    if (stored) { stored = JSON.parse(stored); loadLastProgram(stored); }
                 });
             }
-            h.find("#rprog").on("change", function () {
-                var e = $(this).val();
-                if (e === "s") {
-                    o();
-                } else if (e === "t") {
-                    f(Array.apply(null, Array(controller.stations.snames.length)).map(function () { return 60; }));
-                } else if (c[e] !== undefined) {
-                    f(c[e]);
+            page.find("#rprog").on("change", function () {
+                var selectedVal = $(this).val();
+                if (selectedVal === "s") {
+                    resetDurations();
+                } else if (selectedVal === "t") {
+                    loadDurations(
+                        Array.apply(null, Array(controller.stations.snames.length))
+                            .map(function () { return 60; })
+                    );
+                } else if (allProgramDurations[selectedVal] !== undefined) {
+                    loadDurations(allProgramDurations[selectedVal]);
                 }
             });
-            h.on("click", ".rsubmit", submitRunonce).on("click", ".rreset", o);
-            h.find(".help-icon").on("click", showHelpText); 
+            page.on("click", ".rsubmit", submitRunonce).on("click", ".rreset", resetDurations);
+            page.find(".help-icon").on("click", showHelpText);
 
             // llj
-            h.find(".duration-field button:not(.help-icon)").on("click", function () {
-                var e,
-                t = $(this),
-                n = t.attr("id"),
-                i = h.find("label[for='" + n + "']").text(),
-                o = t.parent().find(".help-icon").data("helptext");
+            page.find(".duration-field button:not(.help-icon)").on("click", function () {
+                var btn = $(this),
+                    btnId = btn.attr("id"),
+                    labelText = page.find("label[for='" + btnId + "']").text(),
+                    helpText = btn.parent().find(".help-icon").data("helptext");
                // a = 240;
 
-                if ("o63" === n) {
+                if ("o63" === btnId) {
                     showSingleDurationInput({
-                        data: t.val(),
-                        title: i,
-                        callback: function (e) { t.val(e).text(e + "%"); 
-                                                console.log(e);
+                        data: btn.val(),
+                        title: labelText,
+                        callback: function (value) { btn.val(value).text(value + "%");
+                                                     loadDurations(allProgramDurations[page.find("#rprog").val()]);
                         },
                         label: _("% Watering"),
                         maximum: 250,
-                        helptext: o,
+                        helptext: helpText,
                     });
                 }
-            }); 
+            });
 
-            h.find("[id^='zone-']").on("click", function () {
-                var t = $(this),
-                    e = h.find("label[for='" + t.attr("id") + "']").text().slice(0, -1);
+            page.find("[id^='zone-']").on("click", function () {
+                var zoneBtn = $(this),
+                    zoneLabel = page.find("label[for='" + zoneBtn.attr("id") + "']")
+                        .text().slice(0, -1);
                 showDurationBox({
-                    seconds: t.val(),
-                    title: e,
-                    callback: function (e) {
-                        t.val(e);
-                        t.text(getDurationText(e));
-                        if (e > 0) { t.addClass("green"); } else { t.removeClass("green"); }
+                    seconds: zoneBtn.val(),
+                    title: zoneLabel,
+                    callback: function (seconds) {
+                        zoneBtn.val(seconds);
+                        zoneBtn.text(getDurationText(seconds));
+                        if (seconds > 0) {
+                            zoneBtn.addClass("green");
+                        } else {
+                            zoneBtn.removeClass("green");
+                        }
                     },
                     maximum: 65535,
                     showSun: !!checkOSVersion(214),
                 });
                 return false;
             });
-            changeHeader({ title: _("Run-Once"), leftBtn: { icon: "carat-l", text: _("Back"), class: "ui-toolbar-back-btn", on: goBack }, rightBtn: { icon: "check", text: _("Submit"), on: submitRunonce } });
+            changeHeader({
+                title: _("Run-Once"),
+                leftBtn: {
+                    icon: "carat-l", text: _("Back"), class: "ui-toolbar-back-btn", on: goBack
+                },
+                rightBtn: { icon: "check", text: _("Submit"), on: submitRunonce }
+            });
             $("#runonce").remove();
-            $.mobile.pageContainer.append(h);
+            $.mobile.pageContainer.append(page);
         };
     })();
 function submitRunonce(durations) {
