@@ -8843,13 +8843,13 @@ var getManual = (function () {
             page = $("<div data-role='page' id='runonce'>" +
                      "<div class='ui-content' role='main' id='runonce_list'></div></div>"),
             loadDurations = function (durations) {
-                scale = Number($("#o63").val())/100;
-                console.log(scale);
+
                 page.find("[id^='zone-']").each(function (zoneIdx, zoneEl) {
                     if (!Station.isMaster(zoneIdx)) {
                         zoneEl = $(zoneEl);
-                        zoneEl.val(durations[zoneIdx]).text(getDurationText(durations[zoneIdx]));
-                        if (durations[zoneIdx] > 0) {
+                        duration=durations[zoneIdx]
+                        zoneEl.val(durations[zoneIdx]).text(getDurationText(duration));
+                        if (duration > 0) {
                             zoneEl.addClass("green");
                         } else {
                             zoneEl.removeClass("green");
@@ -8860,6 +8860,7 @@ var getManual = (function () {
         page.on("pagehide", function () {
             page.detach();
         });
+
         return function () {
             html = "<p class='center'>" +
                 _("Zero value excludes the station from the run-once program.") +
@@ -8932,7 +8933,10 @@ var getManual = (function () {
                 _("Submit") + "</a>";
             html += "<a class='ui-btn ui-btn-b ui-corner-all ui-shadow rreset' href='#'>" +
                 _("Reset") + "</a>";
+
             page.find(".ui-content").html(html).enhanceWithin();
+
+            // controller.settings.rodur run once durations?   Never set anywhere?
             if (typeof controller.settings.rodur === "object") {
                 var total = 0;
                 for (idx = 0; idx < controller.settings.rodur.length; idx++) {
@@ -8945,6 +8949,7 @@ var getManual = (function () {
                     if (stored) { stored = JSON.parse(stored); loadLastProgram(stored); }
                 });
             }
+
             page.find("#rprog").on("change", function () {
                 var selectedVal = $(this).val();
                 if (selectedVal === "s") {
@@ -8961,6 +8966,7 @@ var getManual = (function () {
             page.on("click", ".rsubmit", submitRunonce).on("click", ".rreset", resetDurations);
             page.find(".help-icon").on("click", showHelpText);
 
+
             // llj
             page.find(".duration-field button:not(.help-icon)").on("click", function () {
                 var btn = $(this),
@@ -8974,7 +8980,18 @@ var getManual = (function () {
                         data: btn.val(),
                         title: labelText,
                         callback: function (value) { btn.val(value).text(value + "%");
-                                                     loadDurations(allProgramDurations[page.find("#rprog").val()]);
+                            loadDurations(allProgramDurations[page.find("#rprog").val()]);
+// Might be some way to have some nether function of Jquery Mobile do this... but...
+                            page.find("[id^='zone-']").each(function (zoneIdx, zoneEl) 
+                               {zoneEl.value = Math.round(zoneEl.value * value / 100);
+                                zoneEl.textContent = getDurationText(zoneEl.value);
+                                if (zoneEl.value > 0) {
+                                    $(zoneEl).addClass("green");
+                                } else {
+                                    $(zoneEl).removeClass("green");
+                                }
+                            })
+                                              
                         },
                         label: _("% Watering"),
                         maximum: 250,
@@ -9019,6 +9036,7 @@ function submitRunonce(durations) {
     if (!(durations instanceof Array)) {
         durations = [];
         $("#runonce").find("[id^='zone-']").each(function () {
+            console.log(this.val);
             durations.push(parseInt(this.value) || 0);
         });
         durations.push(0);
