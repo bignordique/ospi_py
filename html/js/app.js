@@ -10293,6 +10293,22 @@ function makeProgram21(programId, isNew) {
         + (prog.weather ? "checked='checked'" : "")
         + " name='uwt-" + pid + "' id='uwt-" + pid + "'>"
         + _("Use Weather Adjustment") + "</label>";
+
+    html += "<table style='width:100%;'>"
+        +     "<tr>"
+        +         "<td>"
+        +             "<p style='font-size:14px;'>"+ _("Program Station Delay, Minutes <= 30")+ "<br>" + _("System value if zero") + "</p>"
+        +         "</td>"
+        +         "<td>"
+        +             "<input data-mini='true' type='number' "
+        +             "onblur = 'if(this.value>30){this.value=30;} else if(this.value<0){this.value=0;}' "
+        +             "value=" + (controller.programs.pd[pid][0] >>> 27)
+        +             " name='psd-" + pid + "' id='psd-" + pid + "'>  </input>"
+        +         "</td>"
+        +      "</tr>"
+        +   "</table>";
+
+
     if (Supported.dateRange()) {
         dateRangeStart = Program.getDateRangeStart(pid);
         dateRangeEnd = Program.getDateRangeEnd(pid);
@@ -10661,6 +10677,7 @@ function submitProgram21(programId, force) {
         minInterval = checkOSVersion(2199) ? 1 : 2,
         dateRangeStr = "";
     flags = flags | (enabled << 0) | (useWeather << 1);
+    flags |= ($("#psd-" + programId).val()) << 27
     if ($("#days_rst-" + programId).val() === "odd") { flags |= 4; }
     else if ($("#days_rst-" + programId).val() === "even") { flags |= 8; }
     if ($("#days_n-" + programId).is(":checked")) {
