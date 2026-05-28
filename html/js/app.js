@@ -10334,9 +10334,19 @@ function makeProgram21(programId, isNew) {
             + " value=" + decodeDate(dateRangeEnd) + "></input>"
             + "</div></div></div></div>";
     }
-    html += "<label class='center' for='start_1-" + pid + "'>" + _("Start Time") + "</label>"
-        + "<button class='timefield' data-mini='true' id='start_1-" + pid + "'"
-        + " value='" + startTimes[0] + "'>" + readStartTime(startTimes[0]) + "</button>";
+
+    html += "<div> <table style='width:100%;'>"
+        +     "<tr>"
+        +         "<td style='width:30%;'>"
+        +             "<label class='center' for='start_1-" + pid + "'>" + _("Start Time") + "</label>"
+        +         "</td>"
+        +         "<td>"
+        +             "<button class='timefield' data-mini='true' id='start_1-" + pid + "'"
+        +             " value='" + startTimes[0] + "'>" + readStartTime(startTimes[0]) + "</button>"
+        +         "</td>"
+         +     "</tr>"
+        +    "</table></div>";
+
     html += "</div></div></div></div>";
 
     // --- Program Type ---
