@@ -101,7 +101,6 @@ class ospi_engine():
 #        self.wx.apply_monthly_adjustment()
 
         match_found = False
-
         for pid in range(0, self.ospi_db.db["programs"]["nprogs"]):
             prog = self.ospi_db.db["programs"]["pd"][pid]
 
@@ -139,7 +138,7 @@ class ospi_engine():
                             match_found = True
                         
         if match_found : 
-            self.schedule_all_stations(curr_time) 
+            self.schedule_all_stations(curr_time, 0) 
 
 # pass in ospi_time to make it easy to minipulate in test harnesses
     def do_loop(self, ospi_time):
@@ -267,7 +266,6 @@ class ospi_engine():
         self.sb.apply_all_station_bits()
 
 
-
     def bound_to_master(self, sid, mas):
         bid, s = self.to_bid_s(sid)
         attributes = self.ospi_db.db["stations"]["masop" + mas][bid] & 0b1 << s
@@ -378,16 +376,19 @@ class ospi_engine():
             entry["st"] += abs(start_adjust)
         entry["deque_time"] = entry["st"] + entry["dur"] + dequeue_adj
 
-    def water_time_decode_signed(self, wt) :
-        wt = 240 if wt > 240 else wt
-        return (wt-120) * 5
+#   def water_time_decode_signed(self, wt) :
+#        wt = 240 if wt > 240 else wt
+#        return (wt-120) * 5
+
+#                              psdt =  (self.ospi_db.db["programs"]["pd"][pid][0] >> 27 & 0b11111) * 60
+ #                           sdt = self.ospi_db.db["options"]["sdt"]
 
 # Sets station start times
     def schedule_all_stations(self, curr_time, delay=1):
         con_start_time = curr_time + delay
         if self.pause_state : con_start_time += self.pause_timer
-        station_delay = self.water_time_decode_signed(self.ospi_db.db["options"]["sdt"])
         seq_start_times = [con_start_time] * ospi_defs.NUM_SEQ_GROUPS
+        station_delay = self.ospi_db.db["options"]["sdt"]
         for ii in range(0, ospi_defs.NUM_SEQ_GROUPS) :
             if self.last_seq_stop_times[ii] > curr_time :
                 seq_start_times[ii] = self.last_seq_stop_times[ii] + station_delay
@@ -478,7 +479,7 @@ class ospi_engine():
                 self.water_logs.write_log (f'{entry["pid"] + 1},"wl",{entry["wl"]}',\
                                           self.ospi_db.get_lcl_stamp(self.logger))
 
-        station_delay = self.water_time_decode_signed(self.ospi_db.db["options"]["sdt"])
+        station_delay = self.ospi_db.db["options"]["sdt"]
 # Day one bug.   Parallel group stations have no sequential stop times.
         if gid != 255 :
             if entry["st"] + entry["dur"] + station_delay == self.last_seq_stop_times[gid] :
@@ -638,6 +639,7 @@ if __name__ == "__main__":
     logging.getLogger("ospi_check_match").setLevel(logging.INFO)
     logging.getLogger("ospi_595_fake").setLevel(logging.INFO)
     logging.getLogger("ospi_log").setLevel(logging.DEBUG)
+    logging.getLogger("ospi_gpio_zones").setLevel(logging.INFO)
 
     engine = ospi_engine(ospi_db_i, cm, sb, ol)
 
@@ -651,31 +653,33 @@ if __name__ == "__main__":
     flag = date_range + start_time + prog_type + even_odd + weather + enable_bit
     days0 = 0b100  # Wednesday
 
-    start0 = 930         # 15:30
+    start0 = 930         # 15:30 in seconds
     start1 = 0b1 << 15   # negative, disabled
     start2 = 0b1 << 15   # negative, disabled
     start3 = 0b1 << 15   # negative, disabled
-    prog0 = [flag, days0, 2, [start0, start1, start2, start3], [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 'turf', [0, 33, 415]]
+    prog0 = [flag, days0, 2, [start0, start1, start2, start3], [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 'zero', [0, 33, 415]]
+    prog4 = [flag, days0, 2, [start0, start1, start2, start3], [100, 123, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 'four', [0, 33, 415]]
 
     start0 = 0b1 << 15   # negative, disabled
     start1 = 935
-    prog1 = [flag, days0, 2, [start0, start1, start2, start3], [0, 101, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 'turf', [0, 33, 415]]
+    prog1 = [flag, days0, 2, [start0, start1, start2, start3], [0, 101, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 'one', [0, 33, 415]]
 
     start1 = 0b1 << 15   # negative, disabled
     start2 = 936
-    prog2 = [flag, days0, 2, [start0, start1, start2, start3], [0, 0, 102, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 'turf', [0, 33, 415]]
+    prog2 = [flag, days0, 2, [start0, start1, start2, start3], [0, 0, 102, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 'two', [0, 33, 415]]
 
     start0 = (0b1 << 14)
     start1 = (0b1 << 14) + 3
     start2 = (0b1 << 13)
     start3 = (0b1 << 13) + (0b1 << 12) + 3
-    prog3 = [flag, days0, 2, [start0, start1, start2, start3], [0, 0, 0, 104, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 'turf', [0, 33, 415]]
+    prog3 = [flag, days0, 2, [start0, start1, start2, start3], [0, 0, 0, 104, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 'three', [0, 33, 415]]
  
-    ospi_db.db["programs"]["nprogs"] = 4
+    ospi_db.db["programs"]["nprogs"] = 5
     ospi_db.db["programs"]["pd"][0] = prog0
     ospi_db.db["programs"]["pd"][1] = prog1
     ospi_db.db["programs"]["pd"][2] = prog2
     ospi_db.db["programs"]["pd"][3] = prog3
+    ospi_db.db["programs"]["pd"][4] = prog4
 
     import time
 # rain delay not gonna work with test bench time... not so sure.
@@ -697,8 +701,20 @@ if __name__ == "__main__":
 #                                                y    m   d  h       m     s
     start_time = int(time.mktime(time.strptime("2024 feb 21 15 " +str(m)+" 25", "%Y %b %d %H %M %S")))
 
-    run_ospi(start_time, 700, '\n    basic test ended\n**** \n\n')
+    #ospi_db.db["programs"]["pd"][4][0] &= 0xfffffffe 
 
+    run_ospi(start_time, 800, '\n    basic test ended\n**** \n\n')
+
+    #ospi_db.db["programs"]["pd"][0][0] &= 0xfffffffe 
+    #ospi_db.db["programs"]["pd"][1][0] &= 0xfffffffe 
+    #ospi_db.db["programs"]["pd"][2][0] &= 0xfffffffe 
+    #ospi_db.db["programs"]["pd"][3][0] &= 0xfffffffe 
+
+    
+
+    #run_ospi(start_time, 700, '\n    sdt test ended\n**** \n\n')
+
+    exit()
 
     ospi_db.db["options"]["mton"] = 0
     ospi_db.db["options"]["mtof"] = 1
@@ -706,6 +722,8 @@ if __name__ == "__main__":
     ospi_db.db["stations"]["masop"][0] = 251
     ospi_db.db["stations"]["stn_grp"][2] = 1
     ospi_db.db["options"]["sdt"] = 120 
+
+   
 
 
     run_ospi(start_time, 700, '\n    master on test ended\n**** \n\n')

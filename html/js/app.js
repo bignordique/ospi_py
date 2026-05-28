@@ -8983,7 +8983,9 @@ var getManual = (function () {
                             loadDurations(allProgramDurations[page.find("#rprog").val()]);
 // Might be some way to have some nether function of Jquery Mobile do this... but...
                             page.find("[id^='zone-']").each(function (zoneIdx, zoneEl) 
-                               {zoneEl.value = Math.round(zoneEl.value * value / 100);
+                               {wt = Math.round(zoneEl.value * value / 100);
+                                if (wt < 60) { wt = 0; };
+                                zoneEl.value = wt;
                                 zoneEl.textContent = getDurationText(zoneEl.value);
                                 if (zoneEl.value > 0) {
                                     $(zoneEl).addClass("green");
@@ -9036,7 +9038,6 @@ function submitRunonce(durations) {
     if (!(durations instanceof Array)) {
         durations = [];
         $("#runonce").find("[id^='zone-']").each(function () {
-            console.log(this.val);
             durations.push(parseInt(this.value) || 0);
         });
         durations.push(0);
@@ -10302,7 +10303,7 @@ function makeProgram21(programId, isNew) {
         +         "<td>"
         +             "<input data-mini='true' type='number' "
         +             "onblur = 'if(this.value>30){this.value=30;} else if(this.value<0){this.value=0;}' "
-        +             "value=" + (controller.programs.pd[pid][0] >>> 27)
+        +             "value=" + (programId === "new" ? 0 : (controller.programs.pd[pid][0] >>> 27))
         +             " name='psd-" + pid + "' id='psd-" + pid + "'>  </input>"
         +         "</td>"
         +      "</tr>"
@@ -10351,9 +10352,9 @@ function makeProgram21(programId, isNew) {
         + " id='days_n-" + pid + "' value='days_n-" + pid + "' "
         + (prog.is_interval ? "checked='checked'" : "")
         + "><label for='days_n-" + pid + "'>" + _("Interval") + "</label>";
-    html += "<label class='center' for='start_1-" + pid + "'>" + _("Start Time") + "</label>"
+   /* html += "<label class='center' for='start_1-" + pid + "'>" + _("Start Time") + "</label>"
         + "<button class='timefield' data-mini='true' id='start_1-" + pid + "'"
-        + " value='" + startTimes[0] + "'>" + readStartTime(startTimes[0]) + "</button>";
+        + " value='" + startTimes[0] + "'>" + readStartTime(startTimes[0]) + "</button>";*/
     html += "</fieldset>";
     html += "<div id='input_days_week-" + pid + "' "
         + (prog.is_interval ? "style='display:none'" : "") + ">";
