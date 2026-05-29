@@ -220,7 +220,10 @@ class ospi_engine():
                 entry = self.run_q[qid]
                 sid = entry["sid"]
                 gid = self.ospi_db.db["stations"]["stn_grp"][sid]
+                psdt = self.get_psdt(entry["pid"])
+                station_delay = self.ospi_db.db["options"]["sdt"]
                 sst = entry["st"] + entry["dur"]
+                if psdt != 0: sst = sst + psdt - station_delay
                 if sst > curr_time :
                     # station not parallel group
                     if gid != 255 and sst > self.last_seq_stop_times[gid] :
@@ -376,12 +379,8 @@ class ospi_engine():
             entry["st"] += abs(start_adjust)
         entry["deque_time"] = entry["st"] + entry["dur"] + dequeue_adj
 
-#   def water_time_decode_signed(self, wt) :
-#        wt = 240 if wt > 240 else wt
-#        return (wt-120) * 5
-
-#                              psdt =  (self.ospi_db.db["programs"]["pd"][pid][0] >> 27 & 0b11111) * 60
- #                           sdt = self.ospi_db.db["options"]["sdt"]
+    def get_psdt(self, pid):
+        return  (self.ospi_db.db["programs"]["pd"][pid][0] >> 27 & 0b11111) * 60
 
 # Sets station start times
     def schedule_all_stations(self, curr_time, delay=1):
@@ -407,7 +406,9 @@ class ospi_engine():
 # Day one bug.  Set sequential start time after master adjustment.
             if gid != ospi_defs.PARALLEL_GROUP_ID :
                 seq_start_times[gid] = entry["st"] + entry["dur"] + 1
-                seq_start_times[gid] += station_delay
+                psdt = self.get_psdt(entry["pid"])
+                if psdt == 0 : seq_start_times[gid] += station_delay
+                else: seq_start_times[gid] += psdt
 
             self.program_busy = True
         self.logger.debug(self.poop_q_string(curr_time, "schedule_all_stations"))
@@ -637,7 +638,7 @@ if __name__ == "__main__":
     ol.water_log_dir = "test/water_logs"
     logging.getLogger("ospi_station_bits").setLevel(logging.INFO)
     logging.getLogger("ospi_check_match").setLevel(logging.INFO)
-    logging.getLogger("ospi_595_fake").setLevel(logging.INFO)
+    logging.getLogger("ospi_gpio_zones").setLevel(logging.DEBUG)
     logging.getLogger("ospi_log").setLevel(logging.DEBUG)
     logging.getLogger("ospi_gpio_zones").setLevel(logging.INFO)
 
@@ -648,9 +649,11 @@ if __name__ == "__main__":
     weather = 0b0 << 1
     even_odd  = 0b10 << 2
     prog_type = 0b00 << 4  # schedule type weekday
-    start_time = 0b1 << 6
+    start_time = 0b1 << 6  # 1 for fixed, 0 for repeating
     date_range = 0b1 << 7
+    psdt = 11 << 27
     flag = date_range + start_time + prog_type + even_odd + weather + enable_bit
+    flag_psdt = psdt + date_range + start_time + prog_type + even_odd + weather + enable_bit
     days0 = 0b100  # Wednesday
 
     start0 = 930         # 15:30 in seconds
@@ -659,6 +662,7 @@ if __name__ == "__main__":
     start3 = 0b1 << 15   # negative, disabled
     prog0 = [flag, days0, 2, [start0, start1, start2, start3], [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 'zero', [0, 33, 415]]
     prog4 = [flag, days0, 2, [start0, start1, start2, start3], [100, 123, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 'four', [0, 33, 415]]
+    prog5 = [flag_psdt, days0, 2, [start0, start1, start2, start3], [100, 123, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 'five', [0, 33, 415]]
 
     start0 = 0b1 << 15   # negative, disabled
     start1 = 935
@@ -668,18 +672,20 @@ if __name__ == "__main__":
     start2 = 936
     prog2 = [flag, days0, 2, [start0, start1, start2, start3], [0, 0, 102, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 'two', [0, 33, 415]]
 
-    start0 = (0b1 << 14)
+    start0 = (0b1 << 14)       # sunrise start
     start1 = (0b1 << 14) + 3
-    start2 = (0b1 << 13)
+    start2 = (0b1 << 13)       # sunset start
     start3 = (0b1 << 13) + (0b1 << 12) + 3
     prog3 = [flag, days0, 2, [start0, start1, start2, start3], [0, 0, 0, 104, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 'three', [0, 33, 415]]
  
-    ospi_db.db["programs"]["nprogs"] = 5
+    ospi_db.db["options"]["vm"] = 1 
+    ospi_db.db["programs"]["nprogs"] = 6
     ospi_db.db["programs"]["pd"][0] = prog0
     ospi_db.db["programs"]["pd"][1] = prog1
     ospi_db.db["programs"]["pd"][2] = prog2
     ospi_db.db["programs"]["pd"][3] = prog3
     ospi_db.db["programs"]["pd"][4] = prog4
+    ospi_db.db["programs"]["pd"][5] = prog5
 
     import time
 # rain delay not gonna work with test bench time... not so sure.
@@ -701,41 +707,48 @@ if __name__ == "__main__":
 #                                                y    m   d  h       m     s
     start_time = int(time.mktime(time.strptime("2024 feb 21 15 " +str(m)+" 25", "%Y %b %d %H %M %S")))
 
-    #ospi_db.db["programs"]["pd"][4][0] &= 0xfffffffe 
+    ospi_db.db["programs"]["pd"][5][0] &= 0xfffffffe 
 
-    run_ospi(start_time, 800, '\n    basic test ended\n**** \n\n')
+    #run_ospi(start_time, 800, '\n    basic test ended\n**** \n\n')
 
-    #ospi_db.db["programs"]["pd"][0][0] &= 0xfffffffe 
-    #ospi_db.db["programs"]["pd"][1][0] &= 0xfffffffe 
-    #ospi_db.db["programs"]["pd"][2][0] &= 0xfffffffe 
-    #ospi_db.db["programs"]["pd"][3][0] &= 0xfffffffe 
 
-    
 
     #run_ospi(start_time, 700, '\n    sdt test ended\n**** \n\n')
 
-    exit()
 
     ospi_db.db["options"]["mton"] = 0
     ospi_db.db["options"]["mtof"] = 1
     ospi_db.db["options"]["mas"] = 18
     ospi_db.db["stations"]["masop"][0] = 251
     ospi_db.db["stations"]["stn_grp"][2] = 1
-    ospi_db.db["options"]["sdt"] = 120 
-
-   
+    ospi_db.db["options"]["sdt"] = 110 
 
 
-    run_ospi(start_time, 700, '\n    master on test ended\n**** \n\n')
+    #run_ospi(start_time, 700, '\n    master on test ended\n**** \n\n')
 
     h = 7
     m = 1
 #                                                y    m   d       h          m     s
     start_time = int(time.mktime(time.strptime("2024 feb 21 "+str(h)+" "+str(m)+" 25", "%Y %b %d %H %M %S")))
-    run_ospi(start_time, 400, '\n    sunrise test ended**** \n\n')
+    #run_ospi(start_time, 400, '\n    sunrise test ended**** \n\n')
 
     h = 17
     m = 23
 #                                                y    m   d       h          m     s
     start_time = int(time.mktime(time.strptime("2024 feb 21 "+str(h)+" "+str(m)+" 25", "%Y %b %d %H %M %S")))
-    run_ospi(start_time, 400, '\n    sunset test ended**** \n\n')
+    #run_ospi(start_time, 400, '\n    sunset test ended**** \n\n')
+
+
+    ospi_db.db["options"]["mas"] = 0
+    ospi_db.db["programs"]["pd"][1][0] &= 0xfffffffe 
+    ospi_db.db["programs"]["pd"][2][0] &= 0xfffffffe 
+    ospi_db.db["programs"]["pd"][3][0] &= 0xfffffffe 
+    ospi_db.db["programs"]["pd"][4][0] &= 0xfffffffe
+
+    ospi_db.db["programs"]["pd"][0] = [flag, days0, 2, [930, 940, 941, 0b1<<15], [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 'zero', [0, 33, 415]]
+    ospi_db.db["programs"]["pd"][5] = [flag_psdt, days0, 2, [931, 942, 0b1<<15, 0b1<<15], [100, 123, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 'five', [0, 33, 415]]
+    h = 15
+    m = 30
+#                                                y    m   d       h          m     s
+    start_time = int(time.mktime(time.strptime("2024 feb 21 "+str(h)+" "+str(m)+" 25", "%Y %b %d %H %M %S")))
+    run_ospi(start_time, 3500, '\n    psdt ended**** \n\n')

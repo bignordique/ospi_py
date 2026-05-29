@@ -40,6 +40,8 @@ class ospi_gpio_zones():
                 self.logger.debug(f'\n    zone: {ii}  gpio: {GPIO_MAP[ii]} off \n')
 
 
+
+
 if __name__ == "__main__":
                
     import os
