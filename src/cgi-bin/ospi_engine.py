@@ -380,7 +380,9 @@ class ospi_engine():
         entry["deque_time"] = entry["st"] + entry["dur"] + dequeue_adj
 
     def get_psdt(self, pid):
-        return  (self.ospi_db.db["programs"]["pd"][pid][0] >> 27 & 0b11111) * 60
+        if pid > 0 and pid < self.ospi_db.db["programs"]["nprogs"] :
+            return  (self.ospi_db.db["programs"]["pd"][pid][0] >> 27 & 0b11111) * 60
+        return 0
 
 # Sets station start times
     def schedule_all_stations(self, curr_time, delay=1):
