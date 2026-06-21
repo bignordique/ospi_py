@@ -25,6 +25,8 @@ class ospi_wl_update():
                 month_number = self.ospi_db.get_month_number(self.logger)
                 self.ospi_db.db["options"]["wl"] = self.ospi_db.db["settings"]["wto"]["scales"][month_number-1]
 
+        self.logger.debug(f'\n    uwt: {self.ospi_db.db["options"]["uwt"]}, wl: {self.ospi_db.db["options"]["wl"]}\n')
+
         # We don't write wl back to disk because its volatile.   Whilst program is running any computed values will persist.
         
 if __name__ == "__main__":

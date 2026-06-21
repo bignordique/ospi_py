@@ -9,10 +9,10 @@ from urllib.parse import unquote
 
 class ospi_co():
 
-    def __init__ (self, ospi_db, sb, wl_update):
+    def __init__ (self, ospi_db, sb, wx):
         self.ospi_db = ospi_db
         self.sb = sb
-        self.wl_update = wl_update
+        self.wx = wx
         self.logger = logging.getLogger(__name__)
         self.cmd_re = re.compile(r"&(\w*)=([a-zA-Z0-9.,%:-_]*)")
 #        self.find_quotes = re.compile(r"%22")
@@ -79,7 +79,7 @@ class ospi_co():
                     self.logger.warning(f'\n    Unrecognized co "{option}".\n')
 
         if writeback_db : self.ospi_db.wb_db(self.logger)
-        if update_wl : self.wl_update.update()
+        if update_wl : self.wx.compute_adjustment()
         return['{"result":1}']
 
 if __name__ == "__main__":

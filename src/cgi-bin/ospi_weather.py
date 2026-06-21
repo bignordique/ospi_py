@@ -17,18 +17,18 @@ import ospi_defs
 
 class ospi_weather():
 
-    def __init__ (self, ospi_db):
+    def __init__ (self, ospi_db, wl_update):
         self.ospi_db = ospi_db
+        self.wl_update = wl_update
         self.logger = logging.getLogger(__name__)
 
     def initialize(self) :
         self.configuration = swagger_client.Configuration()
         self.configuration.api_key['key'] = self.ospi_db.db["debug"]["weatherapi.com_key"]
         self.api_instance = swagger_client.APIsApi(swagger_client.ApiClient(self.configuration))
-        self.compute_daily_adjustment()
+        self.fetch_daily_wx()
 
-    def compute_daily_adjustment(self):
- #       return()
+    def fetch_daily_wx(self):
         ts = self.ospi_db.get_utc_stamp(self.logger)
         yesterday =  time.strftime("%Y-%m-%d", time.localtime(ts - ospi_defs.SECS_PER_DAY))
         today = time.strftime("%Y-%m-%d", time.localtime(ts))
@@ -37,13 +37,13 @@ class ospi_weather():
 #        print (self.api_instance.forecast_weather(zipcode, 1, dt=today))
         avghumidity = 0
         avgtemp_f = 0
-        totalprecip_hundreds = 0
+        self.totalprecip_hundreds = 0
         wx_factors = 0
         try:
             wx_yesterday = self.api_instance.history_weather(zipcode, yesterday)["forecast"]["forecastday"][0]["day"]
             avghumidity = wx_yesterday["avghumidity"] 
             avgtemp_f = wx_yesterday["avgtemp_f"] 
-            totalprecip_hundreds = wx_yesterday["totalprecip_in"] 
+            self.totalprecip_hundreds = wx_yesterday["totalprecip_in"] 
             wx_factors = 1
         except Exception as e:
 # nominally expect index error because the fetch succeeds, but does not return the expected dict.
@@ -53,18 +53,20 @@ class ospi_weather():
             wx_today = self.api_instance.forecast_weather(zipcode, 1, dt=today)["forecast"]["forecastday"][0]["day"]
             avghumidity += wx_today["avghumidity"] 
             avgtemp_f += wx_today["avgtemp_f"] 
-            totalprecip_hundreds += wx_today["totalprecip_in"] 
+            self.totalprecip_hundreds += wx_today["totalprecip_in"] 
             wx_factors += 1
         except Exception as e:
             self.logger.error (f'\n    failed fetch of yesterdays weather: {e}\n')
 
-        if wx_factors == 0 :
-            avghumidity = 0
-            avgtemp_f = 0
-        else :
-            avghumidity = avghumidity/wx_factors
-            avgtemp_f = avgtemp_f/wx_factors
+        self.avghumidity, self.avgtemp_f = self.get_neutral_values() 
 
+        if wx_factors != 0 :
+            self.avghumidity = avghumidity/wx_factors
+            self.avgtemp_f = avgtemp_f/wx_factors
+
+        self.compute_adjustment()
+
+    def get_neutral_values(self):
         if "bh" in self.ospi_db.db["settings"]["wto"]:
             neutral_humidity = self.ospi_db.db["settings"]["wto"]["bh"]
         else :
@@ -74,6 +76,12 @@ class ospi_weather():
             neutral_temp = self.ospi_db.db["settings"]["wto"]["bt"]
         else :
             neutral_temp = ospi_defs.NEUTRAL_TEMP
+
+        return (neutral_humidity, neutral_temp) 
+
+    def compute_adjustment(self):
+
+        neutral_humidity, neutral_temp = self.get_neutral_values() 
 
         if "t" in self.ospi_db.db["settings"]["wto"]:
             temp_scale = self.ospi_db.db["settings"]["wto"]["t"]
@@ -90,18 +98,23 @@ class ospi_weather():
         else :
             precip_scale = 100
 
-        hum_factor = (neutral_humidity - avghumidity) * hum_scale/100
-        temp_factor = (avgtemp_f - neutral_temp) * 4 * temp_scale/100
 
-        precip_factor = (totalprecip_hundreds * -2) * precip_scale/100
+        hum_factor = (neutral_humidity - self.avghumidity) * hum_scale/100
+        temp_factor = (self.avgtemp_f - neutral_temp) * 4 * temp_scale/100
 
-        self.logger.debug(f'\n    avghumidity: {avghumidity}, avgtemp: {avgtemp_f}, ' + \
-                          f'totalprecip_hundreds: {totalprecip_hundreds}\n')
+        precip_factor = (self.totalprecip_hundreds * -2) * precip_scale/100
+
+        self.logger.debug(f'\n    avghumidity: {self.avghumidity}, avgtemp: {self.avgtemp_f}, ' + \
+                          f'totalprecip_hundreds: {self.totalprecip_hundreds}\n')
         self.logger.debug(f'\n    hum_factor: {hum_factor}, temp_factor: {temp_factor}, ' + \
                           f'precip_factor: {precip_factor}\n')
 
         adj = int(min(max(0,100+hum_factor+temp_factor+precip_factor), 200))
+        self.logger.debug(f'\n   computed adjustment: {adj}\n')
+
         self.ospi_db.db["debug"]["zimm"] = adj
+
+        self.wl_update.update()
         
 if __name__ == "__main__":
     import os
@@ -130,10 +143,31 @@ if __name__ == "__main__":
     ospi_db_i = ospi_db()
     ospi_db_i.init_db(DBFILE, "config/ospi_defaults.txt")
 
-    wx = ospi_weather(ospi_db_i)
+    ospi_db_i.db["options"]["uwt"] = 1
+
+    from ospi_wl_update import ospi_wl_update
+    wl = ospi_wl_update(ospi_db_i)
+
+    wx = ospi_weather(ospi_db_i, wl.update)
     wx.initialize()
 
-    wx.compute_daily_adjustment()
+    wx.avghumidity, wx.avgtemp_f = wx.get_neutral_values() 
+    wx.compute_adjustment ()
 
-    print ("water level", ospi_db_i.db["options"]["wl"])
+    ospi_db_i.db["settings"]["wto"]["bt"] = 80
+    wx.compute_adjustment()
+
+    ospi_db_i.db["settings"]["wto"]["t"] = 80
+    wx.compute_adjustment()
+
+    ospi_db_i.db["settings"]["wto"]["bt"] = ospi_defs.NEUTRAL_TEMP
+    ospi_db_i.db["settings"]["wto"]["t"] = 100
+    
+    ospi_db_i.db["settings"]["wto"]["bh"] = 20
+    wx.compute_adjustment()
+
+    ospi_db_i.db["settings"]["wto"]["h"] = 110
+    wx.compute_adjustment()
+  
+
 

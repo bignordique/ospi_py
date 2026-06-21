@@ -18,11 +18,10 @@ class ospi_water_meter():
         self.ol = ol
         self.logger = logging.getLogger(__name__)
         pin = ospi_defs.WM_GPIO_PIN
-        self.button = Button(pin, active_state=True, pull_up=None, hold_time=0.1)
-        self.timestamps = []
+        self.button = Button(pin, active_state=True, pull_up=None, bounce_time=0.001)
         self.timestamps = [0.0 for ii in range(ospi_defs.WM_TS_DEPTH)]
         self.nozone_stamps = []
-        self.button.when_held = self.click
+        self.button.when_pressed = self.click
         self.nozone_timer = None
 
     def init_clicks(self):
@@ -43,14 +42,22 @@ class ospi_water_meter():
                           f'\n    wm_timestamp: {readable_time} ' +\
                           f'wm_clicks: {self.ospi_db.db["settings"]["wm_clicks"]}\n')
 
+    def ts_show_diff(self):
+        string_out = ""
+        for ii in range(ospi_defs.WM_TS_DEPTH - 1):
+            string_out += f'{self.timestamps[ii]} {self.timestamps[ii+1]} {self.timestamps[ii] - self.timestamps[ii+1]}\n'
+        return string_out
+    
     def click(self):
+        # get_lcl_stamp returns seconds since the "local" epoch as an integer.
         time_is = self.ospi_db.get_lcl_stamp(self.logger)
         self.timestamps = [time_is] + self.timestamps[0:ospi_defs.WM_TS_DEPTH-1]
         self.ospi_db.db["settings"]["wm_clicks"] += 1
         self.ospi_db.db["settings"]["wm_timestamp"] = time_is
 #        self.logger.info(f'\n    {self.timestamps[1]:3.2f} {self.timestamps[0]:3.2f} {self.timestamps[0]-self.timestamps[1]:3.2f}\n')
         self.logger.debug(f'\n     wm_clicks: {self.ospi_db.db["settings"]["wm_clicks"]}' + \
-                          f'\n     timestamps: {self.timestamps}\n')
+#                          f'\n     timestamps: {self.timestamps}\n')
+                          self.ts_show_diff())
         if self.sb.station_bits == 0 and self.eng.shut_off_timer == 0:
             self.nozone_stamps = [time_is] + self.nozone_stamps
             if isinstance(self.nozone_timer, Timer):
@@ -97,7 +104,20 @@ if __name__ == "__main__" :
     ospi_db_i = ospi_db()
     ospi_db_i.init_db(DBFILE, DEFFILE)
 
-    water_meter_inst = ospi_water_meter(ospi_db_i)
+    from ospi_station_bits import ospi_station_bits
+    from ospi_weather import ospi_weather
+    from ospi_check_match import ospi_check_match
+    from ospi_log import ospi_log
+    sb = ospi_station_bits(ospi_db_i)
+    cm = ospi_check_match(ospi_db_i)
+    wx = ospi_weather(ospi_db_i)
+    ol = ospi_log(ospi_db_i)
+
+    from ospi_engine import ospi_engine
+    eng = ospi_engine(ospi_db_i, cm, sb, wx)
+
+
+    water_meter_inst = ospi_water_meter(ospi_db_i, eng, sb, ol)
     
     try:
         while True:

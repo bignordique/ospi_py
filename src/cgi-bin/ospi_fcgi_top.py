@@ -47,10 +47,10 @@ from ospi_wl_update import ospi_wl_update
 ospi_db_i = ospi_db()
 
 wl = ospi_wl_update(ospi_db_i)
+wx = ospi_weather(ospi_db_i, wl)
 ol = ospi_log(ospi_db_i)
 sb = ospi_station_bits(ospi_db_i)
 cm = ospi_check_match(ospi_db_i)
-wx = ospi_weather(ospi_db_i)
 wx_os = ospi_os_weather(ospi_db_i)
 eng = ospi_engine(ospi_db_i, cm, sb, ol)
 wm = ospi_water_meter(ospi_db_i, eng, sb, ol)
@@ -63,7 +63,7 @@ fuse = ospi_fuse()
 js = ospi_js(ospi_db_i, sb, fuse, eng)
 ja = ospi_ja(jc, jp, jo, js, jn)
 cv = ospi_cv(ospi_db_i, eng)
-co = ospi_co(ospi_db_i, sb, wl)
+co = ospi_co(ospi_db_i, sb, wx)
 cs = ospi_cs(ospi_db_i)
 mp = ospi_mp(ospi_db_i, eng)
 cm = ospi_cm(ospi_db_i, eng)
@@ -81,7 +81,7 @@ cx = ospi_cx(ospi_db_i)
 temp = ospi_w1_rd_temps("", js.settemp)
 
 zone_current = ospi_mcp3221(ospi_db_i)
-st = ospi_server_thread(ospi_db_i, eng, ol.prune_log, wx.compute_daily_adjustment, wx_os)
+st = ospi_server_thread(ospi_db_i, eng, ol.prune_log, wx.fetch_daily_wx, wx_os)
 
 class ospi_fcgi_top ():
 
@@ -91,7 +91,6 @@ class ospi_fcgi_top ():
         ol.logging_ready()   #generate warning message if log file not available
         wx.initialize()
         wx_os.initialize()
-        wl.update()
         self.ospi_cmd_re = re.compile("pw=([a-f0-9]{32})(&?.*)&_=(\d+)$")
         self.ospi_cmd_re_cm = re.compile("(.*)&pw=([a-f0-9]{32})&_=(\d+)$")
         self.logger = logging.getLogger(__name__)
