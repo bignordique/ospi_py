@@ -108,10 +108,13 @@ if __name__ == "__main__" :
     from ospi_weather import ospi_weather
     from ospi_check_match import ospi_check_match
     from ospi_log import ospi_log
+    from ospi_wl_update import ospi_wl_update
     sb = ospi_station_bits(ospi_db_i)
     cm = ospi_check_match(ospi_db_i)
-    wx = ospi_weather(ospi_db_i)
+    wl = ospi_wl_update(ospi_db_i)
+    wx = ospi_weather(ospi_db_i, wl)
     ol = ospi_log(ospi_db_i)
+
 
     from ospi_engine import ospi_engine
     eng = ospi_engine(ospi_db_i, cm, sb, wx)

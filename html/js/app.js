@@ -9514,7 +9514,7 @@ var getLogs = (function () {
                         (i === "station" ? m[e] : dateToString(new Date(1e3 * e * 60 * 60 * 24)).slice(0, -9)) +
                         "</h2>";
                     if (r[e]) { s[d] += "<span style='border:none' class='" + (r[e] !== 100 ? (r[e] < 100 ? "green " : "red ") : "") + "ui-body ui-body-a'>" + _("Average") + " " + _("Water Level") + ": " + r[e] + "%</span>"; }
-                    if (l[e]) { s[d] += "<span style='border:none' class='ui-body ui-body-a'>" + _("Total Water Used") + ": " + l[e] + " G</span>"; }
+                    if (l[e]) { s[d] += "<span style='border:none' class='ui-body ui-body-a'>" + _("Total Water Used") + ": " + (isMetric ? l[e].toFixed(2) + " L" : (l[e] * 0.264172).toFixed(2) + " G") + "</span>"; }
                     s[d] += c;
                     for (n = 0; n < a[e].length; n++) {
                         var u = new Date(a[e][n][0]);
@@ -9678,16 +9678,22 @@ var getLogs = (function () {
                 $.each(d, function () {
                     var e;
                     //                           t = flowCountToVolume(this[0]);
-                    var t = flowCountToVolume(this[4]);
+                    var liters = flowCountToVolume(this[4]);
                     if (i === "timeline") {
                         e = new Date(parseInt(1e3 * this[3]));
                         e = new Date(e.getUTCFullYear(), e.getUTCMonth(), e.getUTCDate(), e.getUTCHours(), e.getUTCMinutes(), e.getUTCSeconds());
-                        o.push({ start: new Date(e.getTime() - parseInt(1e3 * this[2])), end: e, className: "", content: t + " G", shortname: _("FS"), group: _("Flow Sensor") });
+                        if (isMetric) {
+                            o.push({ start: new Date(e.getTime() - parseInt(1e3 * this[2])), end: e, className: "", content: liters + " L", shortname: _("FS"), group: _("Flow Sensor") });
+                        } else {
+                            gallons = (liters * 0.264172).toFixed(2)
+                            o.push({ start: new Date(e.getTime() - parseInt(1e3 * this[2])), end: e, className: "", content: gallons + " G", shortname: _("FS"), group: _("Flow Sensor") });
+                        }
+
                     } else {
                         e = Math.floor(this[3] / 60 / 60 / 24);
-                        o[e] = o[e] ? o[e] + t : t;
+                        o[e] = o[e] ? o[e] + liters : liters;
                     }
-                    n.totalVolume += t;
+                    n.totalVolume += liters;
                 });
             }
             return [e, o, n];
@@ -9767,9 +9773,7 @@ var getLogs = (function () {
                     ? "<div><span class='bold'>" +
                     _("Total Water Used") +
                     "</span>: " +
-                    e.totalVolume +
-                    //                            " L" +
-                    " G" +
+                    (isMetric ? e.totalVolume.toFixed(2) + " L" : (e.totalVolume * 0.264172).toFixed(2) + " G") +
                     (t && e.avgWaterLevel < 100 ? " (<span class='green-text'>" + (e.totalVolume - e.totalVolume * (e.avgWaterLevel / 100)).toFixed(0) + " G saved</span>)" : "") +
                     "</div>"
                     : "") +
